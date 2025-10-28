@@ -367,6 +367,318 @@ def extract_turn_fidelities(session: Dict[str, Any]) -> List[float]:
 
 
 # ============================================================================
+# Pattern Detection Functions (Phase 9)
+# ============================================================================
+
+def detect_intervention_patterns(sessions: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Detect recurring intervention patterns across sessions.
+
+    Identifies:
+    - Sessions with high intervention rates (>50% of turns)
+    - Sessions with low intervention rates (<10% of turns)
+    - Average intervention rate across all sessions
+
+    Args:
+        sessions: List of session data dictionaries
+
+    Returns:
+        Dict with intervention pattern analysis
+    """
+    if not sessions:
+        return {
+            'high_intervention_sessions': [],
+            'low_intervention_sessions': [],
+            'avg_intervention_rate': 0.0,
+            'total_interventions': 0,
+            'total_turns': 0
+        }
+
+    session_intervention_rates = []
+    total_interventions = 0
+    total_turns = 0
+    high_intervention_sessions = []
+    low_intervention_sessions = []
+
+    for idx, session in enumerate(sessions):
+        turns = session.get('turns', [])
+        if not turns:
+            continue
+
+        interventions = sum(
+            1 for turn in turns
+            if turn.get('metadata', {}).get('intervention_applied', False)
+        )
+
+        rate = interventions / len(turns) if len(turns) > 0 else 0.0
+        session_intervention_rates.append(rate)
+        total_interventions += interventions
+        total_turns += len(turns)
+
+        # Classify sessions
+        session_metadata = session.get('session_metadata', {})
+        session_id = session_metadata.get('session_id', f'Session {idx + 1}')
+
+        if rate > 0.5:
+            high_intervention_sessions.append({
+                'session_id': session_id,
+                'rate': rate,
+                'interventions': interventions,
+                'turns': len(turns),
+                'idx': idx
+            })
+        elif rate < 0.1 and len(turns) >= 5:  # Only flag low if sufficient turns
+            low_intervention_sessions.append({
+                'session_id': session_id,
+                'rate': rate,
+                'interventions': interventions,
+                'turns': len(turns),
+                'idx': idx
+            })
+
+    avg_rate = total_interventions / total_turns if total_turns > 0 else 0.0
+
+    return {
+        'high_intervention_sessions': sorted(high_intervention_sessions, key=lambda x: x['rate'], reverse=True),
+        'low_intervention_sessions': sorted(low_intervention_sessions, key=lambda x: x['rate']),
+        'avg_intervention_rate': avg_rate,
+        'total_interventions': total_interventions,
+        'total_turns': total_turns,
+        'session_rates': session_intervention_rates
+    }
+
+
+def detect_drift_triggers(sessions: List[Dict[str, Any]], threshold: float = 0.8) -> Dict[str, Any]:
+    """
+    Identify common drift triggers (turns with low fidelity).
+
+    Args:
+        sessions: List of session data dictionaries
+        threshold: Fidelity threshold for drift detection (default: 0.8)
+
+    Returns:
+        Dict with drift trigger analysis
+    """
+    if not sessions:
+        return {
+            'total_drift_events': 0,
+            'drift_rate': 0.0,
+            'sessions_with_drift': [],
+            'avg_drifts_per_session': 0.0
+        }
+
+    total_drift_events = 0
+    total_turns = 0
+    sessions_with_drift = []
+
+    for idx, session in enumerate(sessions):
+        turns = session.get('turns', [])
+        if not turns:
+            continue
+
+        drift_turns = []
+        for turn_idx, turn in enumerate(turns):
+            metrics = turn.get('metrics', {})
+            fidelity = metrics.get('telic_fidelity', 1.0)
+
+            if fidelity < threshold:
+                drift_turns.append({
+                    'turn_number': turn_idx,
+                    'fidelity': fidelity,
+                    'user_input': turn.get('user_message', '')[:100]  # First 100 chars
+                })
+                total_drift_events += 1
+
+        total_turns += len(turns)
+
+        if drift_turns:
+            session_metadata = session.get('session_metadata', {})
+            session_id = session_metadata.get('session_id', f'Session {idx + 1}')
+
+            sessions_with_drift.append({
+                'session_id': session_id,
+                'drift_count': len(drift_turns),
+                'drift_rate': len(drift_turns) / len(turns),
+                'drift_turns': drift_turns[:5],  # Show first 5 drifts
+                'idx': idx
+            })
+
+    drift_rate = total_drift_events / total_turns if total_turns > 0 else 0.0
+    avg_drifts = total_drift_events / len(sessions) if sessions else 0.0
+
+    return {
+        'total_drift_events': total_drift_events,
+        'drift_rate': drift_rate,
+        'sessions_with_drift': sorted(sessions_with_drift, key=lambda x: x['drift_count'], reverse=True),
+        'avg_drifts_per_session': avg_drifts,
+        'threshold_used': threshold
+    }
+
+
+def analyze_governance_effectiveness(sessions: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Analyze governance effectiveness patterns.
+
+    Measures how well interventions improve fidelity by comparing
+    sessions with high vs low intervention rates.
+
+    Args:
+        sessions: List of session data dictionaries
+
+    Returns:
+        Dict with effectiveness analysis
+    """
+    if not sessions:
+        return {
+            'avg_fidelity_with_interventions': 0.0,
+            'avg_fidelity_without_interventions': 0.0,
+            'effectiveness_score': 0.0,
+            'analysis': 'No data available'
+        }
+
+    # Collect fidelity for turns with and without interventions
+    fidelity_with_intervention = []
+    fidelity_without_intervention = []
+
+    for session in sessions:
+        turns = session.get('turns', [])
+        for turn in turns:
+            metrics = turn.get('metrics', {})
+            metadata = turn.get('metadata', {})
+            fidelity = metrics.get('telic_fidelity', 1.0)
+            intervention = metadata.get('intervention_applied', False)
+
+            if intervention:
+                fidelity_with_intervention.append(fidelity)
+            else:
+                fidelity_without_intervention.append(fidelity)
+
+    # Calculate averages
+    avg_with = (sum(fidelity_with_intervention) / len(fidelity_with_intervention)
+                if fidelity_with_intervention else 0.0)
+    avg_without = (sum(fidelity_without_intervention) / len(fidelity_without_intervention)
+                   if fidelity_without_intervention else 0.0)
+
+    # Effectiveness score: positive if interventions improve fidelity
+    effectiveness = avg_with - avg_without
+
+    # Generate analysis text
+    if effectiveness > 0.1:
+        analysis = f"Interventions are highly effective (+{effectiveness:.3f} fidelity improvement)"
+    elif effectiveness > 0.01:
+        analysis = f"Interventions show moderate effectiveness (+{effectiveness:.3f} improvement)"
+    elif effectiveness > -0.01:
+        analysis = "Interventions have neutral effect on fidelity"
+    else:
+        analysis = f"Interventions may be counterproductive ({effectiveness:.3f} fidelity decrease)"
+
+    return {
+        'avg_fidelity_with_interventions': avg_with,
+        'avg_fidelity_without_interventions': avg_without,
+        'effectiveness_score': effectiveness,
+        'intervention_count': len(fidelity_with_intervention),
+        'non_intervention_count': len(fidelity_without_intervention),
+        'analysis': analysis
+    }
+
+
+def detect_anomalous_sessions(sessions: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Detect anomalous sessions using statistical outlier detection.
+
+    Identifies sessions with unusual metrics compared to the norm:
+    - Unusually low average fidelity
+    - Unusually high drift rate
+    - Unusually high intervention rate
+
+    Args:
+        sessions: List of session data dictionaries
+
+    Returns:
+        Dict with anomaly detection results
+    """
+    if len(sessions) < 3:
+        return {
+            'anomalies': [],
+            'message': 'Need at least 3 sessions for anomaly detection'
+        }
+
+    import statistics
+
+    # Extract metrics for all sessions
+    session_metrics = []
+    for idx, session in enumerate(sessions):
+        metrics = extract_session_metrics(session)
+        session_metadata = session.get('session_metadata', {})
+
+        session_metrics.append({
+            'idx': idx,
+            'session_id': session_metadata.get('session_id', f'Session {idx + 1}'),
+            'avg_fidelity': metrics['avg_fidelity'],
+            'intervention_rate': metrics['interventions'] / metrics['turns'] if metrics['turns'] > 0 else 0.0,
+            'basin_violation_rate': metrics['basin_violations'] / metrics['turns'] if metrics['turns'] > 0 else 0.0,
+            'turns': metrics['turns']
+        })
+
+    # Calculate statistics
+    fidelities = [s['avg_fidelity'] for s in session_metrics]
+    intervention_rates = [s['intervention_rate'] for s in session_metrics]
+    violation_rates = [s['basin_violation_rate'] for s in session_metrics]
+
+    # Use median and MAD for robust outlier detection
+    median_fidelity = statistics.median(fidelities)
+    median_intervention = statistics.median(intervention_rates)
+    median_violations = statistics.median(violation_rates)
+
+    # Calculate MAD (Median Absolute Deviation)
+    mad_fidelity = statistics.median([abs(f - median_fidelity) for f in fidelities])
+    mad_intervention = statistics.median([abs(i - median_intervention) for i in intervention_rates])
+    mad_violations = statistics.median([abs(v - median_violations) for v in violation_rates])
+
+    # Detect anomalies (using 2.5 MAD threshold)
+    threshold = 2.5
+    anomalies = []
+
+    for session_data in session_metrics:
+        reasons = []
+
+        # Check fidelity anomaly (low fidelity)
+        if mad_fidelity > 0:
+            z_fidelity = (session_data['avg_fidelity'] - median_fidelity) / (mad_fidelity * 1.4826)
+            if z_fidelity < -threshold:
+                reasons.append(f"Unusually low fidelity (F={session_data['avg_fidelity']:.3f})")
+
+        # Check intervention rate anomaly (high intervention)
+        if mad_intervention > 0:
+            z_intervention = (session_data['intervention_rate'] - median_intervention) / (mad_intervention * 1.4826)
+            if abs(z_intervention) > threshold:
+                reasons.append(f"Unusual intervention rate ({session_data['intervention_rate']:.1%})")
+
+        # Check violation rate anomaly (high violations)
+        if mad_violations > 0:
+            z_violations = (session_data['basin_violation_rate'] - median_violations) / (mad_violations * 1.4826)
+            if z_violations > threshold:
+                reasons.append(f"High drift rate ({session_data['basin_violation_rate']:.1%})")
+
+        if reasons:
+            anomalies.append({
+                'session_id': session_data['session_id'],
+                'idx': session_data['idx'],
+                'reasons': reasons,
+                'metrics': session_data
+            })
+
+    return {
+        'anomalies': anomalies,
+        'total_sessions': len(sessions),
+        'anomaly_count': len(anomalies),
+        'median_fidelity': median_fidelity,
+        'median_intervention_rate': median_intervention,
+        'median_violation_rate': median_violations
+    }
+
+
+# ============================================================================
 # Evidence Export Functions (Phase 8)
 # ============================================================================
 
@@ -4308,6 +4620,332 @@ def render_analytics_dashboard():
         No session data available yet for comparison.
 
         Complete at least 2 conversations to see session-to-session comparisons!
+        """)
+
+    st.divider()
+
+    # Phase 9 Task 3: Automated Pattern Detection
+    st.subheader("🔍 Automated Pattern Detection")
+    st.caption("AI-powered analysis of governance behavior patterns across all sessions")
+
+    if len(sessions_data) > 0:
+        # Run pattern detection
+        with st.spinner('🔍 Analyzing patterns...'):
+            intervention_patterns = detect_intervention_patterns(sessions_data)
+            drift_triggers = detect_drift_triggers(sessions_data)
+            effectiveness = analyze_governance_effectiveness(sessions_data)
+            anomalies = detect_anomalous_sessions(sessions_data)
+
+        # Create tabs for different pattern types
+        pattern_tabs = st.tabs([
+            "🎯 Intervention Patterns",
+            "⚠️ Drift Triggers",
+            "📈 Governance Effectiveness",
+            "🚨 Anomaly Detection"
+        ])
+
+        # Tab 1: Intervention Patterns
+        with pattern_tabs[0]:
+            st.markdown("#### Intervention Behavior Patterns")
+            st.caption("Identifies sessions with unusually high or low intervention rates")
+
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                st.metric(
+                    "Avg Intervention Rate",
+                    f"{intervention_patterns['avg_intervention_rate']:.1%}",
+                    help="Average percentage of turns requiring governance intervention"
+                )
+
+            with col2:
+                st.metric(
+                    "Total Interventions",
+                    intervention_patterns['total_interventions'],
+                    help="Total number of interventions across all sessions"
+                )
+
+            with col3:
+                st.metric(
+                    "Total Turns",
+                    intervention_patterns['total_turns'],
+                    help="Total number of conversation turns analyzed"
+                )
+
+            st.divider()
+
+            # High intervention sessions
+            high_sessions = intervention_patterns['high_intervention_sessions']
+            if high_sessions:
+                st.markdown("##### 🔴 High Intervention Sessions (>50%)")
+                st.caption("Sessions requiring frequent governance corrections")
+
+                for session in high_sessions[:5]:  # Show top 5
+                    with st.expander(f"**{session['session_id']}** - {session['rate']:.1%} intervention rate"):
+                        st.write(f"**Interventions:** {session['interventions']} out of {session['turns']} turns")
+                        st.progress(session['rate'])
+                        st.caption("""
+                        **Analysis:** High intervention rate may indicate:
+                        - Complex/ambiguous user queries
+                        - Attractor misalignment with conversation context
+                        - Need for attractor refinement
+                        """)
+            else:
+                st.info("✓ No sessions with unusually high intervention rates detected")
+
+            st.divider()
+
+            # Low intervention sessions
+            low_sessions = intervention_patterns['low_intervention_sessions']
+            if low_sessions:
+                st.markdown("##### 🟢 Low Intervention Sessions (<10%)")
+                st.caption("Sessions with minimal governance corrections")
+
+                for session in low_sessions[:5]:  # Show top 5
+                    with st.expander(f"**{session['session_id']}** - {session['rate']:.1%} intervention rate"):
+                        st.write(f"**Interventions:** {session['interventions']} out of {session['turns']} turns")
+                        st.progress(session['rate'])
+                        st.caption("""
+                        **Analysis:** Low intervention rate may indicate:
+                        - Strong natural alignment with purpose
+                        - Well-calibrated attractor configuration
+                        - Straightforward queries within attractor scope
+                        """)
+            else:
+                st.info("✓ All sessions show normal intervention patterns")
+
+        # Tab 2: Drift Triggers
+        with pattern_tabs[1]:
+            st.markdown("#### Common Drift Triggers")
+            st.caption("Identifies turns where fidelity drops below target threshold")
+
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                st.metric(
+                    "Total Drift Events",
+                    drift_triggers['total_drift_events'],
+                    help="Number of turns with fidelity below 0.8"
+                )
+
+            with col2:
+                st.metric(
+                    "Overall Drift Rate",
+                    f"{drift_triggers['drift_rate']:.1%}",
+                    help="Percentage of turns experiencing drift"
+                )
+
+            with col3:
+                st.metric(
+                    "Avg Drifts/Session",
+                    f"{drift_triggers['avg_drifts_per_session']:.1f}",
+                    help="Average number of drift events per session"
+                )
+
+            st.divider()
+
+            sessions_with_drift = drift_triggers['sessions_with_drift']
+            if sessions_with_drift:
+                st.markdown("##### ⚠️ Sessions with Drift Events")
+
+                for session_drift in sessions_with_drift[:5]:  # Show top 5
+                    with st.expander(f"**{session_drift['session_id']}** - {session_drift['drift_count']} drift events ({session_drift['drift_rate']:.1%})"):
+                        st.write(f"**Drift turns:** {session_drift['drift_count']} out of total turns")
+
+                        if session_drift['drift_turns']:
+                            st.markdown("**Sample drift triggers:**")
+                            for drift_turn in session_drift['drift_turns']:
+                                st.markdown(f"""
+                                - **Turn {drift_turn['turn_number']}** (F={drift_turn['fidelity']:.3f}):
+                                  _{drift_turn['user_input']}_
+                                """)
+            else:
+                st.success("✓ No drift events detected! All sessions maintained high fidelity.")
+
+        # Tab 3: Governance Effectiveness
+        with pattern_tabs[2]:
+            st.markdown("#### Governance Effectiveness Analysis")
+            st.caption("Measures how well interventions improve fidelity")
+
+            st.markdown(f"""
+            **Overall Assessment:** {effectiveness['analysis']}
+            """)
+
+            st.divider()
+
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                st.metric(
+                    "Avg Fidelity (With Intervention)",
+                    f"{effectiveness['avg_fidelity_with_interventions']:.3f}",
+                    help="Average fidelity when governance intervenes"
+                )
+
+            with col2:
+                st.metric(
+                    "Avg Fidelity (No Intervention)",
+                    f"{effectiveness['avg_fidelity_without_interventions']:.3f}",
+                    help="Average fidelity without intervention"
+                )
+
+            with col3:
+                delta_val = effectiveness['effectiveness_score']
+                st.metric(
+                    "Effectiveness Score",
+                    f"{delta_val:+.3f}",
+                    delta=f"{delta_val:+.3f}",
+                    help="Positive = interventions improve fidelity"
+                )
+
+            st.divider()
+
+            # Effectiveness visualization
+            st.markdown("##### 📊 Intervention Impact")
+
+            if effectiveness['intervention_count'] > 0 and effectiveness['non_intervention_count'] > 0:
+                comparison_data = {
+                    'Category': ['With Intervention', 'Without Intervention'],
+                    'Avg Fidelity': [
+                        effectiveness['avg_fidelity_with_interventions'],
+                        effectiveness['avg_fidelity_without_interventions']
+                    ],
+                    'Sample Size': [
+                        effectiveness['intervention_count'],
+                        effectiveness['non_intervention_count']
+                    ]
+                }
+
+                if HAS_PLOTLY:
+                    fig = go.Figure()
+
+                    fig.add_trace(go.Bar(
+                        x=comparison_data['Category'],
+                        y=comparison_data['Avg Fidelity'],
+                        text=[f"{v:.3f}" for v in comparison_data['Avg Fidelity']],
+                        textposition='outside',
+                        marker=dict(
+                            color=['#4a90e2', '#95a5a6'],
+                            line=dict(color='white', width=2)
+                        ),
+                        hovertemplate='<b>%{x}</b><br>Avg Fidelity: %{y:.3f}<br>Sample: %{customdata} turns<extra></extra>',
+                        customdata=comparison_data['Sample Size']
+                    ))
+
+                    fig.add_hline(
+                        y=0.8,
+                        line_dash="dash",
+                        line_color="red",
+                        annotation_text="Target (F=0.8)",
+                        annotation_position="right"
+                    )
+
+                    fig.update_layout(
+                        yaxis_title="Average Fidelity",
+                        height=350,
+                        template='plotly_white',
+                        yaxis_range=[0, 1],
+                        showlegend=False
+                    )
+
+                    st.plotly_chart(fig, use_container_width=True)
+                else:
+                    st.write(comparison_data)
+
+                st.caption(f"""
+                **Sample sizes:** {effectiveness['intervention_count']:,} turns with intervention,
+                {effectiveness['non_intervention_count']:,} turns without intervention
+                """)
+            else:
+                st.info("Insufficient data for comparison visualization")
+
+        # Tab 4: Anomaly Detection
+        with pattern_tabs[3]:
+            st.markdown("#### Anomalous Session Detection")
+            st.caption("Statistical outlier detection using Median Absolute Deviation (MAD)")
+
+            if 'message' in anomalies:
+                st.info(f"ℹ️ {anomalies['message']}")
+            else:
+                col1, col2, col3, col4 = st.columns(4)
+
+                with col1:
+                    st.metric(
+                        "Total Sessions",
+                        anomalies['total_sessions'],
+                        help="Number of sessions analyzed"
+                    )
+
+                with col2:
+                    st.metric(
+                        "Anomalies Found",
+                        anomalies['anomaly_count'],
+                        help="Sessions flagged as statistical outliers"
+                    )
+
+                with col3:
+                    st.metric(
+                        "Median Fidelity",
+                        f"{anomalies['median_fidelity']:.3f}",
+                        help="Median fidelity across all sessions"
+                    )
+
+                with col4:
+                    st.metric(
+                        "Median Intervention Rate",
+                        f"{anomalies['median_intervention_rate']:.1%}",
+                        help="Median intervention rate"
+                    )
+
+                st.divider()
+
+                if anomalies['anomalies']:
+                    st.warning(f"⚠️ **{len(anomalies['anomalies'])} anomalous session(s) detected**")
+
+                    for anomaly in anomalies['anomalies']:
+                        with st.expander(f"**{anomaly['session_id']}** - {len(anomaly['reasons'])} anomaly indicator(s)"):
+                            st.markdown("**Anomaly indicators:**")
+                            for reason in anomaly['reasons']:
+                                st.markdown(f"- {reason}")
+
+                            st.divider()
+
+                            st.markdown("**Session metrics:**")
+                            metrics = anomaly['metrics']
+                            col_a, col_b, col_c = st.columns(3)
+
+                            with col_a:
+                                st.metric("Avg Fidelity", f"{metrics['avg_fidelity']:.3f}")
+
+                            with col_b:
+                                st.metric("Intervention Rate", f"{metrics['intervention_rate']:.1%}")
+
+                            with col_c:
+                                st.metric("Drift Rate", f"{metrics['basin_violation_rate']:.1%}")
+
+                            st.caption("""
+                            **Recommendations:**
+                            - Review session context and user queries
+                            - Check attractor configuration for this scenario
+                            - Consider if unusual behavior is legitimate or problematic
+                            """)
+                else:
+                    st.success("✓ No anomalous sessions detected. All sessions within normal statistical range.")
+
+                st.divider()
+
+                st.markdown("##### 📊 Detection Method")
+                st.caption("""
+                **MAD-based outlier detection:** Uses Median Absolute Deviation (MAD) to identify sessions
+                with metrics that deviate significantly (>2.5 MAD) from the median. More robust than
+                standard deviation for datasets with outliers.
+                """)
+
+    else:
+        st.info("""
+        No session data available yet for pattern detection.
+
+        Complete at least one conversation to enable automated pattern analysis!
         """)
 
     st.divider()
