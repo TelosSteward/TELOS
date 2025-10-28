@@ -556,6 +556,8 @@ def initialize_teloscope():
                 # Turn navigation
                 if 'current_turn_index' not in st.session_state:
                     st.session_state.current_turn_index = 0  # Will be updated to latest turn
+                if 'is_live_mode' not in st.session_state:
+                    st.session_state.is_live_mode = True  # True = at latest turn, False = reviewing history
                 if 'is_playing' not in st.session_state:
                     st.session_state.is_playing = False  # Pause/play state for turn navigation
                 if 'playback_speed' not in st.session_state:
@@ -743,6 +745,95 @@ def render_chat_bubble(role, text, turn_number=None, timestamp=None, governance_
     # Note: In actual implementation, we'd use a proper container and
     # render the text content with st.markdown() for proper markdown support.
     # This is a simplified version for Phase 1 foundation.
+
+
+# ============================================================================
+# Phase 5: Turn Navigation Controls
+# ============================================================================
+
+def render_turn_navigation(total_turns: int):
+    """
+    Render turn navigation controls for scrubbing through conversation history.
+
+    Features:
+    - Previous/Next turn buttons
+    - Turn counter display (e.g., "Turn 15 / 32")
+    - Timeline scrubber slider
+    - Jump to latest turn button
+    - Live/Review mode indicator
+
+    Args:
+        total_turns: Total number of turns in the conversation
+    """
+    if total_turns == 0:
+        return  # No navigation needed for empty conversation
+
+    # Get current state
+    current_turn = st.session_state.get('current_turn_index', total_turns - 1)
+    is_live = st.session_state.get('is_live_mode', True)
+
+    # Ensure current_turn is within bounds
+    current_turn = max(0, min(current_turn, total_turns - 1))
+
+    # Update live mode based on position
+    is_live = (current_turn == total_turns - 1)
+    st.session_state['is_live_mode'] = is_live
+
+    # Create navigation bar
+    st.markdown("---")
+
+    # Mode indicator
+    if is_live:
+        st.caption("🟢 **LIVE MODE** - At latest turn")
+    else:
+        st.caption("⏸️ **REVIEW MODE** - Viewing conversation history")
+
+    # Navigation controls
+    col1, col2, col3, col4, col5 = st.columns([1, 1, 4, 1, 1])
+
+    with col1:
+        # Previous turn button
+        if st.button("⬅️ Prev", disabled=(current_turn <= 0), use_container_width=True):
+            st.session_state['current_turn_index'] = current_turn - 1
+            st.session_state['is_live_mode'] = False
+            st.rerun()
+
+    with col2:
+        # Next turn button
+        if st.button("Next ➡️", disabled=(current_turn >= total_turns - 1), use_container_width=True):
+            st.session_state['current_turn_index'] = current_turn + 1
+            st.session_state['is_live_mode'] = (current_turn + 1 == total_turns - 1)
+            st.rerun()
+
+    with col3:
+        # Timeline scrubber slider
+        new_turn = st.slider(
+            "Turn",
+            min_value=0,
+            max_value=total_turns - 1,
+            value=current_turn,
+            label_visibility="collapsed",
+            key="turn_scrubber"
+        )
+
+        # Update if slider moved
+        if new_turn != current_turn:
+            st.session_state['current_turn_index'] = new_turn
+            st.session_state['is_live_mode'] = (new_turn == total_turns - 1)
+            st.rerun()
+
+    with col4:
+        # Jump to latest turn button
+        if st.button("⏭️ Latest", disabled=is_live, use_container_width=True):
+            st.session_state['current_turn_index'] = total_turns - 1
+            st.session_state['is_live_mode'] = True
+            st.rerun()
+
+    with col5:
+        # Turn counter display
+        st.markdown(f"**{current_turn + 1} / {total_turns}**")
+
+    st.markdown("---")
 
 
 # ============================================================================
@@ -1029,8 +1120,15 @@ def render_chat_interface():
             # No messages yet - show welcome message
             st.info("👋 Welcome! Start a conversation below.")
         else:
-            # Render all messages
-            for turn in turns:
+            # Phase 5: Filter turns based on current_turn_index
+            current_turn_index = st.session_state.get('current_turn_index', len(turns) - 1)
+            current_turn_index = max(0, min(current_turn_index, len(turns) - 1))  # Bounds check
+
+            # Only show turns up to current_turn_index (inclusive)
+            visible_turns = turns[:current_turn_index + 1]
+
+            # Render filtered messages
+            for turn in visible_turns:
                 turn_number = turn.get('turn_number', 0)
                 user_message = turn.get('user_message', '')
 
@@ -1082,10 +1180,19 @@ def render_chat_interface():
                 """, unsafe_allow_html=True)
 
     # ========================================================================
+    # Phase 5: TURN NAVIGATION CONTROLS
+    # ========================================================================
+
+    # Render navigation controls if there are turns
+    if len(turns) > 0:
+        render_turn_navigation(len(turns))
+
+    # ========================================================================
     # CHAT INPUT AREA (Sticky at bottom)
     # ========================================================================
 
-    st.divider()
+    # Phase 5: Disable input in review mode
+    is_live_mode = st.session_state.get('is_live_mode', True)
 
     # Create input area
     input_container = st.container()
@@ -1094,17 +1201,20 @@ def render_chat_interface():
         col_input, col_send = st.columns([5, 1])
 
         with col_input:
+            # Phase 5: Disable input when in review mode
             user_input = st.text_area(
                 "Message",
                 key="chat_input",
-                placeholder="Type your message here... (Shift+Enter for new line)",
+                placeholder="Type your message here... (Shift+Enter for new line)" if is_live_mode else "⏸️ Navigate to latest turn to send messages",
                 height=80,
-                label_visibility="collapsed"
+                label_visibility="collapsed",
+                disabled=not is_live_mode
             )
 
         with col_send:
             st.markdown("<br>", unsafe_allow_html=True)  # Spacer for alignment
-            send_button = st.button("Send", type="primary", use_container_width=True)
+            # Phase 5: Disable send button in review mode
+            send_button = st.button("Send", type="primary", use_container_width=True, disabled=not is_live_mode)
 
         # Handle send action
         if send_button and user_input.strip():
