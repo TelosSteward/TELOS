@@ -36,6 +36,7 @@ import csv
 import zipfile
 import io
 import logging
+import glob
 from typing import Dict, Any, List
 
 try:
@@ -156,6 +157,126 @@ def prepare_fidelity_chart_data(turns_json: str) -> Dict[str, List]:
         'x': list(range(1, len(fidelities) + 1)),
         'y': fidelities
     }
+
+
+# ============================================================================
+# Cross-Session Analytics Functions (Phase 9)
+# ============================================================================
+
+def load_session_files(export_dir: str = 'purpose_protocol_exports', max_sessions: int = 10) -> List[Dict[str, Any]]:
+    """
+    Load session export files for cross-session analytics.
+
+    Args:
+        export_dir: Directory containing session export files
+        max_sessions: Maximum number of recent sessions to load
+
+    Returns:
+        List of session data dictionaries
+    """
+    session_pattern = os.path.join(export_dir, 'session_*.json')
+    session_files = sorted(glob.glob(session_pattern), key=os.path.getmtime, reverse=True)
+
+    sessions_data = []
+    for file_path in session_files[:max_sessions]:
+        try:
+            with open(file_path, 'r') as f:
+                session_data = json.load(f)
+                sessions_data.append(session_data)
+        except Exception as e:
+            logging.warning(f"Failed to load session file {file_path}: {e}")
+            continue
+
+    return sessions_data
+
+
+def compute_avg_fidelity_across_sessions(sessions: List[Dict[str, Any]]) -> float:
+    """
+    Compute average fidelity across all sessions.
+
+    Args:
+        sessions: List of session data dictionaries
+
+    Returns:
+        Average fidelity value
+    """
+    all_fidelities = []
+    for session in sessions:
+        for turn in session.get('turns', []):
+            metrics = turn.get('metrics', {})
+            fidelity = metrics.get('telic_fidelity', 1.0)
+            all_fidelities.append(fidelity)
+
+    return sum(all_fidelities) / len(all_fidelities) if all_fidelities else 0.0
+
+
+def count_interventions_across_sessions(sessions: List[Dict[str, Any]]) -> int:
+    """
+    Count total interventions across all sessions.
+
+    Args:
+        sessions: List of session data dictionaries
+
+    Returns:
+        Total number of interventions
+    """
+    total = 0
+    for session in sessions:
+        for turn in session.get('turns', []):
+            metadata = turn.get('metadata', {})
+            if metadata.get('intervention_applied', False):
+                total += 1
+    return total
+
+
+def compute_avg_turns_per_session(sessions: List[Dict[str, Any]]) -> float:
+    """
+    Compute average number of turns per session.
+
+    Args:
+        sessions: List of session data dictionaries
+
+    Returns:
+        Average turns per session
+    """
+    if not sessions:
+        return 0.0
+
+    turn_counts = [len(session.get('turns', [])) for session in sessions]
+    return sum(turn_counts) / len(turn_counts) if turn_counts else 0.0
+
+
+def compute_session_avg_fidelity(session: Dict[str, Any]) -> float:
+    """
+    Compute average fidelity for a single session.
+
+    Args:
+        session: Session data dictionary
+
+    Returns:
+        Average fidelity for the session
+    """
+    fidelities = []
+    for turn in session.get('turns', []):
+        metrics = turn.get('metrics', {})
+        fidelity = metrics.get('telic_fidelity', 1.0)
+        fidelities.append(fidelity)
+
+    return sum(fidelities) / len(fidelities) if fidelities else 0.0
+
+
+def extract_session_fidelity_trends(sessions: List[Dict[str, Any]]) -> List[float]:
+    """
+    Extract average fidelity for each session.
+
+    Args:
+        sessions: List of session data dictionaries
+
+    Returns:
+        List of average fidelities (one per session)
+    """
+    return [compute_session_avg_fidelity(session) for session in sessions]
+
 
 # ============================================================================
 # Evidence Export Functions (Phase 8)
@@ -3784,6 +3905,132 @@ def render_analytics_dashboard():
 
         Triggers fire automatically when drift is detected (F < 0.8).
         Start a conversation and try going off-topic to generate evidence!
+        """)
+
+    st.divider()
+
+    # Phase 9: Cross-Session Analytics
+    st.subheader("📊 Cross-Session Trends")
+    st.caption("Analysis of governance patterns across multiple sessions")
+
+    # Load session files
+    sessions_data = load_session_files(max_sessions=10)
+
+    if sessions_data:
+        # Aggregate statistics
+        st.markdown("#### 📈 Aggregate Statistics")
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            st.metric(
+                "Total Sessions",
+                len(sessions_data),
+                help="Number of recent sessions analyzed"
+            )
+
+        with col2:
+            avg_fidelity_all = compute_avg_fidelity_across_sessions(sessions_data)
+            fidelity_color = "🟢" if avg_fidelity_all >= 0.8 else ("🟡" if avg_fidelity_all >= 0.5 else "🔴")
+            st.metric(
+                f"{fidelity_color} Avg Fidelity",
+                f"{avg_fidelity_all:.3f}",
+                help="Average fidelity across all sessions"
+            )
+
+        with col3:
+            total_interventions = count_interventions_across_sessions(sessions_data)
+            st.metric(
+                "Total Interventions",
+                total_interventions,
+                help="Total interventions applied across all sessions"
+            )
+
+        with col4:
+            avg_turns = compute_avg_turns_per_session(sessions_data)
+            st.metric(
+                "Avg Turns/Session",
+                f"{avg_turns:.1f}",
+                help="Average conversation length"
+            )
+
+        st.divider()
+
+        # Fidelity trend across sessions
+        st.markdown("#### 📈 Fidelity Trends Across Sessions")
+        st.caption("Track governance effectiveness over time")
+
+        session_fidelities = extract_session_fidelity_trends(sessions_data)
+        session_numbers = list(range(1, len(session_fidelities) + 1))
+
+        if HAS_PLOTLY:
+            fig = go.Figure()
+
+            # Session fidelity line
+            fig.add_trace(go.Scatter(
+                x=session_numbers,
+                y=session_fidelities,
+                mode='lines+markers',
+                name='Session Avg Fidelity',
+                line=dict(color='#339af0', width=2),
+                marker=dict(size=10)
+            ))
+
+            # Threshold lines
+            fig.add_hline(
+                y=0.8,
+                line_dash="dash",
+                line_color="orange",
+                annotation_text="Target (F=0.8)",
+                annotation_position="right"
+            )
+
+            fig.update_layout(
+                xaxis_title="Session Number (most recent 10)",
+                yaxis_title="Average Fidelity",
+                height=350,
+                template='plotly_white',
+                hovermode='x unified',
+                yaxis_range=[0, 1]
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
+        else:
+            # Fallback: simple line chart
+            df = pd.DataFrame({
+                'Session': session_numbers,
+                'Avg Fidelity': session_fidelities
+            })
+            st.line_chart(df.set_index('Session'))
+
+        # Overall cross-session assessment
+        if avg_fidelity_all > 0.8:
+            st.success("""
+            ✅ **Excellent Cross-Session Performance**
+
+            Governance maintains high fidelity across multiple sessions.
+            System demonstrates consistent alignment with purpose.
+            """)
+        elif avg_fidelity_all > 0.6:
+            st.info("""
+            ℹ️ **Good Cross-Session Performance**
+
+            Governance shows positive impact across sessions.
+            Monitor for potential drift patterns.
+            """)
+        else:
+            st.warning("""
+            ⚠️ **Cross-Session Performance Needs Attention**
+
+            Average fidelity below target across sessions.
+            Review governance configuration and attractor parameters.
+            """)
+    else:
+        st.info("""
+        No exported session data available yet.
+
+        Session data is automatically exported after conversations.
+        Complete at least one conversation to see cross-session analytics!
         """)
 
     st.divider()
