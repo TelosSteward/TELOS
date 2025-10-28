@@ -1614,8 +1614,9 @@ def render_sidebar():
             if st.button("💾 Export", type="primary", use_container_width=True,
                         help="Export session data"):
                 if st.session_state.get('teloscope_initialized', False):
-                    session_json = st.session_state.web_session.export_session()
-                    session_id = st.session_state.current_session.get('session_id', 'unknown')
+                    with st.spinner('📥 Preparing export...'):
+                        session_json = st.session_state.web_session.export_session()
+                        session_id = st.session_state.current_session.get('session_id', 'unknown')
                     st.download_button(
                         label="📥 Download",
                         data=session_json,
@@ -2468,7 +2469,7 @@ def render_live_session():
         # Generate response through LiveInterceptor
         try:
             print(f"DEBUG [render_live_session]: Generating response...")
-            with st.spinner("🤔 Generating response..."):
+            with st.spinner("🤖 Generating governed response..."):
                 response = st.session_state.interceptor.generate(messages)
             print(f"DEBUG [render_live_session]: Response generated, calling st.rerun()")
             # Rerun OUTSIDE the spinner to ensure clean UI state
@@ -3125,18 +3126,19 @@ def render_analytics_dashboard():
 
     # Export all analytics
     if st.button("📥 Export Complete Analytics", type="primary"):
-        analytics_data = {
-            'session_stats': stats,
-            'efficacy_summary': efficacy_data if branches else [],
-            'aggregate_metrics': {
-                'avg_delta_f': avg_delta_f if branches else 0.0,
-                'success_rate': success_rate if branches else 0.0,
-                'significance_rate': sig_rate if branches else 0.0
-            },
-            'exported_at': datetime.now().isoformat()
-        }
+        with st.spinner('📊 Preparing analytics export...'):
+            analytics_data = {
+                'session_stats': stats,
+                'efficacy_summary': efficacy_data if branches else [],
+                'aggregate_metrics': {
+                    'avg_delta_f': avg_delta_f if branches else 0.0,
+                    'success_rate': success_rate if branches else 0.0,
+                    'significance_rate': sig_rate if branches else 0.0
+                },
+                'exported_at': datetime.now().isoformat()
+            }
 
-        analytics_json = json.dumps(analytics_data, indent=2)
+            analytics_json = json.dumps(analytics_data, indent=2)
         st.download_button(
             "📥 Download Analytics JSON",
             data=analytics_json,
