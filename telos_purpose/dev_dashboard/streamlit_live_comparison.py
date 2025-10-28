@@ -793,14 +793,14 @@ def render_turn_navigation(total_turns: int):
 
     with col1:
         # Previous turn button
-        if st.button("⬅️ Prev", disabled=(current_turn <= 0), use_container_width=True):
+        if st.button("⬅️ Prev", disabled=(current_turn <= 0), use_container_width=True, type='secondary'):
             st.session_state['current_turn_index'] = current_turn - 1
             st.session_state['is_live_mode'] = False
             st.rerun()
 
     with col2:
         # Next turn button
-        if st.button("Next ➡️", disabled=(current_turn >= total_turns - 1), use_container_width=True):
+        if st.button("Next ➡️", disabled=(current_turn >= total_turns - 1), use_container_width=True, type='secondary'):
             st.session_state['current_turn_index'] = current_turn + 1
             st.session_state['is_live_mode'] = (current_turn + 1 == total_turns - 1)
             st.rerun()
@@ -824,7 +824,7 @@ def render_turn_navigation(total_turns: int):
 
     with col4:
         # Jump to latest turn button
-        if st.button("⏭️ Latest", disabled=is_live, use_container_width=True):
+        if st.button("⏭️ Latest", disabled=is_live, use_container_width=True, type='primary'):
             st.session_state['current_turn_index'] = total_turns - 1
             st.session_state['is_live_mode'] = True
             st.rerun()
@@ -1764,7 +1764,7 @@ def render_live_session():
                                           help="Start pristine turn-by-turn replay")
 
                 with col2:
-                    stop_button = st.button("⏹️ Stop", use_container_width=True,
+                    stop_button = st.button("⏹️ Stop", use_container_width=True, type='secondary',
                                           help="Stop playback")
 
                 with col3:
@@ -2063,7 +2063,7 @@ def render_live_session():
                             st.rerun()
 
                     with col2:
-                        if st.button("📊 View Analytics", use_container_width=True):
+                        if st.button("📊 View Analytics", use_container_width=True, type='secondary'):
                             st.session_state.active_tab = 3
                             st.rerun()
 
@@ -2703,7 +2703,7 @@ def render_teloscope_view():
 
     if not baseline or not telos:
         st.warning("⏳ Branch data incomplete. Please wait...")
-        if st.button("🔄 Refresh"):
+        if st.button("🔄 Refresh", type='secondary'):
             st.rerun()
         return
 
