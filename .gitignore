@@ -234,3 +234,7 @@ logs/
 *.tmp
 temp/
 tmp/
+
+# TELOS-specific: Test data
+test_sessions/
+*/test_sessions/
