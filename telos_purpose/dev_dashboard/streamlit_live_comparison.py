@@ -679,6 +679,174 @@ def detect_anomalous_sessions(sessions: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 
 # ============================================================================
+# Statistical Summary Functions (Phase 9 Task 4)
+# ============================================================================
+
+def compute_comprehensive_statistics(sessions: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+    """
+    Generate publication-ready descriptive statistics.
+
+    Computes comprehensive statistical measures including:
+    - Central tendency (mean, median)
+    - Dispersion (std dev, IQR, range)
+    - Confidence intervals (95%)
+    - Sample size
+
+    Args:
+        sessions: List of session data dictionaries
+
+    Returns:
+        Dict with statistical measures, or None if insufficient data
+    """
+    import numpy as np
+
+    # Extract all fidelity scores across all sessions
+    all_fidelities = []
+    for session in sessions:
+        fidelities = extract_turn_fidelities(session)
+        all_fidelities.extend(fidelities)
+
+    if not all_fidelities or len(all_fidelities) < 2:
+        return None
+
+    all_fidelities = np.array(all_fidelities)
+
+    # Compute descriptive statistics
+    stats = {
+        'n': len(all_fidelities),
+        'mean': float(np.mean(all_fidelities)),
+        'median': float(np.median(all_fidelities)),
+        'std': float(np.std(all_fidelities, ddof=1)),
+        'min': float(np.min(all_fidelities)),
+        'max': float(np.max(all_fidelities)),
+        'q25': float(np.percentile(all_fidelities, 25)),
+        'q75': float(np.percentile(all_fidelities, 75))
+    }
+
+    # Compute IQR
+    stats['iqr'] = stats['q75'] - stats['q25']
+
+    # Compute 95% confidence interval using t-distribution
+    try:
+        from scipy import stats as scipy_stats
+        confidence_level = 0.95
+        degrees_freedom = stats['n'] - 1
+        sem = scipy_stats.sem(all_fidelities)
+        ci = scipy_stats.t.interval(confidence_level, degrees_freedom, loc=stats['mean'], scale=sem)
+        stats['ci_lower'] = float(ci[0])
+        stats['ci_upper'] = float(ci[1])
+        stats['ci_width'] = float(ci[1] - ci[0])
+    except ImportError:
+        # Fallback if scipy not available: use normal approximation
+        import math
+        z = 1.96  # 95% confidence
+        sem = stats['std'] / math.sqrt(stats['n'])
+        stats['ci_lower'] = stats['mean'] - z * sem
+        stats['ci_upper'] = stats['mean'] + z * sem
+        stats['ci_width'] = 2 * z * sem
+
+    # Store raw data for distribution analysis
+    stats['raw_data'] = all_fidelities.tolist()
+
+    return stats
+
+
+def generate_latex_table(stats: Dict[str, Any]) -> str:
+    """
+    Generate LaTeX table for publication.
+
+    Creates a formatted LaTeX table with statistical summary
+    suitable for academic papers.
+
+    Args:
+        stats: Statistics dictionary from compute_comprehensive_statistics
+
+    Returns:
+        LaTeX table string
+    """
+    latex = r"""\begin{table}[h]
+\centering
+\caption{Telic Fidelity Descriptive Statistics}
+\label{tab:fidelity_stats}
+\begin{tabular}{ll}
+\hline
+\textbf{Measure} & \textbf{Value} \\
+\hline
+Sample Size ($n$) & """ + str(stats['n']) + r""" \\
+Mean ($\mu$) & """ + f"{stats['mean']:.3f}" + r""" \\
+Median & """ + f"{stats['median']:.3f}" + r""" \\
+Standard Deviation ($\sigma$) & """ + f"{stats['std']:.3f}" + r""" \\
+95\% Confidence Interval & $[""" + f"{stats['ci_lower']:.3f}" + r""", """ + f"{stats['ci_upper']:.3f}" + r"""]$ \\
+Interquartile Range (IQR) & """ + f"{stats['iqr']:.3f}" + r""" \\
+Minimum & """ + f"{stats['min']:.3f}" + r""" \\
+First Quartile ($Q_1$) & """ + f"{stats['q25']:.3f}" + r""" \\
+Third Quartile ($Q_3$) & """ + f"{stats['q75']:.3f}" + r""" \\
+Maximum & """ + f"{stats['max']:.3f}" + r""" \\
+Range & """ + f"{stats['max'] - stats['min']:.3f}" + r""" \\
+\hline
+\end{tabular}
+\end{table}"""
+
+    return latex
+
+
+def generate_statistics_csv(sessions: List[Dict[str, Any]]) -> str:
+    """
+    Generate CSV export with per-turn statistics for analysis.
+
+    Creates a CSV file with turn-level data suitable for
+    import into statistical software (R, SPSS, etc.).
+
+    Args:
+        sessions: List of session data dictionaries
+
+    Returns:
+        CSV string
+    """
+    import io
+    import csv
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Header
+    writer.writerow([
+        'Session_ID',
+        'Turn_Number',
+        'Fidelity',
+        'Intervention_Applied',
+        'Basin_Membership',
+        'Session_Index'
+    ])
+
+    # Write turn-level data
+    for session_idx, session in enumerate(sessions):
+        session_metadata = session.get('session_metadata', {})
+        session_id = session_metadata.get('session_id', f'Session_{session_idx + 1}')
+
+        turns = session.get('turns', [])
+        for turn in turns:
+            turn_number = turn.get('turn_number', 0)
+            metrics = turn.get('metrics', {})
+            metadata = turn.get('metadata', {})
+
+            fidelity = metrics.get('telic_fidelity', 1.0)
+            intervention = 1 if metadata.get('intervention_applied', False) else 0
+            basin = 1 if fidelity >= 0.8 else 0
+
+            writer.writerow([
+                session_id,
+                turn_number,
+                f"{fidelity:.6f}",
+                intervention,
+                basin,
+                session_idx
+            ])
+
+    return output.getvalue()
+
+
+# ============================================================================
 # Evidence Export Functions (Phase 8)
 # ============================================================================
 
@@ -4946,6 +5114,174 @@ def render_analytics_dashboard():
         No session data available yet for pattern detection.
 
         Complete at least one conversation to enable automated pattern analysis!
+        """)
+
+    st.divider()
+
+    # Phase 9 Task 4: Statistical Summary Reports
+    st.subheader("📊 Statistical Summary")
+    st.caption("Publication-ready descriptive statistics and distribution analysis")
+
+    if len(sessions_data) > 0:
+        # Compute comprehensive statistics
+        with st.spinner('📈 Computing statistics...'):
+            stats = compute_comprehensive_statistics(sessions_data)
+
+        if stats:
+            # Display statistics in publication format
+            st.markdown("##### Fidelity Score Statistics")
+            st.caption(f"Based on {stats['n']} observations across {len(sessions_data)} session(s)")
+
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                st.markdown("**Central Tendency**")
+                st.write(f"**Mean (μ):** {stats['mean']:.3f}")
+                st.write(f"**Median:** {stats['median']:.3f}")
+                st.write(f"**95% CI:** [{stats['ci_lower']:.3f}, {stats['ci_upper']:.3f}]")
+                st.caption(f"CI Width: ±{stats['ci_width']/2:.3f}")
+
+            with col2:
+                st.markdown("**Dispersion**")
+                st.write(f"**Std Dev (σ):** {stats['std']:.3f}")
+                st.write(f"**IQR:** {stats['iqr']:.3f}")
+                st.write(f"**Range:** [{stats['min']:.3f}, {stats['max']:.3f}]")
+                st.caption(f"Spread: {stats['max'] - stats['min']:.3f}")
+
+            with col3:
+                st.markdown("**Quartiles**")
+                st.write(f"**Q1 (25%):** {stats['q25']:.3f}")
+                st.write(f"**Q2 (50%):** {stats['median']:.3f}")
+                st.write(f"**Q3 (75%):** {stats['q75']:.3f}")
+                st.caption(f"Sample size: n={stats['n']}")
+
+            st.divider()
+
+            # Distribution visualization
+            st.markdown("##### Distribution Analysis")
+            st.caption("Histogram with theoretical normal distribution overlay")
+
+            if HAS_PLOTLY:
+                import numpy as np
+
+                # Create histogram
+                fig = go.Figure()
+
+                # Observed data histogram
+                fig.add_trace(go.Histogram(
+                    x=stats['raw_data'],
+                    name='Observed Fidelity',
+                    nbinsx=30,
+                    histnorm='probability density',
+                    marker=dict(
+                        color='#4a90e2',
+                        line=dict(color='white', width=1)
+                    ),
+                    opacity=0.7
+                ))
+
+                # Normal distribution overlay
+                try:
+                    from scipy.stats import norm
+                    x_range = np.linspace(stats['min'], stats['max'], 200)
+                    normal_curve = norm.pdf(x_range, stats['mean'], stats['std'])
+
+                    fig.add_trace(go.Scatter(
+                        x=x_range,
+                        y=normal_curve,
+                        name='Normal Distribution',
+                        line=dict(color='red', width=2, dash='dash'),
+                        mode='lines'
+                    ))
+                except ImportError:
+                    pass  # Skip normal overlay if scipy not available
+
+                # Add mean line
+                fig.add_vline(
+                    x=stats['mean'],
+                    line_dash="solid",
+                    line_color="green",
+                    annotation_text=f"Mean = {stats['mean']:.3f}",
+                    annotation_position="top"
+                )
+
+                # Add target threshold
+                fig.add_vline(
+                    x=0.8,
+                    line_dash="dash",
+                    line_color="orange",
+                    annotation_text="Target (F=0.8)",
+                    annotation_position="bottom"
+                )
+
+                fig.update_layout(
+                    title='Fidelity Score Distribution',
+                    xaxis_title='Fidelity Score',
+                    yaxis_title='Probability Density',
+                    height=400,
+                    template='plotly_white',
+                    showlegend=True,
+                    legend=dict(
+                        orientation="h",
+                        yanchor="bottom",
+                        y=1.02,
+                        xanchor="right",
+                        x=1
+                    )
+                )
+
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("Install plotly for distribution visualization: `pip install plotly`")
+
+            st.divider()
+
+            # Export options for publications
+            st.markdown("##### Export for Publications")
+            st.caption("Download publication-ready statistical reports")
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                # LaTeX table format
+                latex_table = generate_latex_table(stats)
+                st.download_button(
+                    label="📄 Download LaTeX Table",
+                    data=latex_table,
+                    file_name='fidelity_statistics_table.tex',
+                    mime='text/plain',
+                    help="LaTeX table ready for academic papers"
+                )
+
+                st.caption("""
+                **LaTeX Table**: Formatted table with all descriptive statistics.
+                Copy-paste directly into your paper's `.tex` file.
+                """)
+
+            with col2:
+                # CSV format for statistical software
+                csv_data = generate_statistics_csv(sessions_data)
+                st.download_button(
+                    label="📊 Download Statistics CSV",
+                    data=csv_data,
+                    file_name='fidelity_turn_level_data.csv',
+                    mime='text/csv',
+                    help="Turn-level data for R, SPSS, Python analysis"
+                )
+
+                st.caption("""
+                **Turn-Level CSV**: Raw data for import into statistical software
+                (R, SPSS, Python pandas, etc.) for custom analysis.
+                """)
+
+        else:
+            st.info("Need at least 2 data points to compute meaningful statistics")
+
+    else:
+        st.info("""
+        No session data available yet for statistical analysis.
+
+        Complete at least one conversation to generate statistical summaries!
         """)
 
     st.divider()
