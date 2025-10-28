@@ -945,7 +945,48 @@ def render_steward_lens():
         st.divider()
 
         # ========================================
-        # Section 3: Research Lens Toggle
+        # Section 3: Fidelity Trend Graph
+        # ========================================
+        st.markdown("### 📈 Fidelity Trend")
+
+        # Get all turns with fidelity data
+        if hasattr(st.session_state, 'session_manager'):
+            turns = st.session_state.session_manager.get_all_turns()
+
+            if turns and len(turns) > 0:
+                # Extract fidelity scores from turns
+                fidelities = []
+                turn_numbers = []
+
+                for turn in turns:
+                    fidelity = turn.get('fidelity', None)
+                    if fidelity is not None:
+                        turn_numbers.append(turn.get('turn_number', 0) + 1)  # 1-indexed for display
+                        fidelities.append(fidelity)
+
+                if len(fidelities) > 0:
+                    # Create DataFrame for line chart
+                    chart_data = pd.DataFrame({
+                        'Turn': turn_numbers,
+                        'Fidelity': fidelities
+                    })
+
+                    # Display line chart
+                    st.line_chart(chart_data.set_index('Turn'), height=200)
+
+                    # Add threshold references
+                    st.caption("🎯 Basin threshold: 0.70 | ⚠️ Escalation threshold: 0.30")
+                else:
+                    st.caption("No fidelity data available yet")
+            else:
+                st.caption("No conversation turns yet. Start chatting to see trend.")
+        else:
+            st.caption("Session manager not initialized")
+
+        st.divider()
+
+        # ========================================
+        # Section 4: Research Lens Toggle
         # ========================================
         research_lens_enabled = st.checkbox(
             "🔬 Research Lens (Mathematical Detail)",
