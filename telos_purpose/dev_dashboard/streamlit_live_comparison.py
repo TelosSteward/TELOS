@@ -35,6 +35,7 @@ from datetime import datetime
 import csv
 import zipfile
 import io
+import logging
 from typing import Dict, Any, List
 
 try:
@@ -936,8 +937,9 @@ def initialize_teloscope():
                 st.session_state.config = config
 
         except Exception as e:
-            st.error(f"❌ Initialization failed: {e}")
-            st.exception(e)
+            st.error("🔌 Unable to initialize TELOSCOPE Observatory")
+            st.info("💡 **What to try:**\n- Refresh the page\n- Check your API key is set correctly\n- Ensure all dependencies are installed")
+            logging.error(f"Initialization failed: {e}")  # Log technical details
             st.stop()
 
 
@@ -1339,7 +1341,7 @@ def render_steward_lens():
                     # Add threshold references
                     st.caption("🎯 Basin threshold: 0.70 | ⚠️ Escalation threshold: 0.30")
                 else:
-                    st.caption("No fidelity data available yet")
+                    st.info("💭 Start a conversation to see fidelity trends")
             else:
                 st.caption("No conversation turns yet. Start chatting to see trend.")
         else:
@@ -1765,7 +1767,9 @@ def render_chat_interface():
                     st.rerun()
 
                 except Exception as e:
-                    st.error(f"Error processing message: {e}")
+                    st.error("⚠️ Message could not be processed")
+                    st.info("💡 Please try sending your message again")
+                    logging.error(f"Message processing error: {e}")  # Log technical details
 
 
 # ============================================================================
@@ -2381,7 +2385,9 @@ def render_live_session():
 
                                                     st.success(f"🌿 Counterfactual branches generated! Branch ID: {branch_id}")
                                         except Exception as e:
-                                            st.error(f"⚠️ Failed to generate counterfactual: {e}")
+                                            st.error("🌿 Counterfactual generation interrupted")
+                                            st.info("💡 This is non-critical. You can continue the conversation normally.")
+                                            logging.error(f"Counterfactual generation failed: {e}")  # Log technical details
 
                                 # Show intervention status
                                 if intervention_applied:
@@ -2617,8 +2623,9 @@ def render_live_session():
                                             )
 
             except Exception as e:
-                st.error(f"❌ Error loading session: {e}")
-                st.exception(e)
+                st.error("📂 Unable to load session file")
+                st.info("💡 **What to try:**\n- Check the file format is correct (JSON)\n- Try exporting a new session\n- Upload a different file")
+                logging.error(f"Session loading failed: {e}")  # Log technical details
 
         else:
             st.info("""
@@ -2895,8 +2902,9 @@ def render_live_session():
             print(f"DEBUG [render_live_session]: After st.rerun() - THIS SHOULD NOT PRINT")
         except Exception as e:
             print(f"DEBUG [render_live_session]: ERROR during generation: {e}")
-            st.error(f"❌ Error generating response: {e}")
-            st.exception(e)
+            st.error("🔌 Unable to generate response")
+            st.info("💡 **What to try:**\n- Check your network connection\n- Try again in a moment\n- If this persists, refresh the page")
+            logging.error(f"Response generation failed: {e}")  # Log technical details
 
 
 # ============================================================================
