@@ -37,7 +37,7 @@ import zipfile
 import io
 import logging
 import glob
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 try:
     import plotly.graph_objects as go
