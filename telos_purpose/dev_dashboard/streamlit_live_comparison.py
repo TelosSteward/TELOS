@@ -2940,6 +2940,7 @@ def render_session_replay():
     """Render session replay with timeline scrubber."""
     st.title("⏮️ Session Replay")
     st.caption("Navigate conversation history with timeline controls")
+    st.markdown("---")  # Section separator
 
     turns = st.session_state.current_session.get('turns', [])
 
@@ -2951,12 +2952,17 @@ def render_session_replay():
             st.info("📝 Only 1 turn recorded. Add more conversation turns to use the timeline scrubber.")
         return
 
-    # Initialize replay turn
+    # Initialize replay turn and navigation state
     if 'replay_turn' not in st.session_state:
         st.session_state.replay_turn = 0
+    if 'last_replay_turn' not in st.session_state:
+        st.session_state.last_replay_turn = 0
 
     # Ensure replay_turn is in bounds
     st.session_state.replay_turn = min(st.session_state.replay_turn, len(turns) - 1)
+
+    # Section header: Timeline Controls
+    st.markdown("### 🎬 Timeline Controls")
 
     # Timeline controls
     col1, col2, col3, col4 = st.columns([1, 1, 4, 1])
@@ -2988,7 +2994,16 @@ def render_session_replay():
             st.session_state.replay_turn = min(len(turns) - 1, st.session_state.replay_turn + 1)
             st.rerun()
 
-    st.divider()
+    # Smooth scroll feedback: Show turn change notification
+    if st.session_state.replay_turn != st.session_state.last_replay_turn:
+        direction = "forward" if st.session_state.replay_turn > st.session_state.last_replay_turn else "back"
+        st.info(f"🎯 Jumped {direction} to Turn {st.session_state.replay_turn + 1} of {len(turns)}")
+        st.session_state.last_replay_turn = st.session_state.replay_turn
+
+    st.markdown("---")  # Visual separator
+
+    # Section header: Conversation View
+    st.markdown("### 💬 Conversation View")
 
     # Display selected turn
     selected_turn = turns[turn_num]
@@ -2996,7 +3011,8 @@ def render_session_replay():
     col1, col2 = st.columns([2, 1])
 
     with col1:
-        st.subheader(f"Turn {turn_num + 1} of {len(turns)}")
+        st.markdown(f"**Turn {turn_num + 1} of {len(turns)}**")
+        st.markdown("")  # Small spacer
 
         # User message
         with st.chat_message("user"):
@@ -3011,7 +3027,8 @@ def render_session_replay():
                 st.success("✅ Governance intervention applied")
 
     with col2:
-        st.subheader("📊 Metrics")
+        st.markdown("### 📊 Metrics")
+        st.markdown("")  # Small spacer
 
         metrics = selected_turn.get('metrics', {})
 
@@ -3042,12 +3059,13 @@ def render_session_replay():
         basin_text = "Inside ✅" if basin else "Outside ❌"
         st.write(f"**Basin Status:** {basin_text}")
 
-    st.divider()
+    st.markdown("---")  # Visual separator
 
     # Show trigger markers on timeline
     triggers = st.session_state.web_session.get_all_triggers()
     if triggers:
-        st.subheader("🔬 Counterfactual Triggers on Timeline")
+        st.markdown("### 🔬 Counterfactual Triggers on Timeline")
+        st.markdown("")  # Small spacer
 
         # Create columns for triggers
         num_cols = min(len(triggers), 4)
@@ -4214,6 +4232,48 @@ def main():
         render_chat_interface()
     else:
         # LEGACY: Tab-based interface (default for backward compatibility)
+
+        # ========================================================================
+        # Navigation Breadcrumbs & State Indicators
+        # ========================================================================
+
+        # Initialize active tab tracking
+        if 'active_tab' not in st.session_state:
+            st.session_state.active_tab = 0
+
+        # Build breadcrumb navigation
+        breadcrumb_parts = ["TELOSCOPE"]
+
+        # Determine current view based on active tab
+        tab_names = ["Live Session", "Session Replay", "TELOSCOPE View", "Analytics"]
+        if st.session_state.active_tab < len(tab_names):
+            breadcrumb_parts.append(tab_names[st.session_state.active_tab])
+
+        # Add mode context
+        current_mode = get_mode()
+        breadcrumb_parts.append(current_mode)
+
+        # Display breadcrumb and state indicators
+        breadcrumb_col, state_col = st.columns([3, 1])
+
+        with breadcrumb_col:
+            st.caption(' → '.join(breadcrumb_parts))
+
+        with state_col:
+            # Visual state indicators
+            # Mode icon: 🟢 for Live/Active, ⏸️ for Replay/Paused
+            mode_icon = "🟢" if st.session_state.active_tab == 0 else "⏸️"
+            mode_label = "LIVE" if st.session_state.active_tab == 0 else "REPLAY"
+
+            # Governance status: 🔵 for Active, ⚪ for Inactive
+            governance_active = st.session_state.get('governance_enabled', True)
+            governance_icon = "🔵" if governance_active else "⚪"
+            governance_label = "GOVERNED" if governance_active else "UNGOVERNED"
+
+            st.caption(f"{mode_icon} {mode_label} | {governance_icon} {governance_label}")
+
+        st.markdown("---")  # Visual separator
+
         # Main tabs
         tab1, tab2, tab3, tab4 = st.tabs([
             "🔴 Live Session",
