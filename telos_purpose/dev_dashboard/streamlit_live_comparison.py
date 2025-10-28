@@ -991,6 +991,33 @@ def render_chat_interface():
         render_teloscope_window()
 
     # ========================================================================
+    # Phase 4: GOVERNANCE TOGGLE (Show Native vs TELOS responses)
+    # ========================================================================
+
+    # Add toggle switch for governance mode
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.subheader("Conversation")
+    with col2:
+        # Toggle between Native Mistral and TELOS Steward responses
+        governance_enabled = st.toggle(
+            "Show TELOS",
+            value=st.session_state.get('governance_enabled', True),
+            key='governance_toggle_display',
+            help="Toggle between Native Mistral and TELOS Steward responses"
+        )
+        # Update session state
+        st.session_state['governance_enabled'] = governance_enabled
+
+    # Show toggle status
+    if governance_enabled:
+        st.caption("🔵 Showing **TELOS Steward** responses (governed)")
+    else:
+        st.caption("⚪ Showing **Native Mistral** responses (ungoverned)")
+
+    st.divider()
+
+    # ========================================================================
     # MESSAGE CONTAINER (Scrollable)
     # ========================================================================
 
@@ -1006,15 +1033,22 @@ def render_chat_interface():
             for turn in turns:
                 turn_number = turn.get('turn_number', 0)
                 user_message = turn.get('user_message', '')
-                assistant_response = turn.get('assistant_response', '')
+
+                # Phase 4: Get both responses from turn data
+                native_response = turn.get('native_response', '')
+                telos_response = turn.get('telos_response', '')
+
+                # Phase 4: Select which response to display based on toggle
+                assistant_response = telos_response if governance_enabled else native_response
+
                 timestamp = turn.get('timestamp', datetime.now())
 
                 # Check if intervention was applied
                 governance_metadata = turn.get('governance_metadata', {})
                 intervention_applied = governance_metadata.get('intervention_applied', False)
 
-                # Determine governance mode for badge
-                governance_mode = 'telos' if intervention_applied else 'native'
+                # Phase 4: Badge reflects currently displayed mode
+                governance_mode = 'telos' if governance_enabled else 'native'
 
                 # Render user message
                 st.markdown(f"""

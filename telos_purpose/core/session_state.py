@@ -20,11 +20,19 @@ class TurnSnapshot:
 
     This represents the complete state at a specific point in the conversation,
     allowing perfect reconstruction for counterfactual branching.
+
+    Phase 4 Update: Now stores both Native and TELOS responses for governance toggle.
     """
     turn_number: int
     timestamp: str
     user_input: str
-    assistant_response: str
+
+    # Phase 4: Dual response storage for governance toggle
+    native_response: str  # Original LLM response (before governance)
+    telos_response: str   # Governed response (after intervention)
+
+    # Backward compatibility: deprecated field (use telos_response instead)
+    assistant_response: Optional[str] = None
 
     # Embeddings (immutable)
     user_embedding: tuple  # np.array converted to tuple for immutability
@@ -88,22 +96,28 @@ class SessionStateManager:
         self,
         turn_number: int,
         user_input: str,
-        assistant_response: str,
+        native_response: str,
+        telos_response: str,
         user_embedding: np.ndarray,
         response_embedding: np.ndarray,
         attractor_center: np.ndarray,
         metrics: Dict[str, float],
         conversation_history: List[Dict[str, str]],
         attractor_config: Dict[str, Any],
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
+        # Backward compatibility: deprecated parameter
+        assistant_response: Optional[str] = None
     ) -> TurnSnapshot:
         """
         Save an immutable turn snapshot.
 
+        Phase 4 Update: Now saves both Native and TELOS responses for governance toggle.
+
         Args:
             turn_number: Turn number (0-indexed)
             user_input: User's input text
-            assistant_response: Assistant's response text
+            native_response: Original LLM response (before governance)
+            telos_response: Governed response (after intervention)
             user_embedding: Embedding of user input
             response_embedding: Embedding of assistant response
             attractor_center: Current attractor center
@@ -111,16 +125,23 @@ class SessionStateManager:
             conversation_history: Full conversation up to this point
             attractor_config: Attractor configuration dict
             metadata: Additional metadata
+            assistant_response: DEPRECATED - Use telos_response instead
 
         Returns:
             Immutable TurnSnapshot object
         """
+        # Backward compatibility: if old code passes assistant_response, use it for both
+        if assistant_response is not None and native_response == "":
+            native_response = assistant_response
+            telos_response = assistant_response
         # Create immutable snapshot
         snapshot = TurnSnapshot(
             turn_number=turn_number,
             timestamp=datetime.now().isoformat(),
             user_input=user_input,
-            assistant_response=assistant_response,
+            native_response=native_response,
+            telos_response=telos_response,
+            assistant_response=telos_response,  # Backward compatibility: populate deprecated field
             user_embedding=tuple(user_embedding.flatten().tolist()),
             response_embedding=tuple(response_embedding.flatten().tolist()),
             attractor_center=tuple(attractor_center.flatten().tolist()),
@@ -146,7 +167,9 @@ class SessionStateManager:
             turn_data = {
                 'turn_number': turn_number,
                 'user_input': user_input,
-                'assistant_response': assistant_response,
+                'native_response': native_response,
+                'telos_response': telos_response,
+                'assistant_response': telos_response,  # Backward compatibility
                 'metrics': metrics,
                 'timestamp': snapshot.timestamp
             }
@@ -298,10 +321,12 @@ class SessionStateManager:
             return None
 
         # Reconstruct mutable state from immutable snapshot
-        return {
+        state = {
             'turn_number': snapshot.turn_number,
             'user_input': snapshot.user_input,
-            'assistant_response': snapshot.assistant_response,
+            'native_response': snapshot.native_response,
+            'telos_response': snapshot.telos_response,
+            'assistant_response': snapshot.telos_response,  # Backward compatibility
             'user_embedding': np.array(snapshot.user_embedding).reshape(-1, 1),
             'response_embedding': np.array(snapshot.response_embedding).reshape(-1, 1),
             'attractor_center': np.array(snapshot.attractor_center).reshape(-1, 1),
@@ -318,6 +343,14 @@ class SessionStateManager:
             },
             'metadata': copy.deepcopy(snapshot.metadata)
         }
+
+        # Backward compatibility: handle old snapshots with only assistant_response
+        if not hasattr(snapshot, 'native_response') or not snapshot.native_response:
+            # Old data: use assistant_response for both
+            state['native_response'] = snapshot.assistant_response or ""
+            state['telos_response'] = snapshot.assistant_response or ""
+
+        return state
 
     def get_fidelity_history(self) -> List[float]:
         """
@@ -345,3 +378,29 @@ class SessionStateManager:
             List of basin membership booleans
         """
         return [snapshot.basin_membership for snapshot in self._snapshots]
+
+    def get_all_turns(self) -> List[Dict[str, Any]]:
+        """
+        Get all turns as dictionary format for dashboard compatibility.
+
+        Phase 4: Returns turns with both native_response and telos_response fields.
+
+        Returns:
+            List of turn dictionaries
+        """
+        turns = []
+        for snapshot in self._snapshots:
+            # Build turn dict with backward compatibility
+            turn_dict = {
+                'turn_number': snapshot.turn_number,
+                'user_message': snapshot.user_input,
+                'user_input': snapshot.user_input,  # Alias
+                'native_response': snapshot.native_response if hasattr(snapshot, 'native_response') else snapshot.assistant_response,
+                'telos_response': snapshot.telos_response if hasattr(snapshot, 'telos_response') else snapshot.assistant_response,
+                'assistant_response': snapshot.telos_response if hasattr(snapshot, 'telos_response') else snapshot.assistant_response,  # Default to TELOS response
+                'timestamp': snapshot.timestamp,
+                'fidelity': snapshot.telic_fidelity,
+                'governance_metadata': snapshot.metadata
+            }
+            turns.append(turn_dict)
+        return turns
