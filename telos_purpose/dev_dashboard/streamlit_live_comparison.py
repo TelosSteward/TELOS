@@ -32,6 +32,10 @@ import pandas as pd
 from pathlib import Path
 import numpy as np
 from datetime import datetime
+import csv
+import zipfile
+import io
+from typing import Dict, Any, List
 
 try:
     import plotly.graph_objects as go
@@ -40,6 +44,361 @@ try:
 except ImportError:
     HAS_PLOTLY = False
     st.warning("⚠️ Plotly not installed. Charts will be limited. Install with: pip install plotly")
+
+# ============================================================================
+# Evidence Export Functions (Phase 8)
+# ============================================================================
+
+def export_session_to_csv(session_data: Dict[str, Any]) -> str:
+    """
+    Export session turns to CSV format for statistical analysis.
+
+    Args:
+        session_data: Session data dict with snapshots
+
+    Returns:
+        CSV string
+    """
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Header
+    writer.writerow([
+        'Turn', 'Timestamp', 'User Input', 'Native Response', 'TELOS Response',
+        'Fidelity', 'Error Signal', 'Drift Distance', 'Basin Membership',
+        'Intervention Applied', 'Intervention Type'
+    ])
+
+    # Data rows
+    for snapshot in session_data.get('snapshots', []):
+        intervention = snapshot.get('metadata', {}).get('intervention_applied', False)
+        intervention_details = snapshot.get('metadata', {}).get('intervention_details', {})
+        intervention_type = intervention_details.get('type', 'none') if intervention else 'none'
+
+        writer.writerow([
+            snapshot.get('turn_number', ''),
+            snapshot.get('timestamp', ''),
+            snapshot.get('user_input', ''),
+            snapshot.get('native_response', snapshot.get('assistant_response', '')),  # Fallback for backward compat
+            snapshot.get('telos_response', snapshot.get('assistant_response', '')),
+            f"{snapshot.get('telic_fidelity', 0.0):.4f}",
+            f"{snapshot.get('error_signal', 0.0):.4f}",
+            f"{snapshot.get('drift_distance', 0.0):.4f}",
+            snapshot.get('basin_membership', True),
+            intervention,
+            intervention_type
+        ])
+
+    return output.getvalue()
+
+
+def generate_human_readable_transcript(session_data: Dict[str, Any]) -> str:
+    """
+    Generate human-readable conversation transcript.
+
+    Args:
+        session_data: Session data dict
+
+    Returns:
+        Markdown-formatted transcript
+    """
+    metadata = session_data.get('session_metadata', {})
+    snapshots = session_data.get('snapshots', [])
+
+    transcript = []
+    transcript.append("# TELOSCOPE Session Transcript")
+    transcript.append("")
+    transcript.append(f"**Session ID:** {metadata.get('session_id', 'N/A')}")
+    transcript.append(f"**Started:** {metadata.get('started_at', 'N/A')}")
+    transcript.append(f"**Total Turns:** {metadata.get('total_turns', 0)}")
+    transcript.append("")
+    transcript.append("---")
+    transcript.append("")
+
+    for snapshot in snapshots:
+        turn_num = snapshot.get('turn_number', 0)
+        timestamp = snapshot.get('timestamp', '')
+        fidelity = snapshot.get('telic_fidelity', 0.0)
+        intervention = snapshot.get('metadata', {}).get('intervention_applied', False)
+
+        transcript.append(f"## Turn {turn_num + 1}")
+        transcript.append(f"*{timestamp}* | Fidelity: {fidelity:.3f} | Intervention: {'✓' if intervention else '✗'}")
+        transcript.append("")
+        transcript.append(f"**User:** {snapshot.get('user_input', '')}")
+        transcript.append("")
+        transcript.append(f"**Assistant:** {snapshot.get('telos_response', snapshot.get('assistant_response', ''))}")
+        transcript.append("")
+        transcript.append("---")
+        transcript.append("")
+
+    return "\n".join(transcript)
+
+
+def generate_governance_report_html(session_data: Dict[str, Any]) -> str:
+    """
+    Generate HTML governance report with metrics and summary.
+
+    Args:
+        session_data: Session data dict
+
+    Returns:
+        HTML string
+    """
+    metadata = session_data.get('session_metadata', {})
+    snapshots = session_data.get('snapshots', [])
+
+    # Calculate aggregate metrics
+    total_turns = len(snapshots)
+    if total_turns == 0:
+        avg_fidelity = 0.0
+        intervention_count = 0
+        intervention_rate = 0.0
+        drift_events = 0
+    else:
+        fidelities = [s.get('telic_fidelity', 0.0) for s in snapshots]
+        avg_fidelity = sum(fidelities) / len(fidelities) if fidelities else 0.0
+
+        intervention_count = sum(
+            1 for s in snapshots
+            if s.get('metadata', {}).get('intervention_applied', False)
+        )
+        intervention_rate = (intervention_count / total_turns) * 100 if total_turns > 0 else 0.0
+
+        drift_events = sum(
+            1 for s in snapshots
+            if s.get('telic_fidelity', 1.0) < 0.8 or not s.get('basin_membership', True)
+        )
+
+    # Generate HTML
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>TELOSCOPE Governance Report</title>
+        <style>
+            body {{
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                max-width: 1200px;
+                margin: 40px auto;
+                padding: 20px;
+                background-color: #f5f5f5;
+            }}
+            .header {{
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 30px;
+                border-radius: 10px;
+                margin-bottom: 30px;
+            }}
+            .header h1 {{
+                margin: 0;
+                font-size: 2.5em;
+            }}
+            .header p {{
+                margin: 10px 0 0 0;
+                opacity: 0.9;
+            }}
+            .metric-grid {{
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+                margin-bottom: 30px;
+            }}
+            .metric-card {{
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }}
+            .metric-label {{
+                color: #666;
+                font-size: 0.9em;
+                margin-bottom: 5px;
+            }}
+            .metric-value {{
+                font-size: 2em;
+                font-weight: bold;
+                color: #333;
+            }}
+            .metric-value.good {{
+                color: #10b981;
+            }}
+            .metric-value.warning {{
+                color: #f59e0b;
+            }}
+            .metric-value.critical {{
+                color: #ef4444;
+            }}
+            .section {{
+                background: white;
+                padding: 25px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }}
+            .section h2 {{
+                margin-top: 0;
+                color: #667eea;
+                border-bottom: 2px solid #667eea;
+                padding-bottom: 10px;
+            }}
+            .turn-summary {{
+                border-left: 3px solid #667eea;
+                padding-left: 15px;
+                margin: 10px 0;
+            }}
+            .footer {{
+                text-align: center;
+                color: #666;
+                margin-top: 40px;
+                font-size: 0.9em;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>🔭 TELOSCOPE Governance Report</h1>
+            <p>Evidence Package for AI Alignment Research</p>
+        </div>
+
+        <div class="metric-grid">
+            <div class="metric-card">
+                <div class="metric-label">Average Fidelity</div>
+                <div class="metric-value {'good' if avg_fidelity >= 0.85 else 'warning' if avg_fidelity >= 0.70 else 'critical'}">
+                    {avg_fidelity:.3f}
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Total Turns</div>
+                <div class="metric-value">{total_turns}</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Interventions</div>
+                <div class="metric-value">{intervention_count} ({intervention_rate:.1f}%)</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Drift Events</div>
+                <div class="metric-value {'good' if drift_events == 0 else 'warning' if drift_events <= 2 else 'critical'}">
+                    {drift_events}
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📋 Session Overview</h2>
+            <p><strong>Session ID:</strong> {metadata.get('session_id', 'N/A')}</p>
+            <p><strong>Started:</strong> {metadata.get('started_at', 'N/A')}</p>
+            <p><strong>Last Update:</strong> {metadata.get('last_turn', 'N/A')}</p>
+        </div>
+
+        <div class="section">
+            <h2>📊 Governance Summary</h2>
+            <p>This session demonstrates TELOS governance in action. The system actively monitored {total_turns} conversational turns,
+            maintaining an average telic fidelity of {avg_fidelity:.3f}.</p>
+
+            <p><strong>Key Findings:</strong></p>
+            <ul>
+                <li>Intervention rate: {intervention_rate:.1f}% ({intervention_count}/{total_turns} turns)</li>
+                <li>Drift events detected: {drift_events}</li>
+                <li>Basin stability: {(1 - drift_events / max(total_turns, 1)) * 100:.1f}%</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🔍 Turn-by-Turn Analysis</h2>
+            {''.join([f'''
+            <div class="turn-summary">
+                <strong>Turn {s.get('turn_number', 0) + 1}</strong>
+                | Fidelity: {s.get('telic_fidelity', 0.0):.3f}
+                | {'✓ Intervention' if s.get('metadata', {}).get('intervention_applied') else '○ No intervention'}
+                <br><em>{s.get('timestamp', '')}</em>
+            </div>
+            ''' for s in snapshots[:20]])}
+            {f'<p><em>... and {len(snapshots) - 20} more turns</em></p>' if len(snapshots) > 20 else ''}
+        </div>
+
+        <div class="footer">
+            <p>Generated by TELOSCOPE Observatory | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+            <p>Telically Entrained Linguistic Operational Substrate for Counterfactual Observation via Purpose-scoped Experimentation</p>
+        </div>
+    </body>
+    </html>
+    """
+
+    return html
+
+
+def create_evidence_package_zip(session_data: Dict[str, Any], session_id: str) -> bytes:
+    """
+    Create ZIP package with multiple export formats.
+
+    Args:
+        session_data: Session data dict
+        session_id: Session identifier
+
+    Returns:
+        ZIP file bytes
+    """
+    zip_buffer = io.BytesIO()
+
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        # 1. JSON data
+        zip_file.writestr(
+            f'{session_id}_data.json',
+            json.dumps(session_data, indent=2)
+        )
+
+        # 2. CSV telemetry
+        zip_file.writestr(
+            f'{session_id}_telemetry.csv',
+            export_session_to_csv(session_data)
+        )
+
+        # 3. Human-readable transcript
+        zip_file.writestr(
+            f'{session_id}_transcript.md',
+            generate_human_readable_transcript(session_data)
+        )
+
+        # 4. HTML governance report
+        zip_file.writestr(
+            f'{session_id}_governance_report.html',
+            generate_governance_report_html(session_data)
+        )
+
+        # 5. README
+        readme = f"""# TELOSCOPE Evidence Package
+
+Session ID: {session_id}
+Generated: {datetime.now().isoformat()}
+
+## Contents
+
+1. **{session_id}_data.json** - Complete session data (machine-readable)
+2. **{session_id}_telemetry.csv** - Turn-by-turn metrics (Excel/R/Python compatible)
+3. **{session_id}_transcript.md** - Human-readable conversation transcript
+4. **{session_id}_governance_report.html** - Visual governance summary (open in browser)
+
+## Usage
+
+- **For Publications:** Use the HTML report for visual evidence and CSV for statistical analysis
+- **For Reproducibility:** The JSON file contains all raw data for exact reconstruction
+- **For Sharing:** The transcript provides context for collaborators
+
+## Citation
+
+If using this data in research, please cite:
+TELOSCOPE: Telically Entrained Linguistic Operational Substrate
+for Counterfactual Observation via Purpose-scoped Experimentation
+
+Generated by TELOSCOPE Observatory
+https://github.com/yourusername/telos
+"""
+        zip_file.writestr('README.md', readme)
+
+    zip_buffer.seek(0)
+    return zip_buffer.read()
 
 # ============================================================================
 # Page Configuration
@@ -1611,19 +1970,78 @@ def render_sidebar():
                     st.rerun()
 
         with col2:
-            if st.button("💾 Export", type="primary", use_container_width=True,
-                        help="Export session data"):
+            # Phase 8: Enhanced Export Menu
+            with st.expander("💾 Export Evidence", expanded=False):
                 if st.session_state.get('teloscope_initialized', False):
-                    with st.spinner('📥 Preparing export...'):
-                        session_json = st.session_state.web_session.export_session()
+                    with st.spinner('📥 Preparing exports...'):
+                        session_data = st.session_state.web_session.export_session()
                         session_id = st.session_state.current_session.get('session_id', 'unknown')
+                        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+
+                    st.markdown("**📦 Choose Export Format:**")
+                    st.write("")
+
+                    # Row 1: JSON and CSV
+                    exp_col1, exp_col2 = st.columns(2)
+
+                    with exp_col1:
+                        st.download_button(
+                            label="📄 JSON Data",
+                            data=json.dumps(session_data, indent=2),
+                            file_name=f"teloscope_{session_id}_{timestamp}.json",
+                            mime="application/json",
+                            use_container_width=True,
+                            help="Complete session data (machine-readable)"
+                        )
+
+                    with exp_col2:
+                        st.download_button(
+                            label="📊 CSV Telemetry",
+                            data=export_session_to_csv(session_data),
+                            file_name=f"teloscope_{session_id}_{timestamp}.csv",
+                            mime="text/csv",
+                            use_container_width=True,
+                            help="Turn-by-turn metrics (Excel/R/Python)"
+                        )
+
+                    # Row 2: Transcript and Report
+                    exp_col3, exp_col4 = st.columns(2)
+
+                    with exp_col3:
+                        st.download_button(
+                            label="📝 Transcript",
+                            data=generate_human_readable_transcript(session_data),
+                            file_name=f"teloscope_{session_id}_{timestamp}_transcript.md",
+                            mime="text/markdown",
+                            use_container_width=True,
+                            help="Human-readable conversation log"
+                        )
+
+                    with exp_col4:
+                        st.download_button(
+                            label="📋 HTML Report",
+                            data=generate_governance_report_html(session_data),
+                            file_name=f"teloscope_{session_id}_{timestamp}_report.html",
+                            mime="text/html",
+                            use_container_width=True,
+                            help="Visual governance summary (open in browser)"
+                        )
+
+                    # Row 3: Complete Evidence Package
+                    st.write("")
                     st.download_button(
-                        label="📥 Download",
-                        data=session_json,
-                        file_name=f"teloscope_session_{session_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
-                        mime="application/json",
-                        use_container_width=True
+                        label="🎁 Complete Evidence Package (ZIP)",
+                        data=create_evidence_package_zip(session_data, f"{session_id}_{timestamp}"),
+                        file_name=f"teloscope_evidence_{session_id}_{timestamp}.zip",
+                        mime="application/zip",
+                        use_container_width=True,
+                        type="primary",
+                        help="All formats bundled with README (recommended for research)"
                     )
+
+                    st.caption("💡 **Tip:** Use the ZIP package for publications - it includes all formats plus a README")
+                else:
+                    st.info("Start a conversation to enable exports")
 
         st.divider()
 
