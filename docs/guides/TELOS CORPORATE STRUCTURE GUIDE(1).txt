@@ -1,0 +1,1346 @@
+# ORIGIN INDUSTRIES PBC - CORPORATE STRUCTURE GUIDE
+
+**Balancing Mission Credibility with Commercial Flexibility**
+
+-----
+
+## EXECUTIVE SUMMARY
+
+This document outlines optimal corporate structures for Origin Industries PBC that maximize both:
+
+1. **Mission credibility** (for grants, academic partnerships, regulatory acceptance)
+1. **Commercial flexibility** (for revenue generation, growth, potential VC funding)
+
+The key insight: PBC structure enables sustainable public goods funding through commercial subsidiaries—not despite them.
+
+-----
+
+## THE PROPOSED STRUCTURE
+
+```
+┌─────────────────────────────────────┐
+│    Origin Industries PBC            │
+│    (Parent - Charter Holder)        │
+│                                     │
+│  Charter: "Privacy & Purpose        │
+│            as Primacy"              │
+│                                     │
+│  Owns: Brand, IP portfolio,         │
+│        governance rights            │
+└──────────────┬──────────────────────┘
+               │
+               │ (Controls/Licenses to)
+               │
+       ┌───────┴────────┐
+       │                │
+       ▼                ▼
+┌──────────────┐  ┌──────────────┐
+│ TELOS Labs   │  │ TELOSCOPE    │
+│ LLC          │  │ Systems LLC  │
+│              │  │              │
+│ Open R&D     │  │ Commercial   │
+│ Framework    │  │ Instrument   │
+│ MIT License  │  │ Proprietary  │
+└──────────────┘  └──────────────┘
+```
+
+-----
+
+## KEY QUESTION ADDRESSED
+
+**Can TELOS LLC develop TELOSCOPE as proprietary, then license it—so it’s not directly tied to PBC charter obligations?**
+
+**Answer: YES, with careful structuring.**
+
+-----
+
+## OPTION A: SUBSIDIARY MODEL (RECOMMENDED FOR GRANTS)
+
+### Structure
+
+```
+Origin Industries PBC (Delaware PBC)
+├─── TELOS Labs LLC (wholly-owned subsidiary)
+│    ├─ Develops: TELOS framework
+│    ├─ License: MIT (open source)
+│    ├─ Purpose: Public benefit R&D
+│    └─ Revenue: Grants, donations, research contracts
+│
+└─── TELOSCOPE Systems LLC (wholly-owned subsidiary)
+     ├─ Develops: TELOSCOPE instrument
+     ├─ License: Proprietary (commercial)
+     ├─ Purpose: Commercial deployment
+     └─ Revenue: SaaS, licensing, enterprise contracts
+```
+
+### How It Works
+
+1. **PBC owns both LLCs** (100% ownership as subsidiaries)
+1. **TELOS LLC** operates under PBC charter obligations (open research)
+1. **TELOSCOPE LLC** has commercial flexibility
+1. **PBC board** ensures TELOSCOPE profits fund TELOS research
+1. **Money can be made** via TELOSCOPE without violating PBC charter
+
+### Legal Foundation
+
+**PBCs can have for-profit subsidiaries:**
+
+- Completely legal and common
+- Subsidiaries can be commercially aggressive
+- PBC board ensures profits serve charter mission
+- Must document public benefit impact
+
+**Precedents:**
+
+- Mozilla Foundation (non-profit) owns Mozilla Corporation (for-profit)
+- Patagonia (B-Corp) owns for-profit retail subsidiaries
+- OpenAI (non-profit) owned OpenAI LP (for-profit) before restructuring
+
+### Money Flow
+
+```
+TELOSCOPE Systems LLC Revenue
+         ↓
+   (Profit sweep to parent)
+         ↓
+Origin Industries PBC
+         ↓
+   (Funds allocation per charter)
+         ↓
+TELOS Labs LLC (R&D funding)
+```
+
+**Tax Implications:**
+
+- PBC can sweep subsidiary profits tax-free (consolidated return)
+- Allocates funds per charter obligations
+- Board documents public benefit impact
+
+### Advantages for Grant Applications
+
+**For AI Grant / Emergent Ventures / NSF SBIR:**
+
+✅ Shows PBC commitment  
+✅ Money ultimately serves charter  
+✅ TELOSCOPE can still be fully commercial  
+✅ Clean narrative
+
+**Pitch Template:**
+
+> “Origin Industries PBC operates two subsidiaries: TELOS Labs LLC (open research) and TELOSCOPE Systems LLC (commercial deployment). All TELOSCOPE profits fund TELOS research—creating sustainable AI safety infrastructure. Grant funds go to TELOS Labs for foundational research.”
+
+**This is the Mozilla model:** Non-profit foundation funds open source research via for-profit corporation revenue.
+
+-----
+
+## OPTION B: LICENSING MODEL (RECOMMENDED FOR VC PHASE)
+
+### Structure
+
+```
+Origin Industries PBC
+├─ Owns: IP portfolio, trademarks, patents
+├─ Licenses: TELOS framework (open/free)
+└─ Licenses: TELOSCOPE to commercial entities
+
+TELOS Labs LLC (Separate entity or subsidiary)
+├─ Licensed by PBC to develop TELOS
+├─ Operates independently
+└─ Must open-source per license terms
+
+TELOSCOPE Systems LLC (Separate entity - potentially VC-backed)
+├─ Licensed by PBC to commercialize TELOSCOPE
+├─ Pays royalties/revenue share to PBC (e.g., 10-30%)
+└─ Commercial flexibility, can raise VC independently
+```
+
+### How It Works
+
+1. **PBC retains IP ownership**
+1. **Licenses** commercial rights to TELOSCOPE Systems LLC
+1. **Revenue share** (negotiable %) flows back to PBC
+1. **TELOSCOPE LLC** operates independently
+1. **Can raise VC**, sell equity, exit—without violating PBC charter
+
+### Money Flow
+
+```
+TELOSCOPE Systems LLC Revenue
+         ↓
+   (License fee/royalty - e.g., 15%)
+         ↓
+Origin Industries PBC
+         ↓
+   (Grant funding or contract)
+         ↓
+TELOS Labs LLC (R&D grants)
+```
+
+**Tax Implications:**
+
+- Licensing fees are taxable income to PBC
+- PBC can make grants to TELOS Labs
+- More arm’s-length relationship
+- TELOSCOPE LLC taxed separately
+
+### Advantages for VC Funding
+
+**For Series A and beyond:**
+
+✅ VCs can invest in TELOSCOPE LLC directly  
+✅ Don’t have to navigate PBC governance  
+✅ Clearer exit path (sell TELOSCOPE LLC)  
+✅ More separation = more commercial flexibility
+
+**Pitch Template:**
+
+> “TELOSCOPE Systems LLC has exclusive commercial license from Origin Industries PBC. PBC receives 15% revenue share. VC investment goes into TELOSCOPE LLC, which operates independently while funding ongoing research through license fees.”
+
+-----
+
+## WHAT’S LEGAL (AND COMMON)
+
+### Fully Permitted Activities
+
+✅ **PBC owning for-profit subsidiaries**
+
+- Completely legal
+- Common structure (Mozilla, Patagonia)
+- Board must ensure profits serve charter
+
+✅ **Subsidiary being fully commercial**
+
+- Can charge market rates
+- Can raise VC funding
+- Can pursue aggressive growth
+- Can have separate cap table
+
+✅ **Profits flowing to parent PBC**
+
+- Tax-efficient (consolidated return)
+- Documented public benefit impact
+- Board resolution showing charter alignment
+
+✅ **Different licenses for different entities**
+
+- TELOS (open) developed by TELOS Labs
+- TELOSCOPE (proprietary) developed by TELOSCOPE Systems
+- Not a problem as long as charter served overall
+
+✅ **Commercial subsidiary raising VC**
+
+- TELOSCOPE Systems can have outside investors
+- VCs invest in subsidiary, not PBC
+- PBC retains control through ownership or license terms
+
+✅ **Paying market-rate salaries**
+
+- Employees can be well-compensated
+- Competitive with tech industry
+- Reasonable compensation doesn’t violate charter
+
+-----
+
+### What to Avoid
+
+❌ **“Public benefit” as fig leaf**
+
+- Can’t just say “we’re PBC” then act purely profit-driven
+- Board must document actual public benefit
+- Annual benefit report required (in most states)
+
+❌ **Self-dealing without board approval**
+
+- Transactions between PBC and subsidiaries must be fair
+- Board must approve material transactions
+- Document everything (meeting minutes, resolutions)
+
+❌ **Abandoning charter mission**
+
+- Even with commercial subsidiary, overall mission must be served
+- “TELOSCOPE profits fund TELOS research” must actually happen
+- Can’t just accumulate money without public benefit impact
+
+❌ **Misleading grant applications**
+
+- Must be truthful about corporate structure
+- Disclose commercial subsidiary if relevant
+- Show how grant furthers public benefit
+
+-----
+
+## RECOMMENDED PHASED APPROACH
+
+### Phase 1: Grant Phase (NOW - 2026)
+
+**Use: Subsidiary Model**
+
+```
+┌─────────────────────────────────────┐
+│   Origin Industries PBC             │
+│   (Delaware PBC)                    │
+│   Charter: Privacy & Purpose        │
+│            as Primacy               │
+└──────────────┬──────────────────────┘
+               │
+               │ (100% ownership)
+               │
+       ┌───────┴────────┐
+       │                │
+       ▼                ▼
+┌──────────────┐  ┌──────────────┐
+│ TELOS Labs   │  │ TELOSCOPE    │
+│ LLC          │  │ Systems LLC  │
+│              │  │              │
+│ Delaware LLC │  │ Delaware LLC │
+│              │  │              │
+│ Grant recip. │  │ Commercial   │
+│ Open R&D     │  │ Entity       │
+│ MIT License  │  │ Proprietary  │
+└──────────────┘  └──────────────┘
+```
+
+**Grant Applications:**
+
+- Applied by TELOS Labs LLC
+- Parent is Origin Industries PBC
+- TELOSCOPE is separate commercial subsidiary
+- Board ensures profits serve mission
+
+**This Maximizes:**
+✅ Grant eligibility (non-profit parent structure)  
+✅ PBC credibility (charter commitment visible)  
+✅ Commercial flexibility (TELOSCOPE LLC operational)  
+✅ Tax efficiency (consolidated return)
+
+**Target Grants:**
+
+- Emergent Ventures: $50-100K
+- AI Grant: $250K
+- NSF SBIR Phase I: $275K
+- NSF SBIR Phase II: $1-2M
+
+-----
+
+### Phase 2: Commercial Phase (2026-2027)
+
+**Use: Aggressive Commercial Operation**
+
+**TELOSCOPE Systems LLC:**
+
+- Charge enterprise pricing
+- Pursue large contracts (healthcare, finance, legal, defense)
+- Build sales/marketing team
+- Scale infrastructure
+
+**Revenue Flow:**
+
+```
+TELOSCOPE Enterprise Contracts
+         ↓
+TELOSCOPE Systems LLC Revenue
+         ↓
+(Profit sweep to PBC parent)
+         ↓
+Origin Industries PBC
+         ↓
+Board Allocation:
+  - X% to TELOS Labs (R&D)
+  - Y% to reserves
+  - Z% to expansion
+```
+
+**Board Documentation:**
+
+- Annual benefit report
+- Public benefit metrics (e.g., “funded X papers, Y institutions using open framework”)
+- Meeting minutes showing charter compliance
+
+-----
+
+### Phase 3: VC Phase (2027+ if needed)
+
+**Consider Converting to Licensing Model**
+
+**If TELOSCOPE needs substantial VC investment:**
+
+```
+Origin Industries PBC
+    │
+    │ (owns IP, licenses commercial rights)
+    │
+    └─ Licenses: TELOSCOPE commercial rights
+            │
+            ▼
+    TELOSCOPE Systems LLC
+    ├─ VC investors (e.g., 40% equity)
+    ├─ Founders/employees (e.g., 40% equity)
+    └─ PBC (e.g., 20% equity + royalty)
+```
+
+**This Structure Allows:**
+
+- ✅ VC investment in TELOSCOPE directly
+- ✅ TELOSCOPE cap table separate from PBC
+- ✅ Exit path (acquisition of TELOSCOPE LLC)
+- ✅ PBC preserved with mission intact
+- ✅ Ongoing funding to TELOS through royalty
+
+**Royalty Structure Example:**
+
+- 10-15% of revenue to PBC
+- Funds TELOS Labs research
+- Documented public benefit impact
+
+-----
+
+## GRANT PITCH FRAMEWORK
+
+### Core Narrative
+
+> “Origin Industries PBC demonstrates sustainable public goods funding through institutional innovation:
+> 
+> **TELOS Labs LLC** develops the open-source mathematical framework (MIT licensed), funded by grants and research contracts.
+> 
+> **TELOSCOPE Systems LLC** commercializes privacy-preserving deployment infrastructure, with profits funding continued TELOS research.
+> 
+> This creates a virtuous cycle: commercial success funds open research, making AI safety sustainable without perpetual philanthropic subsidy. We’re the Mozilla model for AI governance.”
+
+### Why This Works
+
+**For Funders, This Shows:**
+
+1. ✅ Mission commitment (PBC parent with charter)
+1. ✅ Sustainability (commercial revenue, not just grants)
+1. ✅ Public benefit (profits explicitly fund research)
+1. ✅ Institutional innovation (new funding model for AI safety)
+1. ✅ Credible commitment (can’t abandon mission legally)
+
+### Application Sections to Emphasize
+
+**AI Grant Application:**
+
+> “Corporate Structure: Public Benefit Corporation with two subsidiaries ensuring perpetual open source commitment to foundational framework (TELOS Labs) while enabling sustainable commercial deployment (TELOSCOPE Systems). Addresses ‘OpenAI problem’—we can scale commercially without abandoning public mission. Our charter legally requires this balance.”
+
+**Emergent Ventures Application:**
+
+> “Institutional Innovation: We’re not just creating AI governance technology—we’re demonstrating a new institutional form for sustainable public goods production. The PBC structure with dual subsidiaries is itself an experiment in credible commitment and stakeholder capitalism.”
+
+**NSF SBIR Application:**
+
+> “As a Public Benefit Corporation with research-focused subsidiary (TELOS Labs), NSF funds directly advance public benefit—not merely shareholder value. Our charter legally requires prioritizing societal impact. Commercial subsidiary (TELOSCOPE Systems) ensures sustainability without dependence on continued federal funding.”
+
+**EU Horizon Application:**
+
+> “While headquartered in the US, Origin Industries PBC operates under governance principles aligned with EU values: stakeholder governance, public benefit orientation, democratic accountability. Our PBC charter embodies social market economy principles. TELOS framework perpetually open source per charter obligations.”
+
+-----
+
+## SPECIFIC SCENARIOS & ANSWERS
+
+### “Can we make money without violating PBC charter?”
+
+**Yes, absolutely.**
+
+**You can:**
+
+- ✅ Charge enterprise prices for TELOSCOPE
+- ✅ Raise VC for TELOSCOPE LLC (if structured correctly)
+- ✅ Exit TELOSCOPE LLC separately (in licensing model)
+- ✅ Pay market-rate salaries to founders/employees
+- ✅ Pursue aggressive commercial growth
+
+**As long as:**
+
+- Board documents public benefit impact regularly
+- Reasonable percentage of profits funds TELOS research
+- Annual benefit report shows charter compliance
+- Overall mission is served (even if subsidiaries profit-seeking)
+
+**The Mozilla Precedent:**
+Mozilla Corporation (for-profit) generates ~$500M/year revenue, pays market salaries, operates commercially—all while parent Mozilla Foundation maintains non-profit mission.
+
+-----
+
+### “Can TELOSCOPE be sold/acquired?”
+
+**Depends on structure:**
+
+**Subsidiary Model:**
+
+- TELOSCOPE Systems LLC is owned by PBC
+- Can’t be sold without PBC board approval
+- Acquirer would need to agree to continue funding TELOS research
+- More complex exit, but possible
+
+**Licensing Model:**
+
+- TELOSCOPE Systems LLC is separate entity
+- Can be acquired independently
+- PBC retains license terms (royalty continues)
+- Cleaner exit path
+
+**Recommendation:** Start with subsidiary model (grants), convert to licensing model if/when exit becomes relevant.
+
+-----
+
+### “Can we raise VC funding?”
+
+**Yes, in multiple ways:**
+
+**Option 1: VC invests in TELOSCOPE Systems subsidiary**
+
+- PBC owns 100%, VCs own 0% initially
+- PBC can issue new shares in subsidiary to VCs
+- PBC ownership dilutes but retains control/license terms
+- More complex but preserves structure
+
+**Option 2: Convert to licensing model, VCs invest in licensed entity**
+
+- PBC licenses IP to TELOSCOPE Systems LLC
+- VCs invest in TELOSCOPE Systems directly
+- Cleaner cap table for VCs
+- PBC receives royalty regardless of equity structure
+
+**Option 3: VC invests in PBC directly (rare)**
+
+- Some PBCs have raised VC (Kickstarter, Patagonia)
+- VCs must accept PBC governance (public benefit prioritized)
+- Less common, more complex
+
+**Recommendation:** If VC becomes necessary, convert to licensing model first.
+
+-----
+
+### “What percentage of profits must fund TELOS research?”
+
+**No legal minimum, but must be defensible.**
+
+**Best Practice:**
+
+- Document in board resolutions
+- Annual benefit report shows allocation
+- Reasonable percentage (e.g., 20-40% of net profits)
+- Depends on growth stage (early stage may reinvest more in TELOSCOPE)
+
+**Example Allocation:**
+
+```
+TELOSCOPE Systems Net Profit: $1M
+
+Allocation:
+- 30% to TELOS Labs R&D: $300K
+- 30% to TELOSCOPE growth: $300K
+- 20% to PBC reserves: $200K
+- 20% to team bonuses: $200K
+```
+
+**Board Minutes:** “Allocation advances charter mission by funding open research (30% to TELOS) while ensuring commercial sustainability (30% reinvested).”
+
+-----
+
+### “Can founders/employees get rich?”
+
+**Yes.**
+
+**Compensation Allowed:**
+
+- Market-rate salaries
+- Equity in subsidiaries (if structured correctly)
+- Performance bonuses
+- Profit-sharing
+
+**The key:** Compensation must be reasonable and documented.
+
+**Examples:**
+
+- Mozilla CEO salary: ~$2-3M (public records)
+- Patagonia pays competitive outdoor industry salaries
+- Kickstarter (PBC) pays tech industry rates
+
+**Your situation:**
+
+- Founders can receive equity in TELOSCOPE Systems LLC
+- If TELOSCOPE exits, founders benefit
+- PBC ensures proceeds partly fund TELOS research
+- Everyone wins: founders, mission, public
+
+-----
+
+## FORMATION CHECKLIST
+
+### Immediate Steps (This Month)
+
+**1. Form Origin Industries PBC**
+
+- [ ] File Certificate of Incorporation (Delaware)
+- [ ] Include charter language: “Privacy and Purpose as Primacy”
+- [ ] Draft bylaws with public benefit provisions
+- [ ] Initial board resolution documenting mission
+- [ ] Cost: ~$500 filing + $1-2K legal
+
+**2. Form TELOS Labs LLC**
+
+- [ ] File Certificate of Formation (Delaware)
+- [ ] Operating agreement (subsidiary of PBC)
+- [ ] Designate as research/grant recipient entity
+- [ ] Open bank account
+- [ ] Cost: ~$200 filing
+
+**3. Form TELOSCOPE Systems LLC**
+
+- [ ] File Certificate of Formation (Delaware)
+- [ ] Operating agreement (subsidiary of PBC)
+- [ ] Designate as commercial entity
+- [ ] Open bank account
+- [ ] Cost: ~$200 filing
+
+**4. IP Assignment**
+
+- [ ] Draft IP assignment agreement
+- [ ] PBC owns all IP (patents, trademarks, copyrights)
+- [ ] PBC licenses to subsidiaries as needed
+- [ ] Record assignments
+- [ ] Cost: ~$1-2K legal
+
+**5. Inter-Company Agreements**
+
+- [ ] TELOS Labs: License to develop open framework
+- [ ] TELOSCOPE Systems: License to commercialize
+- [ ] Transfer pricing / cost allocation agreement
+- [ ] Board oversight provisions
+- [ ] Cost: ~$2-3K legal
+
+**Total Formation Cost: ~$5-10K**
+
+-----
+
+### Ongoing Requirements
+
+**Annual (PBC Requirements):**
+
+- [ ] Public Benefit Report (describes charter impact)
+- [ ] Board meeting documenting public benefit assessment
+- [ ] Financial statements showing fund allocation
+- [ ] Public posting of benefit report (website)
+
+**Annual (LLC Requirements):**
+
+- [ ] Tax returns (consolidated or separate)
+- [ ] Delaware franchise tax
+- [ ] Operating agreement compliance review
+
+**Quarterly (Best Practice):**
+
+- [ ] Board meeting reviewing subsidiary performance
+- [ ] Documentation of charter alignment
+- [ ] Financial reports showing research funding
+
+-----
+
+## KEY DOCUMENTS NEEDED
+
+### Formation Documents
+
+1. **Certificate of Incorporation - Origin Industries PBC**
+- State: Delaware
+- Entity type: Public Benefit Corporation
+- Charter purpose: “Privacy and Purpose as Primacy in machine intelligence”
+- Registered agent: [Delaware agent service]
+1. **Bylaws - Origin Industries PBC**
+- Board composition
+- Public benefit governance provisions
+- Subsidiary oversight provisions
+- Amendment procedures
+1. **Certificate of Formation - TELOS Labs LLC**
+- State: Delaware
+- Member: Origin Industries PBC (100%)
+- Purpose: Research and development
+1. **Operating Agreement - TELOS Labs LLC**
+- Single member LLC (PBC as sole member)
+- Open source commitment
+- Grant receipt provisions
+1. **Certificate of Formation - TELOSCOPE Systems LLC**
+- State: Delaware
+- Member: Origin Industries PBC (100%)
+- Purpose: Commercial software development
+1. **Operating Agreement - TELOSCOPE Systems LLC**
+- Single member LLC (PBC as sole member)
+- Commercial operations authorization
+- Profit sweep provisions
+
+-----
+
+### IP & Licensing Documents
+
+1. **IP Assignment Agreement**
+- Assigns all IP to Origin Industries PBC
+- Covers: TELOS framework, TELOSCOPE instrument, TAP protocol, trademarks
+- Signed by inventors/founders
+1. **License Agreement - TELOS Framework**
+- Licensor: Origin Industries PBC
+- Licensee: TELOS Labs LLC
+- License: MIT (open source)
+- Perpetual, irrevocable
+1. **License Agreement - TELOSCOPE Commercial**
+- Licensor: Origin Industries PBC
+- Licensee: TELOSCOPE Systems LLC
+- License: Proprietary commercial rights
+- Royalty/profit-sharing terms (if licensing model)
+
+-----
+
+### Governance Documents
+
+1. **Board Resolutions - Initial**
+- Formation of subsidiaries
+- IP assignment approval
+- License grant approval
+- Initial funding allocation
+1. **Public Benefit Charter Statement**
+- Detailed mission statement
+- Specific public benefit goals
+- Measurement criteria
+- Stakeholder identification
+1. **Annual Benefit Report Template**
+- Public benefit objectives pursued
+- Metrics showing impact (papers published, institutions using framework)
+- Financial allocation to mission
+- Third-party verification (optional)
+
+-----
+
+## TAX CONSIDERATIONS
+
+### Federal Tax Treatment
+
+**Subsidiary Model (Recommended Initially):**
+
+**Origin Industries PBC:**
+
+- Taxed as C-corporation
+- Can file consolidated return with subsidiaries
+- Profits from TELOSCOPE Systems swept tax-free to parent
+
+**TELOS Labs LLC:**
+
+- Disregarded entity (single-member LLC)
+- Income/expenses consolidated with PBC
+- Grant income may be taxable
+
+**TELOSCOPE Systems LLC:**
+
+- Disregarded entity (single-member LLC)
+- Revenue/expenses consolidated with PBC
+- Commercial income taxable to PBC
+
+**Effective Result:**
+
+- Single tax return for entire structure
+- Internal transfers not taxable
+- Clean and efficient
+
+-----
+
+**Licensing Model (If Using Later):**
+
+**Origin Industries PBC:**
+
+- Taxed as C-corporation
+- Receives royalty income from TELOSCOPE Systems
+- Can make grants to TELOS Labs (if structured correctly)
+
+**TELOS Labs LLC:**
+
+- Could elect non-profit status (501(c)(3)) if appropriate
+- Or remain for-profit LLC with grant income
+- Separate tax return
+
+**TELOSCOPE Systems LLC:**
+
+- Taxed as C-corporation (likely)
+- Separate tax return
+- Pays royalty to PBC as deductible expense
+
+**Effective Result:**
+
+- Multiple tax returns
+- More complex but more separation
+- Transfer pricing considerations
+
+-----
+
+### State Tax Considerations
+
+**Delaware:**
+
+- Franchise tax for corporations (~$400/year)
+- No sales tax
+- Business-friendly courts
+
+**Where You Operate:**
+
+- May need to register as foreign entity
+- State income tax where operations occur
+- Nexus considerations for TELOSCOPE sales
+
+-----
+
+### Grant Income Tax Treatment
+
+**Generally:**
+
+- Grant income taxable unless specific exemption
+- Research grants may qualify for tax credits (R&D credit)
+- Government grants (NSF) typically taxable
+
+**Exception:**
+
+- If TELOS Labs becomes 501(c)(3), grant income tax-exempt
+- Requires separate non-profit application
+- More restrictive but tax advantages
+
+-----
+
+## PRECEDENTS & CASE STUDIES
+
+### Mozilla Foundation + Mozilla Corporation
+
+**Structure:**
+
+- Mozilla Foundation: 501(c)(3) non-profit
+- Mozilla Corporation: For-profit subsidiary (100% owned)
+
+**Operations:**
+
+- Corporation generates ~$500M/year (mostly Google search deal)
+- Pays competitive tech salaries
+- Profits support Foundation’s open source mission
+- Firefox remains open source
+
+**Lessons:**
+
+- Large-scale commercial revenue compatible with mission
+- Open source + commercial model sustainable
+- Separation enables aggressive commercial operation
+
+**Your Parallel:**
+
+- Origin PBC = Mozilla Foundation (mission holder)
+- TELOSCOPE Systems = Mozilla Corp (commercial arm)
+- TELOS open source = Firefox open source
+
+-----
+
+### Patagonia (B-Corp → Trust Structure)
+
+**Structure:**
+
+- Previously B-Corp (like PBC)
+- Now owned by trust + non-profit
+- Retail operations fully commercial
+
+**Operations:**
+
+- $1B+ annual revenue
+- Competitive prices and salaries
+- 100% profits to environmental causes
+- Brand maintained credibility
+
+**Lessons:**
+
+- Commercial success enhances mission (more resources)
+- Brand credibility from mission commitment
+- Customers willing to pay for values-aligned products
+
+**Your Parallel:**
+
+- Commercial TELOSCOPE revenue funds TELOS research
+- Institutions trust you more because of PBC structure
+- Premium pricing justified by mission alignment
+
+-----
+
+### Chan Zuckerberg Initiative (LLC)
+
+**Structure:**
+
+- LLC, not non-profit
+- Mission-driven but flexible structure
+- Can make investments and grants
+
+**Operations:**
+
+- Can invest in for-profit companies
+- Can make charitable grants
+- Pays taxes but has flexibility
+
+**Lessons:**
+
+- LLC structure allows mission + flexibility
+- Not all mission-driven orgs need 501(c)(3)
+- Credibility comes from demonstrated commitment
+
+**Your Parallel:**
+
+- PBC structure (like LLC) gives flexibility
+- Can operate commercially while maintaining mission
+- Structure itself signals commitment
+
+-----
+
+### Kickstarter (B-Corp → PBC)
+
+**Structure:**
+
+- Converted from C-corp to B-Corp to PBC
+- VC-backed initially, then restructured
+- Mission: Support creative projects
+
+**Operations:**
+
+- Takes 5% of all successful campaigns
+- Generates ~$50M+ revenue
+- Remains independent (no acquisition)
+
+**Lessons:**
+
+- Can convert to mission structure after starting
+- VC money not incompatible with PBC (if structured right)
+- Mission structure enables long-term independence
+
+**Your Parallel:**
+
+- Start as PBC with mission commitment
+- Can add VC later if needed (via subsidiary)
+- Structure protects against mission drift
+
+-----
+
+## FREQUENTLY ASKED QUESTIONS
+
+### Can a PBC be as profitable as a regular C-corp?
+
+**Yes.** There’s no legal limit on PBC profitability. The difference is governance, not economics.
+
+**PBC requirement:** Consider public benefit in decisions  
+**Not required:** Sacrifice profit for public benefit
+
+**Example:** If TELOSCOPE can charge $100K/year per enterprise customer OR $50K/year, the PBC can charge $100K as long as product still serves public benefit mission (enabling governance compliance).
+
+-----
+
+### Do PBC board members have fiduciary duty to mission or shareholders?
+
+**Both.** This is the key innovation.
+
+**Traditional C-corp:** Fiduciary duty to shareholders only  
+**PBC:** Fiduciary duty to shareholders AND public benefit
+
+**Practically:** Board must balance profit and mission, documented in meeting minutes.
+
+-----
+
+### Can we pay ourselves competitive Silicon Valley salaries?
+
+**Yes.** Reasonable compensation is allowed and expected.
+
+**Standard:** Market rate for comparable positions  
+**Documentation:** Board approval, comparables analysis  
+**Transparency:** Disclosed in benefit report (optional but recommended)
+
+**Example:** If CTO at commercial AI startup makes $300K + equity, you can pay similar at TELOSCOPE Systems LLC.
+
+-----
+
+### What if TELOSCOPE becomes huge (e.g., $100M+ revenue)?
+
+**Structure scales.**
+
+**Small scale ($1-5M revenue):**
+
+- Simple subsidiary model works
+- Board oversight straightforward
+- Benefit report documents impact
+
+**Medium scale ($5-50M revenue):**
+
+- May add independent board members
+- More formal governance processes
+- Could convert to licensing model for flexibility
+
+**Large scale ($50M+ revenue):**
+
+- Likely licensing model
+- TELOSCOPE could be separate VC-backed entity
+- PBC receives royalty, funds large-scale TELOS research
+- Consider European subsidiary for EU market
+
+-----
+
+### Can the PBC go public (IPO)?
+
+**Yes.** Several PBCs have IPO’d or are positioned to:
+
+- Warby Parker (PBC) IPO’d 2021
+- Laureate Education (PBC) public since 2013
+- Allbirds (PBC) IPO’d 2021
+
+**For TELOSCOPE:**
+
+- If TELOSCOPE Systems grows large, could IPO as PBC
+- Or Origin Industries PBC could IPO
+- Shareholders buy into mission-aligned structure
+- Benefit report becomes public disclosure
+
+**Unlikely near-term, but structure doesn’t prevent it.**
+
+-----
+
+### What happens if founders want to exit?
+
+**Several paths:**
+
+**Scenario 1: Acquisition of TELOSCOPE Systems**
+
+- If subsidiary model: Requires PBC board approval
+- Acquirer must agree to continue funding TELOS research
+- Founders receive proceeds from sale
+- PBC uses proceeds for mission
+
+**Scenario 2: Management buyout**
+
+- New team buys TELOSCOPE Systems from PBC
+- PBC receives cash, continues funding TELOS
+- Original founders exit with payment
+
+**Scenario 3: Licensing model exit**
+
+- TELOSCOPE Systems LLC sold separately
+- PBC retains IP, license continues
+- Cleaner exit, founders benefit from equity
+
+**Key:** Structure allows exits while preserving mission.
+
+-----
+
+## CONCLUSION
+
+### Summary of Recommendations
+
+**Corporate Structure:**
+
+- Form Origin Industries PBC as parent
+- Create TELOS Labs LLC (research subsidiary)
+- Create TELOSCOPE Systems LLC (commercial subsidiary)
+- PBC owns all IP, licenses to subsidiaries
+
+**For Grant Phase (Now - 2026):**
+
+- Use subsidiary model
+- Emphasize PBC commitment in applications
+- Show sustainability through commercial revenue
+- Position as institutional innovation
+
+**For Commercial Phase (2026-2027):**
+
+- Operate TELOSCOPE Systems aggressively
+- Charge enterprise prices
+- Document public benefit impact
+- Sweep profits to fund TELOS research
+
+**For VC Phase (If Needed - 2027+):**
+
+- Consider converting to licensing model
+- TELOSCOPE Systems becomes separate VC-backed entity
+- PBC receives royalty/revenue share
+- Cleaner cap table for investors
+
+-----
+
+### Key Principles
+
+1. **Mission and Money Are Compatible**
+- PBC structure doesn’t limit profit
+- Commercial success funds research
+- Sustainable > philanthropic dependence
+1. **Structure Enables Credibility**
+- Legal commitment > marketing claims
+- Grants more likely with PBC structure
+- Partners/institutions trust mission alignment
+1. **Flexibility Through Subsidiaries**
+- Subsidiaries can operate commercially
+- PBC ensures profits serve mission
+- Best of both worlds
+1. **Documentation Is Critical**
+- Board minutes showing charter alignment
+- Annual benefit reports
+- Allocation of profits to research
+- Transparency builds credibility
+1. **Precedents Exist and Work**
+- Mozilla: $500M+ commercial revenue, mission intact
+- Patagonia: $1B+ revenue, values maintained
+- Kickstarter: VC-backed PBC, independent
+- You’re not inventing this—you’re following proven path
+
+-----
+
+### Next Steps
+
+**Immediate (This Week):**
+
+1. Decide on structure (subsidiary model recommended)
+1. Engage Delaware corporate attorney ($5-10K)
+1. Begin formation paperwork
+
+**Short-term (This Month):**
+
+1. Form Origin Industries PBC
+1. Form TELOS Labs LLC
+1. Form TELOSCOPE Systems LLC
+1. Draft IP assignment agreements
+1. Open bank accounts
+
+**Medium-term (Next 3 Months):**
+
+1. File provisional patent (TAP protocol)
+1. Trademark applications (TELOSCOPE, TAP, Scoped Purpose)
+1. Submit grant applications (Emergent Ventures, AI Grant)
+1. Draft first annual benefit report template
+
+**Long-term (Next 12 Months):**
+
+1. Grant funding received
+1. First TELOS research publications
+1. First TELOSCOPE commercial pilots
+1. Annual benefit report published
+1. Structure refined based on growth
+
+-----
+
+## CONTACT & RESOURCES
+
+### Recommended Legal Support
+
+**Corporate Formation:**
+
+- Clerky (online formation): $500-1000
+- Stripe Atlas: $500 + formation costs
+- Local attorney: $5-10K
+
+**Ongoing Legal:**
+
+- Corporate attorney for governance: $5-15K/year
+- IP attorney for patents/trademarks: As needed
+- Tax attorney for structure optimization: $2-5K/year
+
+### Delaware Resources
+
+**Formation:**
+
+- Delaware Division of Corporations: corp.delaware.gov
+- Registered agent services: $100-300/year
+
+**PBC Information:**
+
+- Delaware PBC statute: 8 Del. C. § 361-368
+- Secretary of State guidance
+
+### Grant Resources
+
+**Applications:**
+
+- Emergent Ventures: mercatus.org/emergent-ventures
+- AI Grant: aigrant.org
+- NSF SBIR: seedfund.nsf.gov
+- EU Horizon: ec.europa.eu/info/funding-tenders
+
+### Additional Reading
+
+**PBC Structures:**
+
+- “The Public Benefit Corporation Guidebook” (Hiller)
+- B Lab resources (bcorporation.net)
+- Delaware PBC case studies
+
+**Similar Organizations:**
+
+- Mozilla governance documents (public)
+- Patagonia mission statements
+- Kickstarter PBC conversion story
+
+-----
+
+**Document Version:** 1.0  
+**Date:** October 24, 2025  
+**Status:** Strategic Planning Document  
+**Classification:** Internal - Origin Industries PBC
+
+**This document is for planning purposes and does not constitute legal advice. Consult qualified attorneys for formation and governance decisions.**
+
+-----
+
+## APPENDIX: SAMPLE CHARTER LANGUAGE
+
+### Origin Industries PBC - Certificate of Incorporation (Draft)
+
+```
+ARTICLE I - NAME
+
+The name of the corporation is Origin Industries PBC.
+
+ARTICLE II - PUBLIC BENEFIT CORPORATION
+
+This corporation is a public benefit corporation organized 
+under Subchapter XV of the Delaware General Corporation Law.
+
+ARTICLE III - PUBLIC BENEFIT PURPOSE
+
+The specific public benefit purpose of this corporation is 
+to advance Privacy and Purpose as foundational principles 
+of machine intelligence, through:
+
+(a) Development and maintenance of open-source mathematical 
+frameworks for runtime AI governance;
+
+(b) Promotion of privacy-preserving measurement and oversight 
+mechanisms for AI systems;
+
+(c) Creation of institutional infrastructure enabling measurable, 
+auditable, and controllable AI governance;
+
+(d) Dissemination of research, tools, and methodologies advancing 
+transparent and accountable AI systems for human benefit.
+
+ARTICLE IV - BALANCING INTERESTS
+
+In discharging their duties, and in considering the best 
+interests of the corporation, the board of directors shall 
+consider the effects of any action upon:
+
+(a) The stockholders of the corporation;
+(b) The employees and workforce of the corporation;
+(c) The interests of customers and users of AI governance systems;
+(d) The advancement of privacy protection and purpose alignment 
+    in machine intelligence;
+(e) The public benefit purposes set forth in Article III;
+(f) The long-term interests of the corporation and promotion 
+    of the sustainable pursuit of the public benefit purposes.
+
+ARTICLE V - ASSESSMENT OF PUBLIC BENEFIT
+
+The corporation shall provide to its stockholders, at least 
+biennially, a statement describing the efforts of the corporation 
+to promote the public benefit purposes identified in Article III 
+and the best interests of those materially affected by the 
+corporation's conduct.
+```
+
+-----
+
+## APPENDIX: SAMPLE BOARD RESOLUTION
+
+### Initial Board Resolution - Subsidiary Formation
+
+```
+ORIGIN INDUSTRIES PBC
+UNANIMOUS WRITTEN CONSENT OF THE BOARD OF DIRECTORS
+
+Date: [DATE]
+
+The undersigned, being all of the members of the Board of 
+Directors of Origin Industries PBC, a Delaware public benefit 
+corporation (the "Corporation"), hereby adopt the following 
+resolutions:
+
+WHEREAS, the Corporation desires to form subsidiary limited 
+liability companies to advance its public benefit purposes;
+
+WHEREAS, separate entities will enable focused research 
+development (TELOS Labs LLC) and commercial deployment 
+(TELOSCOPE Systems LLC) while maintaining unified mission 
+governance;
+
+NOW, THEREFORE, BE IT RESOLVED:
+
+1. FORMATION OF TELOS LABS LLC
+
+   RESOLVED, that the Corporation shall form a wholly-owned 
+   subsidiary limited liability company under the laws of 
+   Delaware, to be named "TELOS Labs LLC" (the "Research 
+   Subsidiary");
+
+   RESOLVED FURTHER, that the purpose of the Research Subsidiary 
+   shall be to develop open-source mathematical frameworks for 
+   AI governance, to be licensed under permissive open-source 
+   licenses;
+
+   RESOLVED FURTHER, that the Research Subsidiary shall be 
+   the primary recipient entity for research grants advancing 
+   the Corporation's public benefit purposes;
+
+2. FORMATION OF TELOSCOPE SYSTEMS LLC
+
+   RESOLVED, that the Corporation shall form a wholly-owned 
+   subsidiary limited liability company under the laws of 
+   Delaware, to be named "TELOSCOPE Systems LLC" (the "Commercial 
+   Subsidiary");
+
+   RESOLVED FURTHER, that the purpose of the Commercial Subsidiary 
+   shall be to commercialize privacy-preserving AI governance 
+   infrastructure, with revenues funding continued research and 
+   advancement of the Corporation's public benefit purposes;
+
+3. PUBLIC BENEFIT ALIGNMENT
+
+   RESOLVED, that all activities of the Research Subsidiary 
+   and Commercial Subsidiary shall be conducted in furtherance 
+   of the Corporation's public benefit purposes as set forth 
+   in its Certificate of Incorporation;
+
+   RESOLVED FURTHER, that the Board shall review subsidiary 
+   performance at least annually to ensure alignment with 
+   the Corporation's public benefit purposes;
+
+   RESOLVED FURTHER, that net profits of the Commercial 
+   Subsidiary shall be allocated to support the Research 
+   Subsidiary's open-source development, with specific 
+   allocation percentages to be determined annually by 
+   the Board;
+
+4. AUTHORIZATION
+
+   RESOLVED, that the officers of the Corporation are hereby 
+   authorized to take all actions necessary to form the 
+   subsidiaries, including:
+
+   (a) Filing certificates of formation;
+   (b) Adopting operating agreements;
+   (c) Appointing managers;
+   (d) Opening bank accounts;
+   (e) Making initial capital contributions;
+
+5. IP ASSIGNMENT
+
+   RESOLVED, that all intellectual property developed by 
+   the Corporation, its founders, and employees shall be 
+   assigned to the Corporation;
+
+   RESOLVED FURTHER, that the Corporation shall license 
+   intellectual property to the subsidiaries as appropriate 
+   for their respective purposes;
+
+This Consent may be executed in counterparts.
+
+Dated: [DATE]
+
+_______________________________
+[Director Name]
+
+_______________________________
+[Director Name]
+```
+
+-----
+
+**END OF DOCUMENT**

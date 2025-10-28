@@ -1,0 +1,26 @@
+[
+  {
+    "user": "Explain the mathematical foundations of TELOS governance",
+    "assistant": ""
+  },
+  {
+    "user": "What role do Lyapunov functions play in stability?",
+    "assistant": ""
+  },
+  {
+    "user": "How does the primacy attractor ensure goal alignment?",
+    "assistant": ""
+  },
+  {
+    "user": "Describe the error signal calculation in the proportional controller",
+    "assistant": ""
+  },
+  {
+    "user": "What are the intervention thresholds epsilon_min and epsilon_max?",
+    "assistant": ""
+  },
+  {
+    "user": "How does basin geometry relate to conversation stability?",
+    "assistant": ""
+  }
+]

@@ -1,0 +1,46 @@
+{
+“governance_profile”: {
+“purpose”: [
+“Explain AI governance mechanisms”,
+“Discuss runtime oversight systems”,
+“Provide technical implementation guidance”
+],
+“scope”: [
+“AI alignment”,
+“Governance frameworks”,
+“Mathematical foundations”,
+“TELOS system architecture”,
+“Validation methodologies”
+],
+“boundaries”: [
+“Stay on topic - no off-topic drift”,
+“Avoid meta-commentary”,
+“Focus on technical content”,
+“No vacation or sports discussions”
+]
+},
+
+“attractor_parameters”: {
+“constraint_tolerance”: 0.2,
+“privacy_level”: 0.8,
+“task_priority”: 0.9
+},
+
+“intervention_thresholds”: {
+“epsilon_min”: 0.5,
+“epsilon_max”: 0.8
+},
+
+“validation_settings”: {
+“cadence_reminder_interval”: 3,
+“use_real_embeddings”: true,
+“embedding_model”: “sentence-transformers/all-MiniLM-L6-v2”
+},
+
+“llm_settings”: {
+“model”: “mistral-small-latest”,
+“temperature”: 0.7,
+“max_tokens”: 500,
+“max_retries”: 3
+}
+}

@@ -1,0 +1,109 @@
+
+# TELOS Grant Application
+
+**Emergent Ventures**  
+Mercatus Center  
+George Mason University
+
+I’ve spent nearly three decades as a teacher and program builder, and later stepped into decentralized finance as a project owner. Both experiences taught me the same lesson: rules on paper don’t mean much if they don’t hold in practice. In classrooms, well-intended policies collapsed under real-world conditions. In DeFi, trust depended not on declarations but on whether accountability could be measured and verified in real time.
+
+When I began studying how large language models handle attention, I saw the same pattern: governance can be declared, but persistence isn’t guaranteed once systems are in use.
+
+⸻
+
+## The Problem: Governance Erodes in Use
+
+Large language models lose alignment over time. Studies show 20–40 percent degradation in adherence to declared purposes and boundaries during extended interactions (Laban et al., 2025; Liu et al., 2024). This “persistence problem” undermines compliance, safety, and trust.
+
+Design-time safeguards like Constitutional AI prevent harmful content but cannot ensure persistence once conversations begin. Models must remain not only safe but purpose-aligned, preserving declared objectives, scope, and privacy boundaries through dynamic dialogue. Users experience drift as constant re-prompting; enterprises face compliance risk when violations go unnoticed; regulators lack real-time evidence that safeguards held.
+
+⸻
+
+## The TELOS Framework: Making Governance Measurable
+
+TELOS reframes governance as a measurable dynamic process by orchestrating three established mathematical disciplines:
+
+• **Control theory** – determines how and when to apply proportional corrections when drift is detected  
+• **Dynamical systems theory** – defines attractors and basins, measurable regions of stability  
+• **Information theory** – quantifies fidelity, continuous evidence of adherence to declared purpose
+
+TELOS operates entirely at the orchestration layer—between user interface and model API. It requires no model retraining or internal access; the model remains a black box. At session start, declared purpose, scope, and privacy boundaries are embedded as vectors forming a Primacy Attractor, a reference geometry for acceptable behavior. Each response is vectorized and compared against this attractor to compute fidelity (adherence), gravity (corrective force), and orbit (stability).
+
+When drift occurs, Runtime Stewards—orchestration-layer controllers—apply proportional interventions: reminders for minor drift, regeneration for moderate violations, and escalation for severe breaches. Each decision is logged as telemetry, creating verifiable audit trails of governance in operation.
+
+This placement is deliberate: late enough to measure real behavior, early enough to correct before user exposure, and independent enough to work across both open-source and proprietary systems.
+
+⸻
+
+## Current Status and 12-Month Plan
+
+TELOS exists today as fully functioning research infrastructure—the mathematical framework, orchestration architecture, and intervention mechanics are operational and model-agnostic. The next phase is institutional validation.
+
+This grant enables the transition from independent development to multi-institutional research collaboration:
+
+• **Q1 (Months 1–3)**: SDK release, documentation, and telemetry tooling  
+• **Q2 (Months 4–6)**: IRB-ready study design + partnership agreements with 3–5 universities  
+• **Q3 (Months 7–9)**: Pilot validation studies and federated delta-sharing protocol testing  
+• **Q4 (Months 10–12)**: Publication of initial results + scaling to additional partners
+
+The first half builds credible research infrastructure; the second executes validation once IRB-approved partnerships are live.
+
+⸻
+
+## Validation-First Approach
+
+The empirical question: Does runtime mathematical mitigation reduce drift more effectively than existing baselines?
+
+Comparative experiments will test four governance modes under identical prompts:
+
+1. **Stateless** (no governance memory)
+1. **Prompt-only**
+1. **Cadence-reminder**
+1. **TELOS intervention**
+
+By holding inputs constant and varying only governance mode, we isolate whether continuous monitoring and proportional correction actually reduce drift.
+
+All studies will be IRB-approved, pre-registered, and published regardless of outcome, using federated protocols that protect institutional data sovereignty. Success means showing that governance constraints hold more reliably over time and that user correction burden declines measurably.
+
+⸻
+
+## Why This Matters Beyond TELOS
+
+Even negative findings advance the field by:
+
+• Establishing governance persistence as measurable science, not assumption  
+• Creating federated validation protocols for reproducible cross-institutional research  
+• Providing the measurement primitives future compliance frameworks will require  
+• Demonstrating what observable, demonstrable due diligence looks like in practice
+
+Emerging standards—EU AI Act Article 72 and NIST AI RMF—demand continuous monitoring evidence rather than design-time assurances. Whether regulators adopt TELOS’s exact approach or not, they will need this class of measurement infrastructure.
+
+⸻
+
+## Budget Summary (12-Month Grant Request: $150,000)
+
+Grant funds support the transition from independent technical development to validated, federated research infrastructure capable of multi-institutional replication. Allocations sustain core personnel, expand infrastructure capacity, establish institutional partnerships, and prepare for independent audit.
+
+• **$80,000 (53%) Personnel**: Full-time lead developer ($50K) for SDK finalization, telemetry pipelines, and federation protocols; part-time principal investigator ($30K) for framework coordination, institutional partnerships, and research design. PI maintains other commitments while dedicating substantial hours to TELOS (consistent with 1000+ hours already invested).
+
+• **$30,000 (20%) Infrastructure**: Cloud hosting, compute resources, model API access (OpenAI, Anthropic, Mistral, open-source deployment), and telemetry system expansion for federation-layer protocols across multiple providers.
+
+• **$25,000 (17%) Institutional Partnerships**: IRB consultation, legal coordination for federated data-sharing agreements, travel for partnership development, and onboarding support for 6–8 collaborating institutions.
+
+• **$15,000 (10%) Audit Preparation**: Independent code review, security assessment of federation protocols, reproducibility documentation, and verification infrastructure ensuring TELOS SDK and PoConRegistry meet research-grade standards.
+
+This allocation scales TELOS from functioning prototype to validated research infrastructure. Every dollar directly advances institutional readiness, federation capacity, and independent auditability.
+
+⸻
+
+## Why Emergent Ventures
+
+Emergent Ventures consistently backs projects that build high-leverage infrastructure before markets recognize the need. TELOS fits that pattern: the system works today, but transforming it into validated research infrastructure requires institutional partners and rigorous comparative testing.
+
+TELOS addresses documented governance erosion (20-40% degradation) in a market where compliance frameworks already mandate solutions (EU AI Act Article 72). This funding scales operational infrastructure into validated, multi-institutional research platform. The investment is proportionate to opportunity: establishing measurement primitives for what will become essential regulatory infrastructure across trillion-dollar AI deployment markets.
+
+We’re not asking you to bet on whether our mathematical method is optimal. We’re asking you to back the creation of reproducible scientific infrastructure for testing what works—turning AI governance from assertion into evidence-based practice.
+
+TELOS makes oversight measurable, validation reproducible, and governance itself scientifically verifiable.
+
+

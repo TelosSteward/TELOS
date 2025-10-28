@@ -1,0 +1,564 @@
+## “””
+TELOS Exception Hierarchy
+
+Comprehensive error handling framework with clear exception types,
+recovery strategies, and user-friendly error messages.
+
+Design Principles:
+
+- Fail fast with clear error messages
+- Provide actionable recovery suggestions
+- Log context for debugging
+- Preserve stack traces
+- Enable graceful degradation where possible
+  “””
+
+from typing import Optional, Dict, Any
+import traceback
+import logging
+
+logger = logging.getLogger(**name**)
+
+# ============================================================================
+
+# Base Exception
+
+# ============================================================================
+
+class TELOSError(Exception):
+“””
+Base exception for all TELOS errors.
+
+```
+All TELOS exceptions inherit from this to enable:
+- Unified exception handling
+- Consistent error formatting
+- Centralized logging
+"""
+
+def __init__(
+    self,
+    message: str,
+    recovery_suggestion: Optional[str] = None,
+    context: Optional[Dict[str, Any]] = None,
+    original_error: Optional[Exception] = None
+):
+    self.message = message
+    self.recovery_suggestion = recovery_suggestion
+    self.context = context or {}
+    self.original_error = original_error
+    
+    super().__init__(self.formatted_message())
+    
+    # Log automatically
+    logger.error(
+        f"{self.__class__.__name__}: {message}",
+        extra={
+            'context': context,
+            'recovery': recovery_suggestion,
+            'original': str(original_error) if original_error else None
+        }
+    )
+
+def formatted_message(self) -> str:
+    """Generate user-friendly formatted error message."""
+    lines = [f"❌ {self.message}"]
+    
+    if self.context:
+        lines.append(f"\n📋 Context:")
+        for key, value in self.context.items():
+            lines.append(f"   • {key}: {value}")
+    
+    if self.recovery_suggestion:
+        lines.append(f"\n💡 Suggestion: {self.recovery_suggestion}")
+    
+    if self.original_error:
+        lines.append(f"\n🔍 Original error: {type(self.original_error).__name__}: {self.original_error}")
+    
+    return "\n".join(lines)
+```
+
+# ============================================================================
+
+# Configuration Errors
+
+# ============================================================================
+
+class ConfigurationError(TELOSError):
+“”“Raised when configuration is invalid or missing.”””
+pass
+
+class MissingConfigError(ConfigurationError):
+“”“Required configuration parameter is missing.”””
+
+```
+def __init__(self, param_name: str, config_file: str = "config.json"):
+    super().__init__(
+        message=f"Required configuration parameter '{param_name}' is missing",
+        recovery_suggestion=f"Add '{param_name}' to {config_file}",
+        context={'parameter': param_name, 'config_file': config_file}
+    )
+```
+
+class InvalidConfigError(ConfigurationError):
+“”“Configuration parameter has invalid value.”””
+
+```
+def __init__(self, param_name: str, value: Any, expected: str):
+    super().__init__(
+        message=f"Invalid value for '{param_name}': {value}",
+        recovery_suggestion=f"Expected {expected}",
+        context={'parameter': param_name, 'value': value, 'expected': expected}
+    )
+```
+
+# ============================================================================
+
+# API Errors
+
+# ============================================================================
+
+class APIError(TELOSError):
+“”“Base class for all API-related errors.”””
+pass
+
+class MissingAPIKeyError(APIError):
+“”“API key is not set.”””
+
+```
+def __init__(self, api_name: str = "Mistral"):
+    super().__init__(
+        message=f"{api_name} API key is not set",
+        recovery_suggestion=f"Set {api_name.upper()}_API_KEY environment variable:\n   export {api_name.upper()}_API_KEY='your_key_here'",
+        context={'api': api_name}
+    )
+```
+
+class APIConnectionError(APIError):
+“”“Failed to connect to API.”””
+
+```
+def __init__(self, api_name: str, original_error: Exception):
+    super().__init__(
+        message=f"Failed to connect to {api_name} API",
+        recovery_suggestion="Check internet connection and API status",
+        context={'api': api_name},
+        original_error=original_error
+    )
+```
+
+class APIRateLimitError(APIError):
+“”“API rate limit exceeded.”””
+
+```
+def __init__(self, api_name: str, retry_after: Optional[int] = None):
+    suggestion = f"Wait {retry_after} seconds before retrying" if retry_after else "Reduce request rate"
+    super().__init__(
+        message=f"{api_name} API rate limit exceeded",
+        recovery_suggestion=suggestion,
+        context={'api': api_name, 'retry_after': retry_after}
+    )
+```
+
+class APIResponseError(APIError):
+“”“API returned unexpected or invalid response.”””
+
+```
+def __init__(self, api_name: str, status_code: Optional[int] = None, response_text: Optional[str] = None):
+    super().__init__(
+        message=f"{api_name} API returned error",
+        recovery_suggestion="Check API documentation or contact support",
+        context={
+            'api': api_name,
+            'status_code': status_code,
+            'response': response_text[:200] if response_text else None
+        }
+    )
+```
+
+# ============================================================================
+
+# Mathematical Errors
+
+# ============================================================================
+
+class MathematicalError(TELOSError):
+“”“Base class for mathematical computation errors.”””
+pass
+
+class InvalidVectorError(MathematicalError):
+“”“Vector has invalid dimensions or values.”””
+
+```
+def __init__(self, vector_name: str, expected_dim: Optional[int] = None, actual_dim: Optional[int] = None):
+    super().__init__(
+        message=f"Invalid vector: {vector_name}",
+        recovery_suggestion="Verify embedding provider is working correctly",
+        context={
+            'vector': vector_name,
+            'expected_dimension': expected_dim,
+            'actual_dimension': actual_dim
+        }
+    )
+```
+
+class NumericalInstabilityError(MathematicalError):
+“”“Numerical computation became unstable.”””
+
+```
+def __init__(self, operation: str, value: Any):
+    super().__init__(
+        message=f"Numerical instability in {operation}",
+        recovery_suggestion="Check input values and try adjusting tolerance parameters",
+        context={'operation': operation, 'problematic_value': value}
+    )
+```
+
+class AttractorConstructionError(MathematicalError):
+“”“Failed to construct primacy attractor.”””
+
+```
+def __init__(self, reason: str):
+    super().__init__(
+        message=f"Failed to construct primacy attractor: {reason}",
+        recovery_suggestion="Verify purpose, scope, and boundaries are not empty",
+        context={'reason': reason}
+    )
+```
+
+# ============================================================================
+
+# Session Errors
+
+# ============================================================================
+
+class SessionError(TELOSError):
+“”“Base class for session management errors.”””
+pass
+
+class SessionNotStartedError(SessionError):
+“”“Operation requires active session.”””
+
+```
+def __init__(self, operation: str):
+    super().__init__(
+        message=f"Cannot {operation}: session not started",
+        recovery_suggestion="Call start_session() before processing turns",
+        context={'operation': operation}
+    )
+```
+
+class SessionAlreadyActiveError(SessionError):
+“”“Attempted to start session when one is already active.”””
+
+```
+def __init__(self, session_id: str):
+    super().__init__(
+        message="Session already active",
+        recovery_suggestion="Call end_session() before starting new session",
+        context={'active_session_id': session_id}
+    )
+```
+
+# ============================================================================
+
+# Validation Errors
+
+# ============================================================================
+
+class ValidationError(TELOSError):
+“”“Base class for validation errors.”””
+pass
+
+class TestConversationError(ValidationError):
+“”“Test conversation data is invalid.”””
+
+```
+def __init__(self, file_path: str, reason: str):
+    super().__init__(
+        message=f"Invalid test conversation: {reason}",
+        recovery_suggestion="Verify JSON format and conversation structure",
+        context={'file': file_path, 'reason': reason}
+    )
+```
+
+class HypothesisTestError(ValidationError):
+“”“Hypothesis test could not be executed.”””
+
+```
+def __init__(self, hypothesis: str, reason: str):
+    super().__init__(
+        message=f"Failed to test {hypothesis}: {reason}",
+        recovery_suggestion="Check that all baseline conditions executed successfully",
+        context={'hypothesis': hypothesis, 'reason': reason}
+    )
+```
+
+# ============================================================================
+
+# I/O Errors
+
+# ============================================================================
+
+class IOError(TELOSError):
+“”“Base class for input/output errors.”””
+pass
+
+class FileNotFoundError(IOError):
+“”“Required file does not exist.”””
+
+```
+def __init__(self, file_path: str, file_type: str = "file"):
+    super().__init__(
+        message=f"Required {file_type} not found: {file_path}",
+        recovery_suggestion=f"Verify {file_type} exists at specified path",
+        context={'file': file_path, 'type': file_type}
+    )
+```
+
+class OutputDirectoryError(IOError):
+“”“Cannot write to output directory.”””
+
+```
+def __init__(self, directory: str, original_error: Exception):
+    super().__init__(
+        message=f"Cannot write to output directory: {directory}",
+        recovery_suggestion="Check directory permissions or create it manually:\n   mkdir -p " + directory,
+        context={'directory': directory},
+        original_error=original_error
+    )
+```
+
+class TelemetryExportError(IOError):
+“”“Failed to export telemetry data.”””
+
+```
+def __init__(self, format: str, reason: str):
+    super().__init__(
+        message=f"Failed to export telemetry as {format}: {reason}",
+        recovery_suggestion="Check disk space and write permissions",
+        context={'format': format, 'reason': reason}
+    )
+```
+
+# ============================================================================
+
+# Embedding Errors
+
+# ============================================================================
+
+class EmbeddingError(TELOSError):
+“”“Base class for embedding-related errors.”””
+pass
+
+class ModelLoadError(EmbeddingError):
+“”“Failed to load embedding model.”””
+
+```
+def __init__(self, model_name: str, original_error: Exception):
+    super().__init__(
+        message=f"Failed to load embedding model: {model_name}",
+        recovery_suggestion="Check internet connection (first run downloads ~80MB) or verify model name",
+        context={'model': model_name},
+        original_error=original_error
+    )
+```
+
+class EncodingError(EmbeddingError):
+“”“Failed to encode text to embedding.”””
+
+```
+def __init__(self, text_preview: str, original_error: Exception):
+    super().__init__(
+        message="Failed to encode text to embedding",
+        recovery_suggestion="Verify text is valid UTF-8 and model is loaded",
+        context={'text_preview': text_preview[:100]},
+        original_error=original_error
+    )
+```
+
+# ============================================================================
+
+# Intervention Errors
+
+# ============================================================================
+
+class InterventionError(TELOSError):
+“”“Base class for intervention-related errors.”””
+pass
+
+class RegenerationFailedError(InterventionError):
+“”“LLM regeneration failed.”””
+
+```
+def __init__(self, reason: str, fallback_used: bool = False):
+    super().__init__(
+        message=f"Regeneration failed: {reason}",
+        recovery_suggestion="Using fallback reminder instead" if fallback_used else "Check LLM client connection",
+        context={'reason': reason, 'fallback_used': fallback_used}
+    )
+```
+
+class InterventionBudgetExceededError(InterventionError):
+“”“Maximum interventions per session exceeded.”””
+
+```
+def __init__(self, max_interventions: int, current_count: int):
+    super().__init__(
+        message=f"Intervention budget exceeded ({current_count}/{max_interventions})",
+        recovery_suggestion="Adjust constraint_tolerance to reduce interventions or increase max_regenerations",
+        context={'max': max_interventions, 'current': current_count}
+    )
+```
+
+# ============================================================================
+
+# Utility Functions
+
+# ============================================================================
+
+def handle_error_gracefully(func):
+“””
+Decorator for graceful error handling with logging.
+
+```
+Usage:
+    @handle_error_gracefully
+    def my_function():
+        # code that might fail
+"""
+def wrapper(*args, **kwargs):
+    try:
+        return func(*args, **kwargs)
+    except TELOSError:
+        # Re-raise TELOS errors (already logged)
+        raise
+    except Exception as e:
+        # Wrap unexpected errors
+        logger.exception(f"Unexpected error in {func.__name__}")
+        raise TELOSError(
+            message=f"Unexpected error in {func.__name__}",
+            recovery_suggestion="Check logs for details or report this issue",
+            context={'function': func.__name__},
+            original_error=e
+        )
+return wrapper
+```
+
+def validate_api_key(api_name: str, env_var: str) -> str:
+“””
+Validate API key is set, raise clear error if not.
+
+```
+Args:
+    api_name: Human-readable API name (e.g., "Mistral")
+    env_var: Environment variable name (e.g., "MISTRAL_API_KEY")
+
+Returns:
+    API key value
+
+Raises:
+    MissingAPIKeyError: If key is not set
+"""
+import os
+key = os.getenv(env_var)
+if not key:
+    raise MissingAPIKeyError(api_name)
+return key
+```
+
+def ensure_output_directory(directory: str) -> None:
+“””
+Ensure output directory exists and is writable.
+
+```
+Args:
+    directory: Path to output directory
+
+Raises:
+    OutputDirectoryError: If directory cannot be created or is not writable
+"""
+from pathlib import Path
+try:
+    Path(directory).mkdir(parents=True, exist_ok=True)
+except Exception as e:
+    raise OutputDirectoryError(directory, e)
+```
+
+# ============================================================================
+
+# Error Context Manager
+
+# ============================================================================
+
+class error_context:
+“””
+Context manager for enriching errors with additional context.
+
+```
+Usage:
+    with error_context("processing turn 5", turn=5, user="alice"):
+        # code that might fail
+"""
+
+def __init__(self, operation: str, **context):
+    self.operation = operation
+    self.context = context
+
+def __enter__(self):
+    return self
+
+def __exit__(self, exc_type, exc_val, exc_tb):
+    if exc_type and not issubclass(exc_type, TELOSError):
+        # Wrap non-TELOS errors with context
+        raise TELOSError(
+            message=f"Error during {self.operation}",
+            recovery_suggestion="Check logs for details",
+            context=self.context,
+            original_error=exc_val
+        ) from exc_val
+    return False  # Don't suppress TELOS errors
+```
+
+# ============================================================================
+
+# Logging Setup
+
+# ============================================================================
+
+def setup_error_logging(log_file: Optional[str] = None, level: int = logging.ERROR):
+“””
+Configure error logging for TELOS.
+
+```
+Args:
+    log_file: Optional file path for log output
+    level: Logging level (default: ERROR)
+"""
+import logging
+
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+# Console handler
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
+console_handler.setLevel(level)
+
+# File handler (if specified)
+handlers = [console_handler]
+if log_file:
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setFormatter(formatter)
+    file_handler.setLevel(logging.DEBUG)  # File gets everything
+    handlers.append(file_handler)
+
+# Configure root logger
+logging.basicConfig(
+    level=logging.DEBUG,
+    handlers=handlers
+)
+
+logger.info(f"Error logging initialized (level: {logging.getLevelName(level)})")
+```

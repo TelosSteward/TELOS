@@ -1,0 +1,27 @@
+TELOS GRANT APPLICATION  9/30/25
+
+Emergent Ventures
+Mercatus Center
+George Mason University
+
+Dear Emergent Ventures Team,
+
+I’ve spent nearly three decades as a teacher and program builder, and later stepped into decentralized finance as a project owner. Both experiences taught me the same lesson: rules on paper don’t mean much if they don’t hold in practice. In the educational system, I watched well-intended policies break down once they met the realities of daily classroom practice. In DeFi, trust depended not on declarations but on whether accountability could be measured. When I began studying how large language models handle attention, I saw the same gap: governance can be declared, but persistence isn’t guaranteed once systems are in use.
+
+The problem is that governance today exists mostly on paper. Constitutions, safety guidelines, and filters declare values, but persistence collapses over time. Studies show alignment fidelity degrades by 20–40% across multi-turn interactions. Users feel this as constant re-prompting and cognitive burden, enterprises face compliance exposure, and regulators are left with paperwork instead of evidence.
+
+TELOS makes oversight testable through mathematical mechanics as mitigation. Purpose and privacy boundaries are encoded as mathematical attractors — session-level invariants that persist across interactions. Drift is tracked through fidelity, corrective forces, and stability dynamics; interventions apply mathematics mechanically to restore adherence. The result is governance reframed as a measurable, accountable process.
+
+Our stance is validation-first. Comparative experiments will test multiple session types: ungoverned baselines, reminder-based strategies, and governed sessions using TELOS interventions. By holding inputs constant and varying governance modes, we can determine whether mathematical mitigation measurably improves persistence and reduces user burden.
+
+Success means showing that governance constraints hold more reliably across time and that users experience less cognitive overhead in keeping systems on track. The details of measurement will be finalized during the research process, ensuring flexibility while maintaining rigor.
+
+We are requesting $80,000 to drive this validation forward. In twelve months, we will:
+• Release the SDK with interventions and telemetry (Month 3)
+• Deliver an IRB-ready package and launch pilots with 3–5 universities (Month 6)
+• Produce preliminary validation results and federated delta sharing (Month 9)
+• Build capacity to onboard up to 6–8 institutions contributing reproducible evidence (Month 12)
+
+This work advances governance from assertion to evidence. TELOS transforms oversight into something that can be measured, tested, and improved.
+
+Emergent Ventures has a track record of backing bold and ambitious projects that move fields forward. We believe TELOS belongs in the same company and class of transformative projects Emergent Ventures has supported — bold research that creates high-leverage infrastructure for the future of AI governance.

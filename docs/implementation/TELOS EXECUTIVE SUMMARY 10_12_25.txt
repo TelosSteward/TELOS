@@ -1,0 +1,93 @@
+# Executive Summary
+
+## TELOS: Mathematical Foundations for Runtime AI Governance
+
+**Observable Demonstrable Due Diligence for Multi-Turn AI Systems**
+
+-----
+
+## The Problem
+
+Modern language models exhibit predictable governance erosion over time. Empirical studies demonstrate 20–40% degradation in adherence to declared purposes and boundaries during extended interactions (Laban et al., 2025; Liu et al., 2024). This “persistence problem” undermines compliance, safety, and institutional trust.
+
+Governance safeguards such as Constitutional AI (Bai et al., 2022) and provider-level safety frameworks establish essential design-time protections—they prevent harmful content and define universal behavioral boundaries.
+
+However, these static constraints cannot ensure persistence within evolving conversations. Once a session begins, the system must not only remain safe but remain purpose-aligned—preserving declared objectives, scope, and privacy boundaries across dozens or hundreds of conversational turns. Design-time constitutions are necessary but insufficient for this form of session-level governance. What is required is a runtime mechanism that can measure, correct, and verify alignment persistence continuously as interaction unfolds.
+
+-----
+
+## The TELOS Framework: From Mathematical Theory to Operational Governance
+
+TELOS (Telically Entrained Linguistic Operating Substrate) introduces a mathematical framework for runtime AI governance, translating mature scientific disciplines into a unified operational system. This framework did not arise from abstraction—it was constructed by adapting established mathematical formalisms that already govern dynamic stability and feedback in complex systems:
+
+- **Control theory** contributes proportional correction dynamics that determine how and when to apply interventions when drift is detected.
+- **Dynamical systems** supply attractor and basin models that define measurable regions of stability—mathematical representations of “staying aligned.”
+- **Information theory** provides similarity and divergence metrics that quantify fidelity—continuous evidence of how closely system outputs adhere to declared purpose.
+
+By orchestrating these proven disciplines, TELOS reframes governance as a measurable dynamic process rather than a declarative rule set. Human-declared intent becomes a mathematically bounded state, and drift becomes a quantifiable signal that can trigger proportional correction. Governance moves from principle to process—from intention to instrumentation.
+
+-----
+
+## Extrinsic Operation at the Basin Layer
+
+TELOS operates entirely at the orchestration layer, between user interface and model API. It requires no modification of model internals, ensuring neutrality and compatibility across both open-source and proprietary systems. This placement allows TELOS to monitor, interpret, and intervene in real time—late enough to measure actual behavior, early enough to correct before user exposure.
+
+At session start, the system encodes declared purpose, scope, and privacy boundaries as a Primacy Attractor—a bounded region in embedding space representing the desired conversational trajectory. Each model response is compared against this attractor to compute:
+
+- **Fidelity** — measured adherence to declared purpose
+- **Gravity** — corrective force proportional to deviation
+- **Orbit** — stability trends indicating convergence or divergence
+
+When drift occurs, Runtime Stewards apply proportionate interventions—reminders, regeneration, or escalation—and record the result as telemetry. This creates a verifiable audit trail of governance behavior: what boundaries were declared, when they were challenged, how they were corrected, and whether adherence was restored.
+
+-----
+
+## Validation Framework and Scientific Integrity
+
+TELOS is operational but unvalidated by design. Its purpose is empirical: to determine whether runtime mathematical mitigation reduces drift more effectively than existing baselines (stateless, prompt-only, or cadence-reminder approaches).
+
+All studies are:
+
+- IRB-approved and pre-registered, ensuring ethical and methodological rigor
+- Conducted via federated protocols that protect institutional data sovereignty
+- Published regardless of outcome, maintaining transparency and reproducibility
+
+This transforms governance from assertion to testable science: mechanisms measured, outcomes compared, results openly reported.
+
+-----
+
+## Regulatory Urgency and Standards Gap
+
+The EU AI Act (Article 72) requires providers of high-risk AI systems to implement post-market monitoring systems by August 2026 (European Union, 2024, Article 72), with the European Commission mandated to provide a template for these systems by February 2026 (ibid.). Currently, no standardized technical framework exists for continuous governance measurement, creating a critical implementation gap.
+
+Without quantitative measurement standards, post-market monitoring risks fragmenting into incompatible institution-specific approaches—creating compliance burden without enabling cross-provider comparison or regulatory enforcement. Together, these frameworks define continuous monitoring and measurement as the cornerstone of high-risk AI compliance; TELOS is designed to empirically test whether such monitoring can be implemented as a mathematically verifiable runtime process.
+
+TELOS addresses this gap by providing:
+
+- **Measurement primitives** that define *what* to track (fidelity, stability, intervention effectiveness)
+- **Telemetry standards** that specify *how* to document evidence (turn-by-turn audit trails, privacy-preserved deltas)
+- **Validation protocols** that establish *how to test* whether monitoring works (comparative studies, reproducibility assessment)
+- **Reference implementation** demonstrating technical feasibility through open-source architecture
+
+Whether TELOS validation demonstrates effectiveness or identifies limitations, both outcomes inform regulatory science: success establishes a viable measurement standard; identified limitations clarify technical boundaries, preventing field-wide investment in ineffective approaches.
+
+The February 2026 Commission template deadline creates urgency. Multi-institutional validation completing by mid-2026 could provide the technical foundation the regulatory framework currently lacks—establishing standardized, quantitative, reproducible approaches to post-market monitoring before the compliance vacuum fills with fragmented, incomparable proprietary solutions.
+
+-----
+
+## Governance and Institutional Architecture
+
+Intellectual property is held by Origin Industries PBC, whose charter mandates public-benefit alignment and transparent governance. TELOS Labs LLC serves as the operational research entity conducting validation and implementation. A Proof-of-Contribution Registry (PoConRegistry) cryptographically records institutional participation—creating verifiable, privacy-preserving attestations of research activity. As the federation matures, governance authority transitions from founding entities to participating institutions, ensuring that those who validate the framework ultimately govern it.
+
+-----
+
+## Institutional and Regulatory Relevance
+
+- **For researchers**: Establishes governance persistence as a reproducible, mathematically grounded scientific domain.
+- **For enterprises**: Produces continuous, auditable telemetry suitable for compliance and post-market monitoring.
+- **For regulators**: Provides real-time, quantitative evidence of governance in operation rather than post-hoc documentation.
+- **For society**: Ensures that AI behavior remains faithful to human-declared purpose through measurable oversight.
+
+-----
+
+TELOS does not alter models—it governs their operation. It complements Constitutional AI’s universal safeguards with session-level mathematics that sustain governance in real time. By translating stability theory, feedback dynamics, and fidelity measurement into runtime oversight, TELOS achieves what compliance frameworks now require: **observable demonstrable due diligence**—governance that can be measured, verified, and trusted. In doing so, TELOS reframes AI governance as an empirical discipline: the science of ensuring that declared human purpose remains measurable, correctable, and persistent.

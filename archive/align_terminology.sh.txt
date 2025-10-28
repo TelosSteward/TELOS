@@ -1,0 +1,154 @@
+#!/usr/bin/env bash
+# TELOS Terminology Alignment Script
+# Aligns all code with ClaudeWhitepaper10_18.txt canonical terminology
+# Per Section 5.3: "Proportional Controller" not "Intervention Controller"
+
+set -e  # Exit on error
+
+echo "==========================================="
+echo "TELOS TERMINOLOGY ALIGNMENT SCRIPT"
+echo "Per Whitepaper Section 5.3"
+echo "==========================================="
+echo ""
+
+# Colors for output
+RED='\033[0.31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Check we're in the right directory
+if [ ! -d "telos_purpose" ]; then
+    echo -e "${RED}Error: telos_purpose directory not found${NC}"
+    echo "Please run this script from the project root directory"
+    exit 1
+fi
+
+echo -e "${YELLOW}Step 1: Creating backup${NC}"
+backup_dir="backup_$(date +%Y%m%d_%H%M%S)"
+mkdir -p "$backup_dir"
+cp -r telos_purpose "$backup_dir/"
+echo -e "${GREEN}✓ Backup created in $backup_dir${NC}"
+echo ""
+
+echo -e "${YELLOW}Step 2: Renaming file${NC}"
+if [ -f "telos_purpose/core/intervention_controller.py" ]; then
+    mv telos_purpose/core/intervention_controller.py \
+       telos_purpose/core/proportional_controller.py
+    echo -e "${GREEN}✓ Renamed intervention_controller.py → proportional_controller.py${NC}"
+else
+    echo -e "${YELLOW}⚠ File already renamed or not found${NC}"
+fi
+echo ""
+
+echo -e "${YELLOW}Step 3: Updating imports in Python files${NC}"
+# Find all Python files and update imports
+find telos_purpose -name "*.py" -type f | while read file; do
+    if grep -q "from.*intervention_controller import" "$file" || \
+       grep -q "import.*intervention_controller" "$file"; then
+        echo "  Updating: $file"
+        
+        # Update import statements
+        sed -i.bak 's/from \.intervention_controller import/from .proportional_controller import/g' "$file"
+        sed -i.bak 's/from \.\.core\.intervention_controller import/from ..core.proportional_controller import/g' "$file"
+        sed -i.bak 's/from telos_purpose\.core\.intervention_controller import/from telos_purpose.core.proportional_controller import/g' "$file"
+        
+        # Update class name
+        sed -i.bak 's/MathematicalInterventionController/ProportionalController/g' "$file"
+        
+        # Update variable names
+        sed -i.bak 's/self\.intervention_controller/self.proportional_controller/g' "$file"
+        
+        # Remove backup files
+        rm "${file}.bak"
+    fi
+done
+echo -e "${GREEN}✓ Imports updated${NC}"
+echo ""
+
+echo -e "${YELLOW}Step 4: Updating documentation files${NC}"
+doc_files=(
+    "docs/TELOS_Architecture_and_Development_Roadmap.md"
+    "docs/architecture_guide.md"
+    "DEPLOYMENT_INSTRUCTIONS.md"
+    "DEVELOPER_CHECKLIST.md"
+    "README.md"
+)
+
+for doc in "${doc_files[@]}"; do
+    if [ -f "$doc" ]; then
+        echo "  Updating: $doc"
+        
+        # Update references to intervention controller
+        sed -i.bak 's/Intervention Controller/Proportional Controller/g' "$doc"
+        sed -i.bak 's/intervention_controller\.py/proportional_controller.py/g' "$doc"
+        sed -i.bak 's/intervention controller/Proportional Controller/g' "$doc"
+        
+        # Remove backup
+        rm "${doc}.bak" 2>/dev/null || true
+    else
+        echo "  ${YELLOW}⚠ Not found: $doc${NC}"
+    fi
+done
+echo -e "${GREEN}✓ Documentation updated${NC}"
+echo ""
+
+echo -e "${YELLOW}Step 5: Verification${NC}"
+echo "Checking for remaining old terminology..."
+
+# Check for old terminology
+old_term_count=$(grep -r "MathematicalInterventionController" telos_purpose --include="*.py" | wc -l)
+old_file_refs=$(grep -r "intervention_controller\.py" . --include="*.py" --include="*.md" | grep -v "backup_" | wc -l)
+
+if [ "$old_term_count" -gt 0 ] || [ "$old_file_refs" -gt 0 ]; then
+    echo -e "${RED}✗ Found remaining old terminology:${NC}"
+    echo "  MathematicalInterventionController references: $old_term_count"
+    echo "  intervention_controller.py references: $old_file_refs"
+    echo ""
+    echo "Run these commands to see details:"
+    echo "  grep -rn 'MathematicalInterventionController' telos_purpose"
+    echo "  grep -rn 'intervention_controller.py' ."
+else
+    echo -e "${GREEN}✓ No old terminology found${NC}"
+fi
+echo ""
+
+# Check for new terminology
+new_term_count=$(grep -r "ProportionalController" telos_purpose --include="*.py" | wc -l)
+new_file_refs=$(grep -r "proportional_controller\.py" . --include="*.py" --include="*.md" | grep -v "backup_" | wc -l)
+
+echo "New terminology found:"
+echo "  ProportionalController references: $new_term_count"
+echo "  proportional_controller.py references: $new_file_refs"
+echo ""
+
+echo -e "${YELLOW}Step 6: Testing imports${NC}"
+if python3 -c "from telos_purpose.core.proportional_controller import ProportionalController; print('✓ Import successful')" 2>/dev/null; then
+    echo -e "${GREEN}✓ ProportionalController imports correctly${NC}"
+else
+    echo -e "${RED}✗ Import test failed${NC}"
+    echo "You may need to fix import paths manually"
+fi
+echo ""
+
+echo "==========================================="
+echo -e "${GREEN}TERMINOLOGY ALIGNMENT COMPLETE${NC}"
+echo "==========================================="
+echo ""
+echo "Summary:"
+echo "  ✓ File renamed"
+echo "  ✓ Imports updated"
+echo "  ✓ Class names updated"
+echo "  ✓ Documentation updated"
+echo "  ✓ Backup created in: $backup_dir"
+echo ""
+echo "Next steps:"
+echo "  1. Review changes: git diff"
+echo "  2. Run tests: python -m telos_purpose.validation.run_internal_test0"
+echo "  3. If successful, commit: git commit -am 'Align with whitepaper terminology'"
+echo "  4. If issues occur, restore backup: cp -r $backup_dir/telos_purpose ."
+echo ""
+echo "To verify alignment with whitepaper:"
+echo "  grep -r 'Proportional Controller' docs/"
+echo "  grep -r 'ProportionalController' telos_purpose/"
+echo ""

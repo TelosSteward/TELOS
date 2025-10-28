@@ -1,0 +1,107 @@
+“””
+Embedding providers for TELOS.
+
+Provides two implementations:
+
+1. DeterministicEmbeddingProvider - Fast, deterministic (for testing)
+1. SentenceTransformerProvider - Real semantic embeddings (for production)
+   “””
+
+from **future** import annotations
+import hashlib
+import numpy as np
+from typing import Optional
+
+class DeterministicEmbeddingProvider:
+“””
+Deterministic embedding provider for testing.
+
+```
+Uses hash-based embeddings that are:
+- Deterministic (same text → same embedding)
+- Fast (no model loading)
+- Suitable for unit tests and rapid iteration
+
+NOT suitable for production (no semantic meaning).
+"""
+
+def __init__(self, dimension: int = 384):
+    """
+    Args:
+        dimension: Embedding dimension
+    """
+    self.dimension = dimension
+
+def encode(self, text: str) -> np.ndarray:
+    """
+    Generate deterministic embedding from text hash.
+    
+    Args:
+        text: Input text
+        
+    Returns:
+        Embedding vector of shape (dimension,)
+    """
+    # Hash text to seed
+    text_hash = hashlib.sha256(text.encode('utf-8')).hexdigest()
+    seed = int(text_hash[:8], 16)
+    
+    # Generate deterministic random vector
+    rng = np.random.RandomState(seed)
+    embedding = rng.randn(self.dimension)
+    
+    # Normalize to unit length
+    embedding = embedding / np.linalg.norm(embedding)
+    
+    return embedding.astype(np.float32)
+```
+
+class SentenceTransformerProvider:
+“””
+Production embedding provider using sentence-transformers.
+
+```
+Uses all-MiniLM-L6-v2 model (384 dimensions):
+- Semantic embeddings
+- Good for production use
+- Requires sentence-transformers package
+"""
+
+def __init__(
+    self,
+    model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
+    device: Optional[str] = None
+):
+    """
+    Args:
+        model_name: HuggingFace model identifier
+        device: Device to use ('cuda', 'cpu', or None for auto)
+    """
+    try:
+        from sentence_transformers import SentenceTransformer
+    except ImportError:
+        raise ImportError(
+            "sentence-transformers required for SentenceTransformerProvider. "
+            "Install with: pip install sentence-transformers"
+        )
+    
+    self.model = SentenceTransformer(model_name, device=device)
+    self.dimension = self.model.get_sentence_embedding_dimension()
+
+def encode(self, text: str) -> np.ndarray:
+    """
+    Generate semantic embedding for text.
+    
+    Args:
+        text: Input text
+        
+    Returns:
+        Embedding vector of shape (dimension,)
+    """
+    embedding = self.model.encode(
+        text,
+        convert_to_numpy=True,
+        normalize_embeddings=True
+    )
+    return embedding.astype(np.float32)
+```

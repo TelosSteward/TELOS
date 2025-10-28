@@ -1,0 +1,98 @@
+"""
+TELOS Internal Test 0 Runner
+Runs one conversation under five governance modes.
+"""
+
+from telos_purpose.validation.baseline_runners import (
+    StatelessRunner, PromptOnlyRunner, CadenceReminderRunner,
+    ObservationRunner, TELOSRunner
+)
+from telos_purpose.core.embedding_provider import DeterministicEmbeddingProvider
+from telos_purpose.llm_clients.mistral_client import TelosMistralClient
+from telos_purpose.core.unified_steward import PrimacyAttractor
+from telos_purpose.validation.telemetry_utils import export_telemetry
+from pathlib import Path
+import json
+
+
+def load_conversation(path):
+    """Load test conversation from JSON."""
+    with open(path) as f:
+        data = json.load(f)
+    # Handle both formats: list of dicts or dict with 'conversation' key
+    if isinstance(data, list):
+        return [(turn["user"], turn["assistant"]) for turn in data]
+    else:
+        return [(turn["user"], turn["assistant"]) for turn in data.get("conversation", [])]
+
+
+def main():
+    # Configuration
+    conversation_path = "telos_purpose/test_conversations/test_convo_002.json"
+    output_dir = Path("validation_results/internal_test0")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Load conversation
+    conversation = load_conversation(conversation_path)
+    print(f"Loaded conversation: {len(conversation)} turns\n")
+    
+    # Initialize components
+    llm = TelosMistralClient()
+    embeddings = DeterministicEmbeddingProvider()
+    
+    # Define governance profile
+    profile = PrimacyAttractor(
+        purpose=["Explain AI governance mechanisms", "Discuss runtime oversight"],
+        scope=["AI alignment", "governance frameworks", "mathematical foundations"],
+        boundaries=["Stay technical", "No off-topic drift"],
+        constraint_tolerance=0.2,
+        privacy_level=0.8,
+        task_priority=0.9
+    )
+    
+    # Define modes
+    modes = {
+        "stateless": StatelessRunner(llm, embeddings, profile),
+        "prompt_only": PromptOnlyRunner(llm, embeddings, profile),
+        "cadence": CadenceReminderRunner(llm, embeddings, profile, reminder_cadence=3),
+        "observation": ObservationRunner(llm, embeddings, profile),
+        "telos": TELOSRunner(llm, embeddings, profile)
+    }
+    
+    # Run all modes
+    print("="*60)
+    print("INTERNAL TEST 0: 5-CONDITION VALIDATION")
+    print("="*60 + "\n")
+    
+    for mode_name, runner in modes.items():
+        print(f"▶ Running: {mode_name.upper()}")
+        
+        try:
+            result = runner.run_conversation(conversation)
+            
+            # Export telemetry
+            session_id = f"internal_test0_{mode_name}"
+            export_telemetry(result, output_dir, session_id, mode_name)
+            
+            # Print quick summary
+            final_fidelity = result["final_metrics"]["fidelity"]
+            print(f"  ✓ Final fidelity: {final_fidelity:.3f}")
+            print()
+            
+        except Exception as e:
+            print(f"  ✗ ERROR: {e}\n")
+            raise
+    
+    print("="*60)
+    print("✓ INTERNAL TEST 0 COMPLETE")
+    print("="*60)
+    print(f"\nResults saved to: {output_dir}/")
+    print("\nGenerated files:")
+    for f in sorted(output_dir.glob("*.csv")):
+        print(f"  - {f.name}")
+    for f in sorted(output_dir.glob("*.json")):
+        print(f"  - {f.name}")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,280 @@
+“””
+pap_mixin.py - Primacy Attractor Profile formation
+
+Adds dynamic attractor learning from early turns with tolerance integration.
+States: WARMUP → STABILIZE → ACTIVE → (optional) REBASE
+
+Updated for constraint_tolerance semantics (0.0 = strict, 1.0 = permissive).
+“””
+
+from **future** import annotations
+from typing import Dict, Any, List, Optional, Tuple
+import time
+import json
+import numpy as np
+
+class PAPMixin:
+“””
+Mixin for dynamic PAP formation.
+
+```
+Learns purpose/scope from early turns, locks when stable,
+instantiates attractor with default tolerances.
+"""
+
+# Configuration defaults
+PAP_WARMUP_TURNS = 5
+PAP_CONFIDENCE_THRESHOLD = 0.75
+PAP_VOLATILITY_THRESHOLD = 0.15
+PAP_STABILITY_STREAK = 2
+PAP_ALPHA_FAST = 0.30
+PAP_ALPHA_SLOW = 0.15
+
+# Default tolerance parameters for learned attractors
+PAP_DEFAULT_TOLERANCE = 0.3  # Moderate-strict governance
+PAP_DEFAULT_PRIVACY = 0.8
+PAP_DEFAULT_TASK_PRIORITY = 0.6
+
+def _pap_init(self):
+    """Initialize PAP state. Call from steward __init__."""
+    self._pap_enabled = False
+    self._pap_state = "WARMUP"
+    self._pap_turns = 0
+    self._pap_confidence = 0.0
+    self._pap_volatility = 0.0
+    self._pap_stability_streak = 0
+    
+    # Learned vectors
+    self._pap_purpose_center = None
+    self._pap_scope_center = None
+    self._pap_prev_purpose = None
+    
+    # Telemetry
+    self._pap_locked_at_turn = None
+    self._pap_lock_timestamp = None
+    self._pap_confidence_history = []
+    self._pap_volatility_history = []
+
+def pap_enable(self, mode: str = "auto"):
+    """
+    Enable PAP formation.
+    
+    Args:
+        mode: "auto" (learn then lock), "manual" (learn but don't auto-lock)
+    """
+    self._pap_enabled = True
+    self._pap_mode = mode
+    self._pap_state = "WARMUP"
+
+def pap_process_turn(self, response_text: str) -> bool:
+    """
+    Process turn for PAP learning.
+    
+    Args:
+        response_text: LLM response to learn from
+        
+    Returns:
+        True if still learning (skip governance), False if locked (apply governance)
+    """
+    if not self._pap_enabled or self._pap_state == "ACTIVE":
+        return False
+    
+    self._pap_turns += 1
+    
+    # Extract embeddings from response
+    response_embedding = self.embedding_provider.encode(response_text)
+    
+    # Update purpose center (EMA)
+    if self._pap_purpose_center is None:
+        self._pap_purpose_center = response_embedding
+        self._pap_scope_center = response_embedding  # Initially same
+    else:
+        self._pap_prev_purpose = self._pap_purpose_center.copy()
+        
+        alpha = self.PAP_ALPHA_FAST if self._pap_state == "WARMUP" else self.PAP_ALPHA_SLOW
+        self._pap_purpose_center = (
+            alpha * response_embedding + (1 - alpha) * self._pap_purpose_center
+        )
+        self._pap_scope_center = (
+            alpha * response_embedding + (1 - alpha) * self._pap_scope_center
+        )
+    
+    # Compute volatility (how much center is moving)
+    if self._pap_prev_purpose is not None:
+        delta = np.linalg.norm(self._pap_purpose_center - self._pap_prev_purpose)
+        self._pap_volatility = 0.4 * delta + 0.6 * self._pap_volatility
+    
+    # Compute confidence (increases with turns, decreases with volatility)
+    turn_factor = min(1.0, self._pap_turns / self.PAP_WARMUP_TURNS)
+    stability_factor = max(0.0, 1.0 - (self._pap_volatility / 0.5))
+    self._pap_confidence = turn_factor * stability_factor
+    
+    # Record history
+    self._pap_confidence_history.append(self._pap_confidence)
+    self._pap_volatility_history.append(self._pap_volatility)
+    
+    # Check for stability
+    if (self._pap_confidence > self.PAP_CONFIDENCE_THRESHOLD and 
+        self._pap_volatility < self.PAP_VOLATILITY_THRESHOLD):
+        self._pap_stability_streak += 1
+    else:
+        self._pap_stability_streak = 0
+    
+    # Transition logic
+    if self._pap_state == "WARMUP":
+        if self._pap_turns >= self.PAP_WARMUP_TURNS:
+            self._pap_state = "STABILIZE"
+    
+    if self._pap_state == "STABILIZE":
+        if (self._pap_stability_streak >= self.PAP_STABILITY_STREAK and 
+            self._pap_mode == "auto"):
+            self._pap_lock()
+            return False  # Start governance
+    
+    return True  # Still learning
+
+def _pap_lock(self):
+    """Lock PAP and instantiate learned attractor with default tolerances."""
+    from .primacy_math import PrimacyAttractorMath
+    from .intervention_controller import MathematicalInterventionController
+    
+    self._pap_state = "ACTIVE"
+    self._pap_locked_at_turn = self._pap_turns
+    self._pap_lock_timestamp = time.time()
+    
+    # Instantiate attractor from learned centers with foundations-aligned math
+    self.attractor_math = PrimacyAttractorMath(
+        purpose_vector=self._pap_purpose_center,
+        scope_vector=self._pap_scope_center,
+        privacy_level=self.PAP_DEFAULT_PRIVACY,
+        constraint_tolerance=self.PAP_DEFAULT_TOLERANCE,  # Updated parameter name
+        task_priority=self.PAP_DEFAULT_TASK_PRIORITY
+    )
+    
+    # Rebuild intervention controller
+    self.intervention_controller = MathematicalInterventionController(
+        attractor=self.attractor_math,
+        llm_client=self.llm_client,
+        embedding_provider=self.embedding_provider,
+        enable_interventions=self.enable_interventions
+    )
+    
+    # Initialize fidelity calculation from lock point forward
+    self.session_states = []
+    
+    if self.dev_commentary_mode == "verbose":
+        print(f"\n[PAP] Locked after {self._pap_turns} turns")
+        print(f"[PAP] Confidence: {self._pap_confidence:.3f}")
+        print(f"[PAP] Volatility: {self._pap_volatility:.3f}")
+        print(f"[PAP] Default tolerance: {self.PAP_DEFAULT_TOLERANCE}")
+
+def pap_force_lock(self):
+    """Manually force PAP lock (for manual mode)."""
+    if self._pap_state == "ACTIVE":
+        return
+    if self._pap_purpose_center is None:
+        raise RuntimeError("Cannot lock PAP before any turns observed")
+    self._pap_lock()
+
+def pap_adjust_tolerance(self, new_tolerance: float):
+    """
+    Adjust constraint tolerance after PAP locks.
+    
+    Args:
+        new_tolerance: New tolerance value (0.0-1.0)
+            0.0 = strict (zero tolerance for drift)
+            1.0 = permissive (high tolerance for drift)
+    """
+    if self._pap_state != "ACTIVE":
+        raise RuntimeError("Can only adjust tolerance after PAP locks")
+    
+    if not 0.0 <= new_tolerance <= 1.0:
+        raise ValueError(f"Tolerance must be in [0.0, 1.0], got {new_tolerance}")
+    
+    from .primacy_math import PrimacyAttractorMath
+    from .intervention_controller import MathematicalInterventionController
+    
+    # Rebuild attractor with new tolerance (uses foundations-aligned formulas)
+    old_tolerance = self.attractor_math.constraint_tolerance
+    
+    self.attractor_math = PrimacyAttractorMath(
+        purpose_vector=self._pap_purpose_center,
+        scope_vector=self._pap_scope_center,
+        privacy_level=self.attractor_math.privacy_level,
+        constraint_tolerance=new_tolerance,  # Updated parameter
+        task_priority=self.attractor_math.task_priority
+    )
+    
+    # Rebuild controller with updated attractor
+    self.intervention_controller = MathematicalInterventionController(
+        attractor=self.attractor_math,
+        llm_client=self.llm_client,
+        embedding_provider=self.embedding_provider,
+        enable_interventions=self.enable_interventions
+    )
+    
+    if self.dev_commentary_mode == "verbose":
+        print(f"\n[PAP] Tolerance adjusted: {old_tolerance:.2f} → {new_tolerance:.2f}")
+        print(f"[PAP] Basin radius: {self.attractor_math.basin_radius:.3f}")
+
+def pap_rebase(self, reason: str = "explicit"):
+    """
+    Rebase PAP (restart learning).
+    
+    Args:
+        reason: Reason for rebase (for telemetry)
+    """
+    self._pap_state = "WARMUP"
+    self._pap_turns = 0
+    self._pap_confidence = 0.0
+    self._pap_volatility = 0.0
+    self._pap_stability_streak = 0
+    self._pap_purpose_center = None
+    self._pap_scope_center = None
+    self._pap_prev_purpose = None
+    self._pap_confidence_history = []
+    self._pap_volatility_history = []
+    
+    if self.dev_commentary_mode == "verbose":
+        print(f"\n[PAP] Rebased: {reason}")
+
+def pap_status(self) -> Dict[str, Any]:
+    """
+    Get PAP status for telemetry/dashboard.
+    
+    Returns:
+        Dict with state, confidence, volatility, locked status
+    """
+    status = {
+        "enabled": self._pap_enabled,
+        "state": self._pap_state,
+        "turns_observed": self._pap_turns,
+        "confidence": round(self._pap_confidence, 3),
+        "volatility": round(self._pap_volatility, 3),
+        "stability_streak": self._pap_stability_streak,
+        "locked": self._pap_state == "ACTIVE",
+        "locked_at_turn": self._pap_locked_at_turn,
+        "confidence_history": self._pap_confidence_history[-20:],
+        "volatility_history": self._pap_volatility_history[-20:]
+    }
+    
+    if self._pap_state == "ACTIVE":
+        status["current_tolerance"] = self.attractor_math.constraint_tolerance
+        status["basin_radius"] = self.attractor_math.basin_radius
+    
+    return status
+
+def pap_summary(self) -> str:
+    """Generate human-readable PAP summary."""
+    if not self._pap_enabled:
+        return "PAP not enabled"
+    
+    if self._pap_state == "ACTIVE":
+        return (f"PAP locked after {self._pap_locked_at_turn} turns "
+               f"(confidence: {self._pap_confidence:.2f}, "
+               f"tolerance: {self.attractor_math.constraint_tolerance:.2f})")
+    else:
+        return (f"PAP forming: {self._pap_state} "
+               f"({self._pap_turns} turns, "
+               f"confidence: {self._pap_confidence:.2f})")
+```

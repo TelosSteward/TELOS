@@ -1,0 +1,500 @@
+“””
+Baseline runners for comparative validation.
+“””
+
+from **future** import annotations
+import time
+from typing import List, Dict, Any, Tuple
+from dataclasses import dataclass
+import numpy as np
+
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(**file**).parent.parent.parent))
+
+from telos_purpose.core.primacy_math import MathematicalState, TelicFidelityCalculator, PrimacyAttractorMath
+from telos_purpose.core.unified_steward import PrimacyAttractor
+
+@dataclass
+class BaselineResult:
+“”“Result from baseline runner.”””
+runner_type: str
+session_id: str
+turn_results: List[Dict[str, Any]]
+final_metrics: Dict[str, float]
+metadata: Dict[str, Any]
+
+class StatelessRunner:
+“””
+Stateless baseline: No session memory.
+Each turn evaluated independently with no context.
+“””
+
+```
+def __init__(
+    self,
+    llm_client,
+    embedding_provider,
+    attractor_config: PrimacyAttractor
+):
+    self.llm = llm_client
+    self.embedding_provider = embedding_provider
+    self.attractor_config = attractor_config
+    self.fidelity_calc = TelicFidelityCalculator()
+    
+    purpose_text = " ".join(attractor_config.purpose)
+    scope_text = " ".join(attractor_config.scope)
+    p_vec = embedding_provider.encode(purpose_text)
+    s_vec = embedding_provider.encode(scope_text)
+    
+    self.attractor = PrimacyAttractorMath(
+        purpose_vector=p_vec,
+        scope_vector=s_vec,
+        privacy_level=attractor_config.privacy_level,
+        constraint_tolerance=attractor_config.constraint_tolerance,
+        task_priority=attractor_config.task_priority
+    )
+
+def run_conversation(
+    self,
+    conversation: List[Tuple[str, str]]
+) -> BaselineResult:
+    """Run conversation with no session memory."""
+    turn_results = []
+    states = []
+    
+    for turn_num, (user_input, _) in enumerate(conversation, 1):
+        messages = [{"role": "user", "content": user_input}]
+        
+        response = self.llm.generate(messages=messages, max_tokens=500)
+        
+        embedding = self.embedding_provider.encode(response)
+        state = MathematicalState(
+            embedding=embedding,
+            turn_number=turn_num,
+            timestamp=time.time(),
+            text_content=response
+        )
+        states.append(state)
+        
+        distance = float(np.linalg.norm(
+            embedding - self.attractor.attractor_center
+        ))
+        in_basin = self.attractor.compute_basin_membership(state)
+        
+        turn_results.append({
+            "turn": turn_num,
+            "user_input": user_input,
+            "response": response,
+            "distance_to_attractor": distance,
+            "in_basin": in_basin,
+            "timestamp": time.time()
+        })
+    
+    final_fidelity = self.fidelity_calc.compute_hard_fidelity(
+        states, self.attractor
+    )
+    
+    return BaselineResult(
+        runner_type="stateless",
+        session_id=f"stateless_{int(time.time())}",
+        turn_results=turn_results,
+        final_metrics={
+            "fidelity": final_fidelity,
+            "avg_distance": np.mean([r["distance_to_attractor"] for r in turn_results]),
+            "basin_adherence": sum(r["in_basin"] for r in turn_results) / len(turn_results)
+        },
+        metadata={"total_turns": len(conversation)}
+    )
+```
+
+class PromptOnlyRunner:
+“””
+Prompt-only baseline: Constraints stated once at start.
+No reinforcement throughout conversation.
+“””
+
+```
+def __init__(
+    self,
+    llm_client,
+    embedding_provider,
+    attractor_config: PrimacyAttractor
+):
+    self.llm = llm_client
+    self.embedding_provider = embedding_provider
+    self.attractor_config = attractor_config
+    self.fidelity_calc = TelicFidelityCalculator()
+    
+    purpose_text = " ".join(attractor_config.purpose)
+    scope_text = " ".join(attractor_config.scope)
+    p_vec = embedding_provider.encode(purpose_text)
+    s_vec = embedding_provider.encode(scope_text)
+    
+    self.attractor = PrimacyAttractorMath(
+        purpose_vector=p_vec,
+        scope_vector=s_vec,
+        privacy_level=attractor_config.privacy_level,
+        constraint_tolerance=attractor_config.constraint_tolerance,
+        task_priority=attractor_config.task_priority
+    )
+
+def run_conversation(
+    self,
+    conversation: List[Tuple[str, str]]
+) -> BaselineResult:
+    """Run conversation with constraints stated once."""
+    governance_prompt = (
+        f"You are a helpful assistant. Please focus on:\n"
+        f"Purpose: {', '.join(self.attractor_config.purpose)}\n"
+        f"Scope: {', '.join(self.attractor_config.scope)}\n"
+        f"Boundaries: {', '.join(self.attractor_config.boundaries)}"
+    )
+    
+    conversation_history = [
+        {"role": "system", "content": governance_prompt}
+    ]
+    
+    turn_results = []
+    states = []
+    
+    for turn_num, (user_input, _) in enumerate(conversation, 1):
+        conversation_history.append({
+            "role": "user",
+            "content": user_input
+        })
+        
+        response = self.llm.generate(
+            messages=conversation_history,
+            max_tokens=500
+        )
+        
+        conversation_history.append({
+            "role": "assistant",
+            "content": response
+        })
+        
+        embedding = self.embedding_provider.encode(response)
+        state = MathematicalState(
+            embedding=embedding,
+            turn_number=turn_num,
+            timestamp=time.time(),
+            text_content=response
+        )
+        states.append(state)
+        
+        distance = float(np.linalg.norm(
+            embedding - self.attractor.attractor_center
+        ))
+        in_basin = self.attractor.compute_basin_membership(state)
+        
+        turn_results.append({
+            "turn": turn_num,
+            "user_input": user_input,
+            "response": response,
+            "distance_to_attractor": distance,
+            "in_basin": in_basin,
+            "timestamp": time.time()
+        })
+    
+    final_fidelity = self.fidelity_calc.compute_hard_fidelity(
+        states, self.attractor
+    )
+    
+    return BaselineResult(
+        runner_type="prompt_only",
+        session_id=f"prompt_only_{int(time.time())}",
+        turn_results=turn_results,
+        final_metrics={
+            "fidelity": final_fidelity,
+            "avg_distance": np.mean([r["distance_to_attractor"] for r in turn_results]),
+            "basin_adherence": sum(r["in_basin"] for r in turn_results) / len(turn_results)
+        },
+        metadata={"total_turns": len(conversation)}
+    )
+```
+
+class CadenceReminderRunner:
+“””
+Cadence-reminder baseline: Fixed-interval reminders.
+Reminds every N turns regardless of drift detection.
+“””
+
+```
+def __init__(
+    self,
+    llm_client,
+    embedding_provider,
+    attractor_config: PrimacyAttractor,
+    reminder_cadence: int = 3
+):
+    self.llm = llm_client
+    self.embedding_provider = embedding_provider
+    self.attractor_config = attractor_config
+    self.reminder_cadence = reminder_cadence
+    self.fidelity_calc = TelicFidelityCalculator()
+    
+    purpose_text = " ".join(attractor_config.purpose)
+    scope_text = " ".join(attractor_config.scope)
+    p_vec = embedding_provider.encode(purpose_text)
+    s_vec = embedding_provider.encode(scope_text)
+    
+    self.attractor = PrimacyAttractorMath(
+        purpose_vector=p_vec,
+        scope_vector=s_vec,
+        privacy_level=attractor_config.privacy_level,
+        constraint_tolerance=attractor_config.constraint_tolerance,
+        task_priority=attractor_config.task_priority
+    )
+
+def run_conversation(
+    self,
+    conversation: List[Tuple[str, str]]
+) -> BaselineResult:
+    """Run conversation with fixed-interval reminders."""
+    governance_prompt = (
+        f"Purpose: {', '.join(self.attractor_config.purpose)}\n"
+        f"Scope: {', '.join(self.attractor_config.scope)}\n"
+        f"Boundaries: {', '.join(self.attractor_config.boundaries)}"
+    )
+    
+    conversation_history = [
+        {"role": "system", "content": f"You are a helpful assistant. {governance_prompt}"}
+    ]
+    
+    turn_results = []
+    states = []
+    reminder_count = 0
+    
+    for turn_num, (user_input, _) in enumerate(conversation, 1):
+        if turn_num > 1 and turn_num % self.reminder_cadence == 0:
+            conversation_history.append({
+                "role": "system",
+                "content": f"Reminder: {governance_prompt}"
+            })
+            reminder_count += 1
+        
+        conversation_history.append({
+            "role": "user",
+            "content": user_input
+        })
+        
+        response = self.llm.generate(
+            messages=conversation_history,
+            max_tokens=500
+        )
+        
+        conversation_history.append({
+            "role": "assistant",
+            "content": response
+        })
+        
+        embedding = self.embedding_provider.encode(response)
+        state = MathematicalState(
+            embedding=embedding,
+            turn_number=turn_num,
+            timestamp=time.time(),
+            text_content=response
+        )
+        states.append(state)
+        
+        distance = float(np.linalg.norm(
+            embedding - self.attractor.attractor_center
+        ))
+        in_basin = self.attractor.compute_basin_membership(state)
+        
+        turn_results.append({
+            "turn": turn_num,
+            "user_input": user_input,
+            "response": response,
+            "distance_to_attractor": distance,
+            "in_basin": in_basin,
+            "reminder_injected": turn_num % self.reminder_cadence == 0 and turn_num > 1,
+            "timestamp": time.time()
+        })
+    
+    final_fidelity = self.fidelity_calc.compute_hard_fidelity(
+        states, self.attractor
+    )
+    
+    return BaselineResult(
+        runner_type="cadence_reminder",
+        session_id=f"cadence_{int(time.time())}",
+        turn_results=turn_results,
+        final_metrics={
+            "fidelity": final_fidelity,
+            "avg_distance": np.mean([r["distance_to_attractor"] for r in turn_results]),
+            "basin_adherence": sum(r["in_basin"] for r in turn_results) / len(turn_results)
+        },
+        metadata={
+            "total_turns": len(conversation),
+            "reminder_cadence": self.reminder_cadence,
+            "total_reminders": reminder_count
+        }
+    )
+```
+
+class TELOSRunner:
+“””
+TELOS baseline: Full intervention system.
+Mathematical drift detection with proportional corrections.
+“””
+
+```
+def __init__(
+    self,
+    llm_client,
+    embedding_provider,
+    attractor_config: PrimacyAttractor
+):
+    from telos_purpose.core.unified_steward import UnifiedGovernanceSteward
+    
+    self.steward = UnifiedGovernanceSteward(
+        attractor=attractor_config,
+        llm_client=llm_client,
+        embedding_provider=embedding_provider,
+        enable_interventions=True,
+        dev_commentary_mode="silent"
+    )
+
+def run_conversation(
+    self,
+    conversation: List[Tuple[str, str]]
+) -> BaselineResult:
+    """Run conversation with full TELOS intervention system."""
+    self.steward.start_session()
+    
+    turn_results = []
+    
+    for turn_num, (user_input, _) in enumerate(conversation, 1):
+        messages = self.steward.conversation.get_messages_for_api()
+        messages.append({"role": "user", "content": user_input})
+        
+        initial_response = self.steward.llm_client.generate(
+            messages=messages,
+            max_tokens=500
+        )
+        
+        result = self.steward.process_turn(user_input, initial_response)
+        
+        turn_results.append({
+            "turn": turn_num,
+            "user_input": user_input,
+            "response": result["final_response"],
+            "distance_to_attractor": result["metrics"]["error_signal"],
+            "in_basin": result["metrics"]["primacy_basin_membership"],
+            "governance_action": result["governance_action"],
+            "intervention_applied": result["intervention_applied"],
+            "intervention_type": result["intervention_result"].type if result["intervention_result"] else None,
+            "timestamp": time.time()
+        })
+    
+    summary = self.steward.end_session()
+    
+    return BaselineResult(
+        runner_type="telos",
+        session_id=summary["session_id"],
+        turn_results=turn_results,
+        final_metrics={
+            "fidelity": summary["session_metadata"]["final_telic_fidelity"],
+            "avg_distance": np.mean([r["distance_to_attractor"] for r in turn_results]),
+            "basin_adherence": sum(r["in_basin"] for r in turn_results) / len(turn_results)
+        },
+        metadata={
+            "total_turns": len(conversation),
+            "total_interventions": sum(1 for r in turn_results if r["intervention_applied"]),
+            "intervention_rate": sum(1 for r in turn_results if r["intervention_applied"]) / len(turn_results),
+            "intervention_statistics": summary.get("intervention_statistics")
+        }
+    )
+```
+
+class ObservationRunner:
+“””
+Observation mode: Full TELOS math active, interventions disabled.
+
+```
+Logs drift detection signals without modifying responses.
+Proves the mathematical instrumentation works independently.
+"""
+
+def __init__(
+    self,
+    llm_client,
+    embedding_provider,
+    attractor_config: PrimacyAttractor
+):
+    from telos_purpose.core.unified_steward import UnifiedGovernanceSteward
+    
+    # Initialize steward with interventions explicitly disabled
+    self.steward = UnifiedGovernanceSteward(
+        attractor=attractor_config,
+        llm_client=llm_client,
+        embedding_provider=embedding_provider,
+        enable_interventions=False,  # Critical: no interventions
+        dev_commentary_mode="silent"
+    )
+
+def run_conversation(
+    self,
+    conversation: List[Tuple[str, str]]
+) -> Dict[str, Any]:
+    """
+    Run conversation with observation-only mode.
+    
+    Args:
+        conversation: List of (user_input, expected_assistant) tuples
+        
+    Returns:
+        Dict matching BaselineResult structure
+    """
+    self.steward.start_session()
+    
+    turn_results = []
+    
+    for turn_num, (user_input, _) in enumerate(conversation, 1):
+        # Get conversation context
+        messages = self.steward.conversation.get_messages_for_api()
+        messages.append({"role": "user", "content": user_input})
+        
+        # Generate response (no interventions will be applied)
+        response = self.steward.llm_client.generate(
+            messages=messages,
+            max_tokens=500
+        )
+        
+        # Process through steward (computes metrics but doesn't intervene)
+        result = self.steward.process_turn(user_input, response)
+        
+        turn_results.append({
+            "turn": turn_num,
+            "user_input": user_input,
+            "response": response,
+            "distance_to_attractor": result["metrics"]["error_signal"],
+            "in_basin": result["metrics"]["primacy_basin_membership"],
+            "fidelity": result["metrics"]["telic_fidelity"],
+            "lyapunov": result["metrics"]["lyapunov_value"],
+            "would_have_intervened": result["intervention_applied"],  # Flags what would trigger
+            "intervention_type": result["intervention_result"].type if result["intervention_result"] else None,
+            "timestamp": time.time()
+        })
+    
+    summary = self.steward.end_session()
+    
+    return {
+        "runner_type": "observation",
+        "session_id": summary["session_id"],
+        "turn_results": turn_results,
+        "final_metrics": {
+            "fidelity": summary["session_metadata"]["final_telic_fidelity"],
+            "avg_distance": np.mean([r["distance_to_attractor"] for r in turn_results]),
+            "basin_adherence": sum(r["in_basin"] for r in turn_results) / len(turn_results),
+            "would_have_intervened_count": sum(1 for r in turn_results if r["would_have_intervened"])
+        },
+        "metadata": {
+            "total_turns": len(conversation),
+            "observation_mode": True,
+            "interventions_disabled": True
+        }
+    }
+```

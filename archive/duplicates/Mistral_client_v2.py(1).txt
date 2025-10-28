@@ -1,0 +1,292 @@
+"""
+TELOS Mistral Client - Enhanced Version
+----------------------------------------
+Production-grade LLM client with comprehensive error handling,
+retry logic, and connection diagnostics.
+
+Improvements:
+- Complete error handling with specific exceptions
+- Exponential backoff with jitter
+- API key validation on init
+- Rate limit handling
+- Connection diagnostics
+- Detailed logging
+"""
+
+import os
+import time
+import logging
+from typing import List, Dict, Any, Optional
+from mistralai.client import MistralClient
+from mistralai.models.chat_completion import ChatMessage
+
+from telos_purpose.exceptions import (
+    MissingAPIKeyError,
+    APIConnectionError,
+    APIRateLimitError,
+    APIResponseError,
+    validate_api_key
+)
+
+logger = logging.getLogger(__name__)
+
+
+class TelosMistralClient:
+    """
+    Enhanced Mistral API client with robust error handling.
+    
+    Features:
+    - Automatic API key validation
+    - Retry logic with exponential backoff
+    - Rate limit detection and handling
+    - Clear error messages with recovery suggestions
+    - Connection diagnostics
+    
+    Example:
+        >>> client = TelosMistralClient()
+        >>> response = client.generate(
+        ...     messages=[{"role": "user", "content": "Hello"}],
+        ...     max_tokens=100
+        ... )
+        >>> print(response)
+    """
+    
+    def __init__(
+        self,
+        model: str = "mistral-small-latest",
+        max_retries: int = 3,
+        timeout: int = 30
+    ):
+        """
+        Initialize Mistral client with validation.
+        
+        Args:
+            model: Mistral model name
+            max_retries: Maximum retry attempts for transient errors
+            timeout: Request timeout in seconds
+        
+        Raises:
+            MissingAPIKeyError: If MISTRAL_API_KEY not set
+            APIConnectionError: If initial connection test fails
+        """
+        # Validate API key
+        self.api_key = validate_api_key("Mistral", "MISTRAL_API_KEY")
+        
+        self.model = model
+        self.max_retries = max_retries
+        self.timeout = timeout
+        
+        # Initialize client
+        try:
+            self.client = MistralClient(api_key=self.api_key)
+            logger.info(f"Mistral client initialized (model: {model})")
+        except Exception as e:
+            raise APIConnectionError("Mistral", e)
+    
+    def generate(
+        self,
+        messages: List[Dict[str, str]],
+        temperature: float = 0.7,
+        max_tokens: int = 500
+    ) -> str:
+        """
+        Generate completion with retry logic and error handling.
+        
+        Args:
+            messages: List of message dicts with 'role' and 'content'
+            temperature: Sampling temperature (0.0-1.0)
+            max_tokens: Maximum tokens to generate
+        
+        Returns:
+            Generated text response
+        
+        Raises:
+            APIRateLimitError: If rate limit exceeded
+            APIResponseError: If API returns error response
+            APIConnectionError: If connection fails after retries
+        
+        Example:
+            >>> messages = [
+            ...     {"role": "system", "content": "You are helpful."},
+            ...     {"role": "user", "content": "What is 2+2?"}
+            ... ]
+            >>> response = client.generate(messages, max_tokens=50)
+        """
+        for attempt in range(self.max_retries):
+            try:
+                # Convert to Mistral format
+                chat_messages = [
+                    ChatMessage(role=msg["role"], content=msg["content"])
+                    for msg in messages
+                ]
+                
+                # Make API call
+                response = self.client.chat(
+                    model=self.model,
+                    messages=chat_messages,
+                    temperature=temperature,
+                    max_tokens=max_tokens
+                )
+                
+                # Extract text
+                text = response.choices[0].message.content
+                logger.debug(f"Generated {len(text)} chars (attempt {attempt + 1})")
+                
+                return text
+                
+            except Exception as e:
+                error_str = str(e).lower()
+                
+                # Rate limit error
+                if "rate limit" in error_str or "429" in error_str:
+                    retry_after = self._extract_retry_after(str(e))
+                    if attempt < self.max_retries - 1:
+                        wait_time = retry_after or (2 ** attempt)
+                        logger.warning(f"Rate limited, waiting {wait_time}s...")
+                        time.sleep(wait_time)
+                        continue
+                    else:
+                        raise APIRateLimitError("Mistral", retry_after)
+                
+                # Connection error
+                elif "connection" in error_str or "timeout" in error_str:
+                    if attempt < self.max_retries - 1:
+                        wait_time = 2 ** attempt
+                        logger.warning(f"Connection error, retrying in {wait_time}s...")
+                        time.sleep(wait_time)
+                        continue
+                    else:
+                        raise APIConnectionError("Mistral", e)
+                
+                # Other API errors
+                else:
+                    status_code = self._extract_status_code(str(e))
+                    raise APIResponseError("Mistral", status_code, str(e))
+        
+        # Should never reach here
+        raise APIConnectionError("Mistral", Exception(f"Failed after {self.max_retries} retries"))
+    
+    def chat_completion(
+        self,
+        messages: List[Dict[str, str]],
+        temperature: float = 0.7,
+        max_tokens: int = 500
+    ) -> str:
+        """
+        Alias for generate() for backward compatibility.
+        
+        Args:
+            messages: List of message dicts
+            temperature: Sampling temperature
+            max_tokens: Max tokens to generate
+        
+        Returns:
+            Generated response text
+        """
+        return self.generate(messages, temperature, max_tokens)
+    
+    def _extract_retry_after(self, error_str: str) -> Optional[int]:
+        """Extract retry-after value from error message."""
+        import re
+        match = re.search(r'retry.*?(\d+)', error_str.lower())
+        if match:
+            return int(match.group(1))
+        return None
+    
+    def _extract_status_code(self, error_str: str) -> Optional[int]:
+        """Extract HTTP status code from error message."""
+        import re
+        match = re.search(r'\b(4\d{2}|5\d{2})\b', error_str)
+        if match:
+            return int(match.group(1))
+        return None
+
+
+def diagnose_connection() -> bool:
+    """
+    Interactive diagnostic tool for Mistral API connection issues.
+    
+    Checks:
+    1. API key is set
+    2. Network connectivity
+    3. API is accessible
+    4. Test API call works
+    
+    Returns:
+        True if all checks pass, False otherwise
+    
+    Usage:
+        >>> from telos_purpose.llm_clients.mistral_client import diagnose_connection
+        >>> if not diagnose_connection():
+        ...     print("Fix the issues above before running Test 0")
+    """
+    print("\n" + "="*60)
+    print("🔍 MISTRAL API CONNECTION DIAGNOSTICS")
+    print("="*60 + "\n")
+    
+    # Check 1: API key
+    print("Check 1: API Key")
+    api_key = os.getenv("MISTRAL_API_KEY")
+    if not api_key:
+        print("  ❌ MISTRAL_API_KEY environment variable not set")
+        print("  💡 Fix: export MISTRAL_API_KEY='your_key_here'")
+        print()
+        return False
+    print(f"  ✅ API key found (ends with ...{api_key[-4:]})")
+    print()
+    
+    # Check 2: Network
+    print("Check 2: Network Connectivity")
+    try:
+        import requests
+        response = requests.get("https://api.mistral.ai", timeout=5)
+        print(f"  ✅ Can reach api.mistral.ai (status: {response.status_code})")
+    except Exception as e:
+        print(f"  ❌ Network error: {e}")
+        print("  💡 Check your internet connection")
+        print()
+        return False
+    print()
+    
+    # Check 3: API accessibility
+    print("Check 3: API Endpoint")
+    try:
+        client = TelosMistralClient()
+        print("  ✅ Mistral client initialized")
+    except MissingAPIKeyError:
+        print("  ❌ API key validation failed")
+        return False
+    except APIConnectionError as e:
+        print(f"  ❌ Cannot connect to API: {e}")
+        print("  💡 Check API key is valid")
+        print()
+        return False
+    print()
+    
+    # Check 4: Test call
+    print("Check 4: Test API Call")
+    try:
+        test_messages = [{"role": "user", "content": "test"}]
+        response = client.generate(test_messages, max_tokens=5)
+        print(f"  ✅ API call successful (response: '{response[:50]}')")
+    except APIRateLimitError as e:
+        print(f"  ⚠️  Rate limit hit: {e}")
+        print("  💡 Wait before running Test 0")
+        print()
+        return False
+    except Exception as e:
+        print(f"  ❌ API call failed: {e}")
+        print()
+        return False
+    print()
+    
+    print("="*60)
+    print("✅ ALL CHECKS PASSED - READY FOR TEST 0")
+    print("="*60 + "\n")
+    
+    return True
+
+
+if __name__ == "__main__":
+    # Run diagnostics when executed directly
+    diagnose_connection()

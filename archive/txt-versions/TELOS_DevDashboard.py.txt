@@ -1,0 +1,173 @@
+“””
+Developer dashboard for steward telemetry.
+On-demand command interface to governance internals.
+“””
+
+from typing import Optional
+
+class DevDashboard:
+“””
+Command-based dashboard for steward monitoring.
+
+```
+Commands:
+- status: Quick metrics snapshot
+- explain: Natural language state explanation
+- diagnose: Failure analysis with recommendations
+- history: Turn-by-turn trajectory
+- intervention: Explain last intervention
+- watch: Toggle auto-status after each turn
+- help: Show available commands
+"""
+
+def __init__(self, steward):
+    """
+    Args:
+        steward: UnifiedGovernanceSteward instance
+    """
+    self.steward = steward
+    self.watch_mode = False
+
+def cmd(self, command: str) -> None:
+    """Execute dashboard command."""
+    commands = {
+        'status': self._status,
+        'explain': self._explain,
+        'diagnose': self._diagnose,
+        'history': self._history,
+        'intervention': self._intervention,
+        'watch': self._watch,
+        'help': self._help
+    }
+    
+    if command in commands:
+        commands[command]()
+    else:
+        print(f"\nUnknown command: {command}")
+        self._help()
+
+def _status(self) -> None:
+    """Quick status snapshot."""
+    metrics = self.steward.get_metrics_summary()
+    
+    if 'error' in metrics:
+        print(f"\n{metrics['error']}\n")
+        return
+    
+    fidelity_bar = self._progress_bar(metrics['fidelity'], width=20)
+    trend = self._trend_arrow()
+    
+    print(f"\n{'-'*50}")
+    print(f"Turn {metrics['turn']} Status")
+    print(f"{'-'*50}")
+    print(f"Fidelity:      {fidelity_bar} {metrics['fidelity']:.3f}")
+    print(f"Lyapunov:      {metrics['lyapunov']:.3f} {trend}")
+    print(f"In Basin:      {'YES' if metrics['in_basin'] else 'NO'}")
+    print(f"Error Signal:  {metrics['error_signal']:.3f}")
+    print(f"Alerts:        {metrics['total_alerts']}")
+    print(f"Interventions: {metrics['total_interventions']}")
+    print(f"{'-'*50}\n")
+
+def _explain(self) -> None:
+    """Natural language explanation."""
+    print(f"\n{'-'*50}")
+    print("State Explanation")
+    print(f"{'-'*50}\n")
+    explanation = self.steward.explain_current_state()
+    print(explanation)
+    print(f"\n{'-'*50}\n")
+
+def _diagnose(self) -> None:
+    """Run diagnostics."""
+    print(f"\n{'-'*50}")
+    print("Diagnostic Analysis")
+    print(f"{'-'*50}\n")
+    
+    diagnostics = self.steward.diagnose_failures()
+    
+    if 'error' in diagnostics:
+        print(diagnostics['error'])
+        print()
+        return
+    
+    total_issues = (
+        len(diagnostics.get('failure_modes', [])) +
+        len(diagnostics.get('mathematical_anomalies', []))
+    )
+    
+    if total_issues == 0:
+        print("No critical issues detected.\n")
+        return
+    
+    print(f"Found {total_issues} issue(s):\n")
+    
+    for failure in diagnostics.get('failure_modes', [])[:3]:
+        severity = failure.get('severity', 'unknown').upper()
+        print(f"[{severity}] {failure['description']}")
+    
+    print()
+    
+    if diagnostics.get('narrative_analysis'):
+        print("AI Analysis:")
+        print(diagnostics['narrative_analysis'])
+        print()
+    
+    if diagnostics.get('recommendations'):
+        print("Recommendations:")
+        for i, rec in enumerate(diagnostics['recommendations'][:3], 1):
+            priority = rec.get('priority', 'medium').upper()
+            print(f"{i}. [{priority}] {rec['issue']}")
+            print(f"   Fix: {rec['fix']}")
+        print()
+    
+    print(f"{'-'*50}\n")
+
+def _history(self) -> None:
+    """Show turn-by-turn history."""
+    if not self.steward.turn_history:
+        print("\nNo history\n")
+        return
+    
+    print()
+    for t in self.steward.turn_history[-5:]:
+        print(f"T{t['turn_number']}: F={t['metrics']['telic_fidelity']:.3f} {t['governance_action']}")
+    print()
+
+def _intervention(self) -> None:
+    """Explain last intervention."""
+    print("\n" + self.steward.explain_last_intervention() + "\n")
+
+def _watch(self) -> None:
+    """Toggle watch mode."""
+    self.watch_mode = not self.watch_mode
+    print(f"\nWatch: {'ON' if self.watch_mode else 'OFF'}\n")
+
+def _help(self) -> None:
+    """Show available commands."""
+    print("\nCommands: status | explain | diagnose | history | intervention | watch | help\n")
+
+def _progress_bar(self, value: float, width: int = 20) -> str:
+    """Generate visual progress bar."""
+    filled = int(value * width)
+    bar = '█' * filled + '░' * (width - filled)
+    return f"[{bar}]"
+
+def _trend_arrow(self) -> str:
+    """Show Lyapunov trend arrow."""
+    if len(self.steward.session_states) < 2:
+        return ""
+    
+    prev_V = self.steward.attractor_math.compute_lyapunov_function(
+        self.steward.session_states[-2]
+    )
+    curr_V = self.steward.attractor_math.compute_lyapunov_function(
+        self.steward.session_states[-1]
+    )
+    
+    if curr_V < prev_V:
+        return "↓"
+    elif curr_V > prev_V:
+        return "↑"
+    else:
+        return "→"
+```

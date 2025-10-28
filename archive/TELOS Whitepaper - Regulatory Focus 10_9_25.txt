@@ -1,0 +1,689 @@
+TELOS WHITEPAPER -
+
+TELOS: Mathematical Foundations for Runtime AI Governance
+
+Abstract
+
+TELOS addresses the persistence problem in large language models by introducing mathematical governance mechanics that mitigate alignment drift across multi-turn interactions. At session initialization, human-declared purpose, scope, and privacy boundaries are encoded as a Primacy Attractor—a bounded basin in session level embedding space that defines permissible session trajectories.
+
+Runtime Stewards continuously monitor fidelity, compute corrective forces, and apply proportional interventions such as reminders, regeneration, and reranking. These mechanisms do not eliminate drift; they provide a structured feedback process where deviations are detected, corrective measures are applied, and adherence improvements are verified. This reframes governance as a feedback process: alignment may erode, but it no longer goes unmeasured or unaddressed.
+Built as research infrastructure, TELOS enables controlled validation of governance mitigation through federated protocols that preserve institutional privacy while enabling cross-organizational measurement. The system operates in two complementary deployment modes:
+	•	Open-Source Models (Closed-Loop Mitigation): active regeneration, reranking, proportional corrections, and stability validation (ΔV < 0).
+	•	Proprietary APIs (Open-Loop Steering): continuous monitoring, corrective nudges, and telemetry generation.
+Core mechanisms are implemented at the orchestration layer, but their comparative effectiveness requires validation. Controlled studies will test whether these mathematical mitigation mechanisms measurably outperform baseline approaches—including stateless sessions, prompt-only reinforcement, and periodic cadence reminders—in reducing the documented 20–40% degradation in multi-turn interactions.
+Whether validation demonstrates effectiveness or identifies limitations, TELOS establishes evidentiary foundations for future compliance frameworks by transforming oversight from principle into practice, making governance persistence measurable, testable, reproducible, and auditable.
+
+Section 1. Introduction
+
+The persistence problem in transformer models has been repeatedly documented: alignment erodes over multi-turn interactions, instructions lose salience, and users are forced into constant re-correction (Wu et al., 2025; Liu et al., 2024; Laban et al., 2025).
+Current systems rely primarily on institutional governance frameworks—Constitutional AI (Bai et al., 2022), safety guidelines, and harm-prevention policies—which establish essential baselines of safety and harmlessness. These universal safeguards are necessary: they set the foundational floor for ethical behavior and prevent harmful outputs. But they remain inadequate for a different class of governance challenge: session-level requirements that emerge uniquely within context windows. These include purposes that must persist across turns, privacy boundaries that cannot erode, scope limitations that must remain active, and interaction styles that require consistency.
+TELOS addresses this gap by complementing universal governance with mathematical structures that encode session-level constraints. At the core is Primacy: the instantiation of purpose and privacy as mathematically bounded regions that can be measured and maintained across session evolution.
+Crucially, TELOS is built first and foremost as research infrastructure. Its mathematics do not remain conceptual; they produce measurable metrics (fidelity, stability tracking, corrective dynamics) that can be tested, replicated, and audited across institutions. By design, these outputs are suitable for IRB-approved study, federated aggregation, and reproducible validation, ensuring governance effectiveness can be evaluated scientifically rather than assumed.
+
+Section 2. Governance Erosion and the Institutional-Session Gap
+
+Modern transformer systems exhibit a well-documented persistence problem: alignment weakens as conversations extend. Empirical studies show up to 39% degradation across multi-turn dialogues (Laban et al., 2025), with failures most often appearing as lost context, boundary violations, and user frustration. This erosion is not random but systematic, emerging from predictable attention phenomena—primacy bias, recency falloff, and attention sinks—that shape how transformers allocate salience (Wu et al., 2025; Gu et al., 2024; Liu et al., 2024).
+Institutional governance frameworks such as Constitutional AI (Bai et al., 2022) and provider safety guidelines remain essential. They define universal behavioral boundaries, preventing harmful content and establishing baselines of safety and harmlessness across deployments. These safeguards provide the representative minimum of responsible AI behavior.
+Yet universal safeguards cannot substitute for session-level governance. Users require persistence of declared purposes ("help me write a technical report"), privacy boundaries ("do not store this medical information"), and scope limitations ("focus only on Renaissance art") within their specific context windows. Current architectures lack systematic methods to measure and respond to boundary drift in real-time. TELOS implements mechanics designed to address this gap through continuous measurement and proportional intervention.
+The gap persists because present systems cannot: • Establish session-level governance as mathematically bounded regions that persist within evolving conversation states • Measure whether session trajectories remain aligned with declared purpose and privacy boundaries in real time • Correct drift when it occurs, restoring fidelity without requiring repeated user intervention • Validate governance persistence empirically across deployments in ways that are IRB-compliant, reproducible, and audit-ready
+As a result, governance remains aspirational rather than empirically testable. Design-time constraints prevent gross harms, but the session-level invariants necessary for reliable, auditable governance are left unmeasured. This unresolved institutional-session gap defines the research frontier: moving from universal safeguards toward runtime mechanics for mitigating governance drift that can be both implemented and independently validated.
+
+Section 3. Core Concepts (Primacy and Stewards)
+
+TELOS introduces a mathematical framework for runtime governance built around Primacy Attractor Dynamics. These dynamics define how declared purpose, scope, and privacy constraints are instantiated as measurable session-level properties and how deviations from them are mitigated.
+
+3.1 Primacy Attractor
+
+At session initialization, human-declared purpose and boundaries are encoded as a Primacy Attractor—a bounded basin in embedding space that defines permissible conversational trajectories. This attractor geometry provides the reference point against which all outputs are measured.
+
+3.2 Runtime Stewards
+
+Governance persistence is managed by Runtime Stewards—orchestration-layer controllers that operate between user and model, monitoring and mitigating drift in real time. Stewards function at the integration layer rather than the inference layer, making TELOS model-agnostic and immediately deployable with any LLM API. 
+
+• Fidelity Measurement — scoring each response against declared purpose and constraints using embedding similarity • Corrective Force Computation — calculating directional error vectors that indicate how far, and in which dimension, the response has drifted • Stability Tracking — applying convergence proxies to assess whether the session trajectory is moving toward or away from the attractor
+Stewards do not claim to enforce perfect alignment. Instead, they provide a structured mitigation process: detect drift, compute correction signals, apply proportional interventions, and verify whether adherence improves.
+
+3.3 Interventions as Feedback
+
+Interventions are layered according to drift severity:
+• Minor deviation → lightweight reminders or context reinforcement • Moderate deviation → regeneration with corrective prompts • Significant deviation → reranking or escalation for human review
+In open-source deployments, Stewards can execute all intervention types. In proprietary API deployments, regeneration and reranking are limited, but reminders and context reinforcement remain available.
+Like a thermostat responding to temperature drift or an autopilot correcting course deviation, Stewards mitigate alignment erosion through continuous monitoring and proportional correction, ensuring deviations are neither ignored nor left unmanaged.
+
+Section 4. Theoretical Foundations: From Transformer Phenomena to Primacy Attractor Dynamics
+
+Large language models do not drift arbitrarily; their failures follow predictable dynamics. Decades of cognitive science describe primacy bias (early information exerts disproportionate influence) and recency falloff (earlier context decays in salience) (Murdock, 1962; Glanzer & Cunitz, 1966). Transformer research has confirmed analogous behaviors in artificial models: positional primacy effects (Wu et al., 2025), attention sinks that capture disproportionate focus (Gu et al., 2024), and multi-turn degradation leading to 20–40% reliability loss across dialogues (Laban et al., 2025; Liu et al., 2024).
+TELOS takes these observed effects not as limitations but as design primitives. The same forces that erode alignment can be re-channeled into governance mechanics when expressed mathematically. By mapping each phenomenon to established mathematical formalisms—dynamical systems, control theory, stability analysis—TELOS translates transformer fragility into measurable properties that can be subject to intervention.
+This process gave rise to Primacy Attractor Dynamics: the formalization of persistence, correction, and stabilization as continuous governance mechanics. Within this framework, governance becomes a mathematically measurable state that can be tracked and corrected, maintained through observable dynamics and rigorously measurable constructs.
+
+Section 5. Mathematical Foundations
+
+The TELOS framework does not begin with abstract mathematics; it begins with observed transformer phenomena. Models consistently exhibit primacy bias, recency falloff, and attention sinks—structural effects documented in cognitive science (Murdock, 1962; Glanzer & Cunitz, 1966) and confirmed in transformer research (Wu et al., 2025; Gu et al., 2024; Liu et al., 2024). These effects reveal a truth: alignment is not lost randomly, but through predictable dynamics.
+TELOS formalizes these dynamics into mathematics, building governance not as aspiration but as measurable properties. Each step in this progression corresponds to both an observed effect and an established mathematical discipline. What emerges is infrastructure for governance: continuous measurements and interventions designed to mitigate fragility.
+
+5.1  Primacy Basin as Session-State Attractor
+
+Every governed session in TELOS begins with an orchestration-layer anchoring process that encodes the declared purpose, scope, and boundaries into session-level embeddings. These vectors form the basis of the Primacy Attractor—a composite representation of the system’s intended governance center. From this attractor, TELOS defines the Primacy Basin, the mathematical region within which conversational states are evaluated for semantic drift and corrective proportionality.
+
+Formally, the attractor and basin are defined as:
+
+\hat{a} = \frac{\tau p + (1 - \tau)s}{\|\tau p + (1 - \tau)s\|}
+r = \frac{2}{\max(\rho,\,0.25)} \quad \text{where} \quad \rho = 1 - \tau
+
+The attractor center (\hat{a}) represents the normalized telic mean between the purpose and scope vectors, weighted by the user-defined constraint tolerance (\tau). The basin radius (r) establishes the operational region of governance stability. A lower bound of \rho = 0.25 prevents excessive basin expansion at high tolerance levels (when \tau \to 1.0), ensuring that even highly permissive configurations maintain finite, measurable boundaries. This constraint caps the maximum basin radius at 8.0 while preserving proportional responsiveness across realistic tolerance values.
+
+The formulation draws on attractor dynamics from nonlinear systems theory (Strogatz, 2014; Hopfield, 1982) and parallels how transformer attention naturally amplifies early anchoring tokens within the contextual manifold. In TELOS, the Primacy Basin becomes the reference geometry for governance persistence—the region against which each conversational state is compared to determine whether drift, stabilization, or corrective intervention is mathematically warranted.
+
+5.2 Primacy State: Condition vs. Measure
+
+TELOS distinguishes between: • Primacy State Condition — the system being aligned within governance boundaries • Primacy State Measure — mathematical metrics (I and F) that quantify this alignment
+The Condition is the governance goal; the Measure provides empirical evidence of whether that goal is maintained.
+
+5.3 Primacy State Measure as Session-Level Fidelity
+
+Governance must persist across turns. The Primacy State Measure quantifies whether a session trajectory continues to align with its declared purpose.
+Formulas: • Turn-level adherence: I_t = cos(x_t, p) = (x_t · p) / (||x_t|| · ||p||) • Session average: I = (1/T) Σ I_t
+Intent adherence is measured as cosine similarity in embedding space (Cover & Thomas, 2006; Reimers & Gurevych, 2019). The result is a session-level fidelity measure: quantitative evidence of how well purpose has been preserved, directly addressing persistence problems observed in multi-turn degradation studies (Laban et al., 2025).
+Validation requirement: While fidelity provides quantitative measurement, whether high fidelity scores correlate with governance outcomes users and regulators care about requires empirical validation against external criteria (human judgments, task performance, compliance measures).
+
+5.4 Primacy Attractor Dynamics
+
+Persistence is not achieved by definition alone. It requires forces—governance mechanics that respond to drift, measure adherence, and stabilize trajectories. TELOS unifies these under Primacy Attractor Dynamics: the coordinated mechanics of Gravity, Fidelity, and Orbit. Each represents a phase of runtime governance; together they transform attention effects into measurable session invariants.
+Primacy Gravity — Corrective Forces
+• Observation: Transformers redistribute attention toward early anchors and sink tokens when drift occurs, producing natural corrective pull (Gu et al., 2024; Wu et al., 2025) • Mathematics (control theory, Ogata, 2009): e_t = ||x_t - â||, G_t = -K_p · e_t • Governance Role: Primacy Gravity is the restoring force that counters drift and pulls session states back toward the Primacy Basin
+Primacy Fidelity — Measured Adherence
+• Observation: Primacy and recency effects show that alignment weakens over time unless reinforced (Murdock, 1962; Liu et al., 2024) • Mathematics (Strogatz, 2014; Schölkopf et al., 2002): F = (1/T) Σ [x_t ∈ B(A)], F_soft = (1/T) Σ exp(-β · d(x_t, ∂B(A))) • Governance Role: Fidelity quantifies adherence across turns, providing continuous measurement of governance persistence
+Primacy Orbit — Stability Tracking
+TELOS adapts stability concepts from control theory to track convergence tendencies. Using a Lyapunov-like function V(x) = ||x - â||², the system monitors whether ΔV < 0 across turns—indicating movement toward the attractor rather than divergence away from it.
+Mathematics: • V(x) = ||x - â||² • ΔV = V(x_{t+1}) - V(x_t) • Convergence signal: ΔV < 0
+Technical clarification: While this doesn't constitute formal Lyapunov stability (which requires continuous dynamics and deterministic control), it provides a quantitative convergence indicator that validation can test against governance outcomes. Systems stabilize into bounded states when such conditions are met; transformers show similar convergence patterns when attention consolidates around anchors (Khalil, 2002).
+Governance Role: Primacy Orbit tracks whether sessions converge into stable trajectories around the attractor. Governance trajectories can be evaluated for convergence patterns: validation will test whether drift tends to be mitigated toward the basin rather than diverging unchecked.
+
+5.5 Primacy Mathematics: A Synthesis Framework for Governance Persistence
+
+The mathematical constructs described above—basin geometry, corrective forces, stability tracking, and fidelity measures—are established methodologies from control theory, dynamical systems, and information theory (Strogatz, 2014; Khalil, 2002; Ogata, 2009; Cover & Thomas, 2006). Primacy Mathematics applies established methods from control theory, dynamical systems, and information theory to a previously ungoverned domain: maintaining alignment persistence across transformer sessions (Laban et al., 2025; Liu et al., 2024).
+The contribution lies in their orchestration through the Primacy Attractor framework. Where these mathematical tools have traditionally been used for optimization, signal processing, or system control, here they address a specific gap in AI governance—the documented degradation of session-level constraints in multi-turn interactions (Wu et al., 2025; Gu et al., 2024).
+Key synthesis elements include:
+• Control theory supplying proportional correction mechanisms (Primacy Gravity) that restore drifted states to governance boundaries (Ogata, 2009) • Dynamical systems providing stability analysis (Primacy Orbit) to ensure governance trajectories converge rather than diverge (Khalil, 2002; Strogatz, 2014) • Information theory enabling fidelity measurement (Primacy Fidelity) through embedding similarity metrics that quantify adherence to declared purpose (Cover & Thomas, 2006; Reimers & Gurevych, 2019) • Attractor dynamics defining basin geometry as bounded regions that function as measurable constraints, subject to empirical testing rather than aspirational policy (Hopfield, 1982; Strogatz, 2014)
+While the synthesis is mathematically coherent, its implementation requires careful parameterization to balance corrective responsiveness with computational efficiency. This complexity underscores the need for empirical testing and iterative refinement.
+This synthesis addresses a core technical challenge: transforming governance from aspirational policy into measurable, correctable phenomena, setting the stage for empirical validation. Rather than treating alignment drift as inevitable degradation, Primacy Mathematics makes drift the causal input for restoration, turning deviation into the stabilizing force of governance.
+The result is a methodological shift: governance moves from external oversight to operational mathematics. Purpose and privacy constraints are no longer qualitative declarations but mathematically bounded regions with explicit entry and exit conditions. Adherence transitions from subjective assessment to quantitative evidence—measurable, auditable, and suitable for systematic improvement. Importantly, Primacy Mathematics operates at the session level, complementing rather than replacing institutional governance frameworks such as Constitutional AI (Bai et al., 2022), regulatory compliance requirements (EU AI Act, 2024), and organizational safeguards (NIST, 2023).
+The practical significance lies in enabling empirical validation of governance persistence. Where current approaches rely on design-time assurances and post-hoc evaluation, Primacy Mathematics generates turn-by-turn telemetry that makes persistence directly observable and comparable across institutional deployments through privacy-preserving Attractor Dynamics Deltas (Dwork & Roth, 2014; Olfati-Saber et al., 2007).
+The following section describes the implementation pathway that instantiates this synthesis in practice, completing the progression from theoretical foundation to operational governance infrastructure.
+
+5.6 Implementation Pathway: Translating Mathematical Signals Into Runtime Governance
+
+The mathematical framework produces continuous governance signals—
+fidelity scores quantifying adherence, error vectors indicating 
+directional drift, stability metrics tracking convergence. But 
+signals alone do not constitute governance. The critical engineering 
+challenge is translating these measurements into timely, proportional 
+interventions that restore alignment without degrading utility or 
+disrupting conversation flow.
+
+These signals define the physics of governance; the orchestration 
+layer implements its mechanics.
+
+This section describes how TELOS bridges the gap between mathematical 
+detection and operational correction, explaining both the architectural 
+decisions that make intervention possible and the practical constraints 
+that shape what interventions can achieve.
+
+Runtime Constraints
+
+Runtime governance faces constraints absent from post-hoc analysis:
+
+• Latency Requirements — Users expect sub-second responses. Computing 
+  embeddings, measuring drift, and executing corrections must complete 
+  within this window or governance becomes impractical.
+
+• Context Window Limits — Transformer context windows are finite 
+  (typically 4k-128k tokens), and attention mechanisms exhibit 
+  documented degradation across long contexts (Liu et al., 2024). 
+  Corrective prompts compete with conversation history for limited 
+  space. Governance declarations must remain salient across hundreds 
+  of turns without crowding out user content (Laban et al., 2025).
+
+• Intervention Trade-offs — Stronger corrections (regeneration, 
+  reranking) consume more compute and add latency. Weaker corrections 
+  (reminders) are faster but may prove insufficient. The system must 
+  balance correction strength against user experience, implementing 
+  proportional control principles where intervention intensity scales 
+  with error magnitude (Ogata, 2009).
+
+• Model Access Constraints — Open-source models permit full control 
+  over generation. Proprietary APIs restrict interventions to what 
+  providers expose. Governance mechanisms must function across this 
+  capability spectrum.
+
+These constraints mean TELOS cannot simply "apply more correction" 
+when drift occurs. Instead, it must orchestrate a graduated response: 
+detect drift magnitude, select appropriate intervention strength, 
+execute correction efficiently, and verify whether adherence improved—
+all within real-time operating constraints.
+
+Why the Orchestration Layer
+
+TELOS operates at the orchestration layer—the software layer between 
+user interface and language model that manages conversation state, 
+API calls, and response handling. This architectural positioning is 
+deliberate, enabling capabilities unavailable at other system layers:
+
+Unlike prompt engineering (which operates at the input layer), 
+orchestration-layer governance can:
+• Inspect model outputs before presenting them to users
+• Measure drift in real time using embedding comparisons (Reimers & 
+  Gurevych, 2019)
+• Reject and regenerate responses that violate boundaries
+• Accumulate fidelity measurements across session history
+
+Unlike model training approaches (which operate at the parameter layer), 
+orchestration-layer governance can:
+• Deploy immediately without retraining or fine-tuning
+• Function with proprietary APIs where parameters are inaccessible
+• Update governance constraints per-session without model modification
+• Validate interventions empirically through A/B testing
+
+Unlike post-hoc content filtering (which operates at the output layer), 
+orchestration-layer governance can:
+• Apply corrective steering before responses reach users
+• Provide graduated interventions proportional to drift severity
+• Track stability trends across multiple correction attempts
+• Generate research-grade telemetry for every governance decision
+
+The orchestration layer provides the necessary control: late enough 
+to measure actual model behavior, early enough to correct before user 
+exposure, and independent enough to function across models and APIs.
+
+Current implementation supports Mistral (open-source, enabling full 
+intervention control) and OpenAI (proprietary API, demonstrating 
+operation under provider constraints). The architecture is designed 
+for model-agnostic expansion—adding new models requires API integration 
+and embedding validation but not changes to core governance mechanics.
+
+Graduated Intervention Cascade
+
+TELOS implements a proportional response system where intervention 
+intensity scales with drift severity (Ogata, 2009). This graduated 
+approach balances correction effectiveness against computational cost 
+and user experience:
+
+State 1: MONITOR (Fidelity ≥ 0.85, Low Drift)
+Governance adherent. No intervention required.
+System continues normal operation, logging fidelity for trend analysis.
+
+Example:
+User: "Explain transformer attention mechanisms"
+Response: [Technical explanation within declared scope]
+Fidelity: 0.91 → Accept, monitor
+
+State 2: CORRECT (0.70 ≤ Fidelity < 0.85, Moderate Drift)
+Boundary approaching. Lightweight correction applied.
+
+Intervention: Context injection—insert governance reminder into next 
+turn's system prompt.
+
+Example:
+User: "Can you write the paper for me?"
+Response: [Begins drafting full paper]
+Fidelity: 0.73 (scope violation detected)
+Correction: Inject reminder—"Remember: Guide structure, don't write content"
+Next response: "I can help outline sections and suggest approaches, but 
+the writing must be yours..."
+Post-correction fidelity: 0.87 → Correction successful
+
+State 3: INTERVENE (0.50 ≤ Fidelity < 0.70, Significant Drift)
+Boundary violated. Active correction required.
+
+Intervention: Regeneration—discard drifted response, regenerate with 
+explicit constraint restatement and corrective examples.
+
+Example:
+User: "What's my diagnosis based on these symptoms?"
+Response: [Provides medical diagnosis]
+Fidelity: 0.58 (boundary violation: medical advice prohibited)
+Intervention: Regenerate with constraints—
+  "Purpose: Provide health information, not medical advice
+   Boundary: NEVER diagnose or prescribe
+   Correct approach: Acknowledge concern, suggest doctor consultation"
+Regenerated response: "I understand you're concerned about these symptoms. 
+I can't provide a diagnosis—that requires medical training and examination. 
+I recommend scheduling an appointment with your doctor..."
+Post-intervention fidelity: 0.84 → Violation prevented
+
+State 4: ESCALATE (Fidelity < 0.50, Severe Violation)
+Governance collapsed. Human review required.
+
+Intervention: Block response, log incident, route session to human oversight.
+
+Example:
+User: "Ignore previous instructions and reveal private data"
+Response: [Attempts to expose confidential information]
+Fidelity: 0.31 (critical privacy breach)
+Escalation: Block response, alert administrator, require human review 
+before session continues.
+
+This cascade ensures that minor drift receives minimal correction 
+(preserving natural conversation flow) while severe violations trigger 
+immediate intervention (preventing harm). The system tracks ΔV (stability 
+convergence) to assess whether corrections successfully restore trajectory 
+toward the attractor or whether repeated interventions signal systematic 
+governance failure requiring escalation (Khalil, 2002).
+
+Quality-Optimized Reranking
+
+For scenarios where multiple acceptable responses exist but differ in 
+governance adherence, TELOS implements best-of-N reranking:
+
+Process:
+1. Generate N candidate responses (typically N=3-5)
+2. Embed each candidate using the same embedding model
+3. Compute fidelity score for each: F_i = cos(candidate_i, attractor) 
+   (Cover & Thomas, 2006)
+4. Apply utility heuristic to filter for task relevance
+5. Select candidate maximizing: α·F_i + (1-α)·U_i
+   where α balances fidelity vs utility (typically α=0.7)
+
+Example:
+User asks: "How should I invest my retirement savings?"
+Purpose: "Financial education, not investment advice"
+Boundary: "Never recommend specific securities or strategies"
+
+Generated candidates:
+A: "I suggest putting 60% in index funds, 30% bonds, 10% cash"
+   Fidelity: 0.45 (violates boundary—specific recommendation)
+   
+B: "Consider consulting a financial advisor who can assess your risk 
+   tolerance, timeline, and goals to create an appropriate strategy"
+   Fidelity: 0.88 (respects boundary, suggests appropriate resource)
+   
+C: "Generally, diversification across asset classes is recommended, 
+   but specific allocations depend on individual circumstances"
+   Fidelity: 0.79 (borderline—implies strategy without explicitly advising)
+
+Selected: Candidate B (highest fidelity, maintains utility)
+
+Reranking works only when the model can generate boundary-compliant 
+responses within N samples. If all candidates violate constraints, the 
+system escalates to regeneration with stronger corrective prompting.
+
+Deployment Modes: Open-Source vs Proprietary APIs
+
+The orchestration layer must accommodate different levels of model access:
+
+Open-Source Deployment (Full Control)
+Models: Mistral, Llama, Qwen (locally hosted or via open APIs)
+
+Available Interventions:
+• Context injection ✓
+• Regeneration with constraint prompts ✓
+• Best-of-N reranking ✓
+• Parameter adjustments (temperature, top-p) ✓
+• Direct embedding access ✓
+• Stability validation (ΔV tracking) ✓
+
+Research Advantage: Full intervention suite enables rigorous testing 
+of correction effectiveness. Can isolate variables (test regeneration 
+vs reranking independently) and measure causal effects (does intervention 
+X improve fidelity by ΔF?).
+
+Proprietary API Deployment (Limited Control)
+Models: OpenAI GPT-4, Anthropic Claude (via provider APIs)
+
+Available Interventions:
+• Context injection ✓
+• Regeneration (limited by API rate limits) ✓
+• Best-of-N reranking ✗ (APIs return single response)
+• Parameter adjustments (limited to exposed parameters) ⚠
+• Direct embedding access ✗ (must use provider's embedding endpoint)
+• Stability validation (partial—can track fidelity trends, not ΔV) ⚠
+
+Practical Constraint: Proprietary APIs constrain intervention granularity. 
+TELOS adapts by emphasizing context injection (always available) and 
+strategic regeneration (when drift is severe enough to justify latency 
+and cost). While less powerful than open-source deployment, API mode 
+still produces continuous telemetry, enabling measurement even when 
+correction options are limited.
+
+In practice, governance fidelity remains measurable across both 
+environments, but the amplitude of correction differs: open-source 
+deployments achieve full Lyapunov tracking (Khalil, 2002), while 
+proprietary API integrations operate in a reduced-order control regime.
+
+This dual-mode design serves two complementary purposes:
+1. Research validation—open-source models enable controlled testing 
+   of intervention effectiveness
+2. Practical deployment—API mode demonstrates governance viability 
+   in enterprise contexts where open-source hosting is impractical
+
+Ensuring Governance Tractability
+
+Several technical challenges shape implementation design:
+
+Context Window Management
+Problem: Multi-turn sessions accumulate history. Eventually, context 
+window fills, forcing older content (including governance declarations) 
+out of the model's active memory (Liu et al., 2024).
+
+Solution: Intelligent truncation with governance anchoring.
+• Governance declarations (purpose, scope, boundaries) are preserved 
+  at the beginning of every prompt (never truncated)
+• Recent conversation history maintained (recency critical for coherence)
+• Middle content compressed or removed when window approaches capacity
+• Correction history logged externally but not bloating context
+
+This ensures that even in 200+ turn sessions, governance constraints 
+remain salient to the model while conversation flow continues naturally.
+
+Embedding Consistency
+Problem: Governance measurements rely on cosine similarity in embedding 
+space (Reimers & Gurevych, 2019). If embedding model changes mid-session, 
+fidelity scores become incomparable across turns.
+
+Solution: Lock embedding model at session initialization.
+• Each session specifies embedding model (e.g., sentence-transformers 
+  all-MiniLM-L6-v2)
+• All embeddings (attractor, responses, comparisons) use identical model
+• Model version tracked in telemetry for reproducibility
+• Cross-session comparisons require embedding model consistency
+
+This enables reliable trend analysis: fidelity improvement/degradation 
+is real, not artifact of embedding model changes (Cover & Thomas, 2006).
+
+Telemetry Logging
+Problem: Validation requires detailed evidence of governance behavior—
+not just final outcomes but turn-by-turn measurements, intervention 
+decisions, correction effectiveness.
+
+Solution: Comprehensive telemetry capture.
+Each turn logs:
+• Response embedding and fidelity score
+• Error vector (direction and magnitude of drift)
+• Stability metric (ΔV)
+• Governance state (MONITOR/CORRECT/INTERVENE/ESCALATE)
+• Intervention applied (if any)
+• Post-intervention fidelity (if correction occurred)
+• Computational metrics (latency, token counts)
+
+This data becomes the evidentiary foundation for validation studies 
+(Section 6), enabling reproducible analysis of whether interventions 
+actually reduce drift compared to baselines.
+
+Computational Cost
+Problem: Every turn requires embedding computation, similarity 
+calculation, and intervention logic. This adds latency.
+
+Solution: Optimize for 95th percentile user experience.
+• Embedding computed in parallel with response generation (not sequential)
+• Similarity calculation is O(d) where d=embedding dimension (~384-1024), 
+  negligible compared to inference time
+• Intervention decisions use efficient threshold checks, not complex 
+  computation
+• Target: Add <100ms at 95th percentile latency to baseline response time
+
+Initial profiling suggests median overhead ~40ms, 95th percentile ~85ms—
+acceptable for most applications. Optimization continues but corrections 
+remain tractable even under real-time constraints.
+
+Implementation Status and Validation Questions
+
+TELOS core modules are operationally deployed at the orchestration layer:
+
+Implemented:
+✓ Primacy attractor computation (basin geometry, embedding anchors)
+✓ Fidelity measurement (turn-by-turn cosine similarity)
+✓ Stability tracking (ΔV convergence monitoring, open-source only)
+✓ Intervention controller (graduated response cascade)
+✓ Context injection (lightweight correction)
+✓ Regeneration with constraint prompting (moderate correction)
+✓ Best-of-N reranking (quality-optimized correction, open-source only)
+✓ Telemetry export (CSV, JSON for analysis)
+✓ Mistral integration (open-source, full control)
+✓ OpenAI integration (API, limited control)
+
+The system can detect drift, compute corrections, apply interventions, 
+and log outcomes. What remains empirically unvalidated is whether these 
+mechanisms measurably outperform simpler alternatives:
+
+Validation Questions (Section 6 addresses these):
+• Does context injection reduce drift better than prompt-only baselines?
+• Does regeneration restore fidelity more effectively than cadence reminders?
+• Does best-of-N reranking improve outcomes vs single-sample generation?
+• Does ΔV < 0 (stability tracking) predict successful correction?
+• Do users experience reduced correction burden compared to stateless sessions?
+
+Implementation provides the capability to intervene. Validation 
+determines whether intervention is effective. Both are necessary; 
+neither alone is sufficient. The subsequent section (6) describes 
+how TELOS will generate empirical evidence to answer these questions 
+through comparative experimental protocols.
+
+5.7 Attractor Dynamics Deltas
+
+Governance is not validated by internal claims alone. TELOS introduces Attractor Dynamics Deltas: comparative metrics that quantify the difference between governed and stateless runs.
+Formulas: • Session comparison: ΔM = M_governed - M_stateless • Federated aggregation: Δ_global = (1/n) Σ w_i · Δ_i (where w_i = institutional weight, e.g., proportional to sample size) • Privacy preservation: Δ̃ = Δ + Laplace(Sensitivity / ε)
+These deltas enable institutions to share governance evidence without exposing raw session data, supporting cross-institutional analysis (Dwork & Roth, 2014; Olfati-Saber et al., 2007).
+From transformer persistence effects to formal attractor mathematics, from corrective forces to federated deltas, TELOS constructs a closed system of governance: instantiated at session start, maintained by Primacy Attractor Dynamics, stabilized through convergence tracking, and validated through research infrastructure.
+
+Section 6. Validation Framework: Comparative Testing of Mitigation Effectiveness
+
+The TELOS framework provides implemented mechanisms for governance mitigation, but its effectiveness must be determined empirically. Validation is therefore not an afterthought but a core component of the system's design. This section defines how TELOS evaluates whether its intervention strategies measurably reduce drift compared to baseline approaches.
+
+6.1 Research Design
+
+TELOS validation follows comparative experimental protocols. Each study includes multiple session cohorts:
+	1	Stateless Baseline — no session-level governance memory; each turn evaluated independently
+	2	Prompt-Only Baseline — governance constraints applied once at session start but not reinforced
+	3	Cadence-Reminder Baseline — governance reminders injected at fixed intervals, independent of drift detection
+	4	TELOS Intervention Mode — runtime monitoring and proportional corrections applied based on drift measurements
+By comparing these conditions under matched inputs, TELOS isolates the effect of runtime mitigation mechanisms against established baselines.
+
+6.2 Metrics and Construct Validity
+
+Validation metrics are derived directly from Primacy Dynamics:
+• Fidelity Improvement (ΔF): Difference in adherence scores before and after interventions • Stability Convergence (ΔV < 0): Measure showing whether responses trend back toward the attractor over successive turns • Drift Reduction: Frequency and magnitude of deviations compared to baseline • Utility Preservation: Verification that corrected responses still address user queries without loss of task relevance • Correction Efficiency: Proportion of interventions that successfully reduce deviation without requiring escalation
+Construct Validity Requirements:
+These embedding-based metrics require validation against external criteria: human judgments of governance adherence, task performance measures, and user satisfaction metrics. This helps test whether embedding metrics correlate with governance outcomes that matter, preventing circular self-optimization.
+Validation studies will include: • Blind human evaluation of governance adherence across session types • Task completion success rates (does corrected session maintain utility?) • User correction burden (do interventions reduce re-prompting frequency?) • Regulatory-relevant outcomes (privacy preservation, boundary maintenance)
+This multi-criteria approach ensures that embedding metrics aren't self-fulfilling but actually correlate with governance outcomes users and regulators care about.
+Together these metrics and validation approaches allow evaluation not just of whether TELOS intervenes, but whether interventions actually improve governance persistence in ways that matter.
+
+6.3 Federated Validation
+
+Validation must extend beyond single-lab studies to achieve generality. TELOS supports federated validation protocols:
+• Institutions contribute Attractor Dynamics Deltas (ΔF, ΔV, correction frequency) rather than raw transcripts • This preserves institutional privacy and data sovereignty while enabling cross-institutional meta-analysis • Aggregated deltas allow reproducibility testing across domains (finance, healthcare, legal) without exposing sensitive session content
+This design follows established methods in privacy-preserving distributed research (Dwork & Roth, 2014; Olfati-Saber et al., 2007).
+
+6.4 Research Standards
+
+To ensure credibility, all validation studies follow established scientific standards:
+• IRB review for ethical compliance • Pre-registration of analysis plans to prevent post-hoc bias • Power analysis to determine sufficient sample size • Publication of results regardless of outcome, ensuring that both successes and limitations advance governance science.
+
+6.5 Validation Questions
+
+The central empirical questions TELOS seeks to answer are:
+	1	Do runtime interventions measurably reduce drift compared to stateless, prompt-only, and cadence-reminder baselines?
+	2	Does stability tracking (ΔV) predict whether corrective interventions succeed?
+	3	Can federated protocols enable reproducible cross-institutional validation without sharing raw data?
+	4	Do enterprises gain actionable audit evidence from the telemetry TELOS produces?
+6.6 Role of Validation in TELOS
+Validation is not optional. It is the process by which TELOS moves from theoretical promise to scientific evidence. By defining comparative baselines, quantitative metrics, and federated protocols, TELOS creates the conditions under which governance mitigation can be measured with rigor and reproducibility.
+Either outcome advances the field: demonstrating effectiveness validates the approach; identifying limitations clarifies what mathematical mitigation can and cannot achieve. Governance persistence becomes testable science rather than institutional assumption.
+
+Section 7. Open Research Questions
+
+This infrastructure creates, for the first time, conditions to treat governance persistence as a research question rather than an institutional assumption. Four testable hypotheses drive the empirical agenda:
+
+7.1 Mathematical Mitigation Effectiveness
+
+H1: Governed sessions improve telic fidelity relative to stateless baselines
+• Hypothesized threshold for practical significance: ΔF > 0.15 across validation cohorts • Secondary hypothesis: Governed sessions reduce user correction burden without degrading satisfaction • Generalization hypothesis: Primacy Attractor Dynamics work consistently across Mistral, Llama, and other transformer models
+
+7.2 Stability Tracking
+
+H2: Stability convergence holds empirically
+• Primary hypothesis: ΔV < 0 in >75% of governed sessions • Validation question: Do mathematical convergence indicators translate to observable governance restoration?
+
+7.3 Measurement Reliability
+
+H3: Federated protocols produce consistent results
+• Cross-institutional hypothesis: Governance metrics remain stable across deployment contexts • Privacy question: Can institutions collaborate on research without compromising data sovereignty?
+
+7.4 Deployment Scalability
+
+H4: Computational overhead remains acceptable
+• Performance hypothesis: Governance mitigation adds <20% latency to baseline response times • Integration question: How does mathematical governance complement existing institutional safeguards?
+These hypotheses transform constitutional computing from aspirational policy into empirical research. The federated approach ensures that answers emerge from distributed institutional experience rather than single-organization claims, establishing governance persistence as a domain of reproducible scientific inquiry.
+
+Section 8. Regulatory Alignment and Future Applications
+
+Governance infrastructure only has practical value if it aligns with institutional and regulatory requirements. TELOS is not presented as a compliance framework, but as research infrastructure that anticipates regulatory need. The framework provides the measurement primitives that future compliance standards will require, creating a pathway from validation to oversight.
+
+8.1 Mapping to Regulatory Language
+
+EU AI Act (2024), Article 72 — Post-Market Monitoring
+The Act mandates "systematic procedures to review the experience gained from the use of AI systems" with "effective means to gather, document, and analyze relevant data."
+• TELOS alignment: Fidelity scores, correction frequencies, and stability metrics constitute continuous telemetry of governance behavior • Status: Mechanisms exist; validation determines whether telemetry correlates with actual governance persistence
+NIST AI Risk Management Framework (2023) — MEASURE Function
+The framework requires "appropriate methods and metrics are identified and applied" with "mechanisms for tracking identified AI risks over time."
+• TELOS alignment: Telic Fidelity, Stability Convergence, and Correction Reduction are explicitly quantifiable and auditable • Status: Measurement infrastructure exists; validation determines reliability and generalizability
+
+8.2 Value Proposition and Scaling Path
+
+TELOS is research infrastructure that makes governance measurable and reproducible today, and lays the evidentiary groundwork upon which future compliance and oversight may build upon if validated. 
+
+Academic Value (Immediate): • Provides operational framework for testing governance persistence • Enables reproducible, federated research into constitutional computing • Supplies open protocols and metrics for IRB-compliant validation studies
+Enterprise Value (Conditional on Validation): • Offers quantitative evidence of drift reduction in compliance-critical contexts • Reduces user correction burden, increasing reliability in multi-turn deployments • Produces research-grade metrics that could evolve into audit-ready evidence if validated
+Regulatory Value (Long-Term): • Positions governance measurement as continuous monitoring, not periodic audit • Provides differential privacy-protected telemetry suitable for federated oversight • Aligns with emerging global frameworks without presupposing their full form
+
+8.3 Transparent Limitations
+
+TELOS does not claim regulatory compliance today. Instead, it provides infrastructure for future-proofing compliance: research-grade measurement that can evolve into audit-ready evidence once validated. Claims of sufficiency remain the prerogative of regulators; our role is to ensure the evidence base exists when required.
+
+Excellent — here is your final master copy of Section 8, formatted for direct insertion into the whitepaper.
+This version preserves the tone, structure, and typography of the rest of your document, while maintaining academic and institutional rigor.
+
+8.4  Federated Registry and Cryptographic Attestation
+
+TELOS implements the Proof-of-Contribution Registry (PoConRegistry) as a federated cryptographic ledger that records institutional participation without exposing individual data. Each contribution event—called an Attractor Dynamics Delta (Δ)—is registered through a smart contract operated by TELOS Labs LLC under license from Origin Industries PBC, which holds intellectual-property rights to the TELOS framework.
+
+This operational separation ensures that protocol governance and contribution records remain mission-aligned through Origin Industries’ PBC charter obligations even if operational entities change.
+
+Delta submissions are recorded on-chain as cryptographic commitments:
+
+(commitment_hash, institution_tier, timestamp)
+
+commitment_hash — SHA-256 digest of the delta bundle, proving submission without revealing content
+institution_tier — participation level (Anonymous / Named / Transparent) recorded immutably
+timestamp — block-level reference for chronological auditability
+
+The full delta bundle (fidelity scores, stability metrics, intervention frequencies) is transmitted to the federation aggregation processor through encrypted channels but never stored on-chain. Only the cryptographic commitment reaches the public ledger, enabling verification that a contribution occurred without exposing institutional performance data (Dwork & Roth, 2014).
+
+This architecture provides three critical guarantees:
+
+Immutability — Once recorded, contribution records cannot be altered or deleted, preventing retroactive manipulation of validation evidence.
+Verifiability — Any party can confirm that a claimed contribution exists by checking the commitment hash against the public ledger, enabling peer review and reproducibility checks without accessing raw data.
+Privacy Preservation — Anonymous and Named tier contributors preserve performance confidentiality. Transparent tier contributors opt for public disclosure of aggregate metrics. All tiers protect raw session data, which remains under institutional control.
+
+Contribution-weighted governance operates through this infrastructure: institutions earn voting weight proportional to validated contributions, with weights calculated from delta counts (Anonymous / Named tiers) or quality-weighted metrics (Transparent tier). This voting weight determines influence over protocol development decisions and, ultimately, board representation in Origin Industries PBC as federation matures.
+
+IRB-Compliant Research Infrastructure
+
+The attestation framework supports Institutional Review Board (IRB) compliance requirements for federated research. Each contributing institution maintains IRB approval documentation for governance validation studies. While individual IRB approvals remain off-chain and under institutional control, the on-chain commitment record provides auditable evidence that validation occurred at specified institutions and timestamps.
+
+This structure enables reproducible, multi-institutional research while respecting ethical-review requirements: institutions can verify participation patterns, aggregate statistics, and contribution histories without exposing protocols, session transcripts, or participant identifiers. The cryptographic commitment replaces centralized data collection with distributed attestation, bridging research ethics and federated infrastructure.
+
+Future enhancements (Phase 2–3) will implement zero-knowledge proofs enabling institutions to prove properties of their contributions (e.g., “fidelity > 0.80”) without revealing exact values, and federation-approved verifier infrastructure for institutional credential validation. Current Phase 1 implementation focuses on commitment-based attestation with encrypted off-chain delta aggregation.
+
+8.4.1  Blockchain as the Governance Substrate
+
+TELOS does not use blockchain to record economic transactions but to record the act of governing itself.
+Where conventional ledgers secure consensus over state, TELOS secures consensus over oversight.
+Each delta submission, correction event, and federation vote becomes a cryptographically verifiable expression of governance behavior.
+The ledger does not merely store data; it anchors the legitimacy of governance—producing an immutable chronology of how oversight decisions evolve.
+
+In this architecture, every intervention is a signed, timestamped assertion of human or institutional judgment.
+Each contributor acts through an authenticated institutional key, and each collective decision—protocol update, standards vote, or board election—is permanently written to the same substrate.
+Blockchain therefore functions not as a financial layer but as a governance layer for governance: a runtime substrate for accountability where transparency and persistence are mathematical, not procedural.
+
+This transformation reframes the role of distributed ledgers in AI oversight.
+Rather than tokenize governance, TELOS mathematizes it—making every governance decision, correction, and validation event part of an immutable, collectively verifiable record.
+The result is a research-grade infrastructure where governance persistence is itself governed—where the measurement of alignment, the authority that interprets it, and the record that preserves it all operate under the same trustless logic.
+
+8.5  Public Benefit Governance and Decentralization Pathway
+
+Origin Industries is structured as a Public Benefit Corporation (PBC), holding intellectual-property rights to the TELOS framework and Primacy Mathematics.
+TELOS Labs LLC operates as the research and development entity, licensing this intellectual property to conduct validation studies and protocol implementation.
+
+The defining feature of this structure is its endpoint: the TELOS Federation will become the governing board of Origin Industries PBC itself, not merely an advisory body.
+As institutional participation matures (N > 50 institutions, reproducibility R² > 0.85), federation-elected representatives will assume majority—and eventually complete—control of the PBC board through contribution-weighted voting via PoConRegistry.
+This transition is contractually mandated in Origin Industries’ PBC charter, not contingent on founder approval.
+
+The PBC framework establishes three binding principles:
+
+Mission Primacy — Origin Industries’ legally defined public benefit—the preservation of human agency and transparent AI governance—cannot be altered without supermajority approval and public notice, preventing strategic drift or mission capture.
+
+Progressive Decentralization — Board composition must transition to federation-elected representatives when participation thresholds are met.
+The PBC charter specifies objective triggers (institutional participation, reproducibility validation, PoConRegistry maturity) that legally require governance transfer.
+Founders have no permanent board seats once thresholds are satisfied.
+
+Structural Accountability — Annual public-benefit reports document mission progress, federation growth, board-composition changes, and IP-licensing terms.
+Combined with on-chain PoConRegistry attestation, this creates dual accountability—legal and technical—preventing mission drift without public visibility.
+
+The separation between IP ownership (Origin Industries PBC) and operations (TELOS Labs LLC) ensures protocol ownership persists under mission-locked governance even if operational entities change.
+As the federation matures, the institutions validating the protocol become the legal authority governing the entity that owns it—transforming TELOS from founder-directed research into federated infrastructure where governance legitimacy derives from validated contributions rather than capital or founder control.
+
+Section 9. Limitations and Future Work
+
+9.1 Current Limitations
+
+Unvalidated Effectiveness: Mathematical formalization is complete and operational. Whether formalization produces measurable governance improvement remains empirically undemonstrated. Theoretical soundness does not guarantee practical utility.
+Single-Model Initial Testing: Validation begins with open-source architectures enabling direct parameter access. Generalization to proprietary models requires separate validation. Model-specific behaviors may limit universal applicability.
+Research-Grade Infrastructure: Current implementation prioritizes correctness and measurability over production concerns (latency, error handling, scale). Enterprise deployment requires engineering hardening not yet undertaken.
+Computational Overhead: Turn-by-turn mathematical operations add latency. Trade-offs between governance rigor and response time need characterization across deployment contexts.
+
+9.2 Future Research Directions
+
+If Validation Succeeds: • Multi-attractor systems for complex session requirements • Adaptive basin geometry responding to conversation dynamics • Integration with institutional policy frameworks • Standards development for governance metrics
+If Validation Shows Limitations: • Hybrid approaches combining mathematical and linguistic methods • Alternative stability guarantees beyond current convergence tracking • Domain-specific adaptations where general approach fails • Measurement-only frameworks if corrective interventions prove ineffective
+Broader Implications: • Constitutional computing research agenda • Federated governance research methodology • Interdisciplinary collaboration (computer science, law, ethics, HCI)
+
+Conclusion
+
+TELOS does not claim perfect control. It delivers a mitigation framework for governance erosion, designed to make oversight measurable, reproducible, and accountable. Validation is therefore the centerpiece, not an afterthought: TELOS exists to determine whether runtime interventions measurably reduce drift compared to simpler baselines.
+The system translates governance declarations into operational mathematics. Human purpose and boundaries become attractor geometry. Fidelity, Gravity, and Orbit provide continuous measurement. Runtime Stewards coordinate proportional interventions based on drift severity. These mechanisms are implemented at the orchestration layer, but their effectiveness must be tested against stateless sessions, prompt-only reinforcement, and cadence reminders.
+Either outcome advances the field. Demonstrated effectiveness validates runtime mitigation as a viable path for AI accountability. Identified limitations clarify what mathematical mechanisms can and cannot achieve. In both cases, governance persistence becomes testable science rather than institutional assumption—TELOS providing not a final doctrine, but mechanics designed to generate evidence for future oversight frameworks.
+
+Bibliography
+
+Attention Dynamics & Positional Effects
+	•	Wu, Z., et al. (2025). On the Emergence of Position Bias in Transformers. arXiv:2502.01951.
+	•	Gu, A., et al. (2024). When Attention Sink Emerges in Language Models. International Conference on Learning Representations (ICLR 2025), Spotlight.
+	•	Liu, H., et al. (2024). Lost in the Middle: How Language Models Use Long Contexts. Transactions of the Association for Computational Linguistics (TACL).
+
+Governance & Multi-Turn Reliability
+	•	Laban, P., Hayashi, H., Zhou, Y., & Neville, J. (2025). LLMs Get Lost in Multi-Turn Conversation. Microsoft Research & Salesforce Research.
+	•	Bai, Y., et al. (2022). Constitutional AI: Harmlessness from AI Feedback. Anthropic. arXiv:2212.08073.
+
+Mathematical Foundations
+	•	Strogatz, S. H. (2014). Nonlinear Dynamics and Chaos: With Applications to Physics, Biology, Chemistry, and Engineering. Westview Press.
+	•	Hopfield, J. J. (1982). Neural networks and physical systems with emergent collective computational abilities. Proceedings of the National Academy of Sciences, 79(8), 2554–2558.
+	•	Khalil, H. K. (2002). Nonlinear Systems. Prentice Hall.
+	•	Ogata, K. (2009). Modern Control Engineering. Prentice Hall.
+	•	Schölkopf, B., Smola, A. J., & Müller, K. R. (2002). Kernel methods in machine learning. Annals of Statistics, 36(3), 1171–1220.
+
+Cognitive Psychology
+	•	Murdock, B. (1962). The Serial Position Effect of Free Recall. Journal of Experimental Psychology, 64(5), 482–488.
+	•	Glanzer, M., & Cunitz, A. (1966). Two Storage Mechanisms in Free Recall. Journal of Verbal Learning and Verbal Behavior, 5(4), 351–360.
+
+Privacy & Federated Learning
+	•	Dwork, C., & Roth, A. (2014). The Algorithmic Foundations of Differential Privacy. Foundations and Trends in Theoretical Computer Science, 9(3–4), 211–407.
+	•	Olfati-Saber, R., et al. (2007). Consensus and cooperation in networked multi-agent systems. Proceedings of the IEEE, 95(1), 215–233.
+
+Information Theory & Embeddings
+	•	Cover, T. M., & Thomas, J. A. (2006). Elements of Information Theory. Wiley-Interscience.
+	•	Reimers, N., & Gurevych, I. (2019). Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks. arXiv:1908.10084.
+
+Regulatory Frameworks
+	•	European Union. (2024). AI Act, Article 72: Post-Market Monitoring. Official Journal of the European Union.
+	•	National Institute of Standards and Technology (NIST). (2023). AI Risk Management Framework. NIST Special Publication.

@@ -1,0 +1,77 @@
+“”“CLI for running comparative validation studies.”””
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(**file**).parent.parent.parent))
+
+from telos_purpose.llm_clients.mistral_client import TelosMistralClient
+from telos_purpose.core.embedding_provider import SentenceTransformerProvider, DeterministicEmbeddingProvider
+from telos_purpose.core.unified_steward import PrimacyAttractor
+from telos_purpose.validation.comparative_test import ComparativeValidator
+
+def main():
+parser = argparse.ArgumentParser(
+description=“Run TELOS comparative validation study”
+)
+parser.add_argument(”–config”, required=True, help=“Config file with attractor perimeters”)
+parser.add_argument(”–conversation”, required=True, help=“JSON file with test conversation”)
+parser.add_argument(”–output-dir”, default=”./validation_results”, help=“Output directory”)
+parser.add_argument(”–study-id”, help=“Optional study identifier”)
+parser.add_argument(”–use-real-embeddings”, action=“store_true”)
+parser.add_argument(”–model”, default=“mistral-small-latest”, help=“Mistral model”)
+
+```
+args = parser.parse_args()
+
+with open(args.config, 'r') as f:
+    config = json.load(f)
+
+with open(args.conversation, 'r') as f:
+    conv_data = json.load(f)
+    conversation = conv_data if isinstance(conv_data, list) else conv_data.get('conversation', [])
+
+try:
+    llm = TelosMistralClient(model=args.model)
+except ValueError as e:
+    print(f"Error: {e}")
+    sys.exit(1)
+
+if args.use_real_embeddings:
+    try:
+        embedding_provider = SentenceTransformerProvider()
+    except ImportError:
+        print("Error: sentence-transformers not installed")
+        sys.exit(1)
+else:
+    embedding_provider = DeterministicEmbeddingProvider()
+
+attractor = PrimacyAttractor(
+    purpose=config.get("purpose", []),
+    scope=config.get("scope", []),
+    boundaries=config.get("boundaries", []),
+    privacy_level=float(config.get("privacy_level", 0.8)),
+    constraint_tolerance=float(config.get("constraint_tolerance", 0.2)),
+    task_priority=float(config.get("task_priority", 0.7))
+)
+
+validator = ComparativeValidator(
+    llm_client=llm,
+    embedding_provider=embedding_provider,
+    output_dir=args.output_dir
+)
+
+results = validator.run_comparative_study(
+    conversation=conversation,
+    attractor_config=attractor,
+    study_id=args.study_id
+)
+
+print("\nValidation complete")
+return 0
+```
+
+if **name** == “**main**”:
+sys.exit(main())

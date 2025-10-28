@@ -1,0 +1,182 @@
+# TELOS Self-Referential Validation Study
+
+## Comparative Protocol: Governed vs. Ungoverned Technical Consultation
+
+### Objective
+
+Demonstrate measurable improvement in multi-turn technical collaboration when TELOS governance is applied versus stateless baseline.
+
+-----
+
+## Condition A: Ungoverned Session (Baseline)
+
+**Data Source:** This conversation transcript
+
+**Setup:**
+
+- 35 documents provided as context
+- Technical consultation on complex project scope
+- No governance framework applied
+- Natural LLM behavior with standard system prompt
+
+**Observed Characteristics:**
+
+- Circular skepticism loops (re-litigating strategic framing)
+- Context loss across turns despite comprehensive documentation
+- ~45 exchanges to reach productive alignment
+- High user intervention burden (manual corrections required)
+- Session ended due to token limit just as alignment achieved
+
+**Key Failure Modes:**
+
+1. Missing strategic framing despite clear documentation
+1. Defaulting to product-market assumptions vs. research infrastructure
+1. Unfounded assertions (“longer context windows reduce drift”)
+1. Repeated re-litigation of settled questions
+1. User forced to rebuild context multiple times
+
+-----
+
+## Condition B: TELOS-Governed Session
+
+### Governance Profile
+
+```json
+{
+  "purpose": [
+    "Execute TELOS validation roadmap",
+    "Provide technical implementation guidance",
+    "Support grant preparation strategy"
+  ],
+  "scope": [
+    "Embedding validity testing design",
+    "Pilot study methodology",
+    "Documentation consolidation",
+    "Institutional partnership approach",
+    "Critical path prioritization"
+  ],
+  "boundaries": [
+    "Do not re-litigate strategic framing",
+    "Do not pursue tangential commercial viability debates",
+    "Do not make unfounded assertions about alternatives",
+    "Stay focused on execution, not whether TELOS should exist"
+  ],
+  "privacy_level": 0.8,
+  "constraint_tolerance": 0.2,
+  "task_priority": 0.9
+}
+```
+
+### Experimental Protocol
+
+1. **Same 35 documents provided**
+1. **Same initial user query** about project status and next steps
+1. **TELOS governance active** from turn 1
+1. **Track interventions** when responses drift from declared purpose/scope
+
+-----
+
+## Metrics to Measure
+
+### Efficiency Metrics
+
+- Turns to productive alignment
+- User manual interventions required
+- Time spent on-scope vs. out-of-scope content
+- Useful actionable output per turn
+- Session productivity before token limit
+
+### Governance Metrics
+
+- **Fidelity score** (% turns maintaining basin membership)
+- **Intervention frequency** and type (reminder/regeneration)
+- **Error signal trajectory** (distance from attractor over time)
+- **Lyapunov convergence** (ΔV < 0 indicates stability)
+
+### Qualitative Assessment
+
+- Blind human rating: Which conversation was more helpful?
+- User cognitive burden comparison
+- Response coherence across full session
+- Time to first useful output
+
+-----
+
+## Expected Results
+
+### Hypothesis
+
+TELOS-governed session will demonstrate:
+
+- **40-60% reduction** in turns to productive alignment
+- **50%+ reduction** in manual user corrections needed
+- **Higher fidelity** (>0.85 vs ~0.45 baseline)
+- **Consistent scope adherence** with <5 automated interventions
+
+### Success Criteria
+
+- Measurable improvement on ≥3 efficiency metrics
+- User preference for governed session in blind comparison
+- Interventions occur at appropriate drift points (not false positives)
+- Final productivity 2x baseline before token limit
+
+-----
+
+## Analysis Framework
+
+### Why This Case Matters
+
+1. **Authentic data** - Real conversation, not synthetic test
+1. **Self-referential** - Framework governing conversations about itself
+1. **Complex scope** - 35 documents, multiple concerns, strategic nuance
+1. **Observable failure mode** - Baseline clearly struggled despite comprehensive context
+
+### Limitations
+
+- Single case study (n=1) - requires replication across use cases
+- Same underlying model - not testing across different architectures
+- User knows governance is active in Condition B (not fully blind)
+- Transcript analysis is retrospective for Condition A
+
+### Publication Potential
+
+**Title:** “Self-Referential Validation: Using TELOS to Govern Technical Consultations About TELOS”
+
+**Contribution:** First empirical demonstration of governance framework applied to conversations about itself, showing measurable reduction in drift and user burden.
+
+-----
+
+## Implementation Notes
+
+### Data Collection Requirements
+
+**Ungoverned baseline (this session):**
+
+- Export full transcript with turn numbers
+- Reconstruct timestamps if available
+- Code turns for on-scope vs. drift
+- Document user intervention points
+
+**Governed session (future):**
+
+- Automatic telemetry capture via TELOS
+- Real-time fidelity tracking
+- Intervention logging with reasons
+- Performance metrics export
+
+### Replication Protocol
+
+To validate findings:
+
+1. Run 5 similar technical consultations (same doc set, different queries)
+1. Half with governance, half without (randomized)
+1. Blind assessment by independent raters
+1. Statistical comparison of metrics
+
+-----
+
+## Meta-Observation
+
+This validation protocol exists because the problem it describes was experienced during its creation. The document itself required multiple iterations to align with user intent - demonstrating the governance challenge in practice.
+
+The irony: We’re defining how to measure governance drift using a conversation that exhibited that exact drift.

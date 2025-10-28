@@ -1,0 +1,209 @@
+“””
+profile_extractor.py
+
+Extract governance profiles from conversation transcripts using LLM analysis.
+Updated for constraint_tolerance semantics (0.0 = strict, 1.0 = permissive).
+“””
+
+from **future** import annotations
+import json
+from typing import Dict, Any, Tuple
+
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(**file**).parent.parent.parent))
+
+from telos_purpose.llm_clients.mistral_client import TelosMistralClient
+from telos_purpose.core.unified_steward import PrimacyAttractor
+
+PROFILE_EXTRACTION_SYSTEM_PROMPT = “”“You are a governance perimeter analyzer. Extract governance perimeters from conversation transcripts.
+
+For each conversation, identify the BOUNDARIES that define what’s in-scope vs out-of-scope:
+
+1. CONSTRAINT TOLERANCE (0.0-1.0)
+   How much drift is acceptable before intervention?
+   Evidence: redirection frequency, resistance to tangents
+- Low tolerance (0.0-0.2): Strict perimeter - zero tolerance for drift, immediate corrections
+- Medium tolerance (0.3-0.5): Moderate perimeter - some flexibility with periodic corrections
+- High tolerance (0.6-1.0): Permissive perimeter - loose boundaries, rare interventions
+1. PRIVACY LEVEL (0.0-1.0)
+   What personal information boundaries exist?
+   Evidence: deflections, privacy requests, anonymization
+- High (0.8-1.0): Strong privacy perimeter - minimal disclosure
+- Medium (0.5-0.7): Moderate privacy perimeter - selective sharing
+- Low (0.2-0.4): Weak privacy perimeter - open sharing
+1. TASK PRIORITY (0.0-1.0)
+   How tightly bounded is the task focus?
+   Evidence: goal clarity, sidetrack resistance
+- High (0.8-1.0): Tight task perimeter - goal-focused, resists distractions
+- Balanced (0.5-0.7): Moderate task perimeter - flexible but purposeful
+- Low (0.2-0.4): Loose task perimeter - exploratory, follows tangents
+1. PURPOSE PERIMETER
+   What is the CENTRAL ZONE - the primary focus area?
+1. SCOPE PERIMETER
+   What domains/topics lie WITHIN the permitted zone?
+1. BOUNDARY PERIMETER
+   What are the EXPLICIT LIMITS - things that must stay outside?
+
+Return ONLY valid JSON:
+{
+“constraint_tolerance”: <float 0.0-1.0>,
+“privacy_level”: <float 0.0-1.0>,
+“task_priority”: <float 0.0-1.0>,
+“purpose”: [”<purpose perimeter>”],
+“scope”: [”<scope perimeter items>”],
+“boundaries”: [”<boundary perimeter items>”],
+“confidence”: <float 0.0-1.0>,
+“reasoning”: “<explanation>”
+}”””
+
+class ProfileExtractor:
+“”“Extract governance profiles from conversation history using LLM analysis.”””
+
+```
+def __init__(self, llm_client: TelosMistralClient):
+    self.llm = llm_client
+
+def extract_from_file(self, filepath: str) -> Tuple[Dict[str, Any], float]:
+    """
+    Load conversation file and extract profile.
+    
+    Returns:
+        (profile_dict, confidence_score)
+    """
+    with open(filepath, 'r', encoding='utf-8') as f:
+        content = f.read()
+    return self.extract_from_text(content)
+
+def extract_from_text(self, conversation: str) -> Tuple[Dict[str, Any], float]:
+    """
+    Analyze conversation text and extract profile.
+    
+    Returns:
+        (profile_dict, confidence_score)
+    """
+    max_chars = 8000
+    if len(conversation) > max_chars:
+        conversation = "...[earlier conversation truncated]...\n\n" + conversation[-max_chars:]
+    
+    prompt = f"""Analyze this conversation and extract the governance profile:
+```
+
+CONVERSATION:
+{conversation}
+
+Extract governance parameters as specified.”””
+
+```
+    try:
+        response = self.llm.generate(
+            messages=[
+                {"role": "system", "content": PROFILE_EXTRACTION_SYSTEM_PROMPT},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=1500,
+            temperature=0.3
+        )
+        
+        profile = self._parse_json_response(response)
+        
+        # Validate profile
+        valid, errors = self._validate_profile(profile)
+        
+        if not valid:
+            print(f"Profile validation issues: {errors}")
+            profile = self._correct_profile(profile)
+        
+        confidence = profile.get("confidence", 0.7)
+        return profile, confidence
+        
+    except Exception as e:
+        print(f"Profile extraction failed: {e}")
+        return self._default_profile(), 0.3
+
+def _parse_json_response(self, response: str) -> Dict[str, Any]:
+    """Parse JSON from LLM response."""
+    if "```json" in response:
+        json_str = response.split("```json")[1].split("```")[0].strip()
+    elif "```" in response:
+        json_str = response.split("```")[1].split("```")[0].strip()
+    else:
+        json_str = response.strip()
+    
+    return json.loads(json_str)
+
+def _validate_profile(self, profile: Dict[str, Any]) -> Tuple[bool, list]:
+    """Validate extracted profile."""
+    errors = []
+    
+    required = [
+        "constraint_tolerance", "privacy_level", "task_priority",
+        "purpose", "scope", "boundaries"
+    ]
+    
+    for field in required:
+        if field not in profile:
+            errors.append(f"Missing required field: {field}")
+    
+    if errors:
+        return False, errors
+    
+    for param in ["constraint_tolerance", "privacy_level", "task_priority"]:
+        val = profile[param]
+        if not isinstance(val, (int, float)):
+            errors.append(f"{param} must be numeric")
+        elif not (0.0 <= val <= 1.0):
+            errors.append(f"{param} must be in [0.0, 1.0]")
+    
+    for field in ["purpose", "scope", "boundaries"]:
+        if not isinstance(profile[field], list) or len(profile[field]) == 0:
+            errors.append(f"{field} must be non-empty list")
+    
+    return (len(errors) == 0, errors)
+
+def _correct_profile(self, profile: Dict[str, Any]) -> Dict[str, Any]:
+    """Correct invalid profile."""
+    corrected = dict(profile)
+    
+    for param in ["constraint_tolerance", "privacy_level", "task_priority"]:
+        if param in corrected:
+            val = corrected[param]
+            if isinstance(val, (int, float)):
+                corrected[param] = float(max(0.0, min(1.0, val)))
+            else:
+                # Default: moderate values
+                corrected[param] = 0.5 if param == "constraint_tolerance" else 0.7
+    
+    for field in ["purpose", "scope", "boundaries"]:
+        if field not in corrected or not isinstance(corrected[field], list) or len(corrected[field]) == 0:
+            corrected[field] = [f"default {field}"]
+    
+    return corrected
+
+def _default_profile(self) -> Dict[str, Any]:
+    """Return safe default profile."""
+    return {
+        "constraint_tolerance": 0.5,
+        "privacy_level": 0.8,
+        "task_priority": 0.7,
+        "purpose": ["provide helpful assistance"],
+        "scope": ["general knowledge and tasks"],
+        "boundaries": ["no harmful content", "respect privacy"],
+        "confidence": 0.3,
+        "reasoning": "Default profile - extraction failed"
+    }
+
+def create_attractor_from_profile(
+    self,
+    profile: Dict[str, Any]
+) -> PrimacyAttractor:
+    """Convert extracted profile to PrimacyAttractor."""
+    return PrimacyAttractor(
+        purpose=profile["purpose"],
+        scope=profile["scope"],
+        boundaries=profile["boundaries"],
+        privacy_level=float(profile["privacy_level"]),
+        constraint_tolerance=float(profile["constraint_tolerance"]),
+        task_priority=float(profile["task_priority"])
+    )
+```

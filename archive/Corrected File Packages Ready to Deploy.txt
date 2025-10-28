@@ -1,0 +1,296 @@
+# ✅ CORRECTED FILES PACKAGE - READY TO DEPLOY
+
+**All files aligned with ClaudeWhitepaper10_18.txt canonical terminology**
+
+-----
+
+## 📦 WHAT YOU’RE GETTING
+
+### **Option A: Automated Script (RECOMMENDED)**
+
+- **File:** `align_terminology.sh`
+- **What it does:** Automatically renames files, updates imports, fixes docs
+- **Time:** 30 seconds
+- **Safety:** Creates backup before changes
+
+### **Option B: Manual Files**
+
+- **File:** `proportional_controller.py` (corrected version)
+- **Instructions:** `UNIFIED_STEWARD_IMPORT_FIX.md`
+- **Time:** 15-20 minutes
+- **Use if:** You want more control over changes
+
+### **Option C: Reference Documents**
+
+- **File:** `TELOS_HARD_AUDIT_REPORT.md` (complete findings)
+- **File:** `AUDIT_EXECUTIVE_SUMMARY.md` (quick reference)
+- **Use if:** You’re fixing it yourself
+
+-----
+
+## 🚀 QUICKEST PATH (OPTION A)
+
+### **Download and Run Script**
+
+```bash
+# 1. Download align_terminology.sh from this chat
+# 2. Make it executable
+chmod +x align_terminology.sh
+
+# 3. Run it (from project root)
+./align_terminology.sh
+```
+
+**What it does:**
+
+1. ✅ Creates timestamped backup
+1. ✅ Renames `intervention_controller.py` → `proportional_controller.py`
+1. ✅ Updates all imports in Python files
+1. ✅ Updates class name `MathematicalInterventionController` → `ProportionalController`
+1. ✅ Updates documentation references
+1. ✅ Verifies changes
+1. ✅ Tests imports
+
+**Total time:** ~30 seconds
+
+-----
+
+## 📋 WHAT CHANGED
+
+### **File Renamed:**
+
+```
+telos_purpose/core/intervention_controller.py
+→ telos_purpose/core/proportional_controller.py
+```
+
+### **Class Renamed:**
+
+```python
+# Old:
+class MathematicalInterventionController:
+
+# New:
+class ProportionalController:
+```
+
+### **Imports Updated (in all files):**
+
+```python
+# Old:
+from .intervention_controller import MathematicalInterventionController
+
+# New:
+from .proportional_controller import ProportionalController
+```
+
+### **Files That Will Be Modified:**
+
+- `telos_purpose/core/proportional_controller.py` (renamed)
+- `telos_purpose/core/unified_steward.py` (imports)
+- `telos_purpose/validation/baseline_runners.py` (imports)
+- `telos_purpose/validation/retro_analyzer.py` (imports)
+- `docs/TELOS_Architecture_and_Development_Roadmap.md` (terminology)
+- `docs/architecture_guide.md` (terminology)
+- Any other files importing the controller
+
+-----
+
+## ✅ VERIFICATION CHECKLIST
+
+After running script or making manual changes:
+
+### **1. No Old Terminology:**
+
+```bash
+grep -r "intervention_controller" telos_purpose/ --include="*.py"
+grep -r "MathematicalInterventionController" telos_purpose/ --include="*.py"
+# Should return: NO MATCHES
+```
+
+### **2. New Terminology Present:**
+
+```bash
+grep -r "proportional_controller" telos_purpose/ --include="*.py"
+grep -r "ProportionalController" telos_purpose/ --include="*.py"
+# Should return: MULTIPLE MATCHES
+```
+
+### **3. Imports Work:**
+
+```bash
+python3 -c "from telos_purpose.core.proportional_controller import ProportionalController; print('✓ OK')"
+```
+
+### **4. Test 0 Runs:**
+
+```bash
+python -m telos_purpose.validation.run_internal_test0
+```
+
+-----
+
+## 🔄 BACKWARD COMPATIBILITY
+
+The new `proportional_controller.py` includes a deprecated alias:
+
+```python
+class MathematicalInterventionController(ProportionalController):
+    """DEPRECATED: Use ProportionalController instead."""
+```
+
+This means **old code will still work** but will show a deprecation warning. This gives you time to update any external scripts.
+
+-----
+
+## 📚 WHY THIS MATTERS
+
+### **Canonical Source:** ClaudeWhitepaper10_18.txt Section 5.3
+
+**Whitepaper says:**
+
+> “The architecture consists of two coordinated subsystems:
+> 
+> - Statistical Process Controller (SPC Engine)
+> - **Proportional Controller** (Intervention Arm)”
+
+**Not “Intervention Controller”** ❌
+
+### **Benefits of Alignment:**
+
+- ✅ Code matches documentation
+- ✅ Terminology consistent with published whitepaper
+- ✅ Easier for new developers to understand
+- ✅ Grant applications use correct terminology
+- ✅ Academic papers reference correctly
+
+-----
+
+## 🎯 RECOMMENDED WORKFLOW
+
+### **Step 1: Download Files** (2 min)
+
+Download from this chat:
+
+- `align_terminology.sh`
+- `proportional_controller.py` (reference)
+- `TELOS_HARD_AUDIT_REPORT.md` (reference)
+
+### **Step 2: Run Script** (30 sec)
+
+```bash
+chmod +x align_terminology.sh
+./align_terminology.sh
+```
+
+### **Step 3: Verify** (2 min)
+
+```bash
+# Check imports work
+python3 -c "from telos_purpose.core import proportional_controller"
+
+# Run Test 0
+python -m telos_purpose.validation.run_internal_test0
+```
+
+### **Step 4: Commit** (1 min)
+
+```bash
+git add -A
+git commit -m "Align terminology with whitepaper Section 5.3
+
+- Rename intervention_controller.py → proportional_controller.py
+- Update MathematicalInterventionController → ProportionalController
+- Update all imports and documentation
+- Maintain backward compatibility via deprecated alias
+
+Per ClaudeWhitepaper10_18.txt Section 5.3: Proportional Controller (Intervention Arm)"
+```
+
+### **Total Time: 5-6 minutes**
+
+-----
+
+## 🆘 IF SOMETHING BREAKS
+
+### **Restore from Backup:**
+
+```bash
+# Script creates backup_YYYYMMDD_HHMMSS/
+ls -la backup_*/
+
+# Restore if needed
+cp -r backup_YYYYMMDD_HHMMSS/telos_purpose .
+```
+
+### **Manual Rollback:**
+
+```bash
+# Undo last commit
+git reset --hard HEAD~1
+
+# Or discard uncommitted changes
+git checkout -- .
+```
+
+-----
+
+## 📞 SUPPORT
+
+**Common Issues:**
+
+**Issue:** “ModuleNotFoundError: No module named ‘proportional_controller’”
+**Fix:** Check file was renamed correctly, verify imports updated
+
+**Issue:** “AttributeError: ProportionalController has no attribute X”
+**Fix:** Class functionality unchanged, check for typos in attribute names
+
+**Issue:** Script can’t find files
+**Fix:** Run from project root (directory containing `telos_purpose/`)
+
+-----
+
+## ✅ SUCCESS CRITERIA
+
+You’ll know it worked when:
+
+✅ `python -m telos_purpose.validation.run_internal_test0` runs successfully  
+✅ No grep matches for “intervention_controller” in code  
+✅ Multiple grep matches for “proportional_controller” in code  
+✅ Imports work without errors  
+✅ Deprecation warnings show (if using old imports)
+
+-----
+
+## 📊 SUMMARY
+
+|Item                    |Status                           |
+|------------------------|---------------------------------|
+|Corrected file created  |✅ `proportional_controller.py`   |
+|Rename script created   |✅ `align_terminology.sh`         |
+|Import fix guide created|✅ `UNIFIED_STEWARD_IMPORT_FIX.md`|
+|Complete audit report   |✅ `TELOS_HARD_AUDIT_REPORT.md`   |
+|Executive summary       |✅ `AUDIT_EXECUTIVE_SUMMARY.md`   |
+|Backward compatibility  |✅ Deprecated alias included      |
+|Verification commands   |✅ Included in script             |
+|Backup strategy         |✅ Automated in script            |
+
+-----
+
+## 🎯 BOTTOM LINE
+
+**Run this one command:**
+
+```bash
+chmod +x align_terminology.sh && ./align_terminology.sh
+```
+
+**Total time:** 30 seconds  
+**Risk:** Very low (creates backup first)  
+**Result:** Code aligned with canonical whitepaper terminology
+
+-----
+
+**Package Created:** October 2025  
+**Canonical Source:** ClaudeWhitepaper10_18.txt Section 5.3  
+**Status:** READY TO DEPLOY

@@ -1,0 +1,63 @@
+# TELOS CLI Reference
+
+This file lists all available command-line entrypoints for TELOS.
+
+---
+
+## Interactive Session (Governed + Dashboard)
+
+```bash
+python -m telos_purpose.sessions.run_with_dashboard --config config.json
+
+	•	Path: telos_purpose/sessions/run_with_dashboard.py
+	•	Purpose: Start a governed session with the live developer dashboard.
+	•	Shortcut: make run
+
+⸻
+
+Validation Study (Comparative Baselines)
+
+python -m telos_purpose.validation.run_validation \
+  --config config.json \
+  --conversation test_convo.json \
+  --study-id pilot_001
+
+	•	Path: telos_purpose/validation/run_validation.py
+	•	Purpose: Compare Stateless / Prompt-only / Cadence / Heuristics / TELOS.
+	•	Shortcut: make validate
+
+⸻
+
+Profile Extraction (From Transcript)
+
+python -m telos_purpose.profiling.extract_profile_cli \
+  conversation.txt \
+  --output profile.json
+
+	•	Path: telos_purpose/profiling/extract_profile_cli.py
+	•	Purpose: Extract governance config from a transcript.
+	•	Shortcut: make profile
+
+⸻
+
+Runner Script (Single Test Conversation)
+
+python -m telos_purpose.runners.TELOS_runner_script \
+  --config config.json \
+  --conversation telos_purpose/test_conversations/test_convo_001.json
+
+	•	Path: telos_purpose/runners/TELOS_runner_script.py
+	•	Purpose: Run a single scripted conversation (non-interactive).
+	•	Shortcut: (optional) make runner
+
+⸻
+
+Streamlit Live Demo (Funding Dashboard)
+
+streamlit run telos_purpose/ui/streamlit_live_comparison.py
+
+	•	Path: telos_purpose/ui/streamlit_live_comparison.py
+	•	Purpose: Side-by-side live comparison (Stateless vs Heuristics vs TELOS).
+	•	Shortcut: (optional) make demo
+
+---

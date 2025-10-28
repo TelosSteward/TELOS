@@ -1,0 +1,85 @@
+# Python
+
+**pycache**/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+
+venv/
+ENV/
+env/
+.venv
+
+# IDEs
+
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Validation Results (generated data)
+
+validation_results/
+*.csv
+*.json
+!config.json
+!test_conversations/*.json
+
+# Logs
+
+*.log
+logs/
+
+# Environment Variables
+
+.env
+.env.local
+
+# Jupyter
+
+.ipynb_checkpoints/
+*.ipynb
+
+# Documentation builds
+
+docs/_build/
+site/
+
+# Model Cache
+
+models/
+.cache/
+transformers_cache/
+
+# API Keys (safety)
+
+*_api_key.txt
+secrets.yaml
+credentials.json

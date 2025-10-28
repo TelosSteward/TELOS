@@ -1,0 +1,178 @@
+TELOS_Pilot0_Study_and_DataSpec.md
+
+⸻
+
+TELOS Pilot 0 Study & Data Specification
+
+Runtime Governance Validation Protocol (Internal Pilot Study)
+
+⸻
+
+🧩 Overview
+
+Purpose:
+Pilot 0 is the first full-system test of TELOS as a runtime governance substrate for LLM sessions.
+Its goal is to verify that the mathematical instrumentation functions correctly and that exported telemetry can demonstrate measurable drift, fidelity, and intervention dynamics across four governance conditions.
+
+This is not a public-facing benchmark; it is an internal validation cycle to generate the data funders and reviewers will require.
+
+⸻
+
+🎯 Research Hypothesis & Objectives
+
+Hypothesis:
+Mathematically adaptive governance (TELOS runtime) yields higher stability and lower intervention burden than static or ungoverned modes.
+
+Objectives
+	1.	Verify end-to-end function of Primacy Attractor → Intervention Controller → Telemetry Export.
+	2.	Compare drift and fidelity across four modes:
+ A Stateless | B Prompt-Only | C Cadence | D TELOS Runtime
+	3.	Capture timestamped telemetry for latency and user-burden analysis.
+	4.	Produce reproducible JSON + CSV data suitable for correlation and validation studies.
+
+⸻
+
+⚙️ Study Conditions
+
+Condition	Description	Intervention Mode
+A Stateless	LLM runs without PAP (initial message only).	None
+B Prompt-Only	Session begins with PAP declaration; no runtime monitoring.	None
+C Cadence	PAP initialized; reminder prompt every 3 turns.	Fixed-interval
+D TELOS Runtime	Continuous Primacy Attractor tracking; adaptive corrections when ε-threshold exceeded.	Proportional
+
+Each scripted conversation is replayed under all 4 conditions with identical user input to allow direct comparison.
+
+⸻
+
+🧮 Instrumentation
+
+Module	Function	Key Metrics
+PrimacyAttractorMath	τ-weighted center & r = 2 / ρ basin geometry	Error signal (E), Lyapunov V(x), fidelity (F)
+InterventionController	Monitors E and V(x); triggers reminder / regen / antimeta	Intervention count & type
+UnifiedSteward	Session orchestration & logging	Per-turn telemetry JSON
+Telemetry Exporter	Writes turn + session files	CSV + summary JSON
+Observation Mode	Logs drift metrics only (no intervention)	Raw trajectory data
+
+
+⸻
+
+🧠 Execution Protocol
+
+1 — Observation Mode Baseline
+
+Run each scenario with interventions disabled to generate pure drift curves.
+
+python -m telos_purpose.runners.TELOS_runner_script --mode observation
+
+2 — Four-Condition Runs
+
+python -m telos_purpose.validation.run_validation --study pilot_0
+
+	•	Executes each conversation under all four modes.
+	•	Exports telemetry per turn and summary per session.
+
+3 — Forked Replays (Optional)
+
+When drift > ε_min without correction, fork from that turn and resume governed run to compare trajectories.
+
+⸻
+
+🧾 Data Export Schema
+
+A. Turn-Level Telemetry (CSV)
+
+Stored as: /validation_results/{condition}/{session_id}_turns.csv
+
+Field	Type	Description
+session_id	str	Unique ID for run
+condition	str	stateless / prompt_only / cadence / telos_governed
+turn_id	int	Sequential turn
+timestamp	ISO 8601	Time of generation
+Δt_ms	int	Elapsed since previous turn
+user_input	text	Raw user message
+model_output	text	Model response
+embedding_distance	float	Distance to attractor center
+fidelity_score	float	Hard fidelity (0–1)
+soft_fidelity	float	Soft fidelity (0–1)
+lyapunov_delta	float	ΔV from previous turn
+intervention_triggered	bool	True if any intervention fired
+intervention_type	text	none
+governance_drift_flag	bool	True if E > ε_min or outside basin
+governance_correction_applied	bool	True if runtime applied fix
+notes	text	Optional annotation
+
+
+⸻
+
+B. Session-Summary (JSON)
+
+Stored as: /validation_results/{condition}/{session_id}_summary.json
+
+{
+  "session_metadata": {
+    "session_id": "pilot0_001",
+    "condition": "telos_governed",
+    "participant": "subject_0",
+    "constraint_tolerance": 0.2,
+    "purpose_prompt": "Explain AI governance mathematically",
+    "observer_mode": false,
+    "runtime_version": "v1.0"
+  },
+  "session_metrics": {
+    "total_turns": 12,
+    "avg_fidelity": 0.84,
+    "min_fidelity": 0.41,
+    "max_fidelity": 0.97,
+    "trajectory_stability": 0.78,
+    "mean_latency_ms": 410,
+    "intervention_rate": 0.18,
+    "governance_breach_events": 3
+  }
+}
+
+
+⸻
+
+C. Human Rating Sheet (CSV)
+
+session_id	turn_id	adherence_1_5	on_purpose	drift_severity_0_1	rater_notes
+pilot0_001	1	5	✓	0.0	Perfect alignment
+pilot0_001	2	2	✗	0.8	Off-topic drift
+pilot0_001	3	4	✓	0.1	Recovered quickly
+
+Store under: /validation_results/human_ratings/
+
+⸻
+
+📈 Comparative Summary (JSON)
+
+Aggregated after all sessions complete.
+/validation_results/comparative_summary.json
+
+{
+  "conditions": {
+    "stateless": {"mean_fidelity": 0.42, "human_rating_avg": 2.8},
+    "prompt_only": {"mean_fidelity": 0.58, "human_rating_avg": 3.4},
+    "cadence": {"mean_fidelity": 0.67, "human_rating_avg": 3.8},
+    "telos_governed": {"mean_fidelity": 0.83, "human_rating_avg": 4.2}
+  },
+  "embedding_validity": {
+    "spearman_rho_fidelity_vs_human": 0.72,
+    "p_value": 0.001
+  },
+  "key_findings": [
+    "TELOS improves fidelity ≈ 40 % over prompt-only.",
+    "Strong embedding-human correlation (ρ ≈ 0.7).",
+    "Adaptive mode reduces intervention load vs cadence."
+  ]
+}
+
+
+⸻
+
+🧮 Derived Analyses
+	1.	Fidelity ΔF:  TELOS – Cadence
+	2.	Latency Δt:  Average turn time vs baseline
+	3.	ρ Validity:  Spearman correlation (F ↔ Human Rating)
+	4.	Intervention Efficiency:  Fidelity gain per intervention
+	5.	Stability Index:  Fraction of ΔV < 0 turns

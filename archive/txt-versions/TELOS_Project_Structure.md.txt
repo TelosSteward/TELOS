@@ -1,0 +1,197 @@
+# TELOS Repository Map and Component Overview
+
+A complete overview of the TELOS runtime governance framework, including directory layout, core components, and validation structure.
+
+⸻
+
+## Core Purpose
+
+TELOS provides runtime governance for LLM sessions using a mathematical attractor derived from declared purpose, scope, and boundaries.
+It measures semantic drift, computes proportional corrections, and exports per-turn telemetry for comparative validation.
+
+This document outlines the repository layout, describes the function of each component, and maps how data flows through the system.
+
+⸻
+
+## Repository Layout (as of v0.9.3)
+
+```
+telos/
+├── README.md
+├── setup.py
+├── config.json
+├── Makefile
+└── telos_purpose/
+    ├── core/
+    │   ├── primacy_math.py
+    │   ├── intervention_controller.py
+    │   ├── unified_steward.py
+    │   ├── embedding_provider.py
+    │   └── conversation_manager.py
+    │
+    ├── validation/
+    │   ├── baseline_runners.py
+    │   ├── system_health_monitor.py
+    │   ├── run_internal_test0.py
+    │   ├── telemetry_utils.py
+    │   ├── retro_analyzer.py
+    │   └── run_validation.py
+    │
+    ├── sessions/
+    │   ├── run_with_dashboard.py
+    │   └── TELOS_runner_script.py
+    │
+    ├── llm_clients/
+    │   └── mistral_client.py
+    │
+    ├── dev_dashboard/
+    │   └── streamlit_live_comparison.py
+    │
+    ├── test_conversations/
+    │   ├── test_convo_001.json
+    │   ├── test_convo_002.json
+    │   └── ...
+    │
+    └── utils/
+        └── logger.py
+```
+
+⸻
+
+## Core Modules
+
+|File                      |Description                                                                                                                                          |
+|--------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+|primacy_math.py           |Mathematical substrate of TELOS — τ-weighted attractor center, basin radius (r = 2/max(ρ,0.25)), Lyapunov stability, and fidelity metrics.           |
+|intervention_controller.py|Decides when to apply proportional interventions based on drift thresholds (εₘᵢₙ, εₘₐₓ); triggers reminders, regenerations, or anti-meta corrections.|
+|unified_steward.py        |Orchestrates runtime loop. Integrates conversation manager, embedding provider, attractor math, controller, and health monitor; exports telemetry.   |
+|embedding_provider.py     |Provides deterministic and semantic embedding utilities for drift measurement.                                                                       |
+|conversation_manager.py   |Maintains conversation history and handles context-window trimming.                                                                                  |
+
+⸻
+
+## Validation Infrastructure
+
+|File                    |Description                                                                                                                                                       |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|baseline_runners.py     |Defines five governance modes — Stateless, Prompt-Only, Cadence, Observation, and TELOS Runtime — for comparative validation.                                     |
+|system_health_monitor.py|Runtime diagnostics system (“EKG of TELOS”) - detects NaN values, config errors, threshold violations, and anomalies. Exports health reports and diagnostic plots.|
+|run_internal_test0.py   |Executes Internal Test 0 across all five modes; exports telemetry (CSV + JSON summaries).                                                                         |
+|telemetry_utils.py      |Handles export of per-turn telemetry and session-level summaries using standardized schemas.                                                                      |
+|retro_analyzer.py       |Performs retrospective analysis on completed conversations, applying TELOS math post-hoc for counterfactual validation.                                           |
+|run_validation.py       |Generalized study harness for Pilot 0 and later comparative experiments.                                                                                          |
+
+⸻
+
+## Session Runners
+
+|File                  |Description                                                           |
+|----------------------|----------------------------------------------------------------------|
+|run_with_dashboard.py |Launches interactive TELOS session with live telemetry dashboard.     |
+|TELOS_runner_script.py|Scripted runner for conversation replay; primary entrypoint for tests.|
+
+⸻
+
+## LLM Integration
+
+|File             |Description                                                                               |
+|-----------------|------------------------------------------------------------------------------------------|
+|mistral_client.py|API client for Mistral models with retry logic, rate-limit handling, and token accounting.|
+
+⸻
+
+## Developer Tools
+
+|File                        |Description                                                           |
+|----------------------------|----------------------------------------------------------------------|
+|streamlit_live_comparison.py|Streamlit app for comparing fidelity curves across modes in real time.|
+
+⸻
+
+## Test Data
+
+|File               |Purpose                                                  |
+|-------------------|---------------------------------------------------------|
+|test_convo_001.json|General governance and purpose-adherence scenario.       |
+|test_convo_002.json|Drift-inducing and recovery scenario for Internal Test 0.|
+
+⸻
+
+## Validation Outputs
+
+|Directory                         |Contents                                                       |
+|----------------------------------|---------------------------------------------------------------|
+|validation_results/internal_test0/|Turn-level CSVs and JSON summaries for 5 governance conditions.|
+|validation_results/health/        |System health diagnostic reports (JSON/CSV/plots).             |
+|validation_results/pilot_0/       |Expanded comparative data from Pilot 0 study.                  |
+|purpose_protocol_exports/         |Live session telemetry exports from Unified Steward.           |
+|purpose_protocol_exports/health/  |Per-session health monitoring reports and diagnostic plots.    |
+|logs/telemetry_log.jsonl          |Continuous streaming telemetry for debugging and analysis.     |
+
+⸻
+
+## Five Validation Modes
+
+|Mode         |Description                         |Purpose                                 |
+|-------------|------------------------------------|----------------------------------------|
+|Stateless    |No governance applied.              |Establishes natural drift baseline.     |
+|Prompt-Only  |Single declaration at start.        |Tests declarative persistence.          |
+|Cadence      |Re-inject governance every N turns. |Tests fixed-interval correction.        |
+|Observation  |TELOS math active, no interventions.|Tests drift detection and fidelity math.|
+|TELOS Runtime|Full adaptive governance.           |Tests proportional mathematical control.|
+
+⸻
+
+## Data Flow Summary
+
+```
+User Input
+   ↓
+Conversation Manager
+   ↓
+LLM Client → Raw response
+   ↓
+Primacy Attractor Math → Drift, Error, Lyapunov
+   ↓
+Intervention Controller → Decision (monitor / remind / regenerate)
+   ↓
+Health Monitor → System diagnostics (passive)
+   ↓
+Unified Steward → Telemetry export
+   ↓
+Validation Runners → Aggregated results
+```
+
+⸻
+
+## Generated Artifacts
+
+After each run:
+
+- `*_turns.csv` → Per-turn telemetry (error, fidelity, drift)
+- `*_summary.json` → Session metrics (fidelity averages, intervention counts)
+- `system_health_*.json` → Health diagnostics (events, vital signs, suggestions)
+- `health_plot_*.png` → Visual diagnostics (fidelity, error, Lyapunov, events)
+- `comparative_summary.json` → Aggregated study results
+
+⸻
+
+## Developer Utilities
+
+Makefile commands:
+
+- `make run` → Launch governed session
+- `make validate` → Run comparative validation
+- `make smoke` → Quick test suite
+- `make clean` → Remove logs and cache
+
+⸻
+
+## Research Positioning
+
+TELOS moves alignment from declaration to measurement.
+It enables purpose persistence to be treated as an empirical, testable property of LLM sessions—where governance fidelity, stability, and drift become quantitatively observable rather than assumed.
+
+⸻
+
+© 2025 TELOS Labs — Research infrastructure for runtime governance validation.

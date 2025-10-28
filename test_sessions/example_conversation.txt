@@ -1,0 +1,2 @@
+Human: What is the TELOS framework?
+Assistant: TELOS is a mathematical framework for AI governance that uses embedding-based primacy attractors to maintain telic fidelity. It ensures AI systems stay aligned with their specified purpose through continuous drift detection and intervention.

@@ -1,0 +1,53 @@
+# TELOS Makefile - Command interface for governed sessions
+
+CONFIG ?= config.json
+PROFILE ?= profile.json
+TRANSCRIPT ?= sample_transcript.txt
+STUDY_ID ?= pilot_001
+RESULTS_DIR ?= validation_results
+
+.PHONY: run validate profile smoke clean help install
+
+help:
+@echo “TELOS Makefile Commands:”
+@echo “  make install    - Install dependencies”
+@echo “  make run        - Start governed session with dashboard”
+@echo “  make validate   - Run 4-way validation study”
+@echo “  make profile    - Extract profile from transcript”
+@echo “  make smoke      - Quick sanity test”
+@echo “  make clean      - Remove logs and results”
+
+install:
+pip install -e .
+
+run:
+python -m telos_purpose.sessions.run_with_dashboard   
+–config $(CONFIG)   
+–use-real-embeddings
+
+validate:
+mkdir -p $(RESULTS_DIR)
+python -m telos_purpose.validation.run_validation   
+–config $(CONFIG)   
+–conversation test_convo.json   
+–study-id $(STUDY_ID)
+
+profile:
+python -m telos_purpose.profiling.extract_profile_cli   
+$(TRANSCRIPT)   
+–output $(PROFILE)   
+–show-reasoning
+
+smoke:
+@echo “Running smoke test…”
+python -m telos_purpose.sessions.run_with_dashboard   
+–config $(CONFIG)
+
+clean:
+rm -rf $(RESULTS_DIR)/*.json
+rm -f $(PROFILE)
+rm -rf logs/*
+rm -rf purpose_protocol_exports/*
+rm -rf **pycache**
+rm -rf telos_purpose/**pycache**
+rm -rf telos_purpose/*/**pycache**

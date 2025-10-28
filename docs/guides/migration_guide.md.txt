@@ -1,0 +1,351 @@
+# TELOS Tolerance Migration Guide
+
+## Overview
+
+This guide documents the migration from `constraint_rigidity` to `constraint_tolerance` across the TELOS codebase.
+
+-----
+
+## Why This Change?
+
+**Old terminology (`constraint_rigidity`):**
+
+- 0.0 = loose governance
+- 1.0 = strict governance
+- **Problem**: Counter-intuitive semantics (“rigid” sounds negative)
+
+**New terminology (`constraint_tolerance`):**
+
+- 0.0 = strict governance (zero tolerance for drift)
+- 1.0 = loose governance (maximum tolerance for drift)
+- **Benefit**: Intuitive semantics (“I have zero tolerance” = strict)
+
+-----
+
+## Files Updated
+
+### ✅ Core Math Files (Already Correct)
+
+- `telos_purpose/core/primacy_math.py`
+- `telos_purpose/core/intervention_controller.py`
+- `telos_purpose/core/unified_steward.py`
+
+### ✅ Config Files
+
+- `config.json` - Default example config
+
+### ✅ Validation Files
+
+- `telos_purpose/validation/baseline_runners.py`
+- `telos_purpose/validation/heuristics_baseline.py`
+- `telos_purpose/validation/run_validation.py`
+
+### ✅ Session Files
+
+- `telos_purpose/sessions/run_with_dashboard.py`
+
+### ✅ Profiling Files
+
+- `telos_purpose/profiling/profile_extractor.py`
+
+-----
+
+## Key Changes
+
+### 1. PrimacyAttractor Dataclass
+
+**Before:**
+
+```python
+@dataclass
+class PrimacyAttractor:
+    purpose: List[str]
+    scope: List[str]
+    boundaries: List[str]
+    privacy_level: float = 0.8
+    constraint_rigidity: float = 0.9  # OLD
+    task_priority: float = 0.7
+```
+
+**After:**
+
+```python
+@dataclass
+class PrimacyAttractor:
+    purpose: List[str]
+    scope: List[str]
+    boundaries: List[str]
+    privacy_level: float = 0.8
+    constraint_tolerance: float = 0.1  # NEW (inverted value!)
+    task_priority: float = 0.7
+```
+
+### 2. Configuration Files
+
+**Before (`config.json`):**
+
+```json
+{
+  "constraint_rigidity": 0.9
+}
+```
+
+**After (`config.json`):**
+
+```json
+{
+  "constraint_tolerance": 0.1
+}
+```
+
+### 3. PrimacyAttractorMath Class
+
+**Before:**
+
+```python
+def __init__(
+    self,
+    purpose_vector: np.ndarray,
+    scope_vector: np.ndarray,
+    constraint_rigidity: float = 0.9
+):
+    self.constraint_rigidity = constraint_rigidity
+    self.basin_radius = 2.0 / max(constraint_rigidity, 0.1)
+    self.lyapunov_coefficient = constraint_rigidity * 2.0
+```
+
+**After:**
+
+```python
+
+def __init__(
+    self,
+    purpose_vector: np.ndarray,
+    scope_vector: np.ndarray,
+    constraint_tolerance: float = 0.1
+):
+    """
+    Initialize Primacy Attractor Math.
+    
+    Args:
+        purpose_vector: Embedding vector representing the declared purpose
+        scope_vector: Embedding vector representing the declared scope
+        constraint_tolerance: Governs how permissive the basin is 
+                              (0.0 = strict, 1.0 = loose)
+    """
+
+    # Store tolerance and derive rigidity
+    self.constraint_tolerance = float(constraint_tolerance)
+    self.constraint_rigidity = 1.0 - self.constraint_tolerance
+
+    # Basin radius (foundations-aligned formula)
+    # r = 2 / max(ρ, 0.25) where ρ = 1 - τ
+    # This ensures r ∈ [2.0, 8.0], preventing runaway expansion
+    rho = max(self.constraint_rigidity, 0.25)
+    self.basin_radius = 2.0 / rho
+
+    # Lyapunov coefficient scales with rigidity
+    # (used in stability analysis)
+    self.lyapunov_coefficient = self.constraint_rigidity * 2.0
+
+    # Attractor center: τ-weighted combination of purpose and scope
+    # â = (τ·p + (1-τ)·s) / ||τ·p + (1-τ)·s||
+    center_unnormalized = (
+        self.constraint_tolerance * purpose_vector +
+        (1.0 - self.constraint_tolerance) * scope_vector
+    )
+    center_norm = np.linalg.norm(center_unnormalized)
+    self.attractor_center = (
+        center_unnormalized / center_norm if center_norm > 0
+        else center_unnormalized
+    )
+
+-----
+
+## Value Conversion Table
+
+When migrating existing configs or documentation:
+
+|Old `constraint_rigidity`|New `constraint_tolerance`|Meaning          |
+|-------------------------|--------------------------|-----------------|
+|0.9-1.0 (high rigidity)  |0.0-0.1 (low tolerance)   |Strict governance|
+|0.7-0.8 (medium-high)    |0.2-0.3 (low-medium)      |Moderate-strict  |
+|0.5-0.6 (medium)         |0.4-0.5 (medium)          |Balanced         |
+|0.3-0.4 (low-medium)     |0.6-0.7 (medium-high)     |Moderate-loose   |
+|0.1-0.2 (low rigidity)   |0.8-0.9 (high tolerance)  |Loose governance |
+
+**Formula:** `new_tolerance = 1.0 - old_rigidity`
+
+-----
+
+## Basin Radius Calculation
+
+### Before (Rigidity-based):
+
+```python
+# Small rigidity → large basin → loose governance
+basin_radius = 2.0 / max(constraint_rigidity, 0.1)
+
+# Examples:
+# rigidity=0.9 → radius=2.22 (strict, small basin)
+# rigidity=0.5 → radius=4.00 (moderate)
+# rigidity=0.1 → radius=20.0 (loose, large basin)
+
+### After (Tolerance-based):
+
+# Basin grows WITH tolerance (more tolerance = bigger basin)
+# Floor ρ at 0.25 to prevent excessive expansion
+rho = max(1.0 - constraint_tolerance, 0.25)
+basin_radius = 2.0 / rho
+
+# Examples:
+# tolerance=0.1 → ρ=0.90 → radius=2.22 (strict, small basin)
+# tolerance=0.5 → ρ=0.50 → radius=4.00 (moderate)
+# tolerance=0.9 → ρ=0.25 (floored) → radius=8.00 (loose, capped at max)
+
+**Key Change**: Direct proportional relationship instead of inverse.
+
+-----
+
+## Intervention Thresholds
+
+### Before (Fixed):
+
+```python
+self.epsilon_min = 0.3  # Below this: no intervention
+self.epsilon_max = 0.8  # Above this: regeneration
+```
+
+### After (Tolerance-scaled):
+
+```python
+# Thresholds scale with tolerance
+# Low tolerance → low thresholds → early intervention
+tolerance = attractor.constraint_tolerance
+self.epsilon_min = 0.1 + (tolerance * 0.3)  # 0.0→0.1, 1.0→0.4
+self.epsilon_max = 0.5 + (tolerance * 0.4)  # 0.0→0.5, 1.0→0.9
+```
+
+-----
+
+## Documentation Updates
+
+### User-Facing Text
+
+**Before:**
+
+> Set `constraint_rigidity` to control governance strictness:
+> 
+> - 0.9-1.0: Strict enforcement (high rigidity)
+> - 0.5-0.7: Moderate enforcement
+> - 0.1-0.3: Loose enforcement (low rigidity)
+
+**After:**
+
+> Set `constraint_tolerance` to control governance strictness:
+> 
+> - 0.0-0.1: Strict enforcement (zero tolerance for drift)
+> - 0.3-0.5: Moderate enforcement
+> - 0.7-0.9: Loose enforcement (high tolerance for drift)
+
+### Code Comments
+
+**Before:**
+
+```python
+# High rigidity → small basin → strict governance
+```
+
+**After:**
+
+```python
+# Low tolerance → small basin → strict governance
+```
+
+-----
+
+## Testing Checklist
+
+After migration, verify:
+
+- [ ] Config files load correctly with `constraint_tolerance`
+- [ ] Basin radius calculations produce expected values
+- [ ] Intervention thresholds scale appropriately
+- [ ] Profile extractor recognizes tolerance parameter
+- [ ] Validation runners use tolerance in all baseline types
+- [ ] Dashboard displays tolerance value correctly
+- [ ] Documentation examples use tolerance semantics
+- [ ] Default values are sensible (0.1-0.2 for strict)
+
+-----
+
+## Common Pitfalls
+
+### ❌ Mistake 1: Forgetting to Invert Values
+
+```python
+# WRONG - copying old value directly
+attractor = PrimacyAttractor(
+    constraint_tolerance=0.9  # This is LOOSE, not strict!
+)
+
+# RIGHT - invert for same behavior
+attractor = PrimacyAttractor(
+    constraint_tolerance=0.1  # Strict governance
+)
+```
+
+### ❌ Mistake 2: Using Old Parameter Name
+
+```python
+# WRONG - old parameter name
+PrimacyAttractorMath(
+    constraint_rigidity=0.9
+)
+
+# RIGHT - new parameter name
+PrimacyAttractorMath(
+    constraint_tolerance=0.1
+)
+```
+
+### ❌ Mistake 3: Not Updating Comments
+
+```python
+# WRONG - comment contradicts code
+self.constraint_tolerance = 0.1  # Loose governance
+
+# RIGHT - comment matches semantics
+self.constraint_tolerance = 0.1  # Strict governance (low tolerance)
+```
+
+-----
+
+## Grep Patterns for Finding Old References
+
+```bash
+# Find any remaining "rigidity" references
+grep -r "constraint_rigidity" telos_purpose/
+
+# Find config files that might need updating
+find . -name "*.json" -exec grep -l "rigidity" {} \;
+
+# Find documentation that needs updating
+grep -r "rigidity" *.md docs/
+```
+
+-----
+
+## Post-Migration Validation Checklist
+
+Run these to confirm all tolerance-based math and telemetry are synchronized:
+
+```bash
+# Run smoke test
+make smoke
+
+# Run Internal Test 0
+python -m telos_purpose.validation.run_internal_test0
+
+# Summarize results
+python -m telos_purpose.validation.test0_quick_summary

@@ -1,0 +1,23 @@
+{
+“purpose”: [
+“explain AI governance mechanisms”,
+“discuss mathematical approaches to alignment”
+],
+“scope”: [
+“AI alignment research”,
+“governance frameworks”,
+“mathematical foundations”,
+“runtime oversight”,
+“control theory applications”
+],
+“boundaries”: [
+“no harmful content”,
+“stay technical and research-focused”,
+“avoid speculation beyond established research”,
+“no personal data disclosure”
+],
+“privacy_level”: 0.8,
+“constraint_tolerance”: 0.1,
+“task_priority”: 0.7,
+“export_dir”: “./purpose_protocol_exports”
+}

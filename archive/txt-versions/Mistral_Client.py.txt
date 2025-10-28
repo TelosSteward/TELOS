@@ -1,0 +1,105 @@
+“”“Mistral API client for TELOS interventions.”””
+
+from **future** import annotations
+import os
+from typing import List, Dict, Optional
+import time
+
+class TelosMistralClient:
+“””
+Mistral API client for TELOS interventions.
+Provides standardized interface for generating responses.
+“””
+
+```
+def __init__(
+    self,
+    api_key: Optional[str] = None,
+    model: str = "mistral-small-latest",
+    temperature: float = 0.7,
+    max_retries: int = 3
+):
+    self.api_key = api_key or os.getenv("MISTRAL_API_KEY")
+    if not self.api_key:
+        raise ValueError(
+            "Mistral API key required. Set MISTRAL_API_KEY environment variable "
+            "or pass api_key parameter."
+        )
+    
+    try:
+        from mistralai.client import MistralClient
+        from mistralai.models.chat_completion import ChatMessage
+        self.MistralClient = MistralClient
+        self.ChatMessage = ChatMessage
+    except ImportError:
+        raise ImportError(
+            "mistralai package required. Install with: pip install mistralai"
+        )
+    
+    self.client = self.MistralClient(api_key=self.api_key)
+    self.model = model
+    self.temperature = temperature
+    self.max_retries = max_retries
+    
+    self.total_tokens = 0
+    self.total_requests = 0
+
+def generate(
+    self,
+    messages: List[Dict[str, str]],
+    max_tokens: int = 1000,
+    temperature: Optional[float] = None
+) -> str:
+    """
+    Generate response using Mistral API.
+    
+    Args:
+        messages: Conversation history as list of dicts with 'role' and 'content'
+        max_tokens: Maximum tokens in response
+        temperature: Override default temperature
+        
+    Returns:
+        Generated response text
+    """
+    mistral_messages = []
+    for msg in messages:
+        if "role" not in msg or "content" not in msg:
+            raise ValueError(f"Invalid message format: {msg}")
+        mistral_messages.append(
+            self.ChatMessage(role=msg["role"], content=msg["content"])
+        )
+    
+    last_error = None
+    for attempt in range(self.max_retries):
+        try:
+            response = self.client.chat(
+                model=self.model,
+                messages=mistral_messages,
+                max_tokens=max_tokens,
+                temperature=temperature or self.temperature
+            )
+            
+            self.total_requests += 1
+            if hasattr(response, 'usage'):
+                self.total_tokens += response.usage.total_tokens
+            
+            return response.choices[0].message.content
+            
+        except Exception as e:
+            last_error = e
+            if attempt < self.max_retries - 1:
+                time.sleep(2 ** attempt)
+                continue
+    
+    raise RuntimeError(
+        f"Mistral API call failed after {self.max_retries} attempts: {last_error}"
+    )
+
+def get_usage_stats(self) -> Dict[str, int]:
+    """Return token usage statistics."""
+    return {
+        "total_requests": self.total_requests,
+        "total_tokens": self.total_tokens,
+        "estimated_cost_usd": self.total_tokens * 0.000001
+    }
+```
