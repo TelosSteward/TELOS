@@ -1021,7 +1021,19 @@ def render_steward_lens():
                 col1, col2, col3, col4 = st.columns(4)
 
                 with col1:
-                    st.metric("Avg Fidelity", f"{avg_fidelity:.2f}")
+                    # Color-code fidelity health: Green (≥0.85), Yellow (0.70-0.85), Red (<0.70)
+                    if avg_fidelity >= 0.85:
+                        fidelity_delta = "Excellent"
+                        fidelity_delta_color = "normal"
+                    elif avg_fidelity >= 0.70:
+                        fidelity_delta = "Good"
+                        fidelity_delta_color = "normal"
+                    else:
+                        fidelity_delta = "Low"
+                        fidelity_delta_color = "inverse"
+
+                    st.metric("Avg Fidelity", f"{avg_fidelity:.2f}",
+                             delta=fidelity_delta, delta_color=fidelity_delta_color)
 
                 with col2:
                     st.metric("Interventions", total_interventions)
@@ -1030,7 +1042,19 @@ def render_steward_lens():
                     st.metric("Intervention Rate", f"{intervention_rate:.1f}%")
 
                 with col4:
-                    st.metric("Basin Crossings", basin_crossings)
+                    # Color-code basin crossings: Green (0), Yellow (1-2), Red (3+)
+                    if basin_crossings == 0:
+                        crossing_delta = "None"
+                        crossing_delta_color = "normal"
+                    elif basin_crossings <= 2:
+                        crossing_delta = "Few"
+                        crossing_delta_color = "normal"
+                    else:
+                        crossing_delta = "High"
+                        crossing_delta_color = "inverse"
+
+                    st.metric("Basin Crossings", basin_crossings,
+                             delta=crossing_delta, delta_color=crossing_delta_color)
             else:
                 st.caption("No metrics available yet. Start chatting to see governance health.")
         else:
