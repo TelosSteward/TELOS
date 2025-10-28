@@ -1035,7 +1035,66 @@ def render_steward_lens():
         st.divider()
 
         # ========================================
-        # Section 5: Research Lens Toggle
+        # Section 5: Intervention Timeline
+        # ========================================
+        st.markdown("### ⏱️ Intervention Timeline")
+
+        # Get all turns with intervention data
+        if hasattr(st.session_state, 'session_manager'):
+            turns = st.session_state.session_manager.get_all_turns()
+
+            if turns and len(turns) > 0:
+                # Extract intervention data from turns
+                intervention_data = []
+                turn_numbers = []
+
+                for turn in turns:
+                    turn_num = turn.get('turn_number', 0) + 1  # 1-indexed for display
+                    turn_numbers.append(turn_num)
+
+                    # Check if intervention occurred in this turn
+                    metadata = turn.get('governance_metadata', {})
+                    intervention_applied = metadata.get('intervention_applied', False)
+
+                    # Count as 1 if intervention occurred, 0 otherwise
+                    intervention_data.append(1 if intervention_applied else 0)
+
+                if len(intervention_data) > 0:
+                    # Create DataFrame for bar chart
+                    chart_data = pd.DataFrame({
+                        'Turn': turn_numbers,
+                        'Intervention': intervention_data
+                    })
+
+                    # Display bar chart
+                    st.bar_chart(chart_data.set_index('Turn'), height=150)
+
+                    # Show intervention type breakdown
+                    intervention_count = sum(intervention_data)
+                    if intervention_count > 0:
+                        st.caption(f"✓ {intervention_count} intervention(s) across {len(turns)} turn(s)")
+
+                        # Get intervention type breakdown from steward
+                        if st.session_state.get('steward') and hasattr(st.session_state.steward, 'llm_wrapper'):
+                            mitigation_stats = st.session_state.steward.llm_wrapper.get_intervention_statistics()
+                            type_counts = mitigation_stats.get('by_type', {})
+
+                            if type_counts:
+                                type_breakdown = " | ".join([f"{k}: {v}" for k, v in type_counts.items()])
+                                st.caption(f"📋 Types: {type_breakdown}")
+                    else:
+                        st.caption("No interventions triggered yet")
+                else:
+                    st.caption("No intervention data available yet")
+            else:
+                st.caption("No conversation turns yet. Start chatting to see intervention timeline.")
+        else:
+            st.caption("Session manager not initialized")
+
+        st.divider()
+
+        # ========================================
+        # Section 6: Research Lens Toggle
         # ========================================
         research_lens_enabled = st.checkbox(
             "🔬 Research Lens (Mathematical Detail)",
