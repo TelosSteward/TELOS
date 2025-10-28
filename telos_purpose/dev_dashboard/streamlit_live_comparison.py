@@ -867,6 +867,7 @@ def render_steward_lens():
         # Section 1: Primacy Attractor
         # ========================================
         st.markdown(f"### {terms['attractor_name']}")
+        st.write('')  # Breathing room
 
         # Get attractor from steward
         if st.session_state.get('steward') and hasattr(st.session_state.steward, 'primacy_attractor'):
@@ -909,6 +910,7 @@ def render_steward_lens():
         # Section 2: Recent Interventions
         # ========================================
         st.markdown("### Recent Interventions")
+        st.write('')  # Breathing room
 
         if st.session_state.get('steward') and hasattr(st.session_state.steward, 'llm_wrapper'):
             mitigation_stats = st.session_state.steward.llm_wrapper.get_intervention_statistics()
@@ -948,6 +950,7 @@ def render_steward_lens():
         # Section 3: Fidelity Trend Graph
         # ========================================
         st.markdown("### 📈 Fidelity Trend")
+        st.write('')  # Breathing room
 
         # Get all turns with fidelity data
         if hasattr(st.session_state, 'session_manager'):
@@ -989,6 +992,7 @@ def render_steward_lens():
         # Section 4: Governance Health Metrics
         # ========================================
         st.markdown("### 📊 Governance Metrics")
+        st.write('')  # Breathing room
 
         # Get all turns for metrics calculation
         if hasattr(st.session_state, 'session_manager'):
@@ -1038,6 +1042,7 @@ def render_steward_lens():
         # Section 5: Intervention Timeline
         # ========================================
         st.markdown("### ⏱️ Intervention Timeline")
+        st.write('')  # Breathing room
 
         # Get all turns with intervention data
         if hasattr(st.session_state, 'session_manager'):
