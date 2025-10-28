@@ -238,3 +238,5 @@ tmp/
 # TELOS-specific: Test data
 test_sessions/
 */test_sessions/
+edge_cases/
+*/edge_cases/
