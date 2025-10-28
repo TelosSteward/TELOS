@@ -31,9 +31,6 @@ class TurnSnapshot:
     native_response: str  # Original LLM response (before governance)
     telos_response: str   # Governed response (after intervention)
 
-    # Backward compatibility: deprecated field (use telos_response instead)
-    assistant_response: Optional[str] = None
-
     # Embeddings (immutable)
     user_embedding: tuple  # np.array converted to tuple for immutability
     response_embedding: tuple
@@ -51,6 +48,9 @@ class TurnSnapshot:
 
     # Attractor state
     attractor_config: Dict[str, Any]
+
+    # Backward compatibility: deprecated field (use telos_response instead)
+    assistant_response: Optional[str] = None
 
     # Metadata
     metadata: Dict[str, Any] = field(default_factory=dict)
