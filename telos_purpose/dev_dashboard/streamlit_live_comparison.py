@@ -2078,6 +2078,31 @@ def render_sidebar():
             ΔF < 0 → Needs tuning
             """)
 
+        # Keyboard Shortcuts Section
+        with st.expander("⌨️ Keyboard Shortcuts", expanded=False):
+            st.markdown("""
+            **Text Input:**
+            - `Ctrl+Enter` / `Cmd+Enter` : Send message
+            - `Shift+Enter` : New line in message
+
+            **Navigation (Session Replay):**
+            - Use slider or navigation buttons
+            - Jump to specific turns via turn selector
+
+            **Quick Actions:**
+            - `Esc` : Clear focus from input fields
+            - `Ctrl+K` / `Cmd+K` : Browser search (focus sidebar)
+
+            **Accessibility:**
+            - `Tab` : Navigate between controls
+            - `Space` : Activate buttons/checkboxes
+            - `Enter` : Confirm selections
+
+            💡 **Tip:** Most browser shortcuts (Ctrl+F for search, Ctrl+R for refresh) work normally.
+
+            *Note: Native keyboard shortcuts are limited in Streamlit. We prioritize accessibility through clear labeling and tab navigation.*
+            """)
+
 
 # ============================================================================
 # Tab 1: Live Session
