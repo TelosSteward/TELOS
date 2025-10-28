@@ -278,6 +278,94 @@ def extract_session_fidelity_trends(sessions: List[Dict[str, Any]]) -> List[floa
     return [compute_session_avg_fidelity(session) for session in sessions]
 
 
+def generate_session_labels(sessions: List[Dict[str, Any]]) -> List[str]:
+    """
+    Generate human-readable labels for session selection.
+
+    Args:
+        sessions: List of session data dictionaries
+
+    Returns:
+        List of session labels with metadata
+    """
+    labels = []
+    for idx, session in enumerate(sessions):
+        session_metadata = session.get('session_metadata', {})
+        session_id = session_metadata.get('session_id', f'Session {idx + 1}')
+        started_at = session_metadata.get('started_at', '')
+        total_turns = session_metadata.get('total_turns', len(session.get('turns', [])))
+
+        # Format timestamp if available
+        if started_at:
+            try:
+                from datetime import datetime
+                dt = datetime.fromisoformat(started_at)
+                time_str = dt.strftime('%Y-%m-%d %H:%M')
+            except:
+                time_str = started_at[:16] if len(started_at) > 16 else started_at
+        else:
+            time_str = 'Unknown time'
+
+        label = f"{session_id} ({time_str}, {total_turns} turns)"
+        labels.append(label)
+
+    return labels
+
+
+def extract_session_metrics(session: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Extract aggregate metrics from a single session.
+
+    Args:
+        session: Session data dictionary
+
+    Returns:
+        Dict with metrics (avg_fidelity, interventions, turns, basin_violations)
+    """
+    turns = session.get('turns', [])
+
+    fidelities = []
+    interventions = 0
+    basin_violations = 0
+
+    for turn in turns:
+        metrics = turn.get('metrics', {})
+        fidelity = metrics.get('telic_fidelity', 1.0)
+        fidelities.append(fidelity)
+
+        # Count interventions
+        metadata = turn.get('metadata', {})
+        if metadata.get('intervention_applied', False):
+            interventions += 1
+
+        # Count basin violations (fidelity < 0.8)
+        if fidelity < 0.8:
+            basin_violations += 1
+
+    return {
+        'avg_fidelity': sum(fidelities) / len(fidelities) if fidelities else 0.0,
+        'interventions': interventions,
+        'turns': len(turns),
+        'basin_violations': basin_violations,
+        'min_fidelity': min(fidelities) if fidelities else 0.0,
+        'max_fidelity': max(fidelities) if fidelities else 0.0
+    }
+
+
+def extract_turn_fidelities(session: Dict[str, Any]) -> List[float]:
+    """
+    Extract turn-by-turn fidelity values from a session.
+
+    Args:
+        session: Session data dictionary
+
+    Returns:
+        List of fidelity values (one per turn)
+    """
+    turns = session.get('turns', [])
+    return [turn.get('metrics', {}).get('telic_fidelity', 1.0) for turn in turns]
+
+
 # ============================================================================
 # Evidence Export Functions (Phase 8)
 # ============================================================================
@@ -4031,6 +4119,195 @@ def render_analytics_dashboard():
 
         Session data is automatically exported after conversations.
         Complete at least one conversation to see cross-session analytics!
+        """)
+
+    st.divider()
+
+    # Phase 9: Session-to-Session Comparison
+    st.subheader("🔍 Session Comparison")
+    st.caption("Compare metrics and performance between different sessions")
+
+    if len(sessions_data) >= 2:
+        # Generate session labels for selection
+        session_labels = generate_session_labels(sessions_data)
+
+        # Session selectors
+        col_selector1, col_selector2 = st.columns(2)
+
+        with col_selector1:
+            session_a_idx = st.selectbox(
+                "Session A",
+                range(len(sessions_data)),
+                format_func=lambda i: session_labels[i],
+                key='session_compare_a'
+            )
+
+        with col_selector2:
+            session_b_idx = st.selectbox(
+                "Session B",
+                range(len(sessions_data)),
+                format_func=lambda i: session_labels[i],
+                index=min(1, len(sessions_data) - 1),
+                key='session_compare_b'
+            )
+
+        if session_a_idx == session_b_idx:
+            st.warning("⚠️ Please select two different sessions to compare.")
+        else:
+            # Extract metrics for both sessions
+            session_a = sessions_data[session_a_idx]
+            session_b = sessions_data[session_b_idx]
+
+            metrics_a = extract_session_metrics(session_a)
+            metrics_b = extract_session_metrics(session_b)
+
+            # Side-by-side metrics comparison
+            st.markdown("#### 📊 Metrics Comparison")
+
+            col1, col2, col3, col4 = st.columns(4)
+
+            with col1:
+                delta_fidelity = metrics_b['avg_fidelity'] - metrics_a['avg_fidelity']
+                st.metric(
+                    "Avg Fidelity",
+                    f"{metrics_b['avg_fidelity']:.3f}",
+                    delta=f"{delta_fidelity:+.3f}",
+                    help="Average fidelity (Session B vs Session A)"
+                )
+
+            with col2:
+                delta_interventions = metrics_b['interventions'] - metrics_a['interventions']
+                st.metric(
+                    "Interventions",
+                    metrics_b['interventions'],
+                    delta=f"{delta_interventions:+d}",
+                    help="Total interventions (Session B vs Session A)"
+                )
+
+            with col3:
+                delta_turns = metrics_b['turns'] - metrics_a['turns']
+                st.metric(
+                    "Turns",
+                    metrics_b['turns'],
+                    delta=f"{delta_turns:+d}",
+                    help="Conversation length (Session B vs Session A)"
+                )
+
+            with col4:
+                delta_violations = metrics_b['basin_violations'] - metrics_a['basin_violations']
+                st.metric(
+                    "Basin Violations",
+                    metrics_b['basin_violations'],
+                    delta=f"{delta_violations:+d}",
+                    delta_color="inverse",
+                    help="Drift events (Session B vs Session A)"
+                )
+
+            st.divider()
+
+            # Turn-by-turn comparison visualization
+            st.markdown("#### 📈 Turn-by-Turn Fidelity Comparison")
+            st.caption("Overlay fidelity trends for both sessions")
+
+            fidelities_a = extract_turn_fidelities(session_a)
+            fidelities_b = extract_turn_fidelities(session_b)
+
+            if HAS_PLOTLY:
+                fig = go.Figure()
+
+                # Session A line
+                fig.add_trace(go.Scatter(
+                    x=list(range(1, len(fidelities_a) + 1)),
+                    y=fidelities_a,
+                    mode='lines+markers',
+                    name=f'Session A ({len(fidelities_a)} turns)',
+                    line=dict(color='#4a90e2', width=2),
+                    marker=dict(size=6)
+                ))
+
+                # Session B line
+                fig.add_trace(go.Scatter(
+                    x=list(range(1, len(fidelities_b) + 1)),
+                    y=fidelities_b,
+                    mode='lines+markers',
+                    name=f'Session B ({len(fidelities_b)} turns)',
+                    line=dict(color='#f39c12', width=2),
+                    marker=dict(size=6)
+                ))
+
+                # Target threshold
+                fig.add_hline(
+                    y=0.8,
+                    line_dash="dash",
+                    line_color="gray",
+                    annotation_text="Target (F=0.8)",
+                    annotation_position="right"
+                )
+
+                fig.update_layout(
+                    xaxis_title="Turn Number",
+                    yaxis_title="Telic Fidelity",
+                    height=400,
+                    template='plotly_white',
+                    hovermode='x unified',
+                    yaxis_range=[0, 1],
+                    legend=dict(
+                        orientation="h",
+                        yanchor="bottom",
+                        y=1.02,
+                        xanchor="right",
+                        x=1
+                    )
+                )
+
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                # Fallback: simple display
+                df_comparison = pd.DataFrame({
+                    'Turn': list(range(1, max(len(fidelities_a), len(fidelities_b)) + 1)),
+                    'Session A': fidelities_a + [None] * (max(len(fidelities_a), len(fidelities_b)) - len(fidelities_a)),
+                    'Session B': fidelities_b + [None] * (max(len(fidelities_a), len(fidelities_b)) - len(fidelities_b))
+                })
+                st.line_chart(df_comparison.set_index('Turn'))
+
+            # Comparative summary
+            st.markdown("#### 📝 Comparative Summary")
+
+            if metrics_b['avg_fidelity'] > metrics_a['avg_fidelity']:
+                improvement_pct = ((metrics_b['avg_fidelity'] - metrics_a['avg_fidelity']) / metrics_a['avg_fidelity'] * 100)
+                st.success(f"""
+                ✅ **Session B shows improvement**
+
+                Average fidelity improved by {improvement_pct:.1f}% compared to Session A.
+                Session B demonstrates better alignment with purpose.
+                """)
+            elif metrics_b['avg_fidelity'] < metrics_a['avg_fidelity']:
+                decline_pct = ((metrics_a['avg_fidelity'] - metrics_b['avg_fidelity']) / metrics_a['avg_fidelity'] * 100)
+                st.warning(f"""
+                ⚠️ **Session B shows decline**
+
+                Average fidelity decreased by {decline_pct:.1f}% compared to Session A.
+                Review Session B for potential issues or configuration changes.
+                """)
+            else:
+                st.info("""
+                ℹ️ **Sessions show similar performance**
+
+                Both sessions demonstrate comparable fidelity levels.
+                Performance appears consistent across sessions.
+                """)
+
+    elif len(sessions_data) == 1:
+        st.info("""
+        Need at least 2 sessions for comparison.
+
+        Complete another conversation to enable session-to-session comparison!
+        """)
+    else:
+        st.info("""
+        No session data available yet for comparison.
+
+        Complete at least 2 conversations to see session-to-session comparisons!
         """)
 
     st.divider()
