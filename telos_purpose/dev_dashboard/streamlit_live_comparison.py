@@ -47,6 +47,117 @@ except ImportError:
     st.warning("⚠️ Plotly not installed. Charts will be limited. Install with: pip install plotly")
 
 # ============================================================================
+# Performance: Cached Data Operations
+# ============================================================================
+
+@st.cache_data(ttl=300)  # Cache for 5 minutes
+def get_session_statistics_cached(turns_data: str) -> Dict[str, Any]:
+    """
+    Performance: Cached expensive computation of session statistics.
+
+    Args:
+        turns_data: JSON string of turns (used for cache key)
+
+    Returns:
+        Dict with avg_fidelity, total_interventions, basin_crossings
+    """
+    turns = json.loads(turns_data)
+
+    fidelities = []
+    interventions = 0
+    basin_crossings = 0
+
+    for turn in turns:
+        metrics = turn.get('metrics', {})
+        fidelity = metrics.get('telic_fidelity', 1.0)
+        fidelities.append(fidelity)
+
+        # Count interventions
+        metadata = turn.get('metadata', {})
+        if metadata.get('intervention_applied', False):
+            interventions += 1
+
+        # Count basin crossings (fidelity < 0.70)
+        if fidelity < 0.70:
+            basin_crossings += 1
+
+    return {
+        'avg_fidelity': sum(fidelities) / len(fidelities) if fidelities else 0.0,
+        'total_interventions': interventions,
+        'basin_crossings': basin_crossings,
+        'total_turns': len(turns)
+    }
+
+
+@st.cache_data(ttl=60)  # Cache for 1 minute
+def get_all_turns_cached(session_id: str) -> List[Dict[str, Any]]:
+    """
+    Performance: Cache turn retrieval to reduce session manager calls.
+
+    Args:
+        session_id: Session identifier for cache invalidation
+
+    Returns:
+        List of turn dictionaries
+    """
+    if 'current_session' in st.session_state:
+        return st.session_state.current_session.get('turns', [])
+    return []
+
+
+@st.cache_data
+def prepare_export_data(turns_json: str, format_type: str) -> str:
+    """
+    Performance: Cache export data preparation to avoid recomputation.
+
+    Args:
+        turns_json: JSON string of turns (used for cache key)
+        format_type: Export format ('csv', 'json', 'html')
+
+    Returns:
+        Formatted export string
+    """
+    turns = json.loads(turns_json)
+
+    if format_type == 'csv':
+        output = io.StringIO()
+        writer = csv.DictWriter(output, fieldnames=['turn', 'user', 'assistant', 'fidelity'])
+        writer.writeheader()
+        for i, turn in enumerate(turns):
+            writer.writerow({
+                'turn': i + 1,
+                'user': turn.get('user_input', ''),
+                'assistant': turn.get('assistant_response', ''),
+                'fidelity': turn.get('metrics', {}).get('telic_fidelity', 1.0)
+            })
+        return output.getvalue()
+
+    elif format_type == 'json':
+        return json.dumps(turns, indent=2)
+
+    return str(turns)
+
+
+@st.cache_data
+def prepare_fidelity_chart_data(turns_json: str) -> Dict[str, List]:
+    """
+    Performance: Cache fidelity trend computation for charts.
+
+    Args:
+        turns_json: JSON string of turns
+
+    Returns:
+        Dict with x (turn numbers) and y (fidelity values) lists
+    """
+    turns = json.loads(turns_json)
+    fidelities = [t.get('metrics', {}).get('telic_fidelity', 1.0) for t in turns]
+
+    return {
+        'x': list(range(1, len(fidelities) + 1)),
+        'y': fidelities
+    }
+
+# ============================================================================
 # Evidence Export Functions (Phase 8)
 # ============================================================================
 
@@ -2761,7 +2872,15 @@ def render_live_session():
         """)
 
     if turns:
-        for idx, turn in enumerate(turns):
+        # Performance: Paginate messages for long conversations to limit DOM size
+        MAX_VISIBLE_MESSAGES = 100
+        if len(turns) > MAX_VISIBLE_MESSAGES:
+            visible_turns = turns[-MAX_VISIBLE_MESSAGES:]
+            st.caption(f"📊 Performance: Showing last {MAX_VISIBLE_MESSAGES} messages of {len(turns)} total (older messages hidden to improve performance)")
+        else:
+            visible_turns = turns
+
+        for idx, turn in enumerate(visible_turns):
             # User message
             with st.chat_message("user"):
                 st.write(turn['user_input'])
