@@ -2103,6 +2103,54 @@ def render_sidebar():
             *Note: Native keyboard shortcuts are limited in Streamlit. We prioritize accessibility through clear labeling and tab navigation.*
             """)
 
+        # Help & Documentation Section
+        with st.expander("❓ Help & Documentation", expanded=False):
+            st.markdown("""
+            ### Key Concepts
+
+            **Fidelity (F):**
+            Measures how well responses stay aligned with governance purpose (0-1 scale).
+            - 🟢 **0.85+**: Excellent alignment
+            - 🟡 **0.5-0.85**: Acceptable with minor drift
+            - 🔴 **<0.5**: Critical drift requiring attention
+
+            **Basin of Attraction:**
+            The mathematical boundary defining acceptable governance drift. Responses within the basin maintain fidelity. Think of it as a "safe zone" where the Steward can keep conversations on track.
+
+            **Error Signal (ε):**
+            Measures deviation from governance target (0-1 scale). Lower is better. High error signals (>0.5) indicate the conversation is drifting away from its intended purpose.
+
+            **Intervention:**
+            Active Steward correction when drift exceeds threshold. Types:
+            - **Reinforcement**: Strengthens attractor salience in context
+            - **Regeneration**: Produces new response if first attempt drifted
+
+            **TELOSCOPE:**
+            Mathematical transparency window showing how governance works. Provides observable evidence through counterfactual comparison ("what if governance was off?").
+
+            **Native vs TELOS:**
+            - **Native**: Original LLM response before governance
+            - **TELOS**: Governed response after Steward intervention
+            - Toggle between them to see governance impact
+
+            ### Getting Started
+
+            1. **Start a Conversation**: Type a message in the Live Session tab
+            2. **Watch the Steward**: See governance metrics in real-time
+            3. **Compare Responses**: Toggle between Native and TELOS to see differences
+            4. **Replay History**: Use Session Replay to navigate through conversation turns
+            5. **View Evidence**: Check TELOSCOPE tab for counterfactual experiments
+
+            ### Understanding Metrics
+
+            - **Salience**: How prominent the governance purpose is in context
+            - **Coupling**: How well the response aligns with the attractor
+            - **Drift Distance**: Numerical measure of how far from purpose
+            - **Lyapunov Value**: Stability indicator for governance system
+
+            💡 **Tip**: Green metrics = good, yellow = watch closely, red = intervention needed
+            """)
+
 
 # ============================================================================
 # Tab 1: Live Session
@@ -2698,6 +2746,20 @@ def render_live_session():
     # Display conversation history
     turns = st.session_state.current_session.get('turns', [])
 
+    # Welcome message for first-time users
+    if not turns:
+        st.info("👋 **Welcome to TELOS Observatory!**")
+        st.markdown("""
+        **Getting Started:**
+        1. 💬 Type a message below to start a governed conversation
+        2. 🔍 Watch the Steward Lens to see governance in action
+        3. ⚖️ Use the toggle to compare Native vs TELOS responses
+        4. ⏮️ Navigate through turns to see how governance evolves
+        5. 📊 Check the Session Replay tab to review conversation history
+
+        💡 **Tip:** Visit the Help & Documentation section in the sidebar to learn about key concepts like Fidelity, Basin of Attraction, and Active Mitigation.
+        """)
+
     if turns:
         for idx, turn in enumerate(turns):
             # User message
@@ -2940,6 +3002,7 @@ def render_session_replay():
     """Render session replay with timeline scrubber."""
     st.title("⏮️ Session Replay")
     st.caption("Navigate conversation history with timeline controls")
+    st.info("💡 **Tip:** Use the timeline slider or navigation buttons to jump between conversation turns. Metrics show governance health at each point. Click trigger buttons to explore counterfactual experiments.")
     st.markdown("---")  # Section separator
 
     turns = st.session_state.current_session.get('turns', [])
@@ -2968,12 +3031,16 @@ def render_session_replay():
     col1, col2, col3, col4 = st.columns([1, 1, 4, 1])
 
     with col1:
-        if st.button("⏮️ First", use_container_width=True):
+        if st.button("⏮️ First",
+                    use_container_width=True,
+                    help="Jump to first turn in conversation history"):
             st.session_state.replay_turn = 0
             st.rerun()
 
     with col2:
-        if st.button("◀️ Prev", use_container_width=True):
+        if st.button("◀️ Prev",
+                    use_container_width=True,
+                    help="Navigate to previous turn in conversation history"):
             st.session_state.replay_turn = max(0, st.session_state.replay_turn - 1)
             st.rerun()
 
@@ -2985,12 +3052,14 @@ def render_session_replay():
             max_value=len(turns) - 1,
             value=st.session_state.replay_turn,
             key="replay_slider",
-            help="Scrub through conversation timeline"
+            help="Scrub through conversation timeline - drag slider or use arrow keys to navigate between turns"
         )
         st.session_state.replay_turn = turn_num
 
     with col4:
-        if st.button("Next ▶️", use_container_width=True):
+        if st.button("Next ▶️",
+                    use_container_width=True,
+                    help="Navigate to next turn in conversation history"):
             st.session_state.replay_turn = min(len(turns) - 1, st.session_state.replay_turn + 1)
             st.rerun()
 
@@ -3028,6 +3097,7 @@ def render_session_replay():
 
     with col2:
         st.markdown("### 📊 Metrics")
+        st.caption("Track governance health: 🟢 Good | 🟡 Watch | 🔴 Attention needed")
         st.markdown("")  # Small spacer
 
         metrics = selected_turn.get('metrics', {})
@@ -3037,27 +3107,32 @@ def render_session_replay():
         fidelity_color = "🟢" if fidelity >= 0.8 else ("🟡" if fidelity >= 0.5 else "🔴")
         st.metric(
             f"{fidelity_color} Fidelity",
-            f"{fidelity:.3f}"
+            f"{fidelity:.3f}",
+            help="Alignment with governance purpose (0-1 scale). Higher is better. 0.85+ excellent, 0.5-0.85 acceptable, <0.5 critical"
         )
 
         # Distance
         distance = metrics.get('drift_distance', 0.0)
         st.metric(
-            "Distance",
-            f"{distance:.3f}"
+            "Drift Distance",
+            f"{distance:.3f}",
+            help="Numerical measure of how far response drifted from purpose. Lower is better. Values >2.0 typically indicate basin exit"
         )
 
         # Error Signal
         error = metrics.get('error_signal', 0.0)
         st.metric(
             "Error Signal",
-            f"{error:.3f}"
+            f"{error:.3f}",
+            help="Deviation from governance target (0-1 scale). Lower is better. High values (>0.5) indicate drift"
         )
 
         # Basin Status
         basin = metrics.get('primacy_basin_membership', True)
-        basin_text = "Inside ✅" if basin else "Outside ❌"
+        basin_icon = "✅" if basin else "❌"
+        basin_text = f"Inside {basin_icon}" if basin else f"Outside {basin_icon}"
         st.write(f"**Basin Status:** {basin_text}")
+        st.caption("Basin = safe zone where governance maintains fidelity")
 
     st.markdown("---")  # Visual separator
 
@@ -3065,6 +3140,7 @@ def render_session_replay():
     triggers = st.session_state.web_session.get_all_triggers()
     if triggers:
         st.markdown("### 🔬 Counterfactual Triggers on Timeline")
+        st.caption("These turns had drift detected. Click to explore 'what if' scenarios showing governance impact.")
         st.markdown("")  # Small spacer
 
         # Create columns for triggers
@@ -3594,7 +3670,7 @@ def render_analytics_dashboard():
     st.divider()
 
     # Export all analytics
-    if st.button("📥 Export Complete Analytics", type="primary"):
+    if st.button("📥 Export Complete Analytics", type="primary", help="Download comprehensive analytics report including session stats, efficacy summary, and aggregate metrics in JSON format"):
         with st.spinner('📊 Preparing analytics export...'):
             analytics_data = {
                 'session_stats': stats,
