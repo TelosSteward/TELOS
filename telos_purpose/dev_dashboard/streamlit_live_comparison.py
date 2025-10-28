@@ -986,7 +986,56 @@ def render_steward_lens():
         st.divider()
 
         # ========================================
-        # Section 4: Research Lens Toggle
+        # Section 4: Governance Health Metrics
+        # ========================================
+        st.markdown("### 📊 Governance Metrics")
+
+        # Get all turns for metrics calculation
+        if hasattr(st.session_state, 'session_manager'):
+            turns = st.session_state.session_manager.get_all_turns()
+
+            if turns and len(turns) > 0:
+                # Extract fidelity scores
+                fidelities = []
+                for turn in turns:
+                    fidelity = turn.get('fidelity', None)
+                    if fidelity is not None:
+                        fidelities.append(fidelity)
+
+                # Get intervention data from steward if available
+                total_interventions = 0
+                if st.session_state.get('steward') and hasattr(st.session_state.steward, 'llm_wrapper'):
+                    mitigation_stats = st.session_state.steward.llm_wrapper.get_intervention_statistics()
+                    total_interventions = mitigation_stats.get('total_interventions', 0)
+
+                # Calculate metrics
+                avg_fidelity = sum(fidelities) / len(fidelities) if fidelities else 0.0
+                intervention_rate = (total_interventions / len(turns)) * 100 if turns else 0.0
+                basin_crossings = len([f for f in fidelities if f < 0.70])
+
+                # Display in columns
+                col1, col2, col3, col4 = st.columns(4)
+
+                with col1:
+                    st.metric("Avg Fidelity", f"{avg_fidelity:.2f}")
+
+                with col2:
+                    st.metric("Interventions", total_interventions)
+
+                with col3:
+                    st.metric("Intervention Rate", f"{intervention_rate:.1f}%")
+
+                with col4:
+                    st.metric("Basin Crossings", basin_crossings)
+            else:
+                st.caption("No metrics available yet. Start chatting to see governance health.")
+        else:
+            st.caption("Session manager not initialized")
+
+        st.divider()
+
+        # ========================================
+        # Section 5: Research Lens Toggle
         # ========================================
         research_lens_enabled = st.checkbox(
             "🔬 Research Lens (Mathematical Detail)",
