@@ -3266,6 +3266,36 @@ def render_chat_interface():
                     st.info("💡 Please try sending your message again")
                     logging.error(f"Message processing error: {e}")  # Log technical details
 
+    # FINAL CSS INJECTION - Applied at end of rendering to override everything
+    st.markdown("""
+    <style>
+    /* FINAL OVERRIDE - Toggle switches MUST be gray */
+    button[role="switch"] {
+        background-color: #888888 !important;
+        background: linear-gradient(#888888, #888888) !important;
+    }
+
+    button[role="switch"][aria-checked="true"] {
+        background-color: #999999 !important;
+        background: linear-gradient(#999999, #999999) !important;
+    }
+
+    /* Override baseui styles directly */
+    [data-baseweb="toggle"] {
+        background-color: #888888 !important;
+    }
+
+    [data-baseweb="toggle"][aria-checked="true"] {
+        background-color: #999999 !important;
+    }
+
+    /* Target inner thumb/track elements */
+    button[role="switch"] > div {
+        background-color: inherit !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 
 # ============================================================================
 # Sidebar: Configuration and Metrics
