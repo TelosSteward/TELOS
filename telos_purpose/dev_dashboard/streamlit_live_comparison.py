@@ -2824,23 +2824,6 @@ def render_chat_interface():
     turns = st.session_state.session_manager.get_all_turns()
 
     # ========================================================================
-    # OBSERVATION DECK INITIALIZATION
-    # ========================================================================
-
-    # Initialize DeckManager if not already initialized
-    if 'deck_manager' not in st.session_state:
-        st.session_state.deck_manager = DeckManager(st.session_state)
-
-    deck_manager = st.session_state.deck_manager
-
-    # Initialize Deck Control Strip (sidebar header)
-    if 'deck_control_strip' not in st.session_state:
-        st.session_state.deck_control_strip = DeckControlStrip(
-            st.session_state.session_manager,
-            deck_manager
-        )
-
-    # ========================================================================
     # KEYBOARD SHORTCUTS (Invisible Handler)
     # ========================================================================
     render_keyboard_handler()
@@ -7034,6 +7017,10 @@ def main():
 
     # Initialize TELOSCOPE
     initialize_teloscope()
+
+    # Initialize DeckManager (needed by sidebar)
+    if 'deck_manager' not in st.session_state:
+        st.session_state.deck_manager = DeckManager(st.session_state)
 
     # Render sidebar
     render_sidebar()
