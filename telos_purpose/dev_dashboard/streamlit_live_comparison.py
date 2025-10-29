@@ -2796,11 +2796,11 @@ def render_chat_interface():
     render_keyboard_handler()
 
     # ========================================================================
-    # MINIMALISTIC HEADER: Dark/Light mode + Governance toggle (top-right)
+    # MINIMALISTIC HEADER: Dark/Light mode + Governance toggle + Telescope (top-right)
     # ========================================================================
 
-    # Create subtle header with toggles - wider columns for Dark and TELOS
-    header_col1, header_col2, header_col3 = st.columns([3, 1.3, 1.5])
+    # Create subtle header with toggles - 4 columns for Dark, TELOS, and Telescope
+    header_col1, header_col2, header_col3, header_col4 = st.columns([2.5, 1.3, 1.5, 0.7])
 
     with header_col1:
         # Empty - keeps toggles on right side
@@ -2825,6 +2825,12 @@ def render_chat_interface():
             help="Toggle governance: ON = TELOS Steward | OFF = Native Mistral"
         )
         st.session_state['governance_enabled'] = governance_enabled
+
+    with header_col4:
+        # Telescope button for Observation Deck (always accessible)
+        if st.button("🔭", key="header_telescope_toggle", help="Toggle Observation Deck"):
+            st.session_state.deck_manager.toggle_deck()
+            st.rerun()
 
     # Use components.html for guaranteed JavaScript execution after Streamlit render
     components.html("""
