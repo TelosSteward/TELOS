@@ -51,11 +51,11 @@ python steward.py complete "task name"  # Mark task complete
 
 ## Recent Completions
 
-1. ✅ Minimalistic ChatGPT-style interface (2025-10-29)
-2. ✅ Session saving/loading for research artifacts (2025-10-29)
-3. ✅ Fixed toggle colors and TELOS wrapping (2025-10-29)
-4. ✅ Hid Streamlit header bar for cleaner UI (2025-10-29)
-5. ✅ Phase 12 performance optimization review (2025-10-28)
+1. ✅ Test steward.py functionality (2025-10-29)
+2. ✅ Minimalistic ChatGPT-style interface (2025-10-29)
+3. ✅ Session saving/loading for research artifacts (2025-10-29)
+4. ✅ Fixed toggle colors and TELOS wrapping (2025-10-29)
+5. ✅ Hid Streamlit header bar for cleaner UI (2025-10-29)
 
 ## Critical Path to V1.00
 
