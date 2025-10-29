@@ -29,7 +29,6 @@ from telos_purpose.core.unified_steward import UnifiedGovernanceSteward, Primacy
 from telos_purpose.profiling.progressive_primacy_extractor import ProgressivePrimacyExtractor
 from telos_purpose.dev_dashboard.steward_analysis import StewardAnalyzer
 from telos_purpose.dev_dashboard.observation_deck.deck_manager import DeckManager
-from telos_purpose.dev_dashboard.observation_deck.observatory_control_strip import ObservatoryControlStrip
 from telos_purpose.dev_dashboard.observation_deck.deck_control_strip import DeckControlStrip
 import os
 import json
@@ -2777,10 +2776,7 @@ def render_chat_interface():
 
     deck_manager = st.session_state.deck_manager
 
-    # Initialize control strips
-    if 'observatory_control_strip' not in st.session_state:
-        st.session_state.observatory_control_strip = ObservatoryControlStrip(st.session_state.session_manager)
-
+    # Initialize Deck Control Strip (sidebar header)
     if 'deck_control_strip' not in st.session_state:
         st.session_state.deck_control_strip = DeckControlStrip(
             st.session_state.session_manager,
@@ -3270,102 +3266,70 @@ def render_chat_interface():
     render_floating_popups(dark_mode)
 
     # ========================================================================
-    # OBSERVATORY CONTROL STRIP (Top-Right Thermometer)
+    # MESSAGE CONTAINER (Scrollable)
     # ========================================================================
 
-    # Render Observatory Control Strip in top-right corner
-    obs_strip_container = st.container()
-    with obs_strip_container:
-        st.session_state.observatory_control_strip.render()
-
-    # ========================================================================
-    # DYNAMIC 3-COLUMN LAYOUT (Sidebar | Chat | Observation Deck)
-    # ========================================================================
-
-    # Get column widths from DeckManager based on sidebar/deck state
-    # States: [sidebar%, chat%, deck%]
-    # - Sidebar open + Deck open: [15, 60, 25]
-    # - Sidebar open + Deck closed: [15, 85, 0]
-    # - Sidebar closed + Deck open: [0, 60, 40]
-    # - Both closed: [0, 100, 0]
-
-    # Note: Streamlit sidebar is separate from column layout, so we only manage chat/deck split
-    deck_is_open = deck_manager.session_state['observation_deck']['is_open']
-
-    if deck_is_open:
-        # Chat (75%) + Observation Deck (25%)
-        chat_col, deck_col = st.columns([75, 25])
+    if len(turns) == 0:
+        # Minimalistic welcome - clean empty state (dark mode aware)
+        welcome_color = "#888" if dark_mode else "#999"
+        st.markdown(f"""
+        <div style="text-align: center; padding: 60px 20px; color: {welcome_color};">
+            <p style="font-size: 19px;">Start a conversation</p>
+            <p style="font-size: 15px; margin-top: 12px; line-height: 1.6;">
+                <code>ESC</code> STEWARD • <code>Space</code> TELOSCOPE • <code>↑</code> Tools • <code>↓</code> Hide All
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
     else:
-        # Chat (100%), Deck hidden
-        chat_col = st.container()
-        deck_col = None
+        # Phase 5: Filter turns based on current_turn_index
+        current_turn_index = st.session_state.get('current_turn_index', len(turns) - 1)
+        current_turn_index = max(0, min(current_turn_index, len(turns) - 1))  # Bounds check
 
-    # ========================================================================
-    # MESSAGE CONTAINER (Scrollable) - Left/Center Column
-    # ========================================================================
+        # Only show turns up to current_turn_index (inclusive)
+        visible_turns = turns[:current_turn_index + 1]
 
-    with chat_col:
-        if len(turns) == 0:
-            # Minimalistic welcome - clean empty state (dark mode aware)
-            welcome_color = "#888" if dark_mode else "#999"
+        # Render filtered messages
+        for turn in visible_turns:
+            turn_number = turn.get('turn_number', 0)
+            user_message = turn.get('user_message', '')
+
+            # Phase 4: Get both responses from turn data
+            native_response = turn.get('native_response', '')
+            telos_response = turn.get('telos_response', '')
+
+            # Phase 4: Select which response to display based on toggle
+            assistant_response = telos_response if governance_enabled else native_response
+
+            timestamp = turn.get('timestamp', datetime.now())
+
+            # Check if intervention was applied
+            governance_metadata = turn.get('governance_metadata', {})
+            intervention_applied = governance_metadata.get('intervention_applied', False)
+
+            # Phase 4: Badge reflects currently displayed mode
+            governance_mode = 'telos' if governance_enabled else 'native'
+
+            # Dark mode aware colors
+            assistant_bg = "#3a3a3a" if dark_mode else "#f0f0f0"
+            assistant_color = "#e0e0e0" if dark_mode else "#000"
+
+            # Render user message (MINIMALISTIC - no turn numbers, no timestamps)
             st.markdown(f"""
-            <div style="text-align: center; padding: 60px 20px; color: {welcome_color};">
-                <p style="font-size: 19px;">Start a conversation</p>
-                <p style="font-size: 15px; margin-top: 12px; line-height: 1.6;">
-                    <code>ESC</code> STEWARD • <code>Space</code> TELOSCOPE • <code>↑</code> Tools • <code>↓</code> Hide All
-                </p>
+            <div style="display: flex; justify-content: flex-end; margin: 10px 0;">
+                <div style="max-width: 75%; background-color: #0084ff; color: white; padding: 14px 18px; border-radius: 18px; font-size: 21px; line-height: 1.5;">
+                    {user_message}
+                </div>
             </div>
             """, unsafe_allow_html=True)
-        else:
-            # Phase 5: Filter turns based on current_turn_index
-            current_turn_index = st.session_state.get('current_turn_index', len(turns) - 1)
-            current_turn_index = max(0, min(current_turn_index, len(turns) - 1))  # Bounds check
 
-            # Only show turns up to current_turn_index (inclusive)
-            visible_turns = turns[:current_turn_index + 1]
-
-            # Render filtered messages
-            for turn in visible_turns:
-                turn_number = turn.get('turn_number', 0)
-                user_message = turn.get('user_message', '')
-
-                # Phase 4: Get both responses from turn data
-                native_response = turn.get('native_response', '')
-                telos_response = turn.get('telos_response', '')
-
-                # Phase 4: Select which response to display based on toggle
-                assistant_response = telos_response if governance_enabled else native_response
-
-                timestamp = turn.get('timestamp', datetime.now())
-
-                # Check if intervention was applied
-                governance_metadata = turn.get('governance_metadata', {})
-                intervention_applied = governance_metadata.get('intervention_applied', False)
-
-                # Phase 4: Badge reflects currently displayed mode
-                governance_mode = 'telos' if governance_enabled else 'native'
-
-                # Dark mode aware colors
-                assistant_bg = "#3a3a3a" if dark_mode else "#f0f0f0"
-                assistant_color = "#e0e0e0" if dark_mode else "#000"
-
-                # Render user message (MINIMALISTIC - no turn numbers, no timestamps)
-                st.markdown(f"""
-                <div style="display: flex; justify-content: flex-end; margin: 10px 0;">
-                    <div style="max-width: 75%; background-color: #0084ff; color: white; padding: 14px 18px; border-radius: 18px; font-size: 21px; line-height: 1.5;">
-                        {user_message}
-                    </div>
+            # Render assistant message (MINIMALISTIC - no badges, no metadata)
+            st.markdown(f"""
+            <div style="display: flex; justify-content: flex-start; margin: 10px 0;">
+                <div style="max-width: 75%; background-color: {assistant_bg}; color: {assistant_color}; padding: 14px 18px; border-radius: 18px; font-size: 21px; line-height: 1.5;">
+                    <div style="white-space: pre-wrap;">{assistant_response}</div>
                 </div>
-                """, unsafe_allow_html=True)
-
-                # Render assistant message (MINIMALISTIC - no badges, no metadata)
-                st.markdown(f"""
-                <div style="display: flex; justify-content: flex-start; margin: 10px 0;">
-                    <div style="max-width: 75%; background-color: {assistant_bg}; color: {assistant_color}; padding: 14px 18px; border-radius: 18px; font-size: 21px; line-height: 1.5;">
-                        <div style="white-space: pre-wrap;">{assistant_response}</div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
+            </div>
+            """, unsafe_allow_html=True)
 
     # ========================================================================
     # TURN NAVIGATION (Hidden - keyboard shortcuts only: ← / →)
@@ -3421,15 +3385,6 @@ def render_chat_interface():
                     st.error("⚠️ Message could not be processed")
                     st.info("💡 Please try sending your message again")
                     logging.error(f"Message processing error: {e}")  # Log technical details
-
-    # ========================================================================
-    # OBSERVATION DECK (Right Column - Collapsible)
-    # ========================================================================
-
-    if deck_col is not None:
-        with deck_col:
-            # Render Observation Deck
-            deck_manager.render_observation_deck()
 
     # FINAL CSS INJECTION - Applied at end of rendering to override everything
     st.markdown("""
