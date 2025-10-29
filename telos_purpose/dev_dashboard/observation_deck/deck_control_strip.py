@@ -46,22 +46,74 @@ class DeckControlStrip:
 
         Shows telescope toggle, symbolic flow, and stats.
         """
-        # TODO: Implement Deck Control Strip rendering
-        # Will include:
-        # - Telescope icon button (opens/closes Deck)
-        # - Symbolic flow animation (👤→⚡→🔄→🤖→✓)
-        # - Stats display (interventions, fidelity)
-        # - Early warning indicators (pulse on drift)
+        # Get current session data for stats
+        session_data = self._get_session_data()
+        governance_state = self._get_governance_state()
 
-        st.markdown("### 🔭 Observation Deck")
+        # CSS for control strip
+        st.markdown("""
+            <style>
+            .deck-control-strip {
+                background: rgba(40, 40, 40, 0.8);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 8px;
+                padding: 12px;
+                margin-bottom: 15px;
+            }
+            .deck-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+            .deck-title {
+                font-size: 14px;
+                font-weight: 600;
+                color: rgba(255, 255, 255, 0.9);
+            }
+            .deck-stats {
+                display: flex;
+                gap: 15px;
+                font-size: 11px;
+                color: rgba(255, 255, 255, 0.7);
+            }
+            .deck-stat-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .deck-stat-value {
+                font-size: 16px;
+                font-weight: 700;
+                color: #00aaff;
+            }
+            .deck-stat-label {
+                font-size: 9px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            </style>
+        """, unsafe_allow_html=True)
 
-        # Telescope toggle button
-        is_open = self.deck_manager.session_state['observation_deck']['is_open']
-        button_text = "Close Deck" if is_open else "Open Deck"
+        # Header with title and toggle
+        col1, col2 = st.columns([3, 1])
 
-        if st.button(button_text, key="deck_toggle"):
-            self.deck_manager.toggle_deck()
-            st.rerun()
+        with col1:
+            st.markdown("### 🔭 Observation Deck")
+
+        with col2:
+            is_open = self.deck_manager.session_state['observation_deck']['is_open']
+            if st.button("📐" if not is_open else "✖", key="deck_toggle", help="Toggle Observation Deck"):
+                self.deck_manager.toggle_deck()
+                st.rerun()
+
+        # Stats summary (compact)
+        self._render_stats_summary(session_data)
+
+        # Symbolic flow (if governance active)
+        if governance_state.get('governance_enabled', False):
+            st.markdown("---")
+            self._render_symbolic_flow(governance_state)
 
     def _render_symbolic_flow(self, governance_state: Dict[str, Any]):
         """
@@ -70,10 +122,11 @@ class DeckControlStrip:
         Args:
             governance_state: Current governance state with telemetry
         """
-        # TODO: Implement symbolic flow visualization
-        # Shows: 👤→⚡→🔄→🤖→✓
-        # With animations based on activity
-        pass
+        # Use SymbolicFlow component
+        from .symbolic_flow import SymbolicFlow
+
+        flow_viz = SymbolicFlow(self.session_manager)
+        flow_viz.render(governance_state)
 
     def _render_stats_summary(self, session_data: Dict[str, Any]):
         """
@@ -82,6 +135,69 @@ class DeckControlStrip:
         Args:
             session_data: Current session data
         """
-        # TODO: Implement stats summary
-        # Shows: intervention count, avg fidelity, drift warnings
-        pass
+        # Extract metrics
+        total_turns = session_data.get('total_turns', 0)
+        interventions = session_data.get('total_interventions', 0)
+        avg_fidelity = session_data.get('avg_fidelity', 0.0)
+        drift_warnings = session_data.get('drift_warnings', 0)
+
+        # Render compact stats
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.metric("Turns", total_turns, help="Total conversation turns")
+
+        with col2:
+            color = "#00ff00" if avg_fidelity >= 0.8 else "#ffaa00" if avg_fidelity >= 0.6 else "#ff0000"
+            st.metric("Fidelity", f"{avg_fidelity:.2f}", help="Average governance fidelity")
+
+        with col3:
+            st.metric("Interventions", interventions, help="Total governance interventions")
+
+        # Drift warning (if any)
+        if drift_warnings > 0:
+            st.warning(f"⚠️ {drift_warnings} drift warning(s) detected")
+
+    def _get_session_data(self) -> Dict[str, Any]:
+        """
+        Get current session data with computed stats.
+
+        Returns:
+            Dictionary with session metrics
+        """
+        try:
+            # TODO: Wire to WebSessionManager
+            # For now, return stub data
+            return {
+                'total_turns': 0,
+                'total_interventions': 0,
+                'avg_fidelity': 0.0,
+                'drift_warnings': 0
+            }
+        except Exception as e:
+            return {
+                'total_turns': 0,
+                'total_interventions': 0,
+                'avg_fidelity': 0.0,
+                'drift_warnings': 0
+            }
+
+    def _get_governance_state(self) -> Dict[str, Any]:
+        """
+        Get current governance state.
+
+        Returns:
+            Dictionary with governance_enabled, drift_detected flags
+        """
+        try:
+            # TODO: Wire to UnifiedGovernanceSteward
+            # For now, return stub data
+            return {
+                'governance_enabled': False,
+                'drift_detected': False
+            }
+        except Exception as e:
+            return {
+                'governance_enabled': False,
+                'drift_detected': False
+            }
