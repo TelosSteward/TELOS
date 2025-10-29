@@ -3430,8 +3430,23 @@ def render_chat_interface():
     deck_is_open = st.session_state.deck_manager.session_state['observation_deck']['is_open']
     panel_class = "observation-deck-panel open" if deck_is_open else "observation-deck-panel"
 
-    # Inject right panel HTML
+    # Inject right panel HTML and conditional CSS for content adjustment
+    content_margin = "420px" if deck_is_open else "0"
+
     st.markdown(f"""
+        <style>
+        /* Adjust main content area when Observation Deck is open */
+        .main .block-container {{
+            margin-right: {content_margin} !important;
+            transition: margin-right 0.3s ease;
+        }}
+
+        section[data-testid="stMain"] .block-container {{
+            margin-right: {content_margin} !important;
+            transition: margin-right 0.3s ease;
+        }}
+        </style>
+
         <div class="{panel_class}">
             <h2 style="color: #fff; margin-top: 0;">🔭 Observation Deck</h2>
             <p style="color: #aaa;">TELOSCOPIC tools and research instruments will appear here.</p>
