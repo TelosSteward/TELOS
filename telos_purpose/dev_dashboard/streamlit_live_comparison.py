@@ -16,6 +16,7 @@ TELOSCOPE = Telically Entrained Linguistic Operational Substrate
 """
 
 import streamlit as st
+import streamlit.components.v1 as components
 from telos_purpose.sessions.web_session import WebSessionManager
 from telos_purpose.core.session_state import SessionStateManager
 from telos_purpose.core.counterfactual_branch_manager import CounterfactualBranchManager
@@ -157,6 +158,138 @@ def prepare_fidelity_chart_data(turns_json: str) -> Dict[str, List]:
         'x': list(range(1, len(fidelities) + 1)),
         'y': fidelities
     }
+
+
+# ============================================================================
+# Keyboard Shortcuts Handler
+# ============================================================================
+
+def render_keyboard_handler():
+    """
+    Render invisible keyboard event listener using JavaScript.
+
+    Keyboard shortcuts:
+    - ESC: Toggle Steward Lens
+    - Spacebar: Toggle TELOSCOPE window
+    - Up Arrow: Show TELOSCOPE Tools (expand TELOSCOPE)
+    - Down Arrow: Hide all windows
+    - Left Arrow: Previous turn (navigate backward)
+    - Right Arrow: Next turn (navigate forward)
+    """
+    keyboard_html = """
+    <script>
+    // Keyboard event handler for TELOS Observatory
+    let lastKey = null;
+    let keyPressTime = Date.now();
+
+    document.addEventListener('keydown', function(e) {
+        // Only handle if not typing in an input field
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+            return;
+        }
+
+        let handled = false;
+        let action = null;
+
+        switch(e.key) {
+            case 'Escape':
+                action = 'toggle_steward_lens';
+                handled = true;
+                break;
+            case ' ':  // Spacebar
+                action = 'toggle_teloscope';
+                handled = true;
+                break;
+            case 'ArrowUp':
+                action = 'show_tools';
+                handled = true;
+                break;
+            case 'ArrowDown':
+                action = 'hide_all_windows';
+                handled = true;
+                break;
+            case 'ArrowLeft':
+                action = 'prev_turn';
+                handled = true;
+                break;
+            case 'ArrowRight':
+                action = 'next_turn';
+                handled = true;
+                break;
+        }
+
+        if (handled) {
+            e.preventDefault();
+            lastKey = action;
+            keyPressTime = Date.now();
+
+            // Send to Streamlit
+            window.parent.postMessage({
+                type: 'streamlit:setComponentValue',
+                value: {action: action, timestamp: keyPressTime}
+            }, '*');
+        }
+    });
+
+    // Heartbeat to keep component alive
+    setInterval(function() {
+        if (lastKey) {
+            window.parent.postMessage({
+                type: 'streamlit:setComponentValue',
+                value: {action: lastKey, timestamp: keyPressTime}
+            }, '*');
+        }
+    }, 100);
+    </script>
+    <div style="display:none;">Keyboard handler active</div>
+    """
+
+    # Render the component and get the return value
+    key_event = components.html(keyboard_html, height=0)
+
+    # Process keyboard events
+    if key_event and isinstance(key_event, dict):
+        action = key_event.get('action')
+        timestamp = key_event.get('timestamp', 0)
+
+        # Debounce: only process if this is a new event
+        last_processed = st.session_state.get('last_key_timestamp', 0)
+        if timestamp > last_processed:
+            st.session_state.last_key_timestamp = timestamp
+
+            # Handle the action
+            if action == 'toggle_steward_lens':
+                st.session_state.show_steward_lens = not st.session_state.get('show_steward_lens', False)
+                st.rerun()
+
+            elif action == 'toggle_teloscope':
+                st.session_state.show_teloscope_window = not st.session_state.get('show_teloscope_window', False)
+                st.rerun()
+
+            elif action == 'show_tools':
+                st.session_state.show_teloscope_tools = not st.session_state.get('show_teloscope_tools', False)
+                st.rerun()
+
+            elif action == 'hide_all_windows':
+                st.session_state.show_steward_lens = False
+                st.session_state.show_teloscope_window = False
+                st.session_state.show_teloscope_tools = False
+                st.rerun()
+
+            elif action == 'prev_turn':
+                # Navigate to previous turn
+                current_idx = st.session_state.get('current_turn_index', 0)
+                if current_idx > 0:
+                    st.session_state.current_turn_index = current_idx - 1
+                    st.rerun()
+
+            elif action == 'next_turn':
+                # Navigate to next turn
+                turns = st.session_state.get('current_session', {}).get('turns', [])
+                current_idx = st.session_state.get('current_turn_index', len(turns) - 1)
+                if current_idx < len(turns) - 1:
+                    st.session_state.current_turn_index = current_idx + 1
+                    st.rerun()
 
 
 # ============================================================================
@@ -2378,19 +2511,247 @@ def render_teloscope_window():
 
 
 # ============================================================================
+# Floating Draggable Popup Windows
+# ============================================================================
+
+def render_floating_popups(dark_mode):
+    """
+    Render floating, draggable popup windows that overlay the chat interface.
+
+    Windows:
+    - Steward Lens (ESC): Primacy Attractor display
+    - TELOSCOPE (Spacebar): Mathematical transparency
+    - TELOSCOPIC TOOLS (Up Arrow): Analysis tools
+    """
+
+    show_steward = st.session_state.get('show_steward_lens', False)
+    show_teloscope = st.session_state.get('show_teloscope_window', False)
+    show_tools = st.session_state.get('show_teloscope_tools', False)
+
+    # Only render if at least one window is visible
+    if not (show_steward or show_teloscope or show_tools):
+        return
+
+    # Get steward data if available
+    steward_content = ""
+    if show_steward and st.session_state.get('steward'):
+        steward = st.session_state.steward
+        attractor = steward.attractor_config
+        # Handle attractor being a list or object
+        if hasattr(attractor, 'purpose'):
+            purpose_text = '<br>'.join(attractor.purpose) if isinstance(attractor.purpose, list) else str(attractor.purpose)
+            scope_text = '<br>'.join(attractor.scope) if isinstance(attractor.scope, list) else str(attractor.scope)
+            boundaries_text = '<br>'.join(attractor.boundaries) if isinstance(attractor.boundaries, list) else str(attractor.boundaries)
+        else:
+            purpose_text = "Governance configuration"
+            scope_text = "All interactions"
+            boundaries_text = "As configured"
+
+        steward_content = f"""
+        <div style="margin-bottom: 12px;">
+            <strong>Purpose:</strong><br>
+            <div style="margin-left: 10px; color: {'#ccc' if dark_mode else '#555'};">{purpose_text}</div>
+        </div>
+        <div style="margin-bottom: 12px;">
+            <strong>Scope:</strong><br>
+            <div style="margin-left: 10px; color: {'#ccc' if dark_mode else '#555'};">{scope_text}</div>
+        </div>
+        <div>
+            <strong>Boundaries:</strong><br>
+            <div style="margin-left: 10px; color: {'#ccc' if dark_mode else '#555'};">{boundaries_text}</div>
+        </div>
+        """
+    elif show_steward:
+        steward_content = "<p style='color: #999;'>Steward initializing...</p>"
+
+    # TELOSCOPE content
+    teloscope_content = ""
+    if show_teloscope:
+        teloscope_content = """
+        <div style="margin-bottom: 10px;">
+            <strong>7-Step Observatory:</strong>
+        </div>
+        <div style="margin-left: 10px; font-size: 0.9em; line-height: 1.6;">
+            1. Native Response Generation<br>
+            2. Pre-Fidelity Assessment<br>
+            3. Drift Detection<br>
+            4. Intervention Decision<br>
+            5. TELOS Response Generation<br>
+            6. Post-Fidelity Assessment<br>
+            7. ΔF Calculation
+        </div>
+        """
+
+    # TELOSCOPIC TOOLS content
+    tools_content = ""
+    if show_tools:
+        tools_content = """
+        <div style="margin-bottom: 10px;">
+            <strong>Analysis Tools:</strong>
+        </div>
+        <div style="margin-left: 10px; font-size: 0.9em;">
+            🔍 Fidelity Inspector<br>
+            📊 Drift Analyzer<br>
+            🧪 Counterfactual Simulator<br>
+            📈 Trend Visualizer<br>
+            🎯 Intervention Tracker
+        </div>
+        """
+
+    # Dark mode colors
+    bg_color = "#2d2d2d" if dark_mode else "#ffffff"
+    text_color = "#e0e0e0" if dark_mode else "#000000"
+    border_color = "#444" if dark_mode else "#ddd"
+    header_bg = "#1a1a1a" if dark_mode else "#f5f5f5"
+
+    # Build popup HTML parts separately (to avoid f-string backslash issues)
+    steward_popup = ""
+    if show_steward:
+        steward_popup = f'''
+        <div class="popup" id="steward-popup" style="display: block;">
+            <div class="popup-header" onmousedown="startDrag(event, 'steward-popup')">
+                🔍 Steward Lens
+                <span class="close-btn" onclick="closePopup('steward-popup')">✕</span>
+            </div>
+            <div class="popup-content">{steward_content}</div>
+        </div>
+        '''
+
+    teloscope_popup = ""
+    if show_teloscope:
+        teloscope_popup = f'''
+        <div class="popup" id="teloscope-popup" style="display: block; left: 320px;">
+            <div class="popup-header" onmousedown="startDrag(event, 'teloscope-popup')">
+                🔭 TELOSCOPE
+                <span class="close-btn" onclick="closePopup('teloscope-popup')">✕</span>
+            </div>
+            <div class="popup-content">{teloscope_content}</div>
+        </div>
+        '''
+
+    tools_popup = ""
+    if show_tools:
+        tools_popup = f'''
+        <div class="popup" id="tools-popup" style="display: block; left: 640px;">
+            <div class="popup-header" onmousedown="startDrag(event, 'tools-popup')">
+                🛠️ TELOSCOPIC TOOLS
+                <span class="close-btn" onclick="closePopup('tools-popup')">✕</span>
+            </div>
+            <div class="popup-content">{tools_content}</div>
+        </div>
+        '''
+
+    # Create floating popup HTML with drag-and-drop
+    popup_html = f"""
+    <div id="floating-popups">
+        {steward_popup}
+        {teloscope_popup}
+        {tools_popup}
+    </div>
+
+    <style>
+    .popup {{
+        position: fixed;
+        top: 80px;
+        left: 20px;
+        width: 280px;
+        background-color: {bg_color};
+        border: 1px solid {border_color};
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        z-index: 9999;
+        overflow: hidden;
+    }}
+
+    .popup-header {{
+        background-color: {header_bg};
+        color: {text_color};
+        padding: 10px 12px;
+        cursor: move;
+        user-select: none;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid {border_color};
+    }}
+
+    .popup-content {{
+        padding: 15px;
+        color: {text_color};
+        max-height: 400px;
+        overflow-y: auto;
+        font-size: 0.9em;
+    }}
+
+    .close-btn {{
+        cursor: pointer;
+        font-size: 1.2em;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+    }}
+
+    .close-btn:hover {{
+        opacity: 1;
+    }}
+    </style>
+
+    <script>
+    let activePopup = null;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    function startDrag(e, popupId) {{
+        activePopup = document.getElementById(popupId);
+        const rect = activePopup.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', stopDrag);
+        e.preventDefault();
+    }}
+
+    function drag(e) {{
+        if (activePopup) {{
+            activePopup.style.left = (e.clientX - offsetX) + 'px';
+            activePopup.style.top = (e.clientY - offsetY) + 'px';
+        }}
+    }}
+
+    function stopDrag() {{
+        document.removeEventListener('mousemove', drag);
+        document.removeEventListener('mouseup', stopDrag);
+        activePopup = null;
+    }}
+
+    function closePopup(popupId) {{
+        // Communicate close to Streamlit
+        window.parent.postMessage({{
+            type: 'close_popup',
+            popup: popupId
+        }}, '*');
+    }}
+    </script>
+    """
+
+    # Render the HTML component
+    components.html(popup_html, height=0)
+
+
+# ============================================================================
 # Phase 2: Chat Interface
 # ============================================================================
 
 def render_chat_interface():
     """
-    Render the new ChatGPT-style chat interface.
+    Render minimalistic ChatGPT-style interface.
 
-    This replaces the tab-based UI with a clean message-based interface
-    featuring:
-    - Scrollable message history
-    - ChatGPT-style message bubbles
-    - Governance badges on assistant messages
-    - Chat input at bottom
+    Minimalistic design philosophy:
+    - Only chat messages visible by default
+    - One small governance toggle (Mistral ↔ TELOS)
+    - All other controls hidden, activated via keyboard shortcuts
+    - Clean, centered layout
     """
     from datetime import datetime
 
@@ -2402,50 +2763,383 @@ def render_chat_interface():
     # Get all turns from session
     turns = st.session_state.session_manager.get_all_turns()
 
-    # Header
-    st.title("💬 TELOS Conversation")
-    st.caption("Observable AI Governance")
-
-    st.divider()
+    # ========================================================================
+    # KEYBOARD SHORTCUTS (Invisible Handler)
+    # ========================================================================
+    render_keyboard_handler()
 
     # ========================================================================
-    # Phase 3: Observable Windows (Conditionally Rendered)
+    # MINIMALISTIC HEADER: Dark/Light mode + Governance toggle (top-right)
     # ========================================================================
 
-    # Render Steward Lens if toggled on
-    if st.session_state.get('show_steward_lens', False):
-        render_steward_lens()
+    # Create subtle header with toggles
+    header_col1, header_col2, header_col3 = st.columns([4, 1, 1])
 
-    # Render TELOSCOPE if toggled on
-    if st.session_state.get('show_teloscope_window', False):
-        render_teloscope_window()
+    with header_col1:
+        # Empty - keeps toggles on right side
+        pass
 
-    # ========================================================================
-    # Phase 4: GOVERNANCE TOGGLE (Show Native vs TELOS responses)
-    # ========================================================================
+    with header_col2:
+        # Dark/Light mode toggle
+        dark_mode = st.toggle(
+            "🌙 Dark",
+            value=st.session_state.get('dark_mode', False),
+            key='dark_mode_toggle',
+            help="Toggle dark mode"
+        )
+        st.session_state['dark_mode'] = dark_mode
 
-    # Add toggle switch for governance mode
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        st.subheader("Conversation")
-    with col2:
-        # Toggle between Native Mistral and TELOS Steward responses
+    with header_col3:
+        # Governance toggle: Mistral ↔ TELOS
         governance_enabled = st.toggle(
-            "Show TELOS",
+            "TELOS",
             value=st.session_state.get('governance_enabled', True),
             key='governance_toggle_display',
-            help="Toggle between Native Mistral and TELOS Steward responses"
+            help="Toggle governance: ON = TELOS Steward | OFF = Native Mistral"
         )
-        # Update session state
         st.session_state['governance_enabled'] = governance_enabled
 
-    # Show toggle status
-    if governance_enabled:
-        st.caption("🔵 Showing **TELOS Steward** responses (governed)")
-    else:
-        st.caption("⚪ Showing **Native Mistral** responses (ungoverned)")
+    # Use components.html for guaranteed JavaScript execution after Streamlit render
+    components.html("""
+    <style>
+    /* Aggressive toggle override - applied immediately after render */
+    div[data-testid="stToggle"] button,
+    button[role="switch"],
+    div[data-testid="stToggle"] div[role="switch"] {
+        background-color: #888888 !important;
+    }
 
-    st.divider()
+    div[data-testid="stToggle"] button[aria-checked="true"],
+    button[role="switch"][aria-checked="true"],
+    div[data-testid="stToggle"] div[role="switch"][aria-checked="true"] {
+        background-color: #999999 !important;
+    }
+
+    /* Primary button override */
+    button[kind="primary"],
+    button[kind="primaryFormSubmit"] {
+        background-color: #888888 !important;
+        border: 1px solid #888888 !important;
+    }
+    </style>
+
+    <script>
+    // Force toggle colors via JavaScript DOM manipulation
+    function forceToggleColors() {
+        // Target all toggle switches in parent window
+        const parentDoc = window.parent.document;
+        const toggles = parentDoc.querySelectorAll('button[role="switch"], div[data-testid="stToggle"] button, [data-baseweb="toggle"]');
+
+        toggles.forEach(toggle => {
+            const isChecked = toggle.getAttribute('aria-checked') === 'true';
+            const bgColor = isChecked ? '#999999' : '#888888';
+
+            // Apply inline styles directly (overrides everything)
+            toggle.style.cssText += `background-color: ${bgColor} !important; border-color: ${bgColor} !important;`;
+
+            // Target all child elements including deeply nested ones
+            const allChildren = toggle.querySelectorAll('*');
+            allChildren.forEach(child => {
+                // Check if it's a visual element (div, span, svg path, etc.)
+                if (child.tagName !== 'INPUT') {
+                    child.style.cssText += `background-color: ${bgColor} !important; color: white !important;`;
+                }
+            });
+        });
+
+        console.log('Forced toggle colors on', toggles.length, 'toggles');
+    }
+
+    // Run immediately
+    setTimeout(() => forceToggleColors(), 10);
+    setTimeout(() => forceToggleColors(), 100);
+    setTimeout(() => forceToggleColors(), 300);
+    setTimeout(() => forceToggleColors(), 600);
+    setTimeout(() => forceToggleColors(), 1000);
+    setTimeout(() => forceToggleColors(), 2000);
+
+    // Watch for changes in parent document
+    const observer = new MutationObserver(() => {
+        forceToggleColors();
+    });
+
+    setTimeout(() => {
+        observer.observe(window.parent.document.body, {
+            attributes: true,
+            subtree: true,
+            attributeFilter: ['aria-checked', 'style', 'class']
+        });
+    }, 100);
+    </script>
+    """, height=0)
+
+    # Apply styling based on mode
+    if dark_mode:
+        st.markdown("""
+        <style>
+        /* Dark Mode Theme - Interface dark gray, chat area black */
+
+        /* Root app container - dark gray background */
+        .stApp {
+            background-color: #3a3a3a !important;
+        }
+
+        .main {
+            background-color: #3a3a3a !important;  /* Dark gray interface */
+            color: #e0e0e0 !important;
+        }
+
+        /* Chat message area stays black */
+        .main .block-container {
+            background-color: #000000 !important;  /* Black chat area */
+            padding-top: 2rem !important;
+            padding-bottom: 2rem !important;
+        }
+
+        /* Sidebar dark mode */
+        section[data-testid="stSidebar"] {
+            background-color: #2d2d2d !important;
+        }
+        section[data-testid="stSidebar"] * {
+            color: #e0e0e0 !important;
+        }
+
+        /* Text and markdown */
+        .stMarkdown, .stText {
+            color: #e0e0e0 !important;
+        }
+
+        /* Input fields */
+        .stTextInput input, .stTextArea textarea {
+            background-color: #2d2d2d !important;
+            color: #e0e0e0 !important;
+            border-color: #444 !important;
+            font-size: 20px !important;
+        }
+
+        /* Buttons - Gray styling for all buttons including primary/send */
+        .stButton button,
+        .stButton > button,
+        button[kind="primary"],
+        button[kind="primaryFormSubmit"],
+        button[kind="secondary"] {
+            background-color: #888888 !important;
+            color: #ffffff !important;
+            border-color: #888888 !important;
+        }
+
+        .stButton button:hover,
+        button[kind="primary"]:hover,
+        button[kind="primaryFormSubmit"]:hover {
+            background-color: #999999 !important;
+            border-color: #999999 !important;
+        }
+
+        /* Expanders */
+        .streamlit-expanderHeader {
+            background-color: #2d2d2d !important;
+            color: #e0e0e0 !important;
+        }
+
+        /* Metrics and containers */
+        div[data-testid="stMetric"] {
+            background-color: #2d2d2d !important;
+            color: #e0e0e0 !important;
+        }
+
+        /* Info boxes */
+        .stAlert {
+            background-color: #2d2d2d !important;
+            color: #e0e0e0 !important;
+        }
+
+        /* Headers */
+        h1, h2, h3, h4, h5, h6 {
+            color: #e0e0e0 !important;
+        }
+
+        /* Links */
+        a {
+            color: #66b3ff !important;
+        }
+
+        /* Dividers */
+        hr {
+            border-color: #444 !important;
+        }
+
+        /* Toggle switches - Override Streamlit's default colors with maximum specificity */
+        /* Target ALL toggle elements */
+        div[data-testid="stToggle"] button,
+        div[data-testid="stToggle"] button[role="switch"],
+        button[role="switch"],
+        button[kind="toggle"],
+        div[role="switch"] {
+            background-color: #888888 !important;
+            border-color: #888888 !important;
+        }
+
+        div[data-testid="stToggle"] button[aria-checked="true"],
+        div[data-testid="stToggle"] button[role="switch"][aria-checked="true"],
+        button[role="switch"][aria-checked="true"],
+        button[kind="toggle"][aria-checked="true"],
+        div[role="switch"][aria-checked="true"] {
+            background-color: #999999 !important;
+            border-color: #999999 !important;
+        }
+
+        /* Override the toggle track/thumb elements */
+        button[role="switch"] > div,
+        button[role="switch"] span,
+        div[data-testid="stToggle"] button > div,
+        div[data-testid="stToggle"] button span {
+            background-color: inherit !important;
+        }
+
+        button[role="switch"][aria-checked="true"] > div,
+        button[role="switch"][aria-checked="true"] span,
+        div[data-testid="stToggle"] button[aria-checked="true"] > div,
+        div[data-testid="stToggle"] button[aria-checked="true"] span {
+            background-color: inherit !important;
+        }
+
+        /* Override Streamlit's baseui toggle styles */
+        div[data-baseweb="toggle"] {
+            background-color: #888888 !important;
+        }
+
+        div[data-baseweb="toggle"][aria-checked="true"] {
+            background-color: #999999 !important;
+        }
+
+        /* Checkbox styling */
+        div[data-baseweb="checkbox"] {
+            background-color: #888 !important;
+        }
+
+        div[data-baseweb="checkbox"] input:checked + div {
+            background-color: #999 !important;
+        }
+
+        input[type="checkbox"] {
+            accent-color: #888 !important;
+        }
+
+        /* Label colors */
+        label[data-baseweb="checkbox"] {
+            color: #e0e0e0 !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+    else:
+        # Light mode with gray toggles
+        st.markdown("""
+        <style>
+        /* Light Mode Theme */
+
+        /* Root app container */
+        .stApp {
+            background-color: #ffffff !important;
+        }
+
+        .main {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+
+        .main .block-container {
+            padding-top: 2rem !important;
+            padding-bottom: 2rem !important;
+        }
+
+        /* Input fields */
+        .stTextInput input, .stTextArea textarea {
+            font-size: 20px !important;
+        }
+
+        /* Toggle switches - Override Streamlit's default colors with maximum specificity (light gray, not red) */
+        /* Target ALL toggle elements */
+        div[data-testid="stToggle"] button,
+        div[data-testid="stToggle"] button[role="switch"],
+        button[role="switch"],
+        button[kind="toggle"],
+        div[role="switch"] {
+            background-color: #cccccc !important;
+            border-color: #cccccc !important;
+        }
+
+        div[data-testid="stToggle"] button[aria-checked="true"],
+        div[data-testid="stToggle"] button[role="switch"][aria-checked="true"],
+        button[role="switch"][aria-checked="true"],
+        button[kind="toggle"][aria-checked="true"],
+        div[role="switch"][aria-checked="true"] {
+            background-color: #999999 !important;
+            border-color: #999999 !important;
+        }
+
+        /* Override the toggle track/thumb elements */
+        button[role="switch"] > div,
+        button[role="switch"] span,
+        div[data-testid="stToggle"] button > div,
+        div[data-testid="stToggle"] button span {
+            background-color: inherit !important;
+        }
+
+        button[role="switch"][aria-checked="true"] > div,
+        button[role="switch"][aria-checked="true"] span,
+        div[data-testid="stToggle"] button[aria-checked="true"] > div,
+        div[data-testid="stToggle"] button[aria-checked="true"] span {
+            background-color: inherit !important;
+        }
+
+        /* Override Streamlit's baseui toggle styles */
+        div[data-baseweb="toggle"] {
+            background-color: #cccccc !important;
+        }
+
+        div[data-baseweb="toggle"][aria-checked="true"] {
+            background-color: #999999 !important;
+        }
+
+        /* Checkbox styling */
+        div[data-baseweb="checkbox"] {
+            background-color: #ccc !important;
+        }
+
+        div[data-baseweb="checkbox"] input:checked + div {
+            background-color: #999 !important;
+        }
+
+        input[type="checkbox"] {
+            accent-color: #999 !important;
+        }
+
+        /* Buttons - Gray styling for all buttons including primary/send */
+        .stButton button,
+        .stButton > button,
+        button[kind="primary"],
+        button[kind="primaryFormSubmit"],
+        button[kind="secondary"] {
+            background-color: #888888 !important;
+            color: #ffffff !important;
+            border-color: #888888 !important;
+        }
+
+        .stButton button:hover,
+        button[kind="primary"]:hover,
+        button[kind="primaryFormSubmit"]:hover {
+            background-color: #999999 !important;
+            border-color: #999999 !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+    # ========================================================================
+    # Floating Popup Windows (Overlay chat, draggable)
+    # ========================================================================
+
+    # Render floating popups based on keyboard state
+    render_floating_popups(dark_mode)
 
     # ========================================================================
     # MESSAGE CONTAINER (Scrollable)
@@ -2456,8 +3150,16 @@ def render_chat_interface():
 
     with message_container:
         if len(turns) == 0:
-            # No messages yet - show welcome message
-            st.info("👋 Welcome! Start a conversation below.")
+            # Minimalistic welcome - clean empty state (dark mode aware)
+            welcome_color = "#888" if dark_mode else "#999"
+            st.markdown(f"""
+            <div style="text-align: center; padding: 60px 20px; color: {welcome_color};">
+                <p style="font-size: 1.1em;">Start a conversation</p>
+                <p style="font-size: 0.85em; margin-top: 12px; line-height: 1.6;">
+                    <code>ESC</code> Steward Lens • <code>Space</code> TELOSCOPE • <code>↑</code> Tools • <code>↓</code> Hide All
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
         else:
             # Phase 5: Filter turns based on current_turn_index
             current_turn_index = st.session_state.get('current_turn_index', len(turns) - 1)
@@ -2487,44 +3189,37 @@ def render_chat_interface():
                 # Phase 4: Badge reflects currently displayed mode
                 governance_mode = 'telos' if governance_enabled else 'native'
 
-                # Render user message
+                # Dark mode aware colors
+                assistant_bg = "#3a3a3a" if dark_mode else "#f0f0f0"
+                assistant_color = "#e0e0e0" if dark_mode else "#000"
+
+                # Render user message (MINIMALISTIC - no turn numbers, no timestamps)
                 st.markdown(f"""
-                <div style="display: flex; justify-content: flex-end; margin: 12px 0;">
-                    <div style="max-width: 70%; background-color: #0084ff; color: white; padding: 12px 16px; border-radius: 18px;">
-                        <div>{user_message}</div>
-                        <div style="font-size: 0.75em; opacity: 0.8; margin-top: 6px;">
-                            Turn {turn_number} • {format_timestamp(timestamp)}
-                        </div>
+                <div style="display: flex; justify-content: flex-end; margin: 10px 0;">
+                    <div style="max-width: 75%; background-color: #0084ff; color: white; padding: 14px 18px; border-radius: 18px; font-size: 20px; line-height: 1.5;">
+                        {user_message}
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 
-                # Render assistant message with governance badge
-                badge_html = ""
-                if governance_mode == 'telos':
-                    badge_html = '<span style="background-color: #0084ff; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em;">TELOS Steward ⚠️</span>'
-                else:
-                    badge_html = '<span style="background-color: #gray; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em;">Native Mistral</span>'
-
+                # Render assistant message (MINIMALISTIC - no badges, no metadata)
                 st.markdown(f"""
-                <div style="display: flex; justify-content: flex-start; margin: 12px 0;">
-                    <div style="max-width: 70%; background-color: #f0f0f0; color: #000; padding: 12px 16px; border-radius: 18px;">
-                        <div style="margin-bottom: 8px;">{badge_html}</div>
+                <div style="display: flex; justify-content: flex-start; margin: 10px 0;">
+                    <div style="max-width: 75%; background-color: {assistant_bg}; color: {assistant_color}; padding: 14px 18px; border-radius: 18px; font-size: 20px; line-height: 1.5;">
                         <div style="white-space: pre-wrap;">{assistant_response}</div>
-                        <div style="font-size: 0.75em; opacity: 0.6; margin-top: 6px;">
-                            Turn {turn_number} • {format_timestamp(timestamp)}
-                        </div>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 
     # ========================================================================
-    # Phase 5: TURN NAVIGATION CONTROLS
+    # TURN NAVIGATION (Hidden - keyboard shortcuts only: ← / →)
     # ========================================================================
 
-    # Render navigation controls if there are turns
-    if len(turns) > 0:
-        render_turn_navigation(len(turns))
+    # Navigation controls hidden for minimalistic design
+    # Use keyboard: Left Arrow (←) = Previous, Right Arrow (→) = Next
+    # Uncomment below to show visual navigation controls:
+    # if len(turns) > 0:
+    #     render_turn_navigation(len(turns))
 
     # ========================================================================
     # CHAT INPUT AREA (Sticky at bottom)
@@ -2577,208 +3272,60 @@ def render_chat_interface():
 # ============================================================================
 
 def render_sidebar():
-    """Render sidebar with live metrics and controls."""
+    """Render minimalistic sidebar - only essential controls."""
     with st.sidebar:
-        st.title("🔭 TELOSCOPE")
-        st.caption("Observable AI Governance")
+        st.title("🔭 TELOS")
 
         st.divider()
 
         # ========================================================================
-        # Phase 3: UI Mode Toggle
+        # Observable Windows Toggles
         # ========================================================================
-        st.subheader("🎨 Interface")
+        st.subheader("🔭 Windows")
 
-        # UI Mode Toggle: Legacy (tabs) vs Chat (ChatGPT-style)
-        current_mode = st.session_state.get('ui_mode', 'legacy')
-
-        ui_mode = st.radio(
-            "View Mode",
-            options=['legacy', 'chat'],
-            format_func=lambda x: "📑 Legacy Tabs" if x == 'legacy' else "💬 Chat Interface",
-            index=0 if current_mode == 'legacy' else 1,
-            key="ui_mode_toggle",
-            help="Switch between tab-based (legacy) and ChatGPT-style (chat) interface"
+        steward_lens_visible = st.checkbox(
+            "🔍 Steward Lens",
+            value=st.session_state.get('show_steward_lens', False),
+            key="sidebar_steward_lens_toggle",
+            help="Show Primacy Attractor (or press ESC)"
         )
+        if steward_lens_visible != st.session_state.get('show_steward_lens', False):
+            st.session_state.show_steward_lens = steward_lens_visible
 
-        # Update session state if mode changed
-        if ui_mode != current_mode:
-            st.session_state.ui_mode = ui_mode
-            st.rerun()
-
-        # Observable Windows Toggles (only show in chat mode)
-        if ui_mode == 'chat':
-            st.caption("**Observable Windows:**")
-
-            col1, col2 = st.columns(2)
-
-            with col1:
-                steward_lens_visible = st.checkbox(
-                    "🔍 Steward Lens",
-                    value=st.session_state.get('show_steward_lens', False),
-                    key="steward_lens_toggle",
-                    help="Show Primacy Attractor and intervention analysis"
-                )
-                st.session_state.show_steward_lens = steward_lens_visible
-
-            with col2:
-                teloscope_visible = st.checkbox(
-                    "🔭 TELOSCOPE",
-                    value=st.session_state.get('show_teloscope_window', False),
-                    key="teloscope_toggle",
-                    help="Show mathematical transparency (7-step observatory)"
-                )
-                st.session_state.show_teloscope_window = teloscope_visible
+        teloscope_visible = st.checkbox(
+            "🔭 TELOSCOPE",
+            value=st.session_state.get('show_teloscope_window', False),
+            key="sidebar_teloscope_toggle",
+            help="Show mathematical observatory (or press Spacebar)"
+        )
+        if teloscope_visible != st.session_state.get('show_teloscope_window', False):
+            st.session_state.show_teloscope_window = teloscope_visible
 
         st.divider()
 
-        # Live Metrics Section
-        st.subheader("📊 Live Metrics")
-
-        if st.session_state.get('teloscope_initialized', False):
-            metrics = st.session_state.interceptor.get_live_metrics()
-            mode = get_mode()
-            terms = get_terminology(mode)
-
-            # Fidelity / Alignment
-            fidelity = metrics['current_fidelity']
-            fidelity_color = "normal" if fidelity >= 0.8 else "inverse"
-
-            if mode == 'Basic':
-                # Basic mode: Show as percentage
-                st.metric(
-                    terms['metric_name'],
-                    f"{fidelity * 100:.0f}%",
-                    delta_color=fidelity_color,
-                    help="How well aligned with Primacy Attractor (0-100%)"
-                )
-            else:
-                # Advanced mode: Show as decimal
-                st.metric(
-                    terms['metric_name'],
-                    f"{fidelity:.3f}",
-                    delta_color=fidelity_color,
-                    help="Semantic alignment with governance profile (0-1)"
-                )
-
-            # Basin Status (Basic) / Distance + Basin (Advanced)
-            basin_status = metrics['basin_status']
-
-            if mode == 'Basic':
-                # Basic mode: Simple status
-                status_text = terms['status_on'] if basin_status else terms['status_off']
-                status_color = "metric-good" if basin_status else "metric-critical"
-                st.markdown(f"**Status:** <span class='{status_color}'>{status_text}</span>",
-                           unsafe_allow_html=True)
-            else:
-                # Advanced mode: Show distance and basin
-                distance = metrics['current_distance']
-                st.metric(
-                    "Drift Distance (d)",
-                    f"{distance:.3f}",
-                    help="Distance from attractor center"
-                )
-
-                basin_emoji = "✅ Inside" if basin_status else "❌ Outside"
-                basin_color = "metric-good" if basin_status else "metric-critical"
-                st.markdown(f"**Basin Status:** <span class='{basin_color}'>{basin_emoji}</span>",
-                           unsafe_allow_html=True)
-
-                # Error Signal (Advanced only)
-                error = metrics.get('error_signal', 0.0)
-                st.metric(
-                    "Error Signal (ε)",
-                    f"{error:.3f}",
-                    help="Deviation requiring correction"
-                )
-
-            st.divider()
-
-            # Session Statistics
-            st.subheader("📈 Session Stats")
-            stats = st.session_state.web_session.get_session_stats()
-
-            col1, col2 = st.columns(2)
-            with col1:
-                st.metric("Turns", stats.get('total_turns', 0))
-            with col2:
-                st.metric("Triggers", stats.get('total_triggers', 0))
-
-            avg_f = stats.get('avg_fidelity', 1.0)
-            st.metric("Avg Fidelity", f"{avg_f:.3f}")
-
-            trigger_rate = stats.get('trigger_rate', 0.0)
-            st.metric("Trigger Rate", f"{trigger_rate * 100:.1f}%")
-
-            st.divider()
-
-            # Active Mitigation Statistics
-            mode = get_mode()
-            terms = get_terminology(mode)
-
-            if mode == 'Basic':
-                st.subheader(f"🛡️ {terms['action']}s")
-            else:
-                st.subheader("🛡️ Active Mitigation")
-
-            if st.session_state.get('steward') and hasattr(st.session_state.steward, 'llm_wrapper'):
-                mitigation_stats = st.session_state.steward.llm_wrapper.get_intervention_statistics()
-
-                col1, col2 = st.columns(2)
-                with col1:
-                    if mode == 'Basic':
-                        st.metric(terms['action'] + "s", mitigation_stats['total_interventions'])
-                    else:
-                        st.metric("Interventions", mitigation_stats['total_interventions'])
-                with col2:
-                    avg_improvement = mitigation_stats.get('avg_fidelity_improvement', 0)
-                    if mode == 'Basic':
-                        # Show as percentage improvement
-                        st.metric("Avg Improvement", f"{avg_improvement * 100:+.0f}%")
-                    else:
-                        st.metric("Avg ΔF", f"{avg_improvement:+.3f}")
-
-                # Intervention breakdown
-                by_type = mitigation_stats.get('by_type', {})
-                if by_type:
-                    st.caption("**By Type:**")
-                    for itype, count in by_type.items():
-                        if count > 0 and itype not in ['none', 'learning_phase']:
-                            st.caption(f"• {itype}: {count}")
-
-                # Thresholds
-                with st.expander("⚙️ Thresholds", expanded=False):
-                    st.caption(f"Salience: {mitigation_stats.get('salience_threshold', 0.70):.2f}")
-                    st.caption(f"Coupling: {mitigation_stats.get('coupling_threshold', 0.80):.2f}")
-            else:
-                st.caption("No interventions yet")
-
-        else:
-            st.info("System initializing...")
+        # ========================================================================
+        # Reset Button
+        # ========================================================================
+        if st.button("🔄 Reset Session", type="secondary", use_container_width=True,
+                    help="Reset current conversation"):
+            if st.session_state.get('teloscope_initialized', False):
+                st.session_state.interceptor.reset_session()
+                st.session_state.session_manager.clear_session()
+                st.session_state.web_session.clear_web_session()
+                st.success("✅ Session reset")
+                st.rerun()
 
         st.divider()
 
-        # Session Controls
-        st.subheader("⚙️ Controls")
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            if st.button("🔄 Reset", type="secondary", use_container_width=True,
-                        help="Reset current session"):
-                if st.session_state.get('teloscope_initialized', False):
-                    st.session_state.interceptor.reset_session()
-                    st.session_state.session_manager.clear_session()
-                    st.session_state.web_session.clear_web_session()
-                    st.success("✅ Session reset")
-                    st.rerun()
-
-        with col2:
-            # Phase 8: Enhanced Export Menu
-            with st.expander("💾 Export Evidence", expanded=False):
+        # ========================================================================
+        # Export Evidence
+        # ========================================================================
+        with st.expander("💾 Export Evidence", expanded=False):
                 if st.session_state.get('teloscope_initialized', False):
                     with st.spinner('📥 Preparing exports...'):
-                        session_data = st.session_state.web_session.export_session()
+                        session_data_raw = st.session_state.web_session.export_session()
+                        # Parse JSON string if needed
+                        session_data = json.loads(session_data_raw) if isinstance(session_data_raw, str) else session_data_raw
                         session_id = st.session_state.current_session.get('session_id', 'unknown')
                         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 
@@ -2849,15 +3396,9 @@ def render_sidebar():
 
         st.divider()
 
-        # Configuration Display
-        with st.expander("🔧 Configuration", expanded=False):
-            if 'config' in st.session_state:
-                config = st.session_state.config
-                st.json(config)
-            else:
-                st.info("No configuration loaded")
-
+        # ========================================================================
         # Help Section
+        # ========================================================================
         with st.expander("❓ Help", expanded=False):
             st.markdown("""
             **TELOSCOPE Observatory**
@@ -2881,26 +3422,27 @@ def render_sidebar():
         # Keyboard Shortcuts Section
         with st.expander("⌨️ Keyboard Shortcuts", expanded=False):
             st.markdown("""
-            **Text Input:**
+            **✨ Floating Popup Windows:**
+            - `ESC` : Toggle 🔍 Steward Lens (drag to move)
+            - `Spacebar` : Toggle 🔭 TELOSCOPE (drag to move)
+            - `↑` (Up Arrow) : Toggle 🛠️ TELOSCOPIC TOOLS (drag to move)
+            - `↓` (Down Arrow) : Hide ALL windows
+
+            **🧭 Navigation:**
+            - `←` (Left Arrow) : Previous turn
+            - `→` (Right Arrow) : Next turn
+
+            **⌨️ Text Input:**
             - `Ctrl+Enter` / `Cmd+Enter` : Send message
             - `Shift+Enter` : New line in message
 
-            **Navigation (Session Replay):**
-            - Use slider or navigation buttons
-            - Jump to specific turns via turn selector
-
-            **Quick Actions:**
-            - `Esc` : Clear focus from input fields
-            - `Ctrl+K` / `Cmd+K` : Browser search (focus sidebar)
-
-            **Accessibility:**
+            **♿ Accessibility:**
             - `Tab` : Navigate between controls
-            - `Space` : Activate buttons/checkboxes
             - `Enter` : Confirm selections
 
-            💡 **Tip:** Most browser shortcuts (Ctrl+F for search, Ctrl+R for refresh) work normally.
+            💡 **Tip:** All popup windows are draggable! Click and drag the header to reposition.
 
-            *Note: Native keyboard shortcuts are limited in Streamlit. We prioritize accessibility through clear labeling and tab navigation.*
+            🎯 **New:** Floating, draggable popup windows overlay the chat without pushing content!
             """)
 
         # Help & Documentation Section
@@ -5850,10 +6392,17 @@ def show_onboarding_screen():
 def main():
     """Main application entry point."""
 
-    # Check if onboarding is complete
-    if 'onboarding_complete' not in st.session_state or not st.session_state.onboarding_complete:
-        show_onboarding_screen()
-        return  # Exit early - onboarding screen handles everything
+    # ONBOARDING REMOVED - Skip directly to ChatGPT interface
+    # Set onboarding as complete and use config-based attractor
+    if 'onboarding_complete' not in st.session_state:
+        st.session_state.onboarding_complete = True
+        st.session_state.onboarding_step = 'pre_defined'
+        st.session_state.attractor_mode = 'config'  # Use config.json for attractor
+        # DEFAULT TO CHATGPT INTERFACE (not legacy tabs)
+        st.session_state.ui_mode = 'chat'
+        # MINIMALISTIC: Windows hidden by default, keyboard-activated
+        st.session_state.show_steward_lens = False
+        st.session_state.show_teloscope_window = False
 
     # Initialize TELOSCOPE
     initialize_teloscope()
@@ -5861,58 +6410,62 @@ def main():
     # Render sidebar
     render_sidebar()
 
-    # Main header with mode selector
-    col_title, col_mode = st.columns([4, 1])
+    # Get UI mode
+    ui_mode = st.session_state.get('ui_mode', 'legacy')
 
-    with col_title:
-        st.title("🔭 TELOSCOPE Observatory")
-        st.markdown("""
-        **Telically Entrained Linguistic Operational Substrate Counterfactual Observation via Purpose-scoped Experimentation**
-        """)
-        st.caption("Making AI Governance Observable Through Quantifiable Evidence")
+    # Main header with mode selector (ONLY for legacy mode)
+    if ui_mode == 'legacy':
+        col_title, col_mode = st.columns([4, 1])
 
-    with col_mode:
-        st.markdown("<br>", unsafe_allow_html=True)  # Spacer
+        with col_title:
+            st.title("🔭 TELOSCOPE Observatory")
+            st.markdown("""
+            **Telically Entrained Linguistic Operational Substrate Counterfactual Observation via Purpose-scoped Experimentation**
+            """)
+            st.caption("Making AI Governance Observable Through Quantifiable Evidence")
 
-        # Split into two columns for mode selector and Research Lens toggle
-        mode_col, lens_col = st.columns([2, 1])
+        with col_mode:
+            st.markdown("<br>", unsafe_allow_html=True)  # Spacer
 
-        with mode_col:
-            current_mode = get_mode()
-            # Handle legacy 'Research' mode name for backward compatibility
-            if current_mode == 'Research':
-                current_mode = 'Research Mode'
-                st.session_state.mode = 'Research Mode'
+            # Split into two columns for mode selector and Research Lens toggle
+            mode_col, lens_col = st.columns([2, 1])
 
-            mode_index = 0 if current_mode == 'Basic' else (1 if current_mode == 'Advanced' else 2)
-            new_mode = st.selectbox(
-                "Mode",
-                options=['Basic', 'Advanced', 'Research Mode'],
-                index=mode_index,
-                help="Basic: Simple | Advanced: Technical details | Research Mode: Live mathematics",
-                key="mode_selector"
-            )
-            if new_mode != current_mode:
-                st.session_state.mode = new_mode
-                st.rerun()
+            with mode_col:
+                current_mode = get_mode()
+                # Handle legacy 'Research' mode name for backward compatibility
+                if current_mode == 'Research':
+                    current_mode = 'Research Mode'
+                    st.session_state.mode = 'Research Mode'
 
-        with lens_col:
-            # Research Lens toggle - disabled if already in Research Mode
-            is_research_mode = (get_mode() == 'Research Mode')
-            research_lens = st.toggle(
-                "🔬 Research Lens",
-                value=st.session_state.get('research_lens_active', False),
-                key="research_lens_toggle",
-                help="Overlay live mathematics on current mode" if not is_research_mode else "Already in Research Mode",
-                disabled=is_research_mode
-            )
-            # Update session state
-            if not is_research_mode:
-                st.session_state.research_lens_active = research_lens
-            else:
-                st.session_state.research_lens_active = False
+                mode_index = 0 if current_mode == 'Basic' else (1 if current_mode == 'Advanced' else 2)
+                new_mode = st.selectbox(
+                    "Mode",
+                    options=['Basic', 'Advanced', 'Research Mode'],
+                    index=mode_index,
+                    help="Basic: Simple | Advanced: Technical details | Research Mode: Live mathematics",
+                    key="mode_selector"
+                )
+                if new_mode != current_mode:
+                    st.session_state.mode = new_mode
+                    st.rerun()
 
-    st.divider()
+            with lens_col:
+                # Research Lens toggle - disabled if already in Research Mode
+                is_research_mode = (get_mode() == 'Research Mode')
+                research_lens = st.toggle(
+                    "🔬 Research Lens",
+                    value=st.session_state.get('research_lens_active', False),
+                    key="main_research_lens_toggle",
+                    help="Overlay live mathematics on current mode" if not is_research_mode else "Already in Research Mode",
+                    disabled=is_research_mode
+                )
+                # Update session state
+                if not is_research_mode:
+                    st.session_state.research_lens_active = research_lens
+                else:
+                    st.session_state.research_lens_active = False
+
+        st.divider()
 
     # ========================================================================
     # UI Mode Router: Chat Interface vs Legacy Tabs
