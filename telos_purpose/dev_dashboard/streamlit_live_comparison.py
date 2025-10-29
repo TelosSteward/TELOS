@@ -2885,6 +2885,17 @@ def render_chat_interface():
             font-size: 17px !important;  /* Base font size increased */
         }
 
+        /* Hide/darken Streamlit header bar with Deploy button */
+        header[data-testid="stHeader"] {
+            background-color: #3a3a3a !important;
+        }
+
+        /* Hide the toolbar/header completely for cleaner look */
+        header[data-testid="stHeader"],
+        div[data-testid="stToolbar"] {
+            display: none !important;
+        }
+
         .main {
             background-color: #3a3a3a !important;  /* Dark gray interface */
             color: #e0e0e0 !important;
@@ -3075,6 +3086,12 @@ def render_chat_interface():
         .stApp {
             background-color: #ffffff !important;
             font-size: 17px !important;  /* Base font size increased */
+        }
+
+        /* Hide Streamlit header bar for cleaner look */
+        header[data-testid="stHeader"],
+        div[data-testid="stToolbar"] {
+            display: none !important;
         }
 
         .main {
