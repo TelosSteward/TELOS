@@ -2610,7 +2610,7 @@ def render_floating_popups(dark_mode):
         steward_popup = f'''
         <div class="popup" id="steward-popup" style="display: block;">
             <div class="popup-header" onmousedown="startDrag(event, 'steward-popup')">
-                🔍 Steward Lens
+                🔍 STEWARD
                 <span class="close-btn" onclick="closePopup('steward-popup')">✕</span>
             </div>
             <div class="popup-content">{steward_content}</div>
@@ -2782,7 +2782,7 @@ def render_chat_interface():
     with header_col2:
         # Dark/Light mode toggle
         dark_mode = st.toggle(
-            "🌙 Dark",
+            "Dark",
             value=st.session_state.get('dark_mode', False),
             key='dark_mode_toggle',
             help="Toggle dark mode"
@@ -2790,9 +2790,9 @@ def render_chat_interface():
         st.session_state['dark_mode'] = dark_mode
 
     with header_col3:
-        # Governance toggle: Mistral ↔ TELOS
+        # Governance toggle: Mistral ↔ TELOS (add extra space to prevent wrapping)
         governance_enabled = st.toggle(
-            "TELOS",
+            "TELOS  ",  # Extra spaces to prevent 'S' wrapping
             value=st.session_state.get('governance_enabled', True),
             key='governance_toggle_display',
             help="Toggle governance: ON = TELOS Steward | OFF = Native Mistral"
@@ -2910,6 +2910,13 @@ def render_chat_interface():
         .stMarkdown, .stText {
             color: #e0e0e0 !important;
             font-size: 17px !important;
+        }
+
+        /* Toggle labels - make white in dark mode */
+        div[data-testid="stToggle"] label,
+        div[data-testid="stToggle"] p,
+        div[data-testid="stToggle"] span {
+            color: #ffffff !important;
         }
 
         /* Input fields */
@@ -3199,7 +3206,7 @@ def render_chat_interface():
             <div style="text-align: center; padding: 60px 20px; color: {welcome_color};">
                 <p style="font-size: 19px;">Start a conversation</p>
                 <p style="font-size: 15px; margin-top: 12px; line-height: 1.6;">
-                    <code>ESC</code> Steward Lens • <code>Space</code> TELOSCOPE • <code>↑</code> Tools • <code>↓</code> Hide All
+                    <code>ESC</code> STEWARD • <code>Space</code> TELOSCOPE • <code>↑</code> Tools • <code>↓</code> Hide All
                 </p>
             </div>
             """, unsafe_allow_html=True)
@@ -3352,12 +3359,69 @@ def render_sidebar():
         st.divider()
 
         # ========================================================================
+        # Saved Chats - Research instrument for later review
+        # ========================================================================
+        st.subheader("💬 Chats")
+
+        # Get list of saved sessions
+        sessions_dir = Path("saved_sessions")
+        if sessions_dir.exists():
+            saved_sessions = sorted(sessions_dir.glob("session_*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+
+            if saved_sessions:
+                # Show dropdown of saved sessions
+                session_options = ["Current Session"] + [f.stem.replace("session_", "") for f in saved_sessions[:20]]  # Show last 20
+                selected_session = st.selectbox(
+                    "Load Session",
+                    options=session_options,
+                    key="session_selector",
+                    help="Select a saved session to review"
+                )
+
+                if selected_session != "Current Session":
+                    if st.button("📂 Load Selected", use_container_width=True):
+                        session_file = sessions_dir / f"session_{selected_session}.json"
+                        try:
+                            with open(session_file, 'r') as f:
+                                loaded_data = json.load(f)
+                                # Load into session state
+                                st.session_state.web_session.load_session(loaded_data)
+                                st.success(f"✅ Loaded session: {selected_session}")
+                                st.rerun()
+                        except Exception as e:
+                            st.error(f"Failed to load session: {e}")
+            else:
+                st.caption("No saved sessions yet")
+        else:
+            st.caption("No saved sessions yet")
+
+        # Save current session button
+        if st.session_state.get('teloscope_initialized', False):
+            if st.button("💾 Save Current", use_container_width=True, help="Save current session for later review"):
+                try:
+                    sessions_dir.mkdir(exist_ok=True)
+                    session_id = st.session_state.current_session.get('session_id', datetime.now().strftime('%Y%m%d_%H%M%S'))
+                    session_file = sessions_dir / f"session_{session_id}.json"
+
+                    session_data_raw = st.session_state.web_session.export_session()
+                    session_data = json.loads(session_data_raw) if isinstance(session_data_raw, str) else session_data_raw
+
+                    with open(session_file, 'w') as f:
+                        json.dump(session_data, f, indent=2)
+
+                    st.success(f"✅ Session saved: {session_id}")
+                except Exception as e:
+                    st.error(f"Failed to save session: {e}")
+
+        st.divider()
+
+        # ========================================================================
         # Observable Windows Toggles
         # ========================================================================
         st.subheader("🔭 Windows")
 
         steward_lens_visible = st.checkbox(
-            "🔍 Steward Lens",
+            "🔍 STEWARD",
             value=st.session_state.get('show_steward_lens', False),
             key="sidebar_steward_lens_toggle",
             help="Show Primacy Attractor (or press ESC)"
