@@ -2906,17 +2906,31 @@ def render_chat_interface():
             color: #e0e0e0 !important;
         }
 
+        /* Sidebar title - three sizes larger */
+        section[data-testid="stSidebar"] h1 {
+            font-size: 3.5rem !important;
+        }
+
         /* Text and markdown */
         .stMarkdown, .stText {
             color: #e0e0e0 !important;
             font-size: 17px !important;
         }
 
-        /* Toggle labels - gray color to match interface */
+        /* Toggle labels - FORCE gray color to match interface */
         div[data-testid="stToggle"] label,
+        div[data-testid="stToggle"] label *,
         div[data-testid="stToggle"] p,
         div[data-testid="stToggle"] span,
-        div[data-testid="stToggle"] div {
+        div[data-testid="stToggle"] div,
+        label[data-baseweb="checkbox"],
+        label[data-baseweb="checkbox"] *,
+        div[data-testid="stToggle"] {
+            color: #888888 !important;
+        }
+
+        /* Force all text within toggle containers to be gray */
+        [data-testid="stToggle"] * {
             color: #888888 !important;
         }
 
@@ -3078,16 +3092,30 @@ def render_chat_interface():
             font-size: 16px !important;
         }
 
+        /* Sidebar title - three sizes larger */
+        section[data-testid="stSidebar"] h1 {
+            font-size: 3.5rem !important;
+        }
+
         /* Text and markdown */
         .stMarkdown, .stText {
             font-size: 17px !important;
         }
 
-        /* Toggle labels - gray color to match interface */
+        /* Toggle labels - FORCE gray color to match interface */
         div[data-testid="stToggle"] label,
+        div[data-testid="stToggle"] label *,
         div[data-testid="stToggle"] p,
         div[data-testid="stToggle"] span,
-        div[data-testid="stToggle"] div {
+        div[data-testid="stToggle"] div,
+        label[data-baseweb="checkbox"],
+        label[data-baseweb="checkbox"] *,
+        div[data-testid="stToggle"] {
+            color: #999999 !important;
+        }
+
+        /* Force all text within toggle containers to be gray */
+        [data-testid="stToggle"] * {
             color: #999999 !important;
         }
 
