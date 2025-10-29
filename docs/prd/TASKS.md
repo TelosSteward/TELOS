@@ -1,7 +1,7 @@
 # TELOS TASKS
 
-**Last Updated**: 2025-10-25
-**Status**: 11/38 complete (28.9%)
+**Last Updated**: 2025-10-29
+**Status**: 11/53 complete (20.8%)
 **Positioning**: Platform infrastructure for multi-stakeholder AI governance
 
 ---
@@ -91,6 +91,101 @@
   ```
   - File: `scripts/update_task.sh`
   - Status: ⏳ To be created
+
+---
+
+## 🔥 SECTION 1B: OBSERVATION DECK (This Week)
+
+**Purpose**: Transform TELOS Observatory into complete research platform with collapsible Observation Deck
+
+**Context**: UI wiring challenge - all backend telemetry already exists, just needs display
+
+### Phase 0: Steward PM Sync
+
+- [ ] **Update TASKS.md with Observation Deck Tasks**
+  - Status: 🔨 In Progress
+  - File: `docs/prd/TASKS.md`
+
+- [ ] **Update PRD.md with Observation Deck Deliverable**
+  - Status: ⏳ Pending
+  - File: `docs/prd/PRD.md`
+
+- [ ] **Update STEWARD.md Current Focus**
+  - Status: ⏳ Pending
+  - File: `STEWARD.md`
+
+### Week 1: Foundation & Control Strips
+
+- [ ] **Create observation_deck/ Module Structure**
+  - Files: `observation_deck/__init__.py`, subdirectories for tools
+  - Status: ⏳ Pending
+
+- [ ] **Build Observatory Control Strip**
+  - File: `telos_purpose/dev_dashboard/observation_deck/observatory_control_strip.py`
+  - Purpose: Top-right thermometer (turn counter, fidelity gauge, calibration progress)
+  - Wire to: `WebSessionManager`, `telemetry_utils.py`
+  - Status: ⏳ Pending
+
+- [ ] **Build Observation Deck Control Strip**
+  - File: `telos_purpose/dev_dashboard/observation_deck/deck_control_strip.py`
+  - Purpose: Sidebar header (telescope toggle, symbolic flow, stats)
+  - Status: ⏳ Pending
+
+- [ ] **Implement Dynamic Layout System**
+  - File: `telos_purpose/dev_dashboard/streamlit_live_comparison.py`
+  - Purpose: 4 column width states for sidebar/deck combinations
+  - States: [15,60,25], [15,85,0], [0,60,40], [0,100,0]
+  - Status: ⏳ Pending
+
+### Week 2: TELOSCOPIC Tools (FREE)
+
+- [ ] **Build Comparison Viewer**
+  - File: `telos_purpose/dev_dashboard/observation_deck/teloscopic_tools/comparison_viewer.py`
+  - Purpose: TELOS vs Baseline split view with intervention highlights
+  - Wire to: `CounterfactualBranchManager`
+  - Status: ⏳ Pending
+
+- [ ] **Build Calculation Window**
+  - File: `telos_purpose/dev_dashboard/observation_deck/teloscopic_tools/calculation_window.py`
+  - Purpose: Display embedding distance, fidelity, interventions
+  - Wire to: `telemetry_utils.py`
+  - Status: ⏳ Pending
+
+- [ ] **Build Turn Navigator**
+  - File: `telos_purpose/dev_dashboard/observation_deck/teloscopic_tools/turn_navigator.py`
+  - Purpose: Timeline scrubber with playback controls
+  - Wire to: `WebSessionManager.get_turn_data()`
+  - Status: ⏳ Pending
+
+- [ ] **Build Calibration Logger**
+  - File: `telos_purpose/dev_dashboard/observation_deck/calibration_logger.py`
+  - Purpose: Display Mistral reasoning during Turns 1-3
+  - Wire to: `PrimacyAttractor` calibration state
+  - Status: ⏳ Pending
+
+### Week 3: Steward Integration & Polish
+
+- [ ] **Build Steward Chat Interface**
+  - File: `telos_purpose/dev_dashboard/observation_deck/steward_integration/steward_chat.py`
+  - Purpose: Conversational Q&A using existing `steward_analysis.py`
+  - Cost: ~$0.002/question (Mistral API)
+  - Status: ⏳ Pending
+
+- [ ] **Build Symbolic Flow Animator**
+  - File: `telos_purpose/dev_dashboard/observation_deck/symbolic_flow.py`
+  - Purpose: Governance pipeline visualization (👤→⚡→🔄→🤖→✓)
+  - Status: ⏳ Pending
+
+- [ ] **Testing & Integration**
+  - Test: All 4 layout states, turn synchronization, performance with 50+ turns
+  - Status: ⏳ Pending
+
+- [ ] **Create Observation Deck Documentation**
+  - Files: Update `STEWARD_ARCHITECTURE.md`, create `OBSERVATION_DECK_USER_GUIDE.md`
+  - Content: FREE vs PAID features, cost transparency
+  - Status: ⏳ Pending
+
+**Expected Outcome**: Full Observation Deck operational for V1.0 MVP (3-week implementation)
 
 ---
 
@@ -444,16 +539,16 @@ See: [docs/manifest/09_future_architecture.md](docs/manifest/09_future_architect
 
 | Status | Count | Percentage |
 |--------|-------|------------|
-| ✅ Completed | 11 | 28.9% |
-| 🔨 In Progress | 0 | 0% |
-| ⏳ Pending | 27 | 71.1% |
-| **Total** | **38** | **100%** |
+| ✅ Completed | 11 | 20.8% |
+| 🔨 In Progress | 1 | 1.9% |
+| ⏳ Pending | 41 | 77.3% |
+| **Total** | **53** | **100%** |
 
 ### By Priority
 
 | Priority | Total | Complete | Remaining |
 |----------|-------|----------|-----------|
-| 🔥 Immediate | 6 | 0 | 6 |
+| 🔥 Immediate | 21 | 0 | 21 |
 | 🔶 Short-Term | 21 | 0 | 21 |
 | 🔷 Future | 11 | 11 | 0 |
 
@@ -462,6 +557,7 @@ See: [docs/manifest/09_future_architecture.md](docs/manifest/09_future_architect
 | Category | Total | Complete | Remaining |
 |----------|-------|----------|-----------|
 | Core Components | 11 | 11 | 0 |
+| Observation Deck | 15 | 0 | 15 |
 | Heuristic TELOS | 6 | 0 | 6 |
 | Parallel TELOS | 10 | 0 | 10 |
 | HBP (Optional) | 1 | 0 | 1 |

@@ -20,7 +20,7 @@ We provide counterfactual evidence proving governance effectiveness through the 
 
 Version 1.00 is achieved when:
 
-1. ✅ **Interface Complete** - Minimalistic ChatGPT-style research instrument
+1. 🔨 **Interface Complete** - Minimalistic ChatGPT-style research instrument with Observation Deck
 2. ✅ **Core Governance Functional** - UnifiedGovernanceSteward with Primacy Attractor
 3. ✅ **Counterfactual System Working** - TELOSCOPE generates comparative evidence
 4. ⏳ **Pilot Data Generated** - 3-5 documented test conversations
@@ -159,9 +159,58 @@ Version 1.00 is achieved when:
 
 ---
 
+### 6. Observation Deck 🔭
+**Status**: In Progress (Week of 2025-10-29)
+**Owner**: TBD
+**Dependencies**: Interface complete (✅), backend telemetry complete (✅)
+
+**Requirements**:
+- Transform TELOS Observatory into complete research platform
+- Collapsible research panel with TELOSCOPIC Tools and Steward integration
+- Two control strip systems (Observatory + Observation Deck)
+- Dynamic layout system (4 column width states)
+- Turn marker synchronization across all tools
+
+**Components**:
+- **Observatory Control Strip** (top-right thermometer): Turn counter, fidelity gauge, calibration progress
+- **Observation Deck Control Strip** (sidebar header): Telescope toggle, symbolic flow, stats
+- **TELOSCOPIC Tools** (FREE): Comparison Viewer, Calculation Window, Turn Navigator
+- **Steward Integration** (PAID): Conversational Q&A about sessions (~$0.002/query)
+- **Calibration Logger**: Mistral reasoning visualization (Turns 1-3)
+- **Symbolic Flow**: Governance pipeline animator (👤→⚡→🔄→🤖→✓)
+
+**Architecture**:
+```
+telos_purpose/dev_dashboard/observation_deck/
+  ├── observatory_control_strip.py
+  ├── deck_control_strip.py
+  ├── teloscopic_tools/
+  │   ├── comparison_viewer.py
+  │   ├── calculation_window.py
+  │   └── turn_navigator.py
+  ├── steward_integration/
+  │   └── steward_chat.py
+  ├── calibration_logger.py
+  └── symbolic_flow.py
+```
+
+**Acceptance Criteria**:
+- [ ] Observatory Control Strip functional (top-right position)
+- [ ] Observation Deck Control Strip functional (sidebar header)
+- [ ] Deck opens/closes with dynamic width adjustment
+- [ ] At least 2 of 3 TELOSCOPIC Tools working (Comparison + Calculation minimum)
+- [ ] Calibration Logger shows Turns 1-3 attractor formation
+- [ ] Basic Steward integration (text Q&A working)
+- [ ] All 4 layout states tested and functional
+- [ ] Turn marker synchronization verified
+
+**Timeline**: 3-week implementation (Weeks 1-3: Foundation, Tools, Integration)
+
+---
+
 ## Technical Requirements
 
-### Interface (✅ Complete)
+### Interface (🔨 In Progress - Observation Deck)
 - [x] Minimalistic ChatGPT-style UI
 - [x] Dark/Light mode toggle
 - [x] Native Mistral ↔ TELOS toggle
@@ -169,6 +218,10 @@ Version 1.00 is achieved when:
 - [x] Floating draggable windows (STEWARD, TELOSCOPE)
 - [x] Keyboard shortcuts for rapid access
 - [x] Export capabilities (JSON, CSV, Transcript, Report)
+- [ ] Observation Deck (collapsible research panel) - **In Progress**
+- [ ] Observatory Control Strip (top-right thermometer) - **In Progress**
+- [ ] TELOSCOPIC Tools (Comparison, Calculation, Turn Navigator) - **In Progress**
+- [ ] Steward Integration (conversational Q&A) - **In Progress**
 
 ### Core Governance (✅ Complete)
 - [x] UnifiedGovernanceSteward
