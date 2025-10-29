@@ -1351,42 +1351,9 @@ st.set_page_config(
 # CSS Styling
 st.markdown("""
 <style>
-/* Force sidebar to be visible - AGGRESSIVE OVERRIDES */
-section[data-testid="stSidebar"],
-[data-testid="stSidebar"],
-div[data-testid="stSidebar"] {
-    display: block !important;
-    visibility: visible !important;
-    width: 21rem !important;
-    min-width: 21rem !important;
-    max-width: 21rem !important;
-    position: relative !important;
-    left: 0 !important;
-    transform: none !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-}
-
-section[data-testid="stSidebar"] > div,
-[data-testid="stSidebar"] > div,
-section[data-testid="stSidebar"] > div:first-child,
-section[data-testid="stSidebar"] .css-1d391kg,
-section[data-testid="stSidebar"] .st-emotion-cache-1d391kg {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    transform: none !important;
-}
-
-/* Prevent sidebar collapse button from working */
-button[kind="header"] {
-    display: none !important;
-}
-
-/* Keep sidebar content container visible */
-.css-1d391kg, .st-emotion-cache-1d391kg {
-    visibility: visible !important;
-    opacity: 1 !important;
+/* Allow sidebar to collapse naturally - just ensure it starts expanded */
+section[data-testid="stSidebar"] {
+    /* Don't force visibility - let Streamlit handle collapse/expand */
 }
 
 /* Right sidebar panel for Observation Deck */
