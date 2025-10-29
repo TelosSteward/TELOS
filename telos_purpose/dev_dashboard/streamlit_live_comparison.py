@@ -1351,6 +1351,37 @@ st.set_page_config(
 # CSS Styling
 st.markdown("""
 <style>
+/* Force sidebar to be visible */
+section[data-testid="stSidebar"] {
+    display: block !important;
+    visibility: visible !important;
+    width: 21rem !important;
+}
+
+section[data-testid="stSidebar"] > div {
+    display: block !important;
+    visibility: visible !important;
+}
+
+/* Right sidebar panel for Observation Deck */
+.observation-deck-panel {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 400px;
+    height: 100vh;
+    background: #1e1e1e;
+    border-left: 1px solid #444;
+    transition: right 0.3s ease;
+    z-index: 999;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.observation-deck-panel.open {
+    right: 0;
+}
+
 .stMetric {
     background-color: #f0f2f6;
     padding: 10px;
@@ -3385,6 +3416,26 @@ def render_chat_interface():
                     st.error("⚠️ Message could not be processed")
                     st.info("💡 Please try sending your message again")
                     logging.error(f"Message processing error: {e}")  # Log technical details
+
+    # ========================================================================
+    # RIGHT SIDEBAR PANEL - Observation Deck (slides in/out)
+    # ========================================================================
+
+    deck_is_open = deck_manager.session_state['observation_deck']['is_open']
+    panel_class = "observation-deck-panel open" if deck_is_open else "observation-deck-panel"
+
+    # Inject right panel HTML
+    st.markdown(f"""
+        <div class="{panel_class}">
+            <h2 style="color: #fff; margin-top: 0;">🔭 Observation Deck</h2>
+            <p style="color: #aaa;">TELOSCOPIC tools and research instruments will appear here.</p>
+            <hr style="border-color: #444;">
+            <div id="deck-content">
+                <!-- Observation Deck content will be rendered here -->
+                <p style="color: #888; font-style: italic;">Click telescope toggle in left sidebar to open/close this panel.</p>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
 
     # FINAL CSS INJECTION - Applied at end of rendering to override everything
     st.markdown("""
