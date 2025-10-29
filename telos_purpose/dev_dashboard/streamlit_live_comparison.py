@@ -3306,9 +3306,6 @@ def render_chat_interface():
         st.markdown(f"""
         <div style="text-align: center; padding: 60px 20px; color: {welcome_color};">
             <p style="font-size: 19px;">Start a conversation</p>
-            <p style="font-size: 15px; margin-top: 12px; line-height: 1.6;">
-                <code>ESC</code> STEWARD • <code>Space</code> TELOSCOPE • <code>↑</code> Tools • <code>↓</code> Hide All
-            </p>
         </div>
         """, unsafe_allow_html=True)
     else:
