@@ -4,7 +4,7 @@
 
 # LLM API Clients
 
-mistralai>=0.1.0
+mistralai>=0.1.0  # Powers both TELOS governance and Steward research analysis
 
 # Embedding Models
 

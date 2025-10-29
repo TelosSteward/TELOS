@@ -27,6 +27,7 @@ from telos_purpose.llm_clients.mistral_client import TelosMistralClient
 from telos_purpose.core.embedding_provider import EmbeddingProvider
 from telos_purpose.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
 from telos_purpose.profiling.progressive_primacy_extractor import ProgressivePrimacyExtractor
+from telos_purpose.dev_dashboard.steward_analysis import StewardAnalyzer
 import os
 import json
 import pandas as pd
@@ -2772,8 +2773,8 @@ def render_chat_interface():
     # MINIMALISTIC HEADER: Dark/Light mode + Governance toggle (top-right)
     # ========================================================================
 
-    # Create subtle header with toggles - wider last column for TELOS
-    header_col1, header_col2, header_col3 = st.columns([3.5, 1, 1.5])
+    # Create subtle header with toggles - wider columns for Dark and TELOS
+    header_col1, header_col2, header_col3 = st.columns([3, 1.3, 1.5])
 
     with header_col1:
         # Empty - keeps toggles on right side
@@ -3402,6 +3403,325 @@ def render_chat_interface():
 
 
 # ============================================================================
+# Steward Research Panel - AI-powered session analysis
+# ============================================================================
+
+def render_steward_research_panel():
+    """Render Steward research analysis interface - overlays normal sidebar."""
+
+    # Initialize Steward analyzer - reuse existing Mistral client for efficiency
+    if 'steward_analyzer' not in st.session_state:
+        # Pass the same Mistral client used by TELOS governance
+        mistral_client = st.session_state.get('llm', None)
+        st.session_state.steward_analyzer = StewardAnalyzer(mistral_client=mistral_client)
+
+    analyzer = st.session_state.steward_analyzer
+
+    st.markdown("### 🤖 Research Analysis")
+    st.caption("Interact with Steward to analyze session data")
+
+    # Show AI status
+    if analyzer.has_ai:
+        st.success("✅ AI analysis enabled (Mistral)")
+    else:
+        st.warning("⚠️ AI unavailable - set MISTRAL_API_KEY")
+
+    # Show capabilities info
+    with st.expander("ℹ️ What Steward Can Do", expanded=False):
+        st.markdown("""
+**Steward is a specialized research analysis instrument.**
+
+✅ **CAN DO:**
+- Analyze governance patterns (TELOS on/off effects)
+- Extract canonical inputs and primacy attractors
+- Identify conversation patterns
+- Generate session summaries and metrics
+- Answer research questions about session data
+
+❌ **CANNOT DO:**
+- Modify code or files
+- Run system commands
+- Access external resources
+- Perform actions outside research scope
+
+Ask Steward about **patterns, metrics, and insights** from your TELOS sessions.
+        """)
+
+    st.divider()
+
+    # ========================================================================
+    # Session Selection
+    # ========================================================================
+    st.subheader("📊 Session Scope")
+
+    # Get list of saved sessions
+    sessions_dir = Path("saved_sessions")
+    session_options = ["Current Session"]
+
+    if sessions_dir.exists():
+        saved_sessions = sorted(
+            sessions_dir.glob("session_*.json"),
+            key=lambda p: p.stat().st_mtime,
+            reverse=True
+        )
+        session_options += [f.stem.replace("session_", "") for f in saved_sessions[:20]]
+
+    analysis_session = st.selectbox(
+        "Analyze Session",
+        options=session_options,
+        key="steward_session_selector",
+        help="Select which session to analyze"
+    )
+
+    st.divider()
+
+    # ========================================================================
+    # Quick Analysis Options
+    # ========================================================================
+    st.subheader("⚡ Quick Analysis")
+
+    quick_analysis = st.selectbox(
+        "Select Analysis Type",
+        options=[
+            "--- Select Analysis ---",
+            "Governance Impact Assessment",
+            "Canonical Input Extraction",
+            "Conversation Pattern Analysis",
+            "Primacy Attractor Evolution",
+            "Turn-by-Turn Metrics",
+            "Session Summary Report"
+        ],
+        key="steward_quick_analysis"
+    )
+
+    if st.button("🔍 Run Analysis", use_container_width=True):
+        if quick_analysis != "--- Select Analysis ---":
+            with st.spinner(f"Analyzing: {quick_analysis}..."):
+                # Get session data
+                if analysis_session == "Current Session":
+                    # Use current session from session_state
+                    if st.session_state.get('teloscope_initialized', False):
+                        session_data_raw = st.session_state.web_session.export_session()
+                        session_data = json.loads(session_data_raw) if isinstance(session_data_raw, str) else session_data_raw
+                    else:
+                        st.error("No active session to analyze")
+                        return
+                else:
+                    # Load saved session
+                    session_data = analyzer.load_session_data(analysis_session)
+                    if not session_data:
+                        st.error(f"Failed to load session: {analysis_session}")
+                        return
+
+                # Run appropriate analysis
+                analysis_map = {
+                    'Governance Impact Assessment': analyzer.analyze_governance_impact,
+                    'Canonical Input Extraction': analyzer.extract_canonical_inputs,
+                    'Conversation Pattern Analysis': analyzer.analyze_conversation_patterns,
+                    'Primacy Attractor Evolution': analyzer.analyze_primacy_attractor_evolution,
+                    'Session Summary Report': analyzer.generate_session_summary
+                }
+
+                analysis_func = analysis_map.get(quick_analysis)
+                if analysis_func:
+                    results = analysis_func(session_data)
+
+                    st.session_state.steward_last_analysis = {
+                        'type': quick_analysis,
+                        'session': analysis_session,
+                        'timestamp': datetime.now().isoformat(),
+                        'results': results
+                    }
+                    st.success(f"✅ Analysis complete: {quick_analysis}")
+                    st.rerun()
+                else:
+                    st.error("Analysis type not yet implemented")
+
+    st.divider()
+
+    # ========================================================================
+    # Chat with Steward
+    # ========================================================================
+    st.subheader("💬 Ask Steward")
+
+    # Initialize Steward chat history
+    if 'steward_chat_history' not in st.session_state:
+        st.session_state.steward_chat_history = []
+
+    # Display chat history
+    if st.session_state.steward_chat_history:
+        with st.container():
+            for msg in st.session_state.steward_chat_history[-5:]:  # Show last 5 messages
+                if msg['role'] == 'user':
+                    st.markdown(f"**You:** {msg['content']}")
+                else:
+                    st.markdown(f"**Steward:** {msg['content']}")
+
+    # Chat input
+    steward_query = st.text_area(
+        "Research Question",
+        placeholder="Ask Steward about the session...\nExample: 'What governance patterns emerged in this conversation?'",
+        key="steward_chat_input",
+        height=100
+    )
+
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        if st.button("📤 Ask Steward", use_container_width=True):
+            if steward_query.strip():
+                # Add user message to history
+                st.session_state.steward_chat_history.append({
+                    'role': 'user',
+                    'content': steward_query.strip()
+                })
+
+                # Get Steward's AI response
+                with st.spinner("Steward is analyzing..."):
+                    # Get session data
+                    if analysis_session == "Current Session":
+                        if st.session_state.get('teloscope_initialized', False):
+                            session_data_raw = st.session_state.web_session.export_session()
+                            session_data = json.loads(session_data_raw) if isinstance(session_data_raw, str) else session_data_raw
+                        else:
+                            session_data = {}
+                    else:
+                        session_data = analyzer.load_session_data(analysis_session)
+                        if not session_data:
+                            session_data = {}
+
+                    # Get AI response from Steward
+                    response = analyzer.chat_with_steward(
+                        steward_query.strip(),
+                        session_data,
+                        context=f"Analyzing session: {analysis_session}"
+                    )
+
+                    st.session_state.steward_chat_history.append({
+                        'role': 'steward',
+                        'content': response
+                    })
+
+                st.rerun()
+
+    with col2:
+        if st.button("🗑️ Clear Chat", use_container_width=True):
+            st.session_state.steward_chat_history = []
+            st.rerun()
+
+    st.divider()
+
+    # ========================================================================
+    # Analysis Results Display
+    # ========================================================================
+    if 'steward_last_analysis' in st.session_state:
+        with st.expander("📋 Last Analysis Results", expanded=True):
+            analysis = st.session_state.steward_last_analysis
+            st.markdown(f"**Type:** {analysis['type']}")
+            st.markdown(f"**Session:** {analysis['session']}")
+            st.markdown(f"**Time:** {analysis['timestamp']}")
+
+            st.divider()
+
+            # Display results based on analysis type
+            results = analysis.get('results', {})
+
+            if 'error' in results:
+                st.error(results['error'])
+            else:
+                # Governance Impact Assessment
+                if analysis['type'] == 'Governance Impact Assessment':
+                    st.metric("Total Turns", results.get('total_turns', 0))
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.metric("TELOS Enabled", results.get('telos_enabled_turns', 0))
+                    with col2:
+                        st.metric("TELOS Disabled", results.get('telos_disabled_turns', 0))
+
+                    st.metric("Governance Switches", results.get('governance_switches', 0))
+                    ratio = results.get('governance_ratio', 0)
+                    st.progress(ratio)
+                    st.caption(f"TELOS usage: {ratio:.1%}")
+
+                    if 'ai_interpretation' in results:
+                        st.markdown("**AI Interpretation:**")
+                        st.info(results['ai_interpretation'])
+
+                # Canonical Input Extraction
+                elif analysis['type'] == 'Canonical Input Extraction':
+                    st.metric("Total Canonical Inputs", results.get('total_canonical_inputs', 0))
+
+                    inputs = results.get('inputs', [])
+                    if inputs:
+                        for inp in inputs[:5]:  # Show first 5
+                            with st.container():
+                                st.markdown(f"**Turn {inp['turn']}:**")
+                                st.text(inp['content'])
+                                st.caption(f"Primacy: {inp.get('primacy_attractor', 'N/A')}")
+
+                    if 'ai_categorization' in results:
+                        st.markdown("**AI Categorization:**")
+                        st.info(results['ai_categorization'])
+
+                # Conversation Pattern Analysis
+                elif analysis['type'] == 'Conversation Pattern Analysis':
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.metric("Total Turns", results.get('total_turns', 0))
+                    with col2:
+                        st.metric("User Turns", results.get('user_turns', 0))
+                    with col3:
+                        st.metric("Assistant Turns", results.get('assistant_turns', 0))
+
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.metric("Avg User Msg Length", f"{results.get('avg_user_message_length', 0)} chars")
+                    with col2:
+                        st.metric("Avg Assistant Msg Length", f"{results.get('avg_assistant_message_length', 0)} chars")
+
+                    if 'ai_pattern_analysis' in results:
+                        st.markdown("**AI Pattern Analysis:**")
+                        st.info(results['ai_pattern_analysis'])
+
+                # Primacy Attractor Evolution
+                elif analysis['type'] == 'Primacy Attractor Evolution':
+                    st.metric("Total Primacy Attractors", results.get('total_primacy_attractors', 0))
+
+                    sequence = results.get('sequence', [])
+                    if sequence:
+                        st.markdown("**Evolution Sequence:**")
+                        for item in sequence[:10]:  # Show first 10
+                            st.text(f"Turn {item['turn']}: {item['attractor']}")
+
+                    if 'ai_evolution_analysis' in results:
+                        st.markdown("**AI Evolution Analysis:**")
+                        st.info(results['ai_evolution_analysis'])
+
+                # Session Summary Report
+                elif analysis['type'] == 'Session Summary Report':
+                    if 'executive_summary' in results:
+                        st.markdown("### Executive Summary")
+                        st.info(results['executive_summary'])
+
+                    st.markdown("### Detailed Metrics")
+
+                    # Show summary of each component
+                    if 'governance_summary' in results:
+                        with st.expander("Governance Impact"):
+                            gov = results['governance_summary']
+                            st.json(gov)
+
+                    if 'canonical_inputs_summary' in results:
+                        with st.expander("Canonical Inputs"):
+                            can = results['canonical_inputs_summary']
+                            st.metric("Total", can.get('total_canonical_inputs', 0))
+
+                    if 'pattern_summary' in results:
+                        with st.expander("Conversation Patterns"):
+                            pat = results['pattern_summary']
+                            st.json(pat)
+
+
+# ============================================================================
 # Sidebar: Configuration and Metrics
 # ============================================================================
 
@@ -3410,7 +3730,21 @@ def render_sidebar():
     with st.sidebar:
         st.title("🔭 TELOS")
 
+        # Toggle for Steward Research Panel
+        steward_mode = st.toggle(
+            "🤖 STEWARD Research",
+            value=st.session_state.get('steward_research_mode', False),
+            key='steward_research_toggle',
+            help="Open Steward research analysis panel"
+        )
+        st.session_state.steward_research_mode = steward_mode
+
         st.divider()
+
+        # Conditionally render either normal sidebar or Steward research panel
+        if steward_mode:
+            render_steward_research_panel()
+            return  # Exit early - don't render normal sidebar controls
 
         # ========================================================================
         # Saved Chats - Research instrument for later review
