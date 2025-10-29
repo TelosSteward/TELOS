@@ -2882,6 +2882,7 @@ def render_chat_interface():
         /* Root app container - dark gray background */
         .stApp {
             background-color: #3a3a3a !important;
+            font-size: 17px !important;  /* Base font size increased */
         }
 
         .main {
@@ -2899,6 +2900,7 @@ def render_chat_interface():
         /* Sidebar dark mode */
         section[data-testid="stSidebar"] {
             background-color: #2d2d2d !important;
+            font-size: 16px !important;
         }
         section[data-testid="stSidebar"] * {
             color: #e0e0e0 !important;
@@ -2907,6 +2909,7 @@ def render_chat_interface():
         /* Text and markdown */
         .stMarkdown, .stText {
             color: #e0e0e0 !important;
+            font-size: 17px !important;
         }
 
         /* Input fields */
@@ -2914,7 +2917,7 @@ def render_chat_interface():
             background-color: #2d2d2d !important;
             color: #e0e0e0 !important;
             border-color: #444 !important;
-            font-size: 20px !important;
+            font-size: 21px !important;
         }
 
         /* Buttons - Gray styling for all buttons including primary/send */
@@ -2926,6 +2929,7 @@ def render_chat_interface():
             background-color: #888888 !important;
             color: #ffffff !important;
             border-color: #888888 !important;
+            font-size: 17px !important;
         }
 
         .stButton button:hover,
@@ -2939,24 +2943,32 @@ def render_chat_interface():
         .streamlit-expanderHeader {
             background-color: #2d2d2d !important;
             color: #e0e0e0 !important;
+            font-size: 16px !important;
         }
 
         /* Metrics and containers */
         div[data-testid="stMetric"] {
             background-color: #2d2d2d !important;
             color: #e0e0e0 !important;
+            font-size: 16px !important;
         }
 
         /* Info boxes */
         .stAlert {
             background-color: #2d2d2d !important;
             color: #e0e0e0 !important;
+            font-size: 16px !important;
         }
 
         /* Headers */
         h1, h2, h3, h4, h5, h6 {
             color: #e0e0e0 !important;
         }
+
+        h1 { font-size: 2.5rem !important; }
+        h2 { font-size: 2rem !important; }
+        h3 { font-size: 1.6rem !important; }
+        h4 { font-size: 1.3rem !important; }
 
         /* Links */
         a {
@@ -3040,6 +3052,7 @@ def render_chat_interface():
         /* Root app container */
         .stApp {
             background-color: #ffffff !important;
+            font-size: 17px !important;  /* Base font size increased */
         }
 
         .main {
@@ -3052,9 +3065,19 @@ def render_chat_interface():
             padding-bottom: 2rem !important;
         }
 
+        /* Sidebar */
+        section[data-testid="stSidebar"] {
+            font-size: 16px !important;
+        }
+
+        /* Text and markdown */
+        .stMarkdown, .stText {
+            font-size: 17px !important;
+        }
+
         /* Input fields */
         .stTextInput input, .stTextArea textarea {
-            font-size: 20px !important;
+            font-size: 21px !important;
         }
 
         /* Toggle switches - Override Streamlit's default colors with maximum specificity (light gray, not red) */
@@ -3123,6 +3146,7 @@ def render_chat_interface():
             background-color: #888888 !important;
             color: #ffffff !important;
             border-color: #888888 !important;
+            font-size: 17px !important;
         }
 
         .stButton button:hover,
@@ -3131,6 +3155,25 @@ def render_chat_interface():
             background-color: #999999 !important;
             border-color: #999999 !important;
         }
+
+        /* Expanders and other elements */
+        .streamlit-expanderHeader {
+            font-size: 16px !important;
+        }
+
+        div[data-testid="stMetric"] {
+            font-size: 16px !important;
+        }
+
+        .stAlert {
+            font-size: 16px !important;
+        }
+
+        /* Headers */
+        h1 { font-size: 2.5rem !important; }
+        h2 { font-size: 2rem !important; }
+        h3 { font-size: 1.6rem !important; }
+        h4 { font-size: 1.3rem !important; }
         </style>
         """, unsafe_allow_html=True)
 
@@ -3154,8 +3197,8 @@ def render_chat_interface():
             welcome_color = "#888" if dark_mode else "#999"
             st.markdown(f"""
             <div style="text-align: center; padding: 60px 20px; color: {welcome_color};">
-                <p style="font-size: 1.1em;">Start a conversation</p>
-                <p style="font-size: 0.85em; margin-top: 12px; line-height: 1.6;">
+                <p style="font-size: 19px;">Start a conversation</p>
+                <p style="font-size: 15px; margin-top: 12px; line-height: 1.6;">
                     <code>ESC</code> Steward Lens • <code>Space</code> TELOSCOPE • <code>↑</code> Tools • <code>↓</code> Hide All
                 </p>
             </div>
@@ -3196,7 +3239,7 @@ def render_chat_interface():
                 # Render user message (MINIMALISTIC - no turn numbers, no timestamps)
                 st.markdown(f"""
                 <div style="display: flex; justify-content: flex-end; margin: 10px 0;">
-                    <div style="max-width: 75%; background-color: #0084ff; color: white; padding: 14px 18px; border-radius: 18px; font-size: 20px; line-height: 1.5;">
+                    <div style="max-width: 75%; background-color: #0084ff; color: white; padding: 14px 18px; border-radius: 18px; font-size: 21px; line-height: 1.5;">
                         {user_message}
                     </div>
                 </div>
@@ -3205,7 +3248,7 @@ def render_chat_interface():
                 # Render assistant message (MINIMALISTIC - no badges, no metadata)
                 st.markdown(f"""
                 <div style="display: flex; justify-content: flex-start; margin: 10px 0;">
-                    <div style="max-width: 75%; background-color: {assistant_bg}; color: {assistant_color}; padding: 14px 18px; border-radius: 18px; font-size: 20px; line-height: 1.5;">
+                    <div style="max-width: 75%; background-color: {assistant_bg}; color: {assistant_color}; padding: 14px 18px; border-radius: 18px; font-size: 21px; line-height: 1.5;">
                         <div style="white-space: pre-wrap;">{assistant_response}</div>
                     </div>
                 </div>
