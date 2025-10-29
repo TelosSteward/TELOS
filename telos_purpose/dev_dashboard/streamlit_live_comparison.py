@@ -3444,7 +3444,7 @@ def render_chat_interface():
     # RIGHT SIDEBAR PANEL - Observation Deck (slides in/out)
     # ========================================================================
 
-    deck_is_open = deck_manager.session_state['observation_deck']['is_open']
+    deck_is_open = st.session_state.deck_manager.session_state['observation_deck']['is_open']
     panel_class = "observation-deck-panel open" if deck_is_open else "observation-deck-panel"
 
     # Inject right panel HTML
@@ -3822,13 +3822,13 @@ def render_sidebar():
         # ========================================================================
         # Observation Deck Toggle (Telescope button to open/close right panel)
         # ========================================================================
-        deck_is_open = deck_manager.session_state['observation_deck']['is_open']
+        deck_is_open = st.session_state.deck_manager.session_state['observation_deck']['is_open']
 
         if st.button("🔭 Observation Deck" if not deck_is_open else "✖ Close Deck",
                      use_container_width=True,
                      type="secondary",
                      help="Toggle Observation Deck panel (research instruments)"):
-            deck_manager.toggle_deck()
+            st.session_state.deck_manager.toggle_deck()
             st.rerun()
 
         st.divider()
