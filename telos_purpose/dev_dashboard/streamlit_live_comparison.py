@@ -28,6 +28,9 @@ from telos_purpose.core.embedding_provider import EmbeddingProvider
 from telos_purpose.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
 from telos_purpose.profiling.progressive_primacy_extractor import ProgressivePrimacyExtractor
 from telos_purpose.dev_dashboard.steward_analysis import StewardAnalyzer
+from telos_purpose.dev_dashboard.observation_deck.deck_manager import DeckManager
+from telos_purpose.dev_dashboard.observation_deck.observatory_control_strip import ObservatoryControlStrip
+from telos_purpose.dev_dashboard.observation_deck.deck_control_strip import DeckControlStrip
 import os
 import json
 import pandas as pd
@@ -2765,6 +2768,26 @@ def render_chat_interface():
     turns = st.session_state.session_manager.get_all_turns()
 
     # ========================================================================
+    # OBSERVATION DECK INITIALIZATION
+    # ========================================================================
+
+    # Initialize DeckManager if not already initialized
+    if 'deck_manager' not in st.session_state:
+        st.session_state.deck_manager = DeckManager(st.session_state)
+
+    deck_manager = st.session_state.deck_manager
+
+    # Initialize control strips
+    if 'observatory_control_strip' not in st.session_state:
+        st.session_state.observatory_control_strip = ObservatoryControlStrip(st.session_state.session_manager)
+
+    if 'deck_control_strip' not in st.session_state:
+        st.session_state.deck_control_strip = DeckControlStrip(
+            st.session_state.session_manager,
+            deck_manager
+        )
+
+    # ========================================================================
     # KEYBOARD SHORTCUTS (Invisible Handler)
     # ========================================================================
     render_keyboard_handler()
@@ -3247,13 +3270,41 @@ def render_chat_interface():
     render_floating_popups(dark_mode)
 
     # ========================================================================
-    # MESSAGE CONTAINER (Scrollable)
+    # OBSERVATORY CONTROL STRIP (Top-Right Thermometer)
     # ========================================================================
 
-    # Container for messages with custom styling for scrolling
-    message_container = st.container()
+    # Render Observatory Control Strip in top-right corner
+    obs_strip_container = st.container()
+    with obs_strip_container:
+        st.session_state.observatory_control_strip.render()
 
-    with message_container:
+    # ========================================================================
+    # DYNAMIC 3-COLUMN LAYOUT (Sidebar | Chat | Observation Deck)
+    # ========================================================================
+
+    # Get column widths from DeckManager based on sidebar/deck state
+    # States: [sidebar%, chat%, deck%]
+    # - Sidebar open + Deck open: [15, 60, 25]
+    # - Sidebar open + Deck closed: [15, 85, 0]
+    # - Sidebar closed + Deck open: [0, 60, 40]
+    # - Both closed: [0, 100, 0]
+
+    # Note: Streamlit sidebar is separate from column layout, so we only manage chat/deck split
+    deck_is_open = deck_manager.session_state['observation_deck']['is_open']
+
+    if deck_is_open:
+        # Chat (75%) + Observation Deck (25%)
+        chat_col, deck_col = st.columns([75, 25])
+    else:
+        # Chat (100%), Deck hidden
+        chat_col = st.container()
+        deck_col = None
+
+    # ========================================================================
+    # MESSAGE CONTAINER (Scrollable) - Left/Center Column
+    # ========================================================================
+
+    with chat_col:
         if len(turns) == 0:
             # Minimalistic welcome - clean empty state (dark mode aware)
             welcome_color = "#888" if dark_mode else "#999"
@@ -3370,6 +3421,15 @@ def render_chat_interface():
                     st.error("⚠️ Message could not be processed")
                     st.info("💡 Please try sending your message again")
                     logging.error(f"Message processing error: {e}")  # Log technical details
+
+    # ========================================================================
+    # OBSERVATION DECK (Right Column - Collapsible)
+    # ========================================================================
+
+    if deck_col is not None:
+        with deck_col:
+            # Render Observation Deck
+            deck_manager.render_observation_deck()
 
     # FINAL CSS INJECTION - Applied at end of rendering to override everything
     st.markdown("""
@@ -3729,6 +3789,14 @@ def render_sidebar():
     """Render minimalistic sidebar - only essential controls."""
     with st.sidebar:
         st.title("🔭 TELOS")
+
+        # ========================================================================
+        # Deck Control Strip (Observation Deck summoning instrument)
+        # ========================================================================
+        if 'deck_control_strip' in st.session_state:
+            st.session_state.deck_control_strip.render()
+
+        st.divider()
 
         # Toggle for Steward Research Panel
         steward_mode = st.toggle(
