@@ -56,7 +56,7 @@ class ObservatoryControlStrip:
             container = st.container()
 
         with container:
-            # Use custom CSS for top-right positioning
+            # Use custom CSS for minimal symbol-based strip
             st.markdown("""
                 <style>
                 .observatory-control-strip {
@@ -64,49 +64,33 @@ class ObservatoryControlStrip:
                     top: 120px;
                     right: 20px;
                     z-index: 1000;
-                    background: rgba(30, 30, 30, 0.95);
-                    border: 1px solid rgba(255, 255, 255, 0.2);
-                    border-radius: 8px;
-                    padding: 10px 15px;
+                    background: rgba(30, 30, 30, 0.8);
+                    border: 1px solid rgba(255, 255, 255, 0.15);
+                    border-radius: 4px;
+                    padding: 4px 8px;
                     display: flex;
-                    gap: 15px;
+                    gap: 8px;
                     align-items: center;
-                    font-size: 13px;
-                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+                    font-size: 11px;
+                    font-family: monospace;
                 }
-                .obs-strip-element {
+                .obs-indicator {
                     display: flex;
-                    flex-direction: column;
                     align-items: center;
                     gap: 3px;
+                    color: rgba(255, 255, 255, 0.7);
                 }
-                .obs-strip-label {
-                    font-size: 10px;
-                    color: rgba(255, 255, 255, 0.6);
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                }
-                .obs-strip-value {
-                    font-size: 14px;
-                    font-weight: 600;
-                }
-                .fidelity-gauge {
-                    width: 40px;
-                    height: 40px;
+                .obs-dot {
+                    width: 6px;
+                    height: 6px;
                     border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    border: 2px solid;
-                    font-size: 12px;
-                    font-weight: 700;
                 }
-                .pulse-animation {
+                .pulse-dot {
                     animation: pulse 2s infinite;
                 }
                 @keyframes pulse {
-                    0%, 100% { opacity: 1; transform: scale(1); }
-                    50% { opacity: 0.7; transform: scale(1.05); }
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0.3; }
                 }
                 </style>
             """, unsafe_allow_html=True)
@@ -161,76 +145,39 @@ class ObservatoryControlStrip:
 
     def _build_control_strip_html(self, turn_data: Dict[str, Any]) -> str:
         """
-        Build HTML for Observatory Control Strip.
+        Build minimal symbol-based HTML for Observatory Control Strip.
 
         Args:
             turn_data: Current turn data dictionary
 
         Returns:
-            HTML string for control strip
+            Compact HTML string
         """
-        current_turn = turn_data['current_turn']
         total_turns = turn_data['total_turns']
         fidelity = turn_data['fidelity']
-        calibration_phase = turn_data['calibration_phase']
         drift_detected = turn_data['drift_detected']
 
-        # Turn counter HTML
-        turn_html = f"""
-            <div class="obs-strip-element">
-                <div class="obs-strip-label">Turn</div>
-                <div class="obs-strip-value">{current_turn}/{total_turns}</div>
-            </div>
-        """
+        # Turn counter: just the number
+        turn_display = f"T{total_turns}" if total_turns > 0 else "T0"
 
-        # Fidelity gauge HTML
-        fidelity_html = self._build_fidelity_gauge_html(fidelity, drift_detected)
+        # Fidelity: colored dot + percentage
+        if fidelity is None:
+            fidelity_color = "#666"
+            fidelity_display = "—"
+            pulse = ""
+        else:
+            fidelity_color = self._get_fidelity_color(fidelity)
+            fidelity_display = f"{int(fidelity * 100)}"
+            pulse = "pulse-dot" if drift_detected else ""
 
-        # Calibration progress HTML (only show during Turns 1-3)
-        calibration_html = ""
-        if calibration_phase and current_turn <= 3:
-            calibration_html = self._build_calibration_progress_html(current_turn)
-
-        # Combine elements
+        # Minimal HTML: T3 ● 95
         html = f"""
             <div class="observatory-control-strip">
-                {turn_html}
-                <div style="width: 1px; height: 30px; background: rgba(255, 255, 255, 0.2);"></div>
-                {fidelity_html}
-                {calibration_html}
-            </div>
-        """
-
-        return html
-
-    def _build_fidelity_gauge_html(self, fidelity: Optional[float], drift_detected: bool) -> str:
-        """
-        Build HTML for fidelity gauge (circular color-coded indicator).
-
-        Args:
-            fidelity: Fidelity score (0.0-1.0) or None
-            drift_detected: Whether drift was detected
-
-        Returns:
-            HTML string for fidelity gauge
-        """
-        if fidelity is None:
-            # No fidelity data yet
-            color = '#666666'
-            display_value = "—"
-            pulse_class = ""
-        else:
-            # Determine color based on thresholds
-            color = self._get_fidelity_color(fidelity)
-            display_value = f"{int(fidelity * 100)}"
-            pulse_class = "pulse-animation" if drift_detected else ""
-
-        html = f"""
-            <div class="obs-strip-element">
-                <div class="obs-strip-label">Fidelity</div>
-                <div class="fidelity-gauge {pulse_class}" style="border-color: {color}; color: {color};">
-                    {display_value}
-                </div>
+                <span class="obs-indicator">{turn_display}</span>
+                <span class="obs-indicator">
+                    <span class="obs-dot {pulse}" style="background: {fidelity_color};"></span>
+                    {fidelity_display}
+                </span>
             </div>
         """
 
@@ -252,28 +199,3 @@ class ObservatoryControlStrip:
 
         # Default to critical if outside ranges
         return self.FIDELITY_COLORS['critical'][2]
-
-    def _build_calibration_progress_html(self, current_turn: int) -> str:
-        """
-        Build HTML for calibration progress indicator (Turns 1-3 only).
-
-        Args:
-            current_turn: Current turn number
-
-        Returns:
-            HTML string for calibration progress
-        """
-        progress_pct = int((current_turn / 3) * 100)
-
-        html = f"""
-            <div style="width: 1px; height: 30px; background: rgba(255, 255, 255, 0.2);"></div>
-            <div class="obs-strip-element">
-                <div class="obs-strip-label">Calibrating</div>
-                <div class="obs-strip-value" style="color: #00aaff;">{current_turn}/3</div>
-                <div style="width: 60px; height: 4px; background: rgba(255, 255, 255, 0.2); border-radius: 2px; overflow: hidden;">
-                    <div style="width: {progress_pct}%; height: 100%; background: #00aaff;"></div>
-                </div>
-            </div>
-        """
-
-        return html
