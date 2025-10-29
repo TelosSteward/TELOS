@@ -2772,8 +2772,8 @@ def render_chat_interface():
     # MINIMALISTIC HEADER: Dark/Light mode + Governance toggle (top-right)
     # ========================================================================
 
-    # Create subtle header with toggles
-    header_col1, header_col2, header_col3 = st.columns([4, 1, 1])
+    # Create subtle header with toggles - wider last column for TELOS
+    header_col1, header_col2, header_col3 = st.columns([3.5, 1, 1.5])
 
     with header_col1:
         # Empty - keeps toggles on right side
@@ -2790,9 +2790,9 @@ def render_chat_interface():
         st.session_state['dark_mode'] = dark_mode
 
     with header_col3:
-        # Governance toggle: Mistral ↔ TELOS (add extra space to prevent wrapping)
+        # Governance toggle: Mistral ↔ TELOS
         governance_enabled = st.toggle(
-            "TELOS  ",  # Extra spaces to prevent 'S' wrapping
+            "TELOS",
             value=st.session_state.get('governance_enabled', True),
             key='governance_toggle_display',
             help="Toggle governance: ON = TELOS Steward | OFF = Native Mistral"
@@ -2912,11 +2912,12 @@ def render_chat_interface():
             font-size: 17px !important;
         }
 
-        /* Toggle labels - make white in dark mode */
+        /* Toggle labels - gray color to match interface */
         div[data-testid="stToggle"] label,
         div[data-testid="stToggle"] p,
-        div[data-testid="stToggle"] span {
-            color: #ffffff !important;
+        div[data-testid="stToggle"] span,
+        div[data-testid="stToggle"] div {
+            color: #888888 !important;
         }
 
         /* Input fields */
@@ -3080,6 +3081,14 @@ def render_chat_interface():
         /* Text and markdown */
         .stMarkdown, .stText {
             font-size: 17px !important;
+        }
+
+        /* Toggle labels - gray color to match interface */
+        div[data-testid="stToggle"] label,
+        div[data-testid="stToggle"] p,
+        div[data-testid="stToggle"] span,
+        div[data-testid="stToggle"] div {
+            color: #999999 !important;
         }
 
         /* Input fields */
