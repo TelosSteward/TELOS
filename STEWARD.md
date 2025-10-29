@@ -1,14 +1,30 @@
 # TELOS Project Manager - STEWARD
 
-## Manifest Tracking
-
-**Build Manifest**: [`archive/TELOS_BUILD_MANIFEST.md`](archive/TELOS_BUILD_MANIFEST.md)
-**Repository Status**: [`REPO_MANIFEST.md`](REPO_MANIFEST.md)
-**Product Requirements**: [`docs/PRD.md`](docs/PRD.md)
+## Quick Status
 
 **Current Phase**: Phase 12 Complete - Interface Polish
 **Overall Progress**: ~85% complete (Platform infrastructure ready)
-**Repository Progress**: 53.4% complete (57/107 UI overhaul tasks)
+**UI Progress**: 53.4% complete (57/107 UI overhaul tasks)
+**Task Progress**: 28.9% complete (11/38 tasks)
+
+## PM Documentation
+
+All project tracking consolidated in **`docs/prd/`**:
+
+- [`docs/prd/PRD.md`](docs/prd/PRD.md) - V1.00 requirements & acceptance criteria
+- [`docs/prd/PLATFORM_STATUS.md`](docs/prd/PLATFORM_STATUS.md) - Core infrastructure (85% complete)
+- [`docs/prd/UI_PHASES.md`](docs/prd/UI_PHASES.md) - Interface phases (53.4% complete)
+- [`docs/prd/TASKS.md`](docs/prd/TASKS.md) - Detailed task backlog (28.9% complete)
+
+## Steward Commands
+
+Use `steward.py` for project management:
+
+```bash
+python steward.py status      # Show current state across all trackers
+python steward.py next        # Suggest what to work on next
+python steward.py complete "task name"  # Mark task complete
+```
 
 ## V1.00 Deliverables
 
