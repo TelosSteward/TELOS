@@ -61,7 +61,7 @@ class ObservatoryControlStrip:
                 <style>
                 .observatory-control-strip {
                     position: fixed;
-                    top: 60px;
+                    top: 120px;
                     right: 20px;
                     z-index: 1000;
                     background: rgba(30, 30, 30, 0.95);
