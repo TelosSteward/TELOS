@@ -1,0 +1,670 @@
+[
+  {
+    "id": "edge_all_interventions_001",
+    "turns": [
+      [
+        "Message requiring intervention 1",
+        "Corrected TELOS response 1"
+      ],
+      [
+        "Message requiring intervention 2",
+        "Corrected TELOS response 2"
+      ],
+      [
+        "Message requiring intervention 3",
+        "Corrected TELOS response 3"
+      ],
+      [
+        "Message requiring intervention 4",
+        "Corrected TELOS response 4"
+      ],
+      [
+        "Message requiring intervention 5",
+        "Corrected TELOS response 5"
+      ],
+      [
+        "Message requiring intervention 6",
+        "Corrected TELOS response 6"
+      ],
+      [
+        "Message requiring intervention 7",
+        "Corrected TELOS response 7"
+      ],
+      [
+        "Message requiring intervention 8",
+        "Corrected TELOS response 8"
+      ],
+      [
+        "Message requiring intervention 9",
+        "Corrected TELOS response 9"
+      ],
+      [
+        "Message requiring intervention 10",
+        "Corrected TELOS response 10"
+      ]
+    ]
+  },
+  {
+    "id": "edge_alternating_fidelity_001",
+    "turns": [
+      [
+        "Oscillating message 1",
+        "Response 1"
+      ],
+      [
+        "Oscillating message 2",
+        "Response 2"
+      ],
+      [
+        "Oscillating message 3",
+        "Response 3"
+      ],
+      [
+        "Oscillating message 4",
+        "Response 4"
+      ],
+      [
+        "Oscillating message 5",
+        "Response 5"
+      ],
+      [
+        "Oscillating message 6",
+        "Response 6"
+      ],
+      [
+        "Oscillating message 7",
+        "Response 7"
+      ],
+      [
+        "Oscillating message 8",
+        "Response 8"
+      ],
+      [
+        "Oscillating message 9",
+        "Response 9"
+      ],
+      [
+        "Oscillating message 10",
+        "Response 10"
+      ],
+      [
+        "Oscillating message 11",
+        "Response 11"
+      ],
+      [
+        "Oscillating message 12",
+        "Response 12"
+      ],
+      [
+        "Oscillating message 13",
+        "Response 13"
+      ],
+      [
+        "Oscillating message 14",
+        "Response 14"
+      ],
+      [
+        "Oscillating message 15",
+        "Response 15"
+      ],
+      [
+        "Oscillating message 16",
+        "Response 16"
+      ],
+      [
+        "Oscillating message 17",
+        "Response 17"
+      ],
+      [
+        "Oscillating message 18",
+        "Response 18"
+      ],
+      [
+        "Oscillating message 19",
+        "Response 19"
+      ],
+      [
+        "Oscillating message 20",
+        "Response 20"
+      ]
+    ]
+  },
+  {
+    "id": "edge_extreme_fidelity_001",
+    "turns": [
+      [
+        "Complete failure case",
+        "Regenerated on-topic response"
+      ],
+      [
+        "Perfect alignment case",
+        "Perfectly aligned response"
+      ],
+      [
+        "Middle case",
+        "Improved response"
+      ],
+      [
+        "Near-perfect case",
+        "Almost perfect response"
+      ],
+      [
+        "Near-zero case",
+        "Heavily corrected response"
+      ]
+    ]
+  },
+  {
+    "id": "edge_missing_fidelity_001",
+    "turns": [
+      [
+        "Message 1",
+        "TELOS response 1"
+      ],
+      [
+        "Message 2",
+        "TELOS response 2"
+      ],
+      [
+        "Message 3",
+        "TELOS response 3"
+      ],
+      [
+        "Message 4",
+        "TELOS response 4"
+      ],
+      [
+        "Message 5",
+        "TELOS response 5"
+      ]
+    ]
+  },
+  {
+    "id": "edge_no_interventions_001",
+    "turns": [
+      [
+        "Well-aligned message 1",
+        "Already good response 1"
+      ],
+      [
+        "Well-aligned message 2",
+        "Already good response 2"
+      ],
+      [
+        "Well-aligned message 3",
+        "Already good response 3"
+      ],
+      [
+        "Well-aligned message 4",
+        "Already good response 4"
+      ],
+      [
+        "Well-aligned message 5",
+        "Already good response 5"
+      ],
+      [
+        "Well-aligned message 6",
+        "Already good response 6"
+      ],
+      [
+        "Well-aligned message 7",
+        "Already good response 7"
+      ],
+      [
+        "Well-aligned message 8",
+        "Already good response 8"
+      ],
+      [
+        "Well-aligned message 9",
+        "Already good response 9"
+      ],
+      [
+        "Well-aligned message 10",
+        "Already good response 10"
+      ],
+      [
+        "Well-aligned message 11",
+        "Already good response 11"
+      ],
+      [
+        "Well-aligned message 12",
+        "Already good response 12"
+      ],
+      [
+        "Well-aligned message 13",
+        "Already good response 13"
+      ],
+      [
+        "Well-aligned message 14",
+        "Already good response 14"
+      ],
+      [
+        "Well-aligned message 15",
+        "Already good response 15"
+      ]
+    ]
+  },
+  {
+    "id": "edge_single_turn_001",
+    "turns": [
+      [
+        "Single message test",
+        "Single TELOS response"
+      ]
+    ]
+  },
+  {
+    "id": "edge_unicode_special_chars_001",
+    "turns": [
+      [
+        "Test with \u00e9mojis \ud83c\udf89 and sp\u00ebcial \u00e7hars: <>&\"'",
+        "Response with \u4e2d\u6587\u5b57\u7b26 and \u0645\u0631\u062d\u0628\u0627"
+      ]
+    ]
+  },
+  {
+    "id": "edge_very_long_session_001",
+    "turns": [
+      [
+        "Long session message 1",
+        "TELOS response 1"
+      ],
+      [
+        "Long session message 2",
+        "TELOS response 2"
+      ],
+      [
+        "Long session message 3",
+        "TELOS response 3"
+      ],
+      [
+        "Long session message 4",
+        "TELOS response 4"
+      ],
+      [
+        "Long session message 5",
+        "TELOS response 5"
+      ],
+      [
+        "Long session message 6",
+        "TELOS response 6"
+      ],
+      [
+        "Long session message 7",
+        "TELOS response 7"
+      ],
+      [
+        "Long session message 8",
+        "TELOS response 8"
+      ],
+      [
+        "Long session message 9",
+        "TELOS response 9"
+      ],
+      [
+        "Long session message 10",
+        "TELOS response 10"
+      ],
+      [
+        "Long session message 11",
+        "TELOS response 11"
+      ],
+      [
+        "Long session message 12",
+        "TELOS response 12"
+      ],
+      [
+        "Long session message 13",
+        "TELOS response 13"
+      ],
+      [
+        "Long session message 14",
+        "TELOS response 14"
+      ],
+      [
+        "Long session message 15",
+        "TELOS response 15"
+      ],
+      [
+        "Long session message 16",
+        "TELOS response 16"
+      ],
+      [
+        "Long session message 17",
+        "TELOS response 17"
+      ],
+      [
+        "Long session message 18",
+        "TELOS response 18"
+      ],
+      [
+        "Long session message 19",
+        "TELOS response 19"
+      ],
+      [
+        "Long session message 20",
+        "TELOS response 20"
+      ],
+      [
+        "Long session message 21",
+        "TELOS response 21"
+      ],
+      [
+        "Long session message 22",
+        "TELOS response 22"
+      ],
+      [
+        "Long session message 23",
+        "TELOS response 23"
+      ],
+      [
+        "Long session message 24",
+        "TELOS response 24"
+      ],
+      [
+        "Long session message 25",
+        "TELOS response 25"
+      ],
+      [
+        "Long session message 26",
+        "TELOS response 26"
+      ],
+      [
+        "Long session message 27",
+        "TELOS response 27"
+      ],
+      [
+        "Long session message 28",
+        "TELOS response 28"
+      ],
+      [
+        "Long session message 29",
+        "TELOS response 29"
+      ],
+      [
+        "Long session message 30",
+        "TELOS response 30"
+      ],
+      [
+        "Long session message 31",
+        "TELOS response 31"
+      ],
+      [
+        "Long session message 32",
+        "TELOS response 32"
+      ],
+      [
+        "Long session message 33",
+        "TELOS response 33"
+      ],
+      [
+        "Long session message 34",
+        "TELOS response 34"
+      ],
+      [
+        "Long session message 35",
+        "TELOS response 35"
+      ],
+      [
+        "Long session message 36",
+        "TELOS response 36"
+      ],
+      [
+        "Long session message 37",
+        "TELOS response 37"
+      ],
+      [
+        "Long session message 38",
+        "TELOS response 38"
+      ],
+      [
+        "Long session message 39",
+        "TELOS response 39"
+      ],
+      [
+        "Long session message 40",
+        "TELOS response 40"
+      ],
+      [
+        "Long session message 41",
+        "TELOS response 41"
+      ],
+      [
+        "Long session message 42",
+        "TELOS response 42"
+      ],
+      [
+        "Long session message 43",
+        "TELOS response 43"
+      ],
+      [
+        "Long session message 44",
+        "TELOS response 44"
+      ],
+      [
+        "Long session message 45",
+        "TELOS response 45"
+      ],
+      [
+        "Long session message 46",
+        "TELOS response 46"
+      ],
+      [
+        "Long session message 47",
+        "TELOS response 47"
+      ],
+      [
+        "Long session message 48",
+        "TELOS response 48"
+      ],
+      [
+        "Long session message 49",
+        "TELOS response 49"
+      ],
+      [
+        "Long session message 50",
+        "TELOS response 50"
+      ],
+      [
+        "Long session message 51",
+        "TELOS response 51"
+      ],
+      [
+        "Long session message 52",
+        "TELOS response 52"
+      ],
+      [
+        "Long session message 53",
+        "TELOS response 53"
+      ],
+      [
+        "Long session message 54",
+        "TELOS response 54"
+      ],
+      [
+        "Long session message 55",
+        "TELOS response 55"
+      ],
+      [
+        "Long session message 56",
+        "TELOS response 56"
+      ],
+      [
+        "Long session message 57",
+        "TELOS response 57"
+      ],
+      [
+        "Long session message 58",
+        "TELOS response 58"
+      ],
+      [
+        "Long session message 59",
+        "TELOS response 59"
+      ],
+      [
+        "Long session message 60",
+        "TELOS response 60"
+      ],
+      [
+        "Long session message 61",
+        "TELOS response 61"
+      ],
+      [
+        "Long session message 62",
+        "TELOS response 62"
+      ],
+      [
+        "Long session message 63",
+        "TELOS response 63"
+      ],
+      [
+        "Long session message 64",
+        "TELOS response 64"
+      ],
+      [
+        "Long session message 65",
+        "TELOS response 65"
+      ],
+      [
+        "Long session message 66",
+        "TELOS response 66"
+      ],
+      [
+        "Long session message 67",
+        "TELOS response 67"
+      ],
+      [
+        "Long session message 68",
+        "TELOS response 68"
+      ],
+      [
+        "Long session message 69",
+        "TELOS response 69"
+      ],
+      [
+        "Long session message 70",
+        "TELOS response 70"
+      ],
+      [
+        "Long session message 71",
+        "TELOS response 71"
+      ],
+      [
+        "Long session message 72",
+        "TELOS response 72"
+      ],
+      [
+        "Long session message 73",
+        "TELOS response 73"
+      ],
+      [
+        "Long session message 74",
+        "TELOS response 74"
+      ],
+      [
+        "Long session message 75",
+        "TELOS response 75"
+      ],
+      [
+        "Long session message 76",
+        "TELOS response 76"
+      ],
+      [
+        "Long session message 77",
+        "TELOS response 77"
+      ],
+      [
+        "Long session message 78",
+        "TELOS response 78"
+      ],
+      [
+        "Long session message 79",
+        "TELOS response 79"
+      ],
+      [
+        "Long session message 80",
+        "TELOS response 80"
+      ],
+      [
+        "Long session message 81",
+        "TELOS response 81"
+      ],
+      [
+        "Long session message 82",
+        "TELOS response 82"
+      ],
+      [
+        "Long session message 83",
+        "TELOS response 83"
+      ],
+      [
+        "Long session message 84",
+        "TELOS response 84"
+      ],
+      [
+        "Long session message 85",
+        "TELOS response 85"
+      ],
+      [
+        "Long session message 86",
+        "TELOS response 86"
+      ],
+      [
+        "Long session message 87",
+        "TELOS response 87"
+      ],
+      [
+        "Long session message 88",
+        "TELOS response 88"
+      ],
+      [
+        "Long session message 89",
+        "TELOS response 89"
+      ],
+      [
+        "Long session message 90",
+        "TELOS response 90"
+      ],
+      [
+        "Long session message 91",
+        "TELOS response 91"
+      ],
+      [
+        "Long session message 92",
+        "TELOS response 92"
+      ],
+      [
+        "Long session message 93",
+        "TELOS response 93"
+      ],
+      [
+        "Long session message 94",
+        "TELOS response 94"
+      ],
+      [
+        "Long session message 95",
+        "TELOS response 95"
+      ],
+      [
+        "Long session message 96",
+        "TELOS response 96"
+      ],
+      [
+        "Long session message 97",
+        "TELOS response 97"
+      ],
+      [
+        "Long session message 98",
+        "TELOS response 98"
+      ],
+      [
+        "Long session message 99",
+        "TELOS response 99"
+      ],
+      [
+        "Long session message 100",
+        "TELOS response 100"
+      ]
+    ]
+  }
+]

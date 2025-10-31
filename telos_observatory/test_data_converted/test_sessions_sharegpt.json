@@ -1,0 +1,694 @@
+[
+  {
+    "id": "critical_drift_session_001",
+    "turns": [
+      [
+        "What are the mathematical foundations? (Turn 1)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "How does regeneration work? (Turn 2)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 3)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "What is basin membership? (Turn 4)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "Tell me about intervention strategies (Turn 5)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "What is basin membership? (Turn 6)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "What is basin membership? (Turn 7)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "What makes governance persistent? (Turn 8)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "What is basin membership? (Turn 9)",
+        "Understanding AI requires knowledge of machine learning fundamentals..."
+      ],
+      [
+        "What are the key principles of TELOS? (Turn 10)",
+        "Here's a general explanation about AI systems and their operation..."
+      ],
+      [
+        "How does drift detection function? (Turn 11)",
+        "Understanding AI requires knowledge of machine learning fundamentals..."
+      ],
+      [
+        "Explain the Primacy Attractor concept (Turn 12)",
+        "Here's a general explanation about AI systems and their operation..."
+      ],
+      [
+        "Tell me about intervention strategies (Turn 13)",
+        "Understanding AI requires knowledge of machine learning fundamentals..."
+      ],
+      [
+        "What are the key principles of TELOS? (Turn 14)",
+        "Understanding AI requires knowledge of machine learning fundamentals..."
+      ],
+      [
+        "How do you measure fidelity? (Turn 15)",
+        "Understanding AI requires knowledge of machine learning fundamentals..."
+      ],
+      [
+        "What are the mathematical foundations? (Turn 16)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "What are the mathematical foundations? (Turn 17)",
+        "The system analyzes data through various computational methods..."
+      ],
+      [
+        "What are the mathematical foundations? (Turn 18)",
+        "Information processing involves multiple layers of analysis..."
+      ]
+    ]
+  },
+  {
+    "id": "excellent_session_001",
+    "turns": [
+      [
+        "Explain the Primacy Attractor concept (Turn 1)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "Explain the Primacy Attractor concept (Turn 2)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "What is basin membership? (Turn 3)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "What are the mathematical foundations? (Turn 4)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "What is basin membership? (Turn 5)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "What makes governance persistent? (Turn 6)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 7)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "What are the mathematical foundations? (Turn 8)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "How does regeneration work? (Turn 9)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "What are the mathematical foundations? (Turn 10)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "How does drift detection function? (Turn 11)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "How does regeneration work? (Turn 12)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ]
+    ]
+  },
+  {
+    "id": "high_drift_session_001",
+    "turns": [
+      [
+        "What are the key principles of TELOS? (Turn 1)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "How does drift detection function? (Turn 2)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "How does regeneration work? (Turn 3)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 4)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 5)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "How do you measure fidelity? (Turn 6)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "What makes governance persistent? (Turn 7)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "How does regeneration work? (Turn 8)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "What is basin membership? (Turn 9)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "What are the key principles of TELOS? (Turn 10)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "What is basin membership? (Turn 11)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "How do you measure fidelity? (Turn 12)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "Explain the Primacy Attractor concept (Turn 13)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "Explain the Primacy Attractor concept (Turn 14)",
+        "AI models process information using neural networks and patterns..."
+      ],
+      [
+        "What are the mathematical foundations? (Turn 15)",
+        "Information processing involves multiple layers of analysis..."
+      ],
+      [
+        "What are the key principles of TELOS? (Turn 16)",
+        "Understanding AI requires knowledge of machine learning fundamentals..."
+      ],
+      [
+        "What are the mathematical foundations? (Turn 17)",
+        "Information processing involves multiple layers of analysis..."
+      ],
+      [
+        "What are the mathematical foundations? (Turn 18)",
+        "Understanding AI requires knowledge of machine learning fundamentals..."
+      ],
+      [
+        "What are the mathematical foundations? (Turn 19)",
+        "Understanding AI requires knowledge of machine learning fundamentals..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 20)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ]
+    ]
+  },
+  {
+    "id": "long_session_001",
+    "turns": [
+      [
+        "How does regeneration work? (Turn 1)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "How does regeneration work? (Turn 2)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "How do you measure fidelity? (Turn 3)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "What is basin membership? (Turn 4)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "Tell me about intervention strategies (Turn 5)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "What makes governance persistent? (Turn 6)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "How does regeneration work? (Turn 7)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "How does regeneration work? (Turn 8)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "What are the key principles of TELOS? (Turn 9)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "What are the mathematical foundations? (Turn 10)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "What are the mathematical foundations? (Turn 11)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "How does regeneration work? (Turn 12)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "What makes governance persistent? (Turn 13)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "What makes governance persistent? (Turn 14)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 15)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "How do you measure fidelity? (Turn 16)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "What makes governance persistent? (Turn 17)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 18)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 19)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "How does regeneration work? (Turn 20)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "Tell me about intervention strategies (Turn 21)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "What are the mathematical foundations? (Turn 22)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "How does regeneration work? (Turn 23)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "Tell me about intervention strategies (Turn 24)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "What makes governance persistent? (Turn 25)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "How does drift detection function? (Turn 26)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 27)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "How does regeneration work? (Turn 28)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "How do you measure fidelity? (Turn 29)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "How does drift detection function? (Turn 30)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "How does drift detection function? (Turn 31)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "How does regeneration work? (Turn 32)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "Tell me about intervention strategies (Turn 33)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "Tell me about intervention strategies (Turn 34)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "Tell me about intervention strategies (Turn 35)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "How do you measure fidelity? (Turn 36)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 37)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "What are the mathematical foundations? (Turn 38)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 39)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "What are the mathematical foundations? (Turn 40)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "How does regeneration work? (Turn 41)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "Explain the Primacy Attractor concept (Turn 42)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 43)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "Explain the Primacy Attractor concept (Turn 44)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "What makes governance persistent? (Turn 45)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "What is basin membership? (Turn 46)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "What is basin membership? (Turn 47)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 48)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "What are the key principles of TELOS? (Turn 49)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "How does drift detection function? (Turn 50)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ]
+    ]
+  },
+  {
+    "id": "normal_session_001",
+    "turns": [
+      [
+        "How does drift detection function? (Turn 1)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "Tell me about intervention strategies (Turn 2)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "Tell me about intervention strategies (Turn 3)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "How does drift detection function? (Turn 4)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "What is basin membership? (Turn 5)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "How does regeneration work? (Turn 6)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "What is basin membership? (Turn 7)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "What makes governance persistent? (Turn 8)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "What makes governance persistent? (Turn 9)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "How do you measure fidelity? (Turn 10)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "What is basin membership? (Turn 11)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "Explain the Primacy Attractor concept (Turn 12)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "What are the mathematical foundations? (Turn 13)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "What are the key principles of TELOS? (Turn 14)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "Explain the Primacy Attractor concept (Turn 15)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ]
+    ]
+  },
+  {
+    "id": "oscillating_session_001",
+    "turns": [
+      [
+        "What are the mathematical foundations? (Turn 1)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "How does drift detection function? (Turn 2)",
+        "Understanding AI requires knowledge of machine learning fundamentals..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 3)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "What are the key principles of TELOS? (Turn 4)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 5)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "Explain the Primacy Attractor concept (Turn 6)",
+        "Understanding AI requires knowledge of machine learning fundamentals..."
+      ],
+      [
+        "Explain the Primacy Attractor concept (Turn 7)",
+        "AI models process information using neural networks and patterns..."
+      ],
+      [
+        "What are the key principles of TELOS? (Turn 8)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "What makes governance persistent? (Turn 9)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "What are the mathematical foundations? (Turn 10)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "Tell me about intervention strategies (Turn 11)",
+        "Here's a general explanation about AI systems and their operation..."
+      ],
+      [
+        "How does drift detection function? (Turn 12)",
+        "Here's a general explanation about AI systems and their operation..."
+      ],
+      [
+        "Tell me about intervention strategies (Turn 13)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "Tell me about intervention strategies (Turn 14)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "How do you measure fidelity? (Turn 15)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "How does drift detection function? (Turn 16)",
+        "AI models process information using neural networks and patterns..."
+      ],
+      [
+        "How does regeneration work? (Turn 17)",
+        "Information processing involves multiple layers of analysis..."
+      ],
+      [
+        "What makes governance persistent? (Turn 18)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 19)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "Tell me about intervention strategies (Turn 20)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ]
+    ]
+  },
+  {
+    "id": "short_session_001",
+    "turns": [
+      [
+        "What are the key principles of TELOS? (Turn 1)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "Explain the Primacy Attractor concept (Turn 2)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "How does drift detection function? (Turn 3)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ]
+    ]
+  },
+  {
+    "id": "stable_session_001",
+    "turns": [
+      [
+        "Tell me about intervention strategies (Turn 1)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "How does drift detection function? (Turn 2)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "How do you measure fidelity? (Turn 3)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "What is basin membership? (Turn 4)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 5)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 6)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "What are the key principles of TELOS? (Turn 7)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "What are the key principles of TELOS? (Turn 8)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "How do you measure fidelity? (Turn 9)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "What makes governance persistent? (Turn 10)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "Explain the Primacy Attractor concept (Turn 11)",
+        "Fidelity measurement uses cosine similarity between response embeddings and the attractor center..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 12)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "How do you measure fidelity? (Turn 13)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "How do you measure fidelity? (Turn 14)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "What is basin membership? (Turn 15)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "Can you explain how AI governance works? (Turn 16)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "What makes governance persistent? (Turn 17)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "Explain the Primacy Attractor concept (Turn 18)",
+        "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space..."
+      ],
+      [
+        "Tell me about intervention strategies (Turn 19)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "What makes governance persistent? (Turn 20)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "What are the mathematical foundations? (Turn 21)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "Explain the Primacy Attractor concept (Turn 22)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ],
+      [
+        "How do you measure fidelity? (Turn 23)",
+        "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope..."
+      ],
+      [
+        "What are the key principles of TELOS? (Turn 24)",
+        "TELOS governance ensures alignment through mathematical measurement of purpose fidelity..."
+      ],
+      [
+        "What makes governance persistent? (Turn 25)",
+        "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity..."
+      ]
+    ]
+  }
+]
