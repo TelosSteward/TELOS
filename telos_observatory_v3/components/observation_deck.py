@@ -25,78 +25,33 @@ class ObservationDeck:
             st.info("No data to display")
             return
 
-        # Deck header
-        st.markdown("""
-        <div style="
-            text-align: center;
-            padding: 15px;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border-bottom: 2px solid #FFD700;
-            margin-bottom: 15px;
-        ">
-            <h2 style="color: #FFD700; margin: 0;">🔭 Observation Deck</h2>
-            <p style="color: #888; font-size: 12px; margin: 5px 0 0 0;">
-                Real-time governance metrics
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+        # Check if deck is expanded
+        is_expanded = self.state_manager.is_deck_expanded()
 
-        # Fidelity Window
-        self._render_metric_window(
-            title="Alignment Fidelity",
-            value=f"{turn_data.get('fidelity', 0.0):.3f}",
-            icon="📊",
-            description="Measure of response alignment with user's deeper preferences"
-        )
+        if not is_expanded:
+            # Collapsed state - thin gold bar
+            if st.button("Observation Deck - Click to expand", key="deck_toggle_collapsed", use_container_width=True):
+                self.state_manager.toggle_deck()
+                st.rerun()
+            return
 
-        # Distance Window
-        self._render_metric_window(
-            title="Semantic Distance",
-            value=f"{turn_data.get('distance', 0.0):.3f}",
-            icon="📏",
-            description="Distance from ideal aligned response"
-        )
-
-        # Status Window
-        status = turn_data.get('status_text', 'Nominal')
-        status_color = "#4CAF50" if status == "Nominal" else "#FFA500"
-        self._render_metric_window(
-            title="System Status",
-            value=status,
-            icon="⚡",
-            description="Current operational status",
-            value_color=status_color
-        )
-
-        # Intervention Window
-        intervention = "ACTIVE" if turn_data.get('intervention_applied', False) else "STANDBY"
-        intervention_color = "#FFD700" if intervention == "ACTIVE" else "#4CAF50"
-        self._render_metric_window(
-            title="Intervention Status",
-            value=intervention,
-            icon="🛡️",
-            description="Whether TELOS modified this response",
-            value_color=intervention_color
-        )
+        # Expanded state - show all content
+        if st.button("▼ Collapse Observation Deck", key="deck_toggle_expanded", use_container_width=True):
+            self.state_manager.toggle_deck()
+            st.rerun()
 
         st.markdown("---")
 
-        # Deep Dive Button
-        if st.button("🔬 Deep Dive Analysis", use_container_width=True, key="deep_dive_btn"):
-            st.info("Deep Dive feature - would show detailed Phase 2B comparison")
+        # Metrics readout section
+        self._render_metrics(turn_data)
 
         st.markdown("---")
 
-        # Navigation Controls
-        self._render_navigation()
-
-        st.markdown("---")
-
-        # Component Toggles
-        self._render_toggles()
+        # View Options Toggles
+        self._render_view_options()
 
     def _render_metric_window(self, title, value, icon, description, value_color="#FFD700"):
-        """Render a gold-themed metric window.
+        """Render a compact gold-themed metric window.
 
         Args:
             title: Window title
@@ -109,89 +64,138 @@ class ObservationDeck:
         <div style="
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             border: 2px solid #FFD700;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+            border-radius: 8px;
+            padding: 6px 8px;
+            margin-bottom: 6px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.15);
         ">
-            <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                <span style="font-size: 24px; margin-right: 10px;">{icon}</span>
-                <span style="color: #FFD700; font-size: 14px; font-weight: bold;">
+            <div style="display: flex; align-items: center; margin-bottom: 3px;">
+                <span style="font-size: 16px; margin-right: 6px;">{icon}</span>
+                <span style="color: #FFD700; font-size: 10px; font-weight: bold;">
                     {title}
                 </span>
             </div>
             <div style="
-                font-size: 32px;
+                font-size: 20px;
                 font-weight: bold;
                 color: {value_color};
-                margin: 10px 0;
+                margin: 3px 0;
                 text-align: center;
             ">
                 {value}
             </div>
-            <div style="color: #888; font-size: 11px; text-align: center;">
+            <div style="color: #b0b0b0; font-size: 8px; text-align: center;">
                 {description}
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-    def _render_navigation(self):
-        """Render navigation controls."""
-        st.markdown("### 🎮 Navigation")
-
-        col1, col2, col3 = st.columns(3)
+    def _render_metrics(self, turn_data):
+        """Render metrics readout section."""
+        col1, col2, col3, col4 = st.columns(4)
 
         with col1:
-            if st.button("◀ Prev", use_container_width=True, key="nav_prev"):
-                if self.state_manager.previous_turn():
-                    st.rerun()
+            self._render_metric_card(
+                "Alignment Fidelity",
+                f"{turn_data.get('fidelity', 0.0):.3f}",
+                "📊",
+                "Measure of response alignment"
+            )
 
         with col2:
-            session_info = self.state_manager.get_session_info()
-            turn_num = session_info.get('current_turn', 0) + 1
-            total = session_info.get('total_turns', 0)
-            st.markdown(f"""
-            <div style="
-                text-align: center;
-                padding: 8px;
-                background-color: #2d2d2d;
-                border-radius: 5px;
-            ">
-                <span style="color: #FFD700; font-size: 14px;">
-                    {turn_num} / {total}
-                </span>
-            </div>
-            """, unsafe_allow_html=True)
+            self._render_metric_card(
+                "Semantic Distance",
+                f"{turn_data.get('distance', 0.0):.3f}",
+                "📏",
+                "Distance from ideal response"
+            )
 
         with col3:
-            if st.button("Next ▶", use_container_width=True, key="nav_next"):
-                if self.state_manager.next_turn():
-                    st.rerun()
+            status = turn_data.get('status_text', 'Nominal')
+            status_color = "#4CAF50" if status == "Nominal" else "#FFA500"
+            self._render_metric_card(
+                "System Status",
+                status,
+                "⚡",
+                "Current operational status",
+                value_color=status_color
+            )
 
-    def _render_toggles(self):
-        """Render component visibility toggles."""
+        with col4:
+            intervention = "ACTIVE" if turn_data.get('intervention_applied', False) else "STANDBY"
+            intervention_color = "#FFD700" if intervention == "ACTIVE" else "#4CAF50"
+            self._render_metric_card(
+                "Intervention Status",
+                intervention,
+                "🛡️",
+                "TELOS intervention state",
+                value_color=intervention_color
+            )
+
+    def _render_metric_card(self, title, value, icon, description, value_color="#FFD700"):
+        """Render a single metric card."""
+        st.markdown(f"""
+        <div style="
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        ">
+            <div style="font-size: 20px; margin-bottom: 5px;">{icon}</div>
+            <div style="color: #FFD700; font-size: 10px; font-weight: bold; margin-bottom: 5px;">
+                {title}
+            </div>
+            <div style="
+                font-size: 18px;
+                font-weight: bold;
+                color: {value_color};
+                margin: 5px 0;
+            ">
+                {value}
+            </div>
+            <div style="color: #888; font-size: 8px;">
+                {description}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    def _render_view_options(self):
+        """Render view options toggles."""
         st.markdown("### ⚙️ View Options")
 
-        if st.checkbox(
-            "Show Math Breakdown",
-            value=self.state_manager.state.show_math_breakdown,
-            key="toggle_math"
-        ):
-            self.state_manager.toggle_component('math_breakdown')
-            st.rerun()
+        col1, col2, col3, col4 = st.columns(4)
 
-        if st.checkbox(
-            "Show Counterfactual Analysis",
-            value=self.state_manager.state.show_counterfactual,
-            key="toggle_cf"
-        ):
-            self.state_manager.toggle_component('counterfactual')
-            st.rerun()
+        with col1:
+            math_label = "✕ Close Math Breakdown" if self.state_manager.state.show_math_breakdown else "🔢 Math Breakdown"
+            if st.button(
+                math_label,
+                key="deck_toggle_math_btn",
+                use_container_width=True
+            ):
+                self.state_manager.toggle_component('math_breakdown')
+                st.rerun()
 
-        if st.checkbox(
-            "Show Steward Details",
-            value=self.state_manager.state.show_steward,
-            key="toggle_steward"
-        ):
-            self.state_manager.toggle_component('steward')
-            st.rerun()
+        with col2:
+            cf_label = "✕ Close Counterfactual" if self.state_manager.state.show_counterfactual else "🔀 Counterfactual"
+            if st.button(
+                cf_label,
+                key="deck_toggle_cf_btn",
+                use_container_width=True
+            ):
+                self.state_manager.toggle_component('counterfactual')
+                st.rerun()
+
+        with col3:
+            steward_label = "✕ Close Steward Details" if self.state_manager.state.show_steward else "👤 Steward Details"
+            if st.button(
+                steward_label,
+                key="deck_toggle_steward_btn",
+                use_container_width=True
+            ):
+                self.state_manager.toggle_component('steward')
+                st.rerun()
+
+        with col4:
+            if st.button("🔬 Deep Dive", key="deck_deep_dive_btn", use_container_width=True):
+                st.info("Deep Dive feature - would show detailed Phase 2B comparison")

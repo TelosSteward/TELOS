@@ -1,13 +1,13 @@
 """
 Control Strip Component for TELOS Observatory V3.
-Top-right clickable strip that displays current turn metrics and opens Observation Deck.
+Clean, minimal strip showing metrics with clickable toggle.
 """
 
 import streamlit as st
 
 
 class ControlStrip:
-    """Clickable control strip using native Streamlit buttons."""
+    """Minimal control strip with clean design."""
 
     def __init__(self, state_manager):
         """Initialize with state manager reference.
@@ -18,29 +18,15 @@ class ControlStrip:
         self.state_manager = state_manager
 
     def render(self):
-        """Render the control strip as a clickable button in top-right."""
+        """Render the control strip."""
         # Get current turn data
         turn_data = self.state_manager.get_current_turn_data()
         session_info = self.state_manager.get_session_info()
 
         if not turn_data:
-            # No data loaded yet
-            st.markdown("""
-            <div style="
-                text-align: right;
-                padding: 10px 20px;
-                background-color: #2d2d2d;
-                border-radius: 8px;
-                margin-bottom: 10px;
-            ">
-                <span style="color: #888; font-size: 14px;">
-                    🔭 No session loaded
-                </span>
-            </div>
-            """, unsafe_allow_html=True)
             return
 
-        # Build strip content
+        # Build strip data
         turn_num = session_info.get('current_turn', 0) + 1
         total_turns = session_info.get('total_turns', 0)
         fidelity = turn_data.get('fidelity', 0.0)
@@ -48,37 +34,44 @@ class ControlStrip:
 
         # Color coding for fidelity
         if fidelity >= 0.8:
-            fidelity_color = "#4CAF50"  # Green
+            fidelity_color = "#4CAF50"
         elif fidelity >= 0.6:
-            fidelity_color = "#FFA500"  # Orange
+            fidelity_color = "#FFA500"
         else:
-            fidelity_color = "#FF5252"  # Red
+            fidelity_color = "#FF5252"
 
-        # Create columns for strip layout (push to right)
-        col1, col2 = st.columns([3, 1])
+        # Create clean strip display
+        col1, col2 = st.columns([4, 1])
 
         with col2:
-            # Clickable strip button
-            button_label = f"🔭 Turn {turn_num}/{total_turns} | Fidelity: {fidelity:.2f} | {status}"
+            # Compact strip with telescope icon
+            st.markdown(f"""
+            <div style="
+                background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+                border: 2px solid #FFD700;
+                border-radius: 8px;
+                padding: 10px 15px;
+                text-align: center;
+                cursor: pointer;
+            ">
+                <div style="font-size: 24px; margin-bottom: 5px;">🔭</div>
+                <div style="color: #FFD700; font-size: 11px; font-weight: bold;">
+                    Turn {turn_num}/{total_turns}
+                </div>
+                <div style="color: {fidelity_color}; font-size: 13px; font-weight: bold; margin: 3px 0;">
+                    {fidelity:.3f}
+                </div>
+                <div style="color: #888; font-size: 10px;">
+                    {status}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
+            # Button below to toggle deck
             if st.button(
-                button_label,
-                key="control_strip_toggle",
-                use_container_width=True,
-                help="Click to toggle Observation Deck"
+                "Open Deck" if not self.state_manager.is_deck_expanded() else "Close Deck",
+                key="strip_toggle",
+                use_container_width=True
             ):
                 self.state_manager.toggle_deck()
                 st.rerun()
-
-            # Additional visual feedback for deck state
-            if self.state_manager.is_deck_expanded():
-                st.markdown("""
-                <div style="
-                    text-align: center;
-                    color: #FFD700;
-                    font-size: 11px;
-                    margin-top: -10px;
-                ">
-                    Deck Open ▼
-                </div>
-                """, unsafe_allow_html=True)

@@ -19,6 +19,17 @@ class TELOSCOPEControls:
 
     def render(self):
         """Render TELOSCOPE controls panel."""
+        # Check if controls are expanded
+        is_expanded = self.state_manager.is_teloscope_expanded()
+
+        if not is_expanded:
+            # Collapsed state - thin gold bar
+            if st.button("TELOSCOPE Controls - Click to expand (ESC)", key="teloscope_toggle_collapsed", use_container_width=True):
+                self.state_manager.toggle_teloscope()
+                st.rerun()
+            return
+
+        # Expanded state - full controls panel
         st.markdown("""
         <div style="
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
@@ -29,7 +40,7 @@ class TELOSCOPEControls:
         ">
             <div style="text-align: center; margin-bottom: 15px;">
                 <h3 style="color: #FFD700; margin: 0;">
-                    🔭 TELOSCOPE Controls
+                    TELOSCOPE Controls
                 </h3>
                 <p style="color: #888; font-size: 11px; margin: 5px 0 0 0;">
                     Session playback and analysis
@@ -37,6 +48,167 @@ class TELOSCOPEControls:
             </div>
         </div>
         """, unsafe_allow_html=True)
+
+        # Collapse button
+        if st.button("▼ Collapse (ESC)", key="teloscope_toggle_expanded", use_container_width=True):
+            self.state_manager.toggle_teloscope()
+            st.rerun()
+
+        st.markdown("---")
+
+        # Session Info Display (from old Control Strip)
+        session_info = self.state_manager.get_session_info()
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.markdown(f"""
+            <div style="
+                background-color: #1a1a1a;
+                border: 1px solid #FFD700;
+                border-radius: 5px;
+                padding: 8px;
+                text-align: center;
+            ">
+                <div style="color: #888; font-size: 10px;">TURN</div>
+                <div style="color: #FFD700; font-size: 16px; font-weight: bold;">
+                    {session_info.get('current_turn', 0) + 1} / {session_info.get('total_turns', 0)}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col2:
+            st.markdown(f"""
+            <div style="
+                background-color: #1a1a1a;
+                border: 1px solid #FFD700;
+                border-radius: 5px;
+                padding: 8px;
+                text-align: center;
+            ">
+                <div style="color: #888; font-size: 10px;">AVG FIDELITY</div>
+                <div style="color: #FFD700; font-size: 16px; font-weight: bold;">
+                    {session_info.get('avg_fidelity', 0.0):.3f}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col3:
+            st.markdown(f"""
+            <div style="
+                background-color: #1a1a1a;
+                border: 1px solid #FFD700;
+                border-radius: 5px;
+                padding: 8px;
+                text-align: center;
+            ">
+                <div style="color: #888; font-size: 10px;">INTERVENTIONS</div>
+                <div style="color: #FFD700; font-size: 16px; font-weight: bold;">
+                    {session_info.get('total_interventions', 0)}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        st.markdown("---")
+
+        # Turn Scrubber
+        st.markdown("**Turn Navigation**")
+        session_info = self.state_manager.get_session_info()
+        current_turn = session_info.get('current_turn', 0)
+        total_turns = session_info.get('total_turns', 1)
+
+        turn_slider = st.slider(
+            f"Navigate through {total_turns} turns",
+            0,
+            total_turns - 1,
+            current_turn,
+            key="turn_scrubber",
+            label_visibility="collapsed"
+        )
+
+        if turn_slider != current_turn:
+            self.state_manager.jump_to_turn(turn_slider)
+            st.rerun()
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            if st.button("◀ Prev", use_container_width=True, key="teloscope_prev"):
+                if self.state_manager.previous_turn():
+                    st.rerun()
+
+        with col2:
+            st.markdown(f"""
+            <div style="
+                text-align: center;
+                padding: 8px;
+                background-color: #2d2d2d;
+                border-radius: 5px;
+            ">
+                <span style="color: #FFD700; font-size: 14px;">
+                    {current_turn + 1} / {total_turns}
+                </span>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col3:
+            if st.button("Next ▶", use_container_width=True, key="teloscope_next"):
+                if self.state_manager.next_turn():
+                    st.rerun()
+
+        st.markdown("---")
+
+        # Intervention Scrubber
+        st.markdown("**Intervention Scrubber**")
+        intervention_turns = [
+            i for i, turn in enumerate(self.state_manager.state.turns)
+            if turn.get('intervention_applied', False)
+        ]
+
+        if len(intervention_turns) > 1:
+            # Only show slider if there are multiple interventions
+            current = self.state_manager.state.current_turn
+            # Find current position in intervention list
+            try:
+                current_idx = intervention_turns.index(current) if current in intervention_turns else 0
+            except ValueError:
+                current_idx = 0
+
+            selected_idx = st.slider(
+                f"Jump between {len(intervention_turns)} interventions",
+                0,
+                len(intervention_turns) - 1,
+                current_idx,
+                key="intervention_scrubber",
+                label_visibility="collapsed"
+            )
+
+            col1, col2 = st.columns([3, 1])
+            with col1:
+                st.markdown(f"""
+                <div style="color: #FFD700; font-size: 11px; text-align: center;">
+                    Intervention {selected_idx + 1}/{len(intervention_turns)} (Turn {intervention_turns[selected_idx] + 1})
+                </div>
+                """, unsafe_allow_html=True)
+
+            with col2:
+                if st.button("Jump", key="jump_to_intervention"):
+                    self.state_manager.jump_to_turn(intervention_turns[selected_idx])
+                    st.rerun()
+        elif len(intervention_turns) == 1:
+            # Single intervention - just show info and jump button
+            st.markdown(f"""
+            <div style="color: #FFD700; font-size: 11px; text-align: center; margin-bottom: 10px;">
+                1 intervention at Turn {intervention_turns[0] + 1}
+            </div>
+            """, unsafe_allow_html=True)
+
+            if st.button("Jump to Intervention", key="jump_to_single_intervention", use_container_width=True):
+                self.state_manager.jump_to_turn(intervention_turns[0])
+                st.rerun()
+        else:
+            st.info("No interventions in this session")
+
+        st.markdown("---")
 
         # Playback controls
         col1, col2, col3 = st.columns(3)
@@ -77,15 +249,3 @@ class TELOSCOPEControls:
         )
         if speed != self.state_manager.state.playback_speed:
             self.state_manager.set_playback_speed(speed)
-
-        # Auto-advance toggle
-        st.markdown("---")
-        auto_advance = st.checkbox(
-            "Auto-advance on intervention",
-            value=False,
-            key="teloscope_auto",
-            help="Automatically skip to next intervention"
-        )
-
-        if auto_advance:
-            st.info("Auto-advance: Will jump to next intervention event")

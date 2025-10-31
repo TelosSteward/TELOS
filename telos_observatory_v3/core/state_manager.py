@@ -29,7 +29,9 @@ class ObservatoryState:
     # UI state
     deck_expanded: bool = False
     teloscope_playing: bool = False
+    teloscope_expanded: bool = False  # TELOSCOPE Controls visibility - default to collapsed
     playback_speed: float = 1.0
+    scrollable_history_mode: bool = False  # Toggle between turn-by-turn and scrollable history
 
     # Component visibility
     show_math_breakdown: bool = False
@@ -169,6 +171,14 @@ class StateManager:
         """Toggle Observation Deck visibility."""
         self.state.deck_expanded = not self.state.deck_expanded
 
+    def toggle_teloscope(self):
+        """Toggle TELOSCOPE Controls visibility."""
+        self.state.teloscope_expanded = not self.state.teloscope_expanded
+
+    def is_teloscope_expanded(self) -> bool:
+        """Check if TELOSCOPE Controls are expanded."""
+        return self.state.teloscope_expanded
+
     def start_playback(self):
         """Start TELOSCOPE playback."""
         self.state.teloscope_playing = True
@@ -194,9 +204,41 @@ class StateManager:
         Args:
             component: One of 'math', 'counterfactual', 'steward'
         """
-        if component == 'math':
+        if component == 'math' or component == 'math_breakdown':
             self.state.show_math_breakdown = not self.state.show_math_breakdown
         elif component == 'counterfactual':
             self.state.show_counterfactual = not self.state.show_counterfactual
         elif component == 'steward':
             self.state.show_steward = not self.state.show_steward
+
+    def toggle_scrollable_history(self):
+        """Toggle between turn-by-turn and scrollable history mode."""
+        self.state.scrollable_history_mode = not self.state.scrollable_history_mode
+
+    def add_user_message(self, message: str):
+        """
+        Add a new user message and create a pending assistant response.
+
+        Args:
+            message: User's input message
+        """
+        # Create a new turn with the user message
+        new_turn = {
+            'user_input': message,
+            'response': 'Processing...',  # Placeholder for assistant response
+            'fidelity': 0.0,
+            'distance': 0.0,
+            'status_text': 'Processing',
+            'intervention_applied': False
+        }
+
+        # Add the new turn to the list
+        self.state.turns.append(new_turn)
+        self.state.total_turns += 1
+
+        # Jump to the new turn
+        self.state.current_turn = self.state.total_turns - 1
+
+        # In a real implementation, this would trigger an API call to get the assistant response
+        # For now, we'll just add a mock response
+        # TODO: Wire up to actual TELOS system for real responses

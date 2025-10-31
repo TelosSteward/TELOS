@@ -22,52 +22,62 @@ class SidebarActions:
     def render(self):
         """Render sidebar actions."""
         with st.sidebar:
-            # TELOS Logo/Branding
+            # TELOS Branding with telescope icon
             st.markdown("""
-            <div style="text-align: center; padding: 20px 0;">
-                <h1 style="color: #FFD700; font-size: 36px; margin: 0;">
-                    🔭 TELOS
+            <div style="text-align: center; padding: 10px 0 10px 0;">
+                <h1 style="color: #FFD700; font-size: 52px; margin: 0; font-weight: bold; letter-spacing: 3px; display: inline-flex; align-items: center; justify-content: center; gap: 15px;">
+                    TELOS <span style="font-size: 64px;">🔭</span>
                 </h1>
-                <p style="color: #888; font-size: 12px; margin: 5px 0 0 0;">
-                    Observatory V3
-                </p>
             </div>
             """, unsafe_allow_html=True)
 
-            st.markdown("---")
-
-            # Session Info (replay only)
-            st.markdown("### 📊 Session Info")
+            # Session Info (compact)
+            st.markdown("### Session")
             session_info = self.state_manager.get_session_info()
 
             st.markdown(f"""
-            <div style="background-color: #1a1a1a; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
-                <div style="color: #888; font-size: 11px;">SESSION ID</div>
-                <div style="color: #fff; font-size: 13px;">{session_info.get('session_id', 'None')}</div>
+            <div style="background-color: #1a1a1a; padding: 8px; border-radius: 5px; margin-bottom: 8px;">
+                <div style="color: #888; font-size: 10px;">SESSION ID</div>
+                <div style="color: #fff; font-size: 12px;">{session_info.get('session_id', 'None')}</div>
             </div>
             """, unsafe_allow_html=True)
 
-            st.markdown(f"""
-            <div style="background-color: #1a1a1a; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
-                <div style="color: #888; font-size: 11px;">TURN</div>
-                <div style="color: #fff; font-size: 13px;">
-                    {session_info.get('current_turn', 0) + 1} / {session_info.get('total_turns', 0)}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            # Saved Sessions - Collapsible
+            # Initialize saved sessions expanded state
+            if 'saved_sessions_expanded' not in st.session_state:
+                st.session_state.saved_sessions_expanded = False
 
-            st.markdown("---")
+            if st.button("💾 Saved Sessions" + (" ▼" if not st.session_state.saved_sessions_expanded else " ▲"),
+                        use_container_width=True, key="toggle_saved_sessions"):
+                st.session_state.saved_sessions_expanded = not st.session_state.saved_sessions_expanded
+                st.rerun()
+
+            # Show saved sessions if expanded
+            if st.session_state.saved_sessions_expanded:
+                saved_sessions = self._get_saved_sessions()
+
+                if saved_sessions:
+                    for session in saved_sessions:
+                        col1, col2 = st.columns([3, 1])
+                        with col1:
+                            st.markdown(f"""
+                            <div style="background-color: #1a1a1a; padding: 6px; border-radius: 5px; margin-bottom: 4px;">
+                                <div style="color: #FFD700; font-size: 11px;">{session['name']}</div>
+                                <div style="color: #888; font-size: 9px;">{session['date']}</div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                        with col2:
+                            if st.button("📂", key=f"load_{session['id']}", help="Load session"):
+                                self._load_session_by_id(session['id'])
+                else:
+                    st.info("No saved sessions")
 
             # Action Buttons
-            st.markdown("### ⚡ Actions")
+            st.markdown("### Actions")
 
             # Save Current
             if st.button("💾 Save Current", use_container_width=True):
                 self._save_current_session()
-
-            # Load Existing
-            if st.button("📂 Load Session", use_container_width=True):
-                self._load_session()
 
             # Reset Session
             if st.button("🔄 Reset Session", use_container_width=True):
@@ -77,10 +87,32 @@ class SidebarActions:
             if st.button("📤 Export Evidence", use_container_width=True):
                 self._export_evidence()
 
-            st.markdown("---")
+            # Keyboard Controls - Toggle
+            # Initialize keyboard controls expanded state
+            if 'keyboard_controls_expanded' not in st.session_state:
+                st.session_state.keyboard_controls_expanded = False
 
-            # Help
-            if st.button("❓ Help", use_container_width=True):
+            keyboard_label = "✕ Close Keyboard Controls" if st.session_state.keyboard_controls_expanded else "⌨️ Keyboard Controls"
+            if st.button(keyboard_label, use_container_width=True, key="toggle_keyboard_controls"):
+                st.session_state.keyboard_controls_expanded = not st.session_state.keyboard_controls_expanded
+                st.rerun()
+
+            # Show keyboard controls if expanded
+            if st.session_state.keyboard_controls_expanded:
+                self._show_keyboard_controls()
+
+            # Help - Toggle
+            # Initialize help expanded state
+            if 'help_expanded' not in st.session_state:
+                st.session_state.help_expanded = False
+
+            help_label = "✕ Close Help" if st.session_state.help_expanded else "❓ Help"
+            if st.button(help_label, use_container_width=True, key="toggle_help"):
+                st.session_state.help_expanded = not st.session_state.help_expanded
+                st.rerun()
+
+            # Show help if expanded
+            if st.session_state.help_expanded:
                 self._show_help()
 
     def _save_current_session(self):
@@ -103,10 +135,25 @@ class SidebarActions:
         except Exception as e:
             st.error(f"Error saving session: {e}")
 
-    def _load_session(self):
-        """Load a session from file."""
-        st.info("Load session feature - file browser would appear here")
-        # In V3, this would open file uploader or file browser
+    def _get_saved_sessions(self):
+        """Get list of saved sessions from session state."""
+        # Initialize saved sessions list if not exists
+        if 'saved_sessions' not in st.session_state:
+            st.session_state.saved_sessions = []
+
+        return st.session_state.saved_sessions
+
+    def _load_session_by_id(self, session_id):
+        """Load a specific session by ID."""
+        # Find the session in saved sessions
+        saved_sessions = st.session_state.get('saved_sessions', [])
+        session_data = next((s for s in saved_sessions if s['id'] == session_id), None)
+
+        if session_data:
+            st.success(f"Loaded session: {session_data['name']}")
+            st.rerun()
+        else:
+            st.error(f"Session not found: {session_id}")
 
     def _reset_session(self):
         """Reset session to beginning."""
@@ -136,18 +183,10 @@ class SidebarActions:
         except Exception as e:
             st.error(f"Error exporting evidence: {e}")
 
+    def _show_keyboard_controls(self):
+        """Show keyboard shortcuts information."""
+        st.markdown("""<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #FFD700; border-radius: 8px; padding: 15px; margin: 10px 0;"><div style="color: #FFD700; font-size: 18px; font-weight: bold; margin-bottom: 10px;">⌨️ Keyboard Shortcuts</div><div style="color: #e0e0e0; font-size: 14px; margin-top: 10px;"><div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-radius: 4px;"><span style="color: #FFD700; font-weight: bold;">Shift + O</span><span>Toggle Observation Deck</span></div><div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-radius: 4px;"><span style="color: #FFD700; font-weight: bold;">Shift + T</span><span>Toggle TELOSCOPE Controls</span></div><div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-radius: 4px;"><span style="color: #FFD700; font-weight: bold;">ESC</span><span>Collapse All Panels</span></div><div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-radius: 4px;"><span style="color: #FFD700; font-weight: bold;">Enter</span><span>Send Message</span></div><div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-radius: 4px;"><span style="color: #FFD700; font-weight: bold;">Shift + Enter</span><span>New Line in Message</span></div></div></div>""", unsafe_allow_html=True)
+
     def _show_help(self):
         """Show help information."""
-        st.info("""
-        **TELOS Observatory V3**
-
-        Navigation:
-        - Use the Strip (top-right) to view turn metrics
-        - Click the 🔭 icon to open the Observation Deck
-
-        Actions:
-        - Save: Export current session state
-        - Load: Import a previous session
-        - Reset: Jump back to turn 1
-        - Export: Generate governance evidence package
-        """)
+        st.markdown("""<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #FFD700; border-radius: 8px; padding: 15px; margin: 10px 0;"><div style="color: #FFD700; font-size: 18px; font-weight: bold; margin-bottom: 10px;">TELOS Observatory V3</div><div style="color: #FFD700; font-size: 14px; font-weight: bold; margin-top: 10px;">Navigation:</div><div style="color: #e0e0e0; font-size: 13px; margin-left: 10px;">• Main chat window displays the conversation<br>• Click "Observation Deck" to view metrics and analysis toggles<br>• Click "TELOSCOPE Controls" for playback and turn navigation</div><div style="color: #FFD700; font-size: 14px; font-weight: bold; margin-top: 10px;">Observation Deck (🔭):</div><div style="color: #e0e0e0; font-size: 13px; margin-left: 10px;">• View turn metrics (Fidelity, Distance, Status, Interventions)<br>• Toggle analysis windows (Math Breakdown, Counterfactual, Steward Details)<br>• Access Deep Dive mode</div><div style="color: #FFD700; font-size: 14px; font-weight: bold; margin-top: 10px;">TELOSCOPE Controls:</div><div style="color: #e0e0e0; font-size: 13px; margin-left: 10px;">• Navigate turns with slider or Prev/Next buttons<br>• Jump between interventions<br>• Play/Pause automatic playback<br>• Adjust playback speed</div><div style="color: #FFD700; font-size: 14px; font-weight: bold; margin-top: 10px;">Sidebar Actions:</div><div style="color: #e0e0e0; font-size: 13px; margin-left: 10px;">• Save Current: Export session state<br>• Reset Session: Jump back to turn 1<br>• Export Evidence: Generate governance package</div></div>""", unsafe_allow_html=True)
