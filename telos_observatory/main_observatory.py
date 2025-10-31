@@ -16,6 +16,7 @@ CRITICAL: Follows Streamlit patterns from docs/streamlit_patterns.md
 """
 
 import streamlit as st
+import streamlit.components.v1 as components
 import sys
 from pathlib import Path
 
@@ -24,7 +25,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from telos_observatory.mock_data import generate_mock_session
 from telos_observatory.observation_deck.deck_interface import render_observation_deck
-from telos_observatory.teloscope.teloscope_controller import render_teloscope
+from telos_observatory.observation_deck.sidebar_deck import render_observation_deck_sidebar
+from telos_observatory.teloscope.teloscope_controller import render_teloscope, snap_to_center, snap_to_dock
 
 
 # ============================================================================
@@ -45,6 +47,14 @@ def init_session_state():
     - last_play_time: Timestamp for autoplay timing
     - telescope_open: TELOSCOPE visibility (Phase 1: always true)
     - session_data: Mock session data
+    - deck_expanded: Observation Deck sidebar visibility
+    - deck_show_math: Math breakdown section expanded
+    - deck_show_counterfactual: Counterfactual section expanded
+    - steward_active: Steward chat active
+    - steward_api_key: Mistral API key (session only)
+    - steward_messages: Steward chat history
+    - teloscope_docked: TELOSCOPE docked to bottom
+    - teloscope_position: TELOSCOPE position when undocked
     """
     if 'initialized' not in st.session_state:
         st.session_state.initialized = True
@@ -56,6 +66,23 @@ def init_session_state():
 
         # Load mock session data
         st.session_state.session_data = generate_mock_session()
+
+        # Observation Deck state
+        st.session_state.deck_expanded = False
+        st.session_state.deck_show_math = False
+        st.session_state.deck_show_counterfactual = False
+
+        # Steward state (shared between Observation Deck and TELOSCOPE)
+        st.session_state.steward_active = False
+        st.session_state.steward_api_key = None
+        st.session_state.steward_messages = []
+
+        # TELOSCOPE state
+        st.session_state.teloscope_docked = True
+        st.session_state.teloscope_position = {'x': 0, 'y': 0}
+
+        # Handle URL parameters for Deep Research links
+        handle_url_parameters()
 
 
 # ============================================================================
@@ -148,11 +175,17 @@ def main():
     # Welcome header
     render_header()
 
-    # Main content: Observation Deck
+    # Main content: Observation Deck (main viewport)
     render_observation_deck()
 
-    # Bottom controls: TELOSCOPE
+    # Right sidebar: Observation Deck sidebar (if expanded)
+    render_observation_deck_sidebar()
+
+    # Bottom controls: TELOSCOPE Remote
     render_teloscope()
+
+    # Keyboard shortcuts
+    render_keyboard_shortcuts()
 
     # Debug info (optional, can be removed)
     render_debug_info()
@@ -185,8 +218,124 @@ def render_debug_info():
             'playing': st.session_state.playing,
             'playback_speed': st.session_state.playback_speed,
             'total_turns': len(st.session_state.session_data.get('turns', [])),
-            'session_id': st.session_state.session_data.get('session_id')
+            'session_id': st.session_state.session_data.get('session_id'),
+            'deck_expanded': st.session_state.get('deck_expanded', False),
+            'teloscope_docked': st.session_state.get('teloscope_docked', True)
         })
+
+
+def handle_url_parameters():
+    """
+    Handle URL query parameters for Deep Research links.
+
+    Supports:
+    - ?turn=5 : Navigate to specific turn (0-based)
+    - ?study=claude_test_1 : Load specific study
+    """
+    try:
+        # Get query parameters
+        query_params = st.query_params
+
+        # Handle turn parameter
+        if 'turn' in query_params:
+            turn_str = query_params['turn']
+            try:
+                turn_index = int(turn_str)
+                # Validate turn index
+                turns = st.session_state.session_data.get('turns', [])
+                if 0 <= turn_index < len(turns):
+                    st.session_state.current_turn = turn_index
+                    # Auto-expand Observation Deck for Deep Research
+                    st.session_state.deck_expanded = True
+            except (ValueError, TypeError):
+                pass  # Invalid turn parameter, ignore
+
+        # Handle study parameter (for future Phase 2/2B study loading)
+        if 'study' in query_params:
+            study_id = query_params['study']
+            # TODO: Load specific study from Phase2Loader
+            # For now, just store it in session state
+            st.session_state.requested_study = study_id
+
+    except Exception as e:
+        # Fail silently if URL parameter handling fails
+        pass
+
+
+def render_keyboard_shortcuts():
+    """
+    Render JavaScript for keyboard shortcuts.
+
+    Shortcuts:
+    - Shift+O: Toggle Observation Deck
+    - Shift+T: Snap TELOSCOPE to center
+    - ESC: Snap TELOSCOPE back to dock
+    - Left Arrow: Previous turn
+    - Right Arrow: Next turn
+    """
+    keyboard_js = """
+    <script>
+    (function() {
+        // Prevent multiple bindings
+        if (window.telosKeyboardBound) return;
+        window.telosKeyboardBound = true;
+
+        document.addEventListener('keydown', function(e) {
+            // Get current state
+            const activeElement = document.activeElement;
+            const isInputFocused = activeElement && (
+                activeElement.tagName === 'INPUT' ||
+                activeElement.tagName === 'TEXTAREA' ||
+                activeElement.contentEditable === 'true'
+            );
+
+            // Don't trigger shortcuts if user is typing in an input field
+            if (isInputFocused) return;
+
+            // Shift+O: Toggle Observation Deck
+            if (e.shiftKey && e.key === 'O') {
+                e.preventDefault();
+                const deckToggle = document.querySelector('[data-testid="baseButton-secondary"][title*="Observation Deck"]');
+                if (deckToggle) deckToggle.click();
+            }
+
+            // Shift+T: Snap TELOSCOPE to center
+            else if (e.shiftKey && e.key === 'T') {
+                e.preventDefault();
+                const centerBtn = document.querySelector('[title*="Snap to center"]');
+                if (centerBtn) centerBtn.click();
+            }
+
+            // ESC: Snap TELOSCOPE back to dock
+            else if (e.key === 'Escape') {
+                const dockBtn = document.querySelector('[title*="Dock"]');
+                if (dockBtn && dockBtn.textContent.includes('📍')) {
+                    e.preventDefault();
+                    dockBtn.click();
+                }
+            }
+
+            // Left Arrow: Previous turn
+            else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                const prevBtn = document.querySelector('[aria-label="Previous"]') ||
+                               document.querySelector('button:has-text("⏮")');
+                if (prevBtn) prevBtn.click();
+            }
+
+            // Right Arrow: Next turn
+            else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                const nextBtn = document.querySelector('[aria-label="Next"]') ||
+                               document.querySelector('button:has-text("⏭")');
+                if (nextBtn) nextBtn.click();
+            }
+        });
+    })();
+    </script>
+    """
+
+    components.html(keyboard_js, height=0)
 
 
 # ============================================================================
