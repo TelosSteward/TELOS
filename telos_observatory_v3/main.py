@@ -349,14 +349,19 @@ def main():
     # More spacing to push control bars down and give chat window more room
     st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
 
-    # Observation Deck (collapsible) - Contains metrics and view options for analysis windows
-    observation_deck.render()
+    # Observatory controls (Observation Deck + TELOSCOPE) - ONLY in Open Mode
+    # Demo Mode: Pure conversation experience (no Observatory UI)
+    demo_mode = st.session_state.get('telos_demo_mode', False)
 
-    # Minimal spacing between the two bars
-    st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
+    if not demo_mode:
+        # Observation Deck (collapsible) - Contains metrics and view options for analysis windows
+        observation_deck.render()
 
-    # TELOSCOPE Controls at bottom (collapsible)
-    teloscope_controls.render()
+        # Minimal spacing between the two bars
+        st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
+
+        # TELOSCOPE Controls at bottom (collapsible)
+        teloscope_controls.render()
 
 
 if __name__ == "__main__":
