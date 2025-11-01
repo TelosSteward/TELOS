@@ -361,10 +361,12 @@ class ConversationDisplay:
         if demo_mode:
             # Demo Mode: Simple clean layout
             if is_loading:
-                # Show contemplative pulsing animation (grey ↔ yellow)
+                # Show contemplative pulsing animation
+                # Border pulses: gray → yellow
+                # "Contemplating..." text pulses: yellow → gray (opposite of border)
                 st.markdown(f"""
 <style>
-@keyframes contemplative-pulse {{
+@keyframes border-pulse {{
     0%, 100% {{
         border-color: #888;
         box-shadow: 0 0 10px rgba(136, 136, 136, 0.3);
@@ -374,15 +376,26 @@ class ConversationDisplay:
         box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
     }}
 }}
-.contemplating {{
-    animation: contemplative-pulse 2s ease-in-out infinite;
+@keyframes text-pulse {{
+    0%, 100% {{
+        color: #FFD700;
+    }}
+    50% {{
+        color: #888;
+    }}
+}}
+.contemplating-border {{
+    animation: border-pulse 2s ease-in-out infinite;
+}}
+.contemplating-text {{
+    animation: text-pulse 2s ease-in-out infinite;
 }}
 </style>
-<div class="contemplating" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888;">
+<div class="contemplating-border" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888;">
     <div style="color: #888; font-size: 18px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">Steward</strong>
     </div>
-    <div style="color: #888; font-size: 18px; font-style: italic; opacity: 0.7;">
+    <div class="contemplating-text" style="font-size: 18px; font-style: italic; opacity: 0.9;">
         Contemplating...
     </div>
 </div>
@@ -436,10 +449,12 @@ class ConversationDisplay:
 
                 with col_msg:
                     if is_loading:
-                        # Show contemplative pulsing animation (grey ↔ yellow)
+                        # Show contemplative pulsing animation
+                        # Border pulses: gray → yellow
+                        # "Contemplating..." text pulses: yellow → gray (opposite of border)
                         st.markdown(f"""
 <style>
-@keyframes contemplative-pulse {{
+@keyframes border-pulse {{
     0%, 100% {{
         border-color: #888;
         box-shadow: 0 0 10px rgba(136, 136, 136, 0.3);
@@ -449,15 +464,26 @@ class ConversationDisplay:
         box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
     }}
 }}
-.contemplating {{
-    animation: contemplative-pulse 2s ease-in-out infinite;
+@keyframes text-pulse {{
+    0%, 100% {{
+        color: #FFD700;
+    }}
+    50% {{
+        color: #888;
+    }}
+}}
+.contemplating-border {{
+    animation: border-pulse 2s ease-in-out infinite;
+}}
+.contemplating-text {{
+    animation: text-pulse 2s ease-in-out infinite;
 }}
 </style>
-<div class="contemplating" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888;">
+<div class="contemplating-border" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888;">
     <div style="color: #888; font-size: 18px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">Steward</strong>
     </div>
-    <div style="color: #888; font-size: 18px; font-style: italic; opacity: 0.7;">
+    <div class="contemplating-text" style="font-size: 18px; font-style: italic; opacity: 0.9;">
         Contemplating...
     </div>
 </div>
