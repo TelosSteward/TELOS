@@ -62,12 +62,7 @@ class ConversationDisplay:
             return
 
         if len(all_turns) == 0:
-            st.markdown("""
-            <div style="color: #888; text-align: center; padding: 40px;">
-                No turns to display. Load a session from the sidebar.
-            </div>
-            """, unsafe_allow_html=True)
-            # Show input area even with no turns
+            # Completely blank - just show input area
             self._render_input_with_scroll_toggle()
             return
 
