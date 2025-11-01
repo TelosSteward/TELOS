@@ -291,25 +291,41 @@ class ConversationDisplay:
         # Escape the message content to prevent HTML injection
         safe_message = html.escape(message)
 
-        # Create columns: Turn badge on left, message+scroll on right (matching Steward layout)
-        # Turn badge gets 0.5, rest gets 9.5 (matching Steward's 8.5 + 1.5 with offset)
-        col_turn, col_content = st.columns([0.5, 9.5])
+        # Check if Demo Mode (affects layout - no turn badges, no scroll button)
+        demo_mode = st.session_state.get('telos_demo_mode', False)
 
-        # Turn badge on the left
-        if turn_number is not None:
-            with col_turn:
-                st.markdown(f"""
+        if demo_mode:
+            # Demo Mode: Clean layout - just the message, no turn badge, no scroll button
+            st.markdown(f"""
+<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
+    <div style="color: #888; font-size: 18px; margin-bottom: 5px;">
+        <strong style="color: #FFD700;">User</strong>
+    </div>
+    <div style="color: #fff; font-size: 18px; white-space: pre-wrap;">
+        {safe_message}
+    </div>
+</div>
+""", unsafe_allow_html=True)
+        else:
+            # Open Mode: Full Observatory layout with turn badge and scroll button
+            # Create columns: Turn badge on left, message+scroll on right
+            col_turn, col_content = st.columns([0.5, 9.5])
+
+            # Turn badge on the left
+            if turn_number is not None:
+                with col_turn:
+                    st.markdown(f"""
 <div style="display: flex; align-items: flex-start; height: 100%;">
     {turn_badge}
 </div>
 """, unsafe_allow_html=True)
 
-        # Message and scroll button in the right section (matching Steward's 8.5:1.5 layout)
-        with col_content:
-            col_msg, col_scroll = st.columns([8.5, 1.5])
+            # Message and scroll button in the right section
+            with col_content:
+                col_msg, col_scroll = st.columns([8.5, 1.5])
 
-            with col_msg:
-                st.markdown(f"""
+                with col_msg:
+                    st.markdown(f"""
 <div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
     <div style="color: #888; font-size: 18px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">User</strong>
@@ -321,38 +337,32 @@ class ConversationDisplay:
 </div>
 """, unsafe_allow_html=True)
 
-            # Only render scroll button if we're showing the current turn (not in history mode)
-            if turn_number is not None and not self.state_manager.state.scrollable_history_mode:
-                with col_scroll:
-                    scroll_label = "📜"
-                    if st.button(scroll_label, key=f"scroll_toggle_current", use_container_width=True, help="Show scrollable history"):
-                        self.state_manager.toggle_scrollable_history()
-                        st.rerun()
-            elif turn_number is not None and self.state_manager.state.scrollable_history_mode:
-                with col_scroll:
-                    scroll_label = "✕"
-                    if st.button(scroll_label, key=f"scroll_close_current", use_container_width=True, help="Close scrollable history"):
-                        self.state_manager.toggle_scrollable_history()
-                        st.rerun()
+                # Only render scroll button if we're showing the current turn (not in history mode)
+                if turn_number is not None and not self.state_manager.state.scrollable_history_mode:
+                    with col_scroll:
+                        scroll_label = "📜"
+                        if st.button(scroll_label, key=f"scroll_toggle_current", use_container_width=True, help="Show scrollable history"):
+                            self.state_manager.toggle_scrollable_history()
+                            st.rerun()
+                elif turn_number is not None and self.state_manager.state.scrollable_history_mode:
+                    with col_scroll:
+                        scroll_label = "✕"
+                        if st.button(scroll_label, key=f"scroll_close_current", use_container_width=True, help="Close scrollable history"):
+                            self.state_manager.toggle_scrollable_history()
+                            st.rerun()
 
     def _render_assistant_message(self, message: str, turn_number: int = None, is_loading: bool = False):
         """Render steward message bubble - aligned with User message."""
         import html
 
-        # Match User message structure: 0.5 (Turn badge space) + 9.5 (content area with 8.5:1.5 split)
-        col_spacer, col_content = st.columns([0.5, 9.5])
+        # Check if Demo Mode (affects layout)
+        demo_mode = st.session_state.get('telos_demo_mode', False)
 
-        with col_spacer:
-            # Empty column to align with Turn badge space from User message
-            st.markdown("")
-
-        with col_content:
-            col_msg, col_empty = st.columns([8.5, 1.5])
-
-            with col_msg:
-                if is_loading:
-                    # Show contemplative pulsing animation (grey ↔ yellow)
-                    st.markdown(f"""
+        if demo_mode:
+            # Demo Mode: Simple clean layout
+            if is_loading:
+                # Show contemplative pulsing animation (grey ↔ yellow)
+                st.markdown(f"""
 <style>
 @keyframes contemplative-pulse {{
     0%, 100% {{
@@ -377,23 +387,84 @@ class ConversationDisplay:
     </div>
 </div>
 """, unsafe_allow_html=True)
-                else:
-                    # Escape the message content and show response
-                    safe_message = html.escape(message)
-                    st.markdown(f"""
+            else:
+                # Show response with markdown rendering
+                # Use container with styling, then native markdown inside
+                st.markdown("""
 <div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700;">
-    <div style="color: #888; font-size: 18px; margin-bottom: 5px;">
+    <div style="color: #888; font-size: 18px; margin-bottom: 10px;">
         <strong style="color: #FFD700;">Steward</strong>
-    </div>
-    <div style="color: #fff; font-size: 18px; white-space: pre-wrap;">
-        {safe_message}
     </div>
 </div>
 """, unsafe_allow_html=True)
+                # Render markdown natively (supports **bold**, _italic_, etc.)
+                st.markdown(f"""
+<div style="background-color: #1a1a1a; padding: 0 15px 15px 15px; margin-top: -10px; border-radius: 0 0 10px 10px; border: 2px solid #FFD700; border-top: none; color: #fff; font-size: 18px;">
 
-            with col_empty:
-                # Empty column for alignment
+{message}
+
+</div>
+""", unsafe_allow_html=True)
+        else:
+            # Open Mode: Match User message structure with turn badge spacer
+            col_spacer, col_content = st.columns([0.5, 9.5])
+
+            with col_spacer:
+                # Empty column to align with Turn badge space from User message
                 st.markdown("")
+
+            with col_content:
+                col_msg, col_empty = st.columns([8.5, 1.5])
+
+                with col_msg:
+                    if is_loading:
+                        # Show contemplative pulsing animation (grey ↔ yellow)
+                        st.markdown(f"""
+<style>
+@keyframes contemplative-pulse {{
+    0%, 100% {{
+        border-color: #888;
+        box-shadow: 0 0 10px rgba(136, 136, 136, 0.3);
+    }}
+    50% {{
+        border-color: #FFD700;
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+    }}
+}}
+.contemplating {{
+    animation: contemplative-pulse 2s ease-in-out infinite;
+}}
+</style>
+<div class="contemplating" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888;">
+    <div style="color: #888; font-size: 18px; margin-bottom: 5px;">
+        <strong style="color: #FFD700;">Steward</strong>
+    </div>
+    <div style="color: #888; font-size: 18px; font-style: italic; opacity: 0.7;">
+        Contemplating...
+    </div>
+</div>
+""", unsafe_allow_html=True)
+                    else:
+                        # Show response with markdown rendering
+                        st.markdown("""
+<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700;">
+    <div style="color: #888; font-size: 18px; margin-bottom: 10px;">
+        <strong style="color: #FFD700;">Steward</strong>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+                        # Render markdown natively (supports **bold**, _italic_, etc.)
+                        st.markdown(f"""
+<div style="background-color: #1a1a1a; padding: 0 15px 15px 15px; margin-top: -10px; border-radius: 0 0 10px 10px; border: 2px solid #FFD700; border-top: none; color: #fff; font-size: 18px;">
+
+{message}
+
+</div>
+""", unsafe_allow_html=True)
+
+                with col_empty:
+                    # Empty column for alignment
+                    st.markdown("")
 
     def _render_math_breakdown_window(self, turn_data: Dict[str, Any]):
         """Render Math Breakdown analysis window with metrics and chat."""
