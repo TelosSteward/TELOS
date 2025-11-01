@@ -341,13 +341,13 @@ class ConversationDisplay:
                 if turn_number is not None and not self.state_manager.state.scrollable_history_mode:
                     with col_scroll:
                         scroll_label = "📜"
-                        if st.button(scroll_label, key=f"scroll_toggle_current", use_container_width=True, help="Show scrollable history"):
+                        if st.button(scroll_label, key=f"scroll_toggle_{turn_number}", use_container_width=True, help="Show scrollable history"):
                             self.state_manager.toggle_scrollable_history()
                             st.rerun()
                 elif turn_number is not None and self.state_manager.state.scrollable_history_mode:
                     with col_scroll:
                         scroll_label = "✕"
-                        if st.button(scroll_label, key=f"scroll_close_current", use_container_width=True, help="Close scrollable history"):
+                        if st.button(scroll_label, key=f"scroll_close_{turn_number}", use_container_width=True, help="Close scrollable history"):
                             self.state_manager.toggle_scrollable_history()
                             st.rerun()
 
