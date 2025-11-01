@@ -55,14 +55,20 @@ class ConversationDisplay:
             enable_intro = st.session_state.get('enable_intro_examples', True)
             st.session_state.show_intro = enable_intro
 
-        # Show intro example if enabled and we have turns
-        if st.session_state.show_intro and len(all_turns) > 0 and st.session_state.get('enable_intro_examples', True):
+        # Show intro example ONLY if enabled and we have NO turns (blank start)
+        # Don't show intro when demo data is loaded
+        if st.session_state.show_intro and len(all_turns) == 0 and st.session_state.get('enable_intro_examples', True):
             self._render_intro_example()
             self._render_input_with_scroll_toggle()
             return
 
         if len(all_turns) == 0:
-            # Completely blank - just show input area
+            # Blank session - check if we should show demo welcome
+            demo_mode = st.session_state.get('telos_demo_mode', False)
+            if demo_mode and 'demo_welcome_shown' not in st.session_state:
+                # Show demo mode welcome message
+                self._render_demo_welcome()
+            # Show input area
             self._render_input_with_scroll_toggle()
             return
 
@@ -75,6 +81,27 @@ class ConversationDisplay:
 
         # Input area
         self._render_input_with_scroll_toggle()
+
+    def _render_demo_welcome(self):
+        """Render Demo Mode welcome message."""
+        from demo_mode.telos_framework_demo import get_demo_welcome_message
+
+        welcome_msg = get_demo_welcome_message()
+
+        # Render in a gold-bordered welcome box
+        st.markdown(f"""
+<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 3px solid #FFD700;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);">
+    {welcome_msg}
+</div>
+""", unsafe_allow_html=True)
+
+        # Mark as shown
+        st.session_state.demo_welcome_shown = True
 
     def _render_intro_example(self):
         """Render a simple intro example that dismisses when user starts typing."""
@@ -773,18 +800,12 @@ class ConversationDisplay:
             form_col1, form_col2 = st.columns([8.5, 1.5])
 
             with form_col1:
-                user_input = st.text_area(
+                user_input = st.text_input(
                     "Message",
-                    placeholder="Type your message...",
+                    placeholder="Type your message and press Enter...",
                     key="main_chat_input_v4",
-                    height=80,
                     label_visibility="collapsed"
                 )
-
-                # Auto-dismiss intro if user starts typing
-                if user_input and 'show_intro' in st.session_state and st.session_state.show_intro:
-                    st.session_state.show_intro = False
-                    st.rerun()
 
             with form_col2:
                 # Send button - this defines the right edge for vertical alignment
@@ -793,7 +814,6 @@ class ConversationDisplay:
                 div[data-testid="column"]:nth-of-type(2) button[kind="formSubmit"] {
                     font-size: 18px !important;
                     font-weight: bold !important;
-                    height: 80px !important;
                 }
                 </style>
                 """, unsafe_allow_html=True)
@@ -804,8 +824,20 @@ class ConversationDisplay:
             # Dismiss intro if showing
             if 'show_intro' in st.session_state and st.session_state.show_intro:
                 st.session_state.show_intro = False
+
+            # CRITICAL: Clear demo data on first user message to prevent contamination
+            # Demo data should NOT be part of primacy attractor calibration
+            if 'user_started_conversation' not in st.session_state:
+                # This is the user's first message - clear ALL demo data
+                print(f"[DEBUG] Before clear: {len(self.state_manager.state.turns)} turns")
+                self.state_manager.clear_demo_data()
+                print(f"[DEBUG] After clear: {len(self.state_manager.state.turns)} turns")
+                st.session_state.user_started_conversation = True
+
             # Add the message to the conversation (this will generate AI response)
+            print(f"[DEBUG] Before add_user_message: {len(self.state_manager.state.turns)} turns")
             self.state_manager.add_user_message(user_input.strip())
+            print(f"[DEBUG] After add_user_message: {len(self.state_manager.state.turns)} turns")
             st.rerun()
 
     def _render_chat_input(self):

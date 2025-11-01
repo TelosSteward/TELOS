@@ -11,6 +11,7 @@ Design: Single source of truth, no scattered session_state usage.
 import logging
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
+import streamlit as st
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -267,6 +268,34 @@ class StateManager:
         """Toggle between turn-by-turn and scrollable history mode."""
         self.state.scrollable_history_mode = not self.state.scrollable_history_mode
 
+    def clear_demo_data(self):
+        """
+        Clear all demo/initial data to start fresh with user conversation.
+
+        This is CRITICAL to prevent demo data from contaminating the primacy
+        attractor calibration for the user's actual conversation.
+        """
+        logger.info("Clearing demo data to start fresh user conversation")
+
+        # Clear all turns
+        self.state.turns = []
+        self.state.total_turns = 0
+        self.state.current_turn = 0
+
+        # Reset statistics
+        self.state.avg_fidelity = 0.0
+        self.state.total_interventions = 0
+        self.state.drift_warnings = 0
+
+        # Reset TELOS session if active
+        if hasattr(self, '_telos_steward') and self._telos_steward:
+            try:
+                self._telos_steward.end_session()
+                self._telos_steward.start_session(session_id=f"{self.state.session_id}_user")
+                logger.info("TELOS session reset for user conversation")
+            except Exception as e:
+                logger.warning(f"Could not reset TELOS session: {e}")
+
     def add_user_message(self, message: str):
         """
         Add a new user message and generate a TELOS-governed response.
@@ -286,27 +315,29 @@ class StateManager:
                 try:
                     logger.info("Initializing TELOS engine...")
                     embedding_provider = SentenceTransformerProvider()
-                    attractor = PrimacyAttractor(
-                        purpose=[
-                            "Explain how TELOS governance works",
-                            "Demonstrate purpose alignment principles",
-                            "Show fidelity measurement and intervention strategies"
-                        ],
-                        scope=[
-                            "TELOS architecture and components",
-                            "Primacy attractor mathematics",
-                            "Intervention strategies and thresholds",
-                            "Purpose alignment examples"
-                        ],
-                        boundaries=[
-                            "Stay focused on TELOS governance topics",
-                            "Redirect off-topic questions back to TELOS",
-                            "Demonstrate drift detection when appropriate"
-                        ],
-                        constraint_tolerance=0.2,
-                        privacy_level=0.8,
-                        task_priority=0.7
-                    )
+
+                    # Check if demo mode is enabled (for TELOS framework walkthrough)
+                    demo_mode = st.session_state.get('telos_demo_mode', False)
+
+                    if demo_mode:
+                        # Demo mode: Use saved TELOS framework demo configuration
+                        from demo_mode.telos_framework_demo import get_demo_attractor_config
+                        config = get_demo_attractor_config()
+                        attractor = PrimacyAttractor(**config)
+
+                        # LAYER 2: Initialize RAG corpus for Demo Mode
+                        logger.info("Loading TELOS documentation corpus for Demo Mode...")
+                        from demo_mode.telos_corpus_loader import TELOSCorpusLoader
+                        self._corpus_loader = TELOSCorpusLoader(embedding_provider)
+                        num_chunks = self._corpus_loader.load_corpus()
+                        logger.info(f"✓ Corpus loaded: {num_chunks} chunks")
+                    else:
+                        # Open mode: NO hardcoded attractor
+                        # TELOS will extract the purpose dynamically from the user's conversation
+                        # using LLM-based analysis and statistical convergence
+                        # This is intentionally minimal - let TELOS learn what the user wants
+                        attractor = None  # Will be initialized by UnifiedGovernanceSteward
+                        self._corpus_loader = None  # No corpus in open mode
 
                     # Initialize Mistral client (Assistant Steward)
                     mistral_client = MistralClient(
@@ -326,6 +357,7 @@ class StateManager:
                     logger.error(f"Failed to initialize TELOS engine: {type(init_error).__name__}: {str(init_error)}")
                     # Set flag to None to trigger fallback in generation
                     self._telos_steward = None
+                    self._corpus_loader = None
                     raise  # Re-raise to trigger fallback response logic
 
             # Check if TELOS engine is available
@@ -334,12 +366,49 @@ class StateManager:
 
             # Generate AI response through Mistral (Assistant Steward)
             # Build conversation history for context
+
+            # Get system prompt based on mode
+            demo_mode = st.session_state.get('telos_demo_mode', False)
+
+            # LAYER 2 (RAG): Retrieve relevant corpus chunks if in demo mode
+            retrieved_context = ""
+            if demo_mode and hasattr(self, '_corpus_loader') and self._corpus_loader:
+                try:
+                    from demo_mode.telos_corpus_loader import format_context_for_llm
+
+                    # Retrieve top-3 most relevant chunks for user's query
+                    chunks = self._corpus_loader.retrieve(message, top_k=3)
+                    retrieved_context = format_context_for_llm(chunks)
+                    logger.info(f"Retrieved {len(chunks)} corpus chunks for context")
+                except Exception as corpus_error:
+                    logger.warning(f"Corpus retrieval failed: {corpus_error}")
+                    retrieved_context = ""
+
+            # Build system prompt with RAG context
+            if demo_mode:
+                from demo_mode.telos_framework_demo import get_demo_system_prompt
+                base_system_prompt = get_demo_system_prompt()
+
+                # If we have RAG context, prepend it
+                if retrieved_context:
+                    system_prompt = f"{retrieved_context}\n\n{base_system_prompt}\n\nIMPORTANT: Use the documentation context above to provide accurate, grounded responses. Cite specific sections when relevant."
+                else:
+                    system_prompt = base_system_prompt
+            else:
+                # Open mode: Neutral, helpful assistant
+                system_prompt = """You are a helpful AI assistant. Engage naturally with the user's questions and topics.
+
+Be informative, conversational, and adapt to what the user wants to discuss."""
+
             conversation_history = [
                 {
                     "role": "system",
-                    "content": "You are an expert AI assistant explaining TELOS governance and purpose alignment. Stay focused on TELOS topics and provide clear, educational explanations."
+                    "content": system_prompt
                 }
             ]
+
+            # Build history from existing turns
+            print(f"[DEBUG add_user_message] Building history from {len(self.state.turns)} turns")
             for turn in self.state.turns:
                 conversation_history.append({
                     "role": "user",
@@ -355,6 +424,9 @@ class StateManager:
                 "role": "user",
                 "content": message
             })
+
+            print(f"[DEBUG add_user_message] Total messages in history: {len(conversation_history)}")
+            print(f"[DEBUG add_user_message] User message: {message}")
 
             # Generate response using Mistral
             response_text = self._telos_steward.llm_client.generate(

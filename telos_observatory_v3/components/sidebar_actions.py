@@ -79,9 +79,27 @@ class SidebarActions:
             if st.button("💾 Save Current", use_container_width=True):
                 self._save_current_session()
 
-            # Reset Session
-            if st.button("🔄 Reset Session", use_container_width=True):
-                self._reset_session()
+            # Reset Session with confirmation
+            # Initialize confirmation state
+            if 'confirm_reset' not in st.session_state:
+                st.session_state.confirm_reset = False
+
+            if not st.session_state.confirm_reset:
+                if st.button("🔄 Reset Session", use_container_width=True):
+                    st.session_state.confirm_reset = True
+                    st.rerun()
+            else:
+                # Show confirmation message
+                st.warning("⚠️ This will delete the entire conversation. Are you sure?")
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button("✓ Yes, Reset", use_container_width=True, type="primary"):
+                        st.session_state.confirm_reset = False
+                        self._reset_session()
+                with col2:
+                    if st.button("✕ Cancel", use_container_width=True):
+                        st.session_state.confirm_reset = False
+                        st.rerun()
 
             # Export Evidence
             if st.button("📤 Export Evidence", use_container_width=True):
@@ -199,9 +217,9 @@ class SidebarActions:
             st.error(f"Error loading session: {e}")
 
     def _reset_session(self):
-        """Reset session to beginning and close all panels."""
-        # Jump to first turn
-        self.state_manager.jump_to_turn(0)
+        """Reset session - completely clear all conversation data and start fresh."""
+        # Clear all conversation data
+        self.state_manager.clear_demo_data()
 
         # Close all analysis panels
         self.state_manager.state.show_primacy_attractor = False
@@ -219,7 +237,23 @@ class SidebarActions:
         # Turn off scrollable history mode
         self.state_manager.state.scrollable_history_mode = False
 
-        st.success("✅ Session reset to Turn 1 - All panels closed")
+        # Clear user conversation flag so next message will be treated as first
+        if 'user_started_conversation' in st.session_state:
+            del st.session_state.user_started_conversation
+
+        # Clear intro state to allow it to show again
+        if 'show_intro' in st.session_state:
+            st.session_state.show_intro = st.session_state.get('enable_intro_examples', True)
+
+        # Clear intro pair cache
+        if 'intro_pair' in st.session_state:
+            del st.session_state.intro_pair
+
+        # Clear demo welcome flag so it shows again in demo mode
+        if 'demo_welcome_shown' in st.session_state:
+            del st.session_state.demo_welcome_shown
+
+        st.success("✅ Session reset - All conversation data cleared")
         st.rerun()
 
     def _export_evidence(self):
@@ -263,6 +297,56 @@ class SidebarActions:
         # Initialize settings defaults
         if 'enable_intro_examples' not in st.session_state:
             st.session_state.enable_intro_examples = True
+        if 'telos_demo_mode' not in st.session_state:
+            st.session_state.telos_demo_mode = True  # Demo mode is DEFAULT
+
+        # Mode Selection
+        st.markdown("---")
+        st.markdown("**Governance Mode**")
+
+        mode_options = {
+            "Demo Mode": True,
+            "Open Mode": False
+        }
+
+        current_mode = "Demo Mode" if st.session_state.telos_demo_mode else "Open Mode"
+
+        selected_mode = st.radio(
+            "Select Mode",
+            options=list(mode_options.keys()),
+            index=0 if st.session_state.telos_demo_mode else 1,
+            key="mode_selector",
+            help="""**Demo Mode** (Default): Pre-established PA focused on explaining TELOS framework. Great for demos and walkthroughs.
+
+**Open Mode**: TELOS extracts purpose dynamically from your conversation. For real applications.""",
+            label_visibility="collapsed"
+        )
+
+        # If mode changed, update and reset session
+        if mode_options[selected_mode] != st.session_state.telos_demo_mode:
+            st.session_state.telos_demo_mode = mode_options[selected_mode]
+
+            # Clear conversation data when switching modes
+            self.state_manager.clear_demo_data()
+
+            # Clear user conversation flag
+            if 'user_started_conversation' in st.session_state:
+                del st.session_state.user_started_conversation
+
+            # Clear demo welcome flag so it shows again in demo mode
+            if 'demo_welcome_shown' in st.session_state:
+                del st.session_state.demo_welcome_shown
+
+            st.success(f"✅ Switched to {selected_mode} - Session reset")
+            st.rerun()
+
+        # Show mode description
+        if st.session_state.telos_demo_mode:
+            st.info("🔒 **Demo Mode**: Pre-established PA keeps conversations focused on TELOS framework topics. PA is locked and cannot be modified.")
+        else:
+            st.info("⚡ **Open Mode**: TELOS will extract your purpose dynamically from your conversation through calibration.")
+
+        st.markdown("---")
 
         # Intro Examples Toggle
         enable_intro = st.checkbox(
