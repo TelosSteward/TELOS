@@ -123,6 +123,30 @@ class MistralClient:
             else:
                 raise APIConnectionError("Mistral", str(e)) from e
 
+    def chat_completion(
+        self,
+        messages: List[Dict[str, str]],
+        temperature: float = 0.7,
+        max_tokens: int = 500,
+        **kwargs
+    ) -> str:
+        """
+        Alternative interface for chat completion (alias for generate).
+
+        Provided for compatibility with intervention systems that call
+        chat_completion() instead of generate().
+
+        Args:
+            messages: List of message dicts with 'role' and 'content'
+            temperature: Sampling temperature (0.0-1.0)
+            max_tokens: Maximum tokens to generate
+            **kwargs: Additional arguments to pass to API
+
+        Returns:
+            Generated text response
+        """
+        return self.generate(messages, temperature, max_tokens, **kwargs)
+
     def test_connection(self) -> bool:
         """
         Test connection to Mistral API.

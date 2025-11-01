@@ -1,0 +1,88 @@
+{
+  "session_id": "short_session_001",
+  "timestamp": "2025-10-28T11:49:02.739655",
+  "total_turns": 3,
+  "avg_fidelity": 0.79,
+  "min_fidelity": 0.745,
+  "max_fidelity": 0.874,
+  "total_interventions": 2,
+  "intervention_rate": 0.667,
+  "turns": [
+    {
+      "turn_number": 1,
+      "user_input": "What are the key principles of TELOS? (Turn 1)",
+      "user_message": "What makes governance persistent? (Turn 1)",
+      "native_response": "Understanding AI requires knowledge of machine learning fundamentals...",
+      "telos_response": "Fidelity measurement uses cosine similarity between response embeddings and the attractor center...",
+      "assistant_response": "TELOS governance ensures alignment through mathematical measurement of purpose fidelity...",
+      "fidelity": 0.745,
+      "intervention_applied": false,
+      "basin_membership": false,
+      "timestamp": "2025-10-28T11:49:32.739655",
+      "governance_metadata": {
+        "intervention_type": null,
+        "fidelity_original": null,
+        "fidelity_governed": null,
+        "salience_before": null,
+        "salience_after": null,
+        "intervention_applied": false
+      }
+    },
+    {
+      "turn_number": 2,
+      "user_input": "Explain the Primacy Attractor concept (Turn 2)",
+      "user_message": "How does drift detection function? (Turn 2)",
+      "native_response": "The system analyzes data through various computational methods...",
+      "telos_response": "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space...",
+      "assistant_response": "TELOS governance ensures alignment through mathematical measurement of purpose fidelity...",
+      "fidelity": 0.751,
+      "intervention_applied": true,
+      "basin_membership": false,
+      "timestamp": "2025-10-28T11:50:02.739655",
+      "governance_metadata": {
+        "intervention_type": "salience_check",
+        "fidelity_original": 0.599,
+        "fidelity_governed": 0.751,
+        "salience_before": 0.653,
+        "salience_after": 0.871,
+        "intervention_applied": true
+      }
+    },
+    {
+      "turn_number": 3,
+      "user_input": "How does drift detection function? (Turn 3)",
+      "user_message": "Tell me about intervention strategies (Turn 3)",
+      "native_response": "Information processing involves multiple layers of analysis...",
+      "telos_response": "Fidelity measurement uses cosine similarity between response embeddings and the attractor center...",
+      "assistant_response": "TELOS governance ensures alignment through mathematical measurement of purpose fidelity...",
+      "fidelity": 0.874,
+      "intervention_applied": true,
+      "basin_membership": true,
+      "timestamp": "2025-10-28T11:50:32.739655",
+      "governance_metadata": {
+        "intervention_type": "coupling_check",
+        "fidelity_original": 0.691,
+        "fidelity_governed": 0.874,
+        "salience_before": 0.542,
+        "salience_after": 0.902,
+        "intervention_applied": true
+      }
+    }
+  ],
+  "config": {
+    "purpose": [
+      "Demonstrate TELOS governance framework"
+    ],
+    "scope": [
+      "AI alignment",
+      "runtime oversight",
+      "mathematical measurement"
+    ],
+    "boundaries": [
+      "technical focus",
+      "factual accuracy"
+    ],
+    "constraint_tolerance": 0.2,
+    "task_priority": 0.7
+  }
+}

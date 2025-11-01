@@ -35,7 +35,8 @@ def render_observation_deck_sidebar():
     """
 
     # Only render if deck is expanded
-    if not st.session_state.get('deck_expanded', False):
+    deck_expanded = st.session_state.get('deck_expanded', False)
+    if not deck_expanded:
         return
 
     # Get current turn data

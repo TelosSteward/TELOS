@@ -54,13 +54,15 @@ class ProgressivePrimacyExtractor:
         embedding_provider,
         mode: str = 'progressive',
         seed_attractor: Optional[PrimacyAttractor] = None,
+        # Phase 2 research mode: LLM semantic analysis at every turn
+        llm_per_turn: bool = False,  # Enable LLM analysis at each turn (vs once at convergence)
         # Statistical parameters (data-driven, not arbitrary)
         window_size: int = 3,  # Rolling window for stability check
         centroid_stability_threshold: float = 0.95,  # Cosine similarity threshold
         variance_stability_threshold: float = 0.1,  # Relative variance threshold
         confidence_threshold: float = 0.80,  # Overall confidence to declare convergence
         consecutive_stable_turns: int = 2,  # Turns of stability before declaring convergence
-        max_turns_safety: int = 100,  # Safety limit to prevent infinite loops
+        max_turns_safety: int = 10,  # Safety limit (changed from 100 for Phase 2)
         distance_scale: float = 2.0  # Distance-to-fidelity scaling
     ):
         """
@@ -71,12 +73,15 @@ class ProgressivePrimacyExtractor:
             embedding_provider: Embedding provider for distance measurement
             mode: 'progressive' or 'hybrid'
             seed_attractor: Required for hybrid mode (provides boundaries)
+            llm_per_turn: If True, call LLM at every turn for semantic analysis
+                         (Phase 2 research mode). If False, call LLM once at convergence
+                         (filtering mode). LLM-per-turn provides stronger research evidence.
             window_size: Size of rolling window for stability checks
             centroid_stability_threshold: Cosine similarity threshold for centroids
             variance_stability_threshold: Max acceptable relative variance
             confidence_threshold: Overall confidence needed to declare convergence
             consecutive_stable_turns: Turns of stability needed before convergence
-            max_turns_safety: Safety limit to prevent runaway
+            max_turns_safety: Safety limit to prevent runaway (10 for Phase 2, 100 for filtering)
             distance_scale: Distance-to-fidelity scaling factor
 
         Raises:
@@ -86,6 +91,7 @@ class ProgressivePrimacyExtractor:
         self.embedding_provider = embedding_provider
         self.mode = mode
         self.seed_attractor = seed_attractor
+        self.llm_per_turn = llm_per_turn
 
         # Statistical convergence parameters
         self.window_size = window_size
@@ -100,6 +106,7 @@ class ProgressivePrimacyExtractor:
         self.turn_count = 0
         self.accumulated_turns: List[Dict[str, str]] = []
         self.accumulated_embeddings: List[np.ndarray] = []
+        self.llm_analyses: List[Dict[str, Any]] = []  # Store LLM analysis per turn (if llm_per_turn=True)
         self.previous_analysis: Optional[Dict[str, Any]] = None
         self.converged = False
         self.convergence_turn: Optional[int] = None
@@ -155,9 +162,34 @@ class ProgressivePrimacyExtractor:
             'assistant': assistant_response
         })
 
-        # Get embedding for this response
-        embedding = self.embedding_provider.encode(assistant_response)
-        self.accumulated_embeddings.append(embedding)
+        # Get embedding - TWO MODES:
+        # 1. LLM-per-turn (Phase 2): Embed LLM's semantic analysis
+        # 2. Direct embedding (Filtering): Embed assistant response directly
+        if self.llm_per_turn and self.llm_client is not None:
+            # PHASE 2 MODE: Call LLM at every turn
+            try:
+                llm_analysis = self._analyze_with_llm()
+                self.llm_analyses.append(llm_analysis)
+
+                # Embed the LLM's semantic understanding
+                # Convert purpose/scope/boundaries to text for embedding
+                analysis_text = self._format_analysis_for_embedding(llm_analysis)
+                embedding = self.embedding_provider.encode(analysis_text)
+                self.accumulated_embeddings.append(embedding)
+            except Exception as e:
+                # LLM call failed - return error
+                return {
+                    'status': 'error',
+                    'message': f'❌ LLM analysis failed at turn {self.turn_count}: {e}',
+                    'fidelity': None,
+                    'drift_detected': None,
+                    'baseline_established': False,
+                    'turn_count': self.turn_count
+                }
+        else:
+            # FILTERING MODE: Direct embedding (no LLM per turn)
+            embedding = self.embedding_provider.encode(assistant_response)
+            self.accumulated_embeddings.append(embedding)
 
         if not self.converged:
             # ============================================================
@@ -191,19 +223,62 @@ class ProgressivePrimacyExtractor:
             if (self.stable_turn_count >= self.consecutive_stable_turns and
                 convergence_check['confidence'] >= self.confidence_threshold):
 
-                # CONVERGED - run LLM analysis and finalize
-                try:
-                    llm_analysis = self._analyze_with_llm()
-                    self._finalize_attractor(llm_analysis)
+                # Mark convergence
+                self.converged = True
+                self.convergence_turn = self.turn_count
+                self.convergence_metrics = convergence_check
 
+                # CONVERGED - finalize attractor
+                if self.llm_client is not None:
+                    try:
+                        # Get final LLM analysis
+                        if self.llm_per_turn:
+                            # LLM-per-turn mode: Use most recent analysis (latest understanding)
+                            llm_analysis = self.llm_analyses[-1]
+                            message_mode = "LLM-per-turn"
+                        else:
+                            # Standard mode: Call LLM once now with all accumulated turns
+                            llm_analysis = self._analyze_with_llm()
+                            message_mode = "statistical"
+
+                        self._finalize_attractor(llm_analysis)
+
+                        return {
+                            'status': 'converged',
+                            'message': f'✅ Converged at turn {self.turn_count} ({message_mode} mode)',
+                            'fidelity': None,
+                            'drift_detected': None,
+                            'baseline_established': True,
+                            'turn_count': self.turn_count,
+                            'attractor': self.primacy_attractor,
+                            'convergence_turn': self.convergence_turn,
+                            'llm_analyses': self.llm_analyses if self.llm_per_turn else None,  # Return all analyses in Phase 2
+                            'convergence_metrics': {
+                                'centroid_stability': convergence_check['centroid_stability'],
+                                'variance_stability': convergence_check['variance_stability'],
+                                'confidence': convergence_check['confidence'],
+                                'turns_to_convergence': self.convergence_turn,
+                            }
+                        }
+                    except Exception as e:
+                        return {
+                            'status': 'error',
+                            'message': f'❌ LLM analysis failed at convergence: {e}',
+                            'fidelity': None,
+                            'drift_detected': None,
+                            'baseline_established': False,
+                            'turn_count': self.turn_count
+                        }
+                else:
+                    # NO LLM - just return convergence metrics (for filtering)
                     return {
-                        'status': 'converged',
-                        'message': f'✅ Statistically converged at turn {self.turn_count}',
+                        'status': 'converged_statistical_only',
+                        'message': f'✅ Statistical convergence at turn {self.turn_count} (no LLM analysis)',
                         'fidelity': None,
                         'drift_detected': None,
-                        'baseline_established': True,
+                        'baseline_established': False,  # No attractor created without LLM
                         'turn_count': self.turn_count,
-                        'attractor': self.primacy_attractor,
+                        'attractor': None,
                         'convergence_turn': self.convergence_turn,
                         'convergence_metrics': {
                             'centroid_stability': convergence_check['centroid_stability'],
@@ -212,45 +287,57 @@ class ProgressivePrimacyExtractor:
                             'turns_to_convergence': self.convergence_turn,
                         }
                     }
-                except Exception as e:
-                    return {
-                        'status': 'error',
-                        'message': f'❌ LLM analysis failed at convergence: {e}',
-                        'fidelity': None,
-                        'drift_detected': None,
-                        'baseline_established': False,
-                        'turn_count': self.turn_count
-                    }
 
             # Safety check: prevent infinite accumulation
             if self.turn_count >= self.max_turns_safety:
-                # Force convergence with current data
-                try:
-                    llm_analysis = self._analyze_with_llm()
-                    self._finalize_attractor(llm_analysis)
+                # Mark convergence at safety limit
+                self.converged = True
+                self.convergence_turn = self.turn_count
 
-                    return {
-                        'status': 'converged',
-                        'message': f'⚠️  Converged at safety limit (turn {self.turn_count})',
-                        'fidelity': None,
-                        'drift_detected': None,
-                        'baseline_established': True,
-                        'turn_count': self.turn_count,
-                        'attractor': self.primacy_attractor,
-                        'convergence_turn': self.convergence_turn,
-                        'convergence_metrics': {
-                            'forced': True,
-                            'reason': 'safety_limit_reached'
+                # Force convergence with current data (if LLM available)
+                if self.llm_client is not None:
+                    try:
+                        llm_analysis = self._analyze_with_llm()
+                        self._finalize_attractor(llm_analysis)
+
+                        return {
+                            'status': 'converged',
+                            'message': f'⚠️  Converged at safety limit (turn {self.turn_count})',
+                            'fidelity': None,
+                            'drift_detected': None,
+                            'baseline_established': True,
+                            'turn_count': self.turn_count,
+                            'attractor': self.primacy_attractor,
+                            'convergence_turn': self.convergence_turn,
+                            'convergence_metrics': {
+                                'forced': True,
+                                'reason': 'safety_limit_reached'
+                            }
                         }
-                    }
-                except Exception as e:
+                    except Exception as e:
+                        return {
+                            'status': 'error',
+                            'message': f'❌ Forced convergence failed: {e}',
+                            'fidelity': None,
+                            'drift_detected': None,
+                            'baseline_established': False,
+                            'turn_count': self.turn_count
+                        }
+                else:
+                    # NO LLM - just mark as reached safety limit
                     return {
-                        'status': 'error',
-                        'message': f'❌ Forced convergence failed: {e}',
+                        'status': 'safety_limit_reached',
+                        'message': f'⚠️  Safety limit reached at turn {self.turn_count} (no LLM analysis)',
                         'fidelity': None,
                         'drift_detected': None,
                         'baseline_established': False,
-                        'turn_count': self.turn_count
+                        'turn_count': self.turn_count,
+                        'attractor': None,
+                        'convergence_turn': self.convergence_turn,
+                        'convergence_metrics': {
+                            'forced': True,
+                            'reason': 'safety_limit_reached_no_llm'
+                        }
                     }
 
             # Still accumulating
@@ -430,6 +517,25 @@ Respond with JSON only."""
                 "scope": ["Various topics"],
                 "boundaries": ["Stay on topic"]
             }
+
+    def _format_analysis_for_embedding(self, analysis: Dict[str, Any]) -> str:
+        """
+        Format LLM analysis into text for embedding.
+
+        Used in llm_per_turn mode to embed the LLM's semantic understanding
+        rather than the raw conversation text.
+
+        Args:
+            analysis: LLM analysis with purpose/scope/boundaries
+
+        Returns:
+            Formatted text string for embedding
+        """
+        purpose = ', '.join(analysis.get('purpose', ['General conversation']))
+        scope = ', '.join(analysis.get('scope', ['Various topics']))
+        boundaries = ', '.join(analysis.get('boundaries', ['Stay on topic']))
+
+        return f"Purpose: {purpose}. Scope: {scope}. Boundaries: {boundaries}."
 
     def _finalize_attractor(self, analysis: Dict[str, Any]) -> None:
         """

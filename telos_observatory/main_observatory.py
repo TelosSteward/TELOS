@@ -175,14 +175,30 @@ def main():
     # Welcome header
     render_header()
 
-    # Main content: Observation Deck (main viewport)
-    render_observation_deck()
+    # CRITICAL: Render TELOSCOPE and Sidebar FIRST so they show even if Observation Deck fails
+    # Bottom controls: TELOSCOPE Remote
+    try:
+        render_teloscope()
+    except Exception as e:
+        st.error(f"❌ TELOSCOPE Error: {str(e)}")
+        import traceback
+        st.code(traceback.format_exc())
 
     # Right sidebar: Observation Deck sidebar (if expanded)
-    render_observation_deck_sidebar()
+    try:
+        render_observation_deck_sidebar()
+    except Exception as e:
+        st.error(f"❌ Sidebar Error: {str(e)}")
+        import traceback
+        st.code(traceback.format_exc())
 
-    # Bottom controls: TELOSCOPE Remote
-    render_teloscope()
+    # Main content: Observation Deck (main viewport)
+    try:
+        render_observation_deck()
+    except Exception as e:
+        st.error(f"❌ Observation Deck Error: {str(e)}")
+        import traceback
+        st.code(traceback.format_exc())
 
     # Keyboard shortcuts
     render_keyboard_shortcuts()

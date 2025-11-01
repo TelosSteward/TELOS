@@ -42,6 +42,10 @@ import io
 import logging
 import glob
 from typing import Dict, Any, List, Optional
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 try:
     import plotly.graph_objects as go
@@ -1353,20 +1357,49 @@ st.markdown("""
 <style>
 /* Allow sidebar to collapse naturally - just ensure it starts expanded */
 section[data-testid="stSidebar"] {
-    /* Don't force visibility - let Streamlit handle collapse/expand */
+    /* Reduce sidebar width but keep enough space for TELOS text */
+    max-width: 240px !important;
+    min-width: 240px !important;
+}
+
+/* Ensure sidebar content wraps properly in reduced space */
+section[data-testid="stSidebar"] > div {
+    width: 100% !important;
+    overflow-x: hidden !important;
+}
+
+section[data-testid="stSidebar"] * {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+/* Move sidebar collapse arrow to far left corner */
+button[kind="header" ElementsToolbarButton] {
+    position: fixed !important;
+    left: 0px !important;
+    top: 0px !important;
+    z-index: 999999 !important;
+}
+
+/* Alternative selector for sidebar collapse button */
+section[data-testid="stSidebar"] button[kind="header"] {
+    position: fixed !important;
+    left: 0px !important;
+    top: 0px !important;
+    z-index: 999999 !important;
 }
 
 /* Right sidebar panel for Observation Deck */
 .observation-deck-panel {
     position: fixed;
-    top: 0;
+    top: 70px;  /* Aligned with toggle buttons - proper spacing from header */
     right: -400px;
     width: 400px;
-    height: 100vh;
+    height: calc(100vh - 70px);  /* Adjust height to account for top offset */
     background: #1e1e1e;
     border-left: 1px solid #444;
     transition: right 0.3s ease;
-    z-index: 999;
+    z-index: 100;  /* Lower z-index so it doesn't cover input elements */
     overflow-y: auto;
     padding: 20px;
 }
@@ -2796,11 +2829,16 @@ def render_chat_interface():
     render_keyboard_handler()
 
     # ========================================================================
+    # OBSERVATORY CONTROL STRIP - Turn-by-Turn Metrics (Top Right)
+    # ========================================================================
+    render_observatory_control_strip()
+
+    # ========================================================================
     # MINIMALISTIC HEADER: Dark/Light mode + Governance toggle + Telescope (top-right)
     # ========================================================================
 
-    # Create subtle header with toggles - 4 columns for Dark, TELOS, and Telescope
-    header_col1, header_col2, header_col3, header_col4 = st.columns([2.5, 1.3, 1.5, 0.7])
+    # Create subtle header with toggles - 4 columns for spacing, Dark, TELOS, and Telescope
+    header_col1, header_col2, header_col3, header_col4 = st.columns([2.0, 1.3, 1.5, 1.2])
 
     with header_col1:
         # Empty - keeps toggles on right side
@@ -2827,8 +2865,17 @@ def render_chat_interface():
         st.session_state['governance_enabled'] = governance_enabled
 
     with header_col4:
-        # Telescope button for Observation Deck (always accessible)
-        if st.button("🔭", key="header_telescope_toggle", help="Toggle Observation Deck"):
+        # Observation Deck toggle - synchronized with Observation Deck state
+        current_deck_state = st.session_state.deck_manager.session_state['observation_deck']['is_open']
+        observatory_enabled = st.toggle(
+            "Observation Deck",
+            value=current_deck_state,
+            key='observatory_toggle',
+            help="Toggle Observation Deck panel"
+        )
+
+        # Update deck state if toggle changed
+        if observatory_enabled != current_deck_state:
             st.session_state.deck_manager.toggle_deck()
             st.rerun()
 
@@ -2918,15 +2965,24 @@ def render_chat_interface():
             font-size: 17px !important;  /* Base font size increased */
         }
 
-        /* Hide/darken Streamlit header bar with Deploy button */
+        /* Show header but style it to match theme */
         header[data-testid="stHeader"] {
             background-color: #3a3a3a !important;
         }
 
-        /* Hide the toolbar/header completely for cleaner look */
-        header[data-testid="stHeader"],
+        /* Show toolbar */
         div[data-testid="stToolbar"] {
+            background-color: #3a3a3a !important;
+        }
+
+        /* Hide Deploy button while keeping collapse arrows visible */
+        header[data-testid="stHeader"] button[kind="header"] {
             display: none !important;
+        }
+
+        /* But ensure collapse control remains visible */
+        button[data-testid="collapsedControl"] {
+            display: flex !important;
         }
 
         .main {
@@ -3121,10 +3177,24 @@ def render_chat_interface():
             font-size: 17px !important;  /* Base font size increased */
         }
 
-        /* Hide Streamlit header bar for cleaner look */
-        header[data-testid="stHeader"],
+        /* Show header but style it to match theme */
+        header[data-testid="stHeader"] {
+            background-color: #ffffff !important;
+        }
+
+        /* Show toolbar */
         div[data-testid="stToolbar"] {
+            background-color: #ffffff !important;
+        }
+
+        /* Hide Deploy button while keeping collapse arrows visible */
+        header[data-testid="stHeader"] button[kind="header"] {
             display: none !important;
+        }
+
+        /* But ensure collapse control remains visible */
+        button[data-testid="collapsedControl"] {
+            display: flex !important;
         }
 
         .main {
@@ -3385,8 +3455,9 @@ def render_chat_interface():
             # Process the message through TELOS
             with st.spinner("Processing..."):
                 try:
-                    # Send through LiveInterceptor
-                    response = st.session_state.interceptor.chat(user_input.strip())
+                    # Send through LiveInterceptor with proper message format
+                    messages = [{"role": "user", "content": user_input.strip()}]
+                    response = st.session_state.interceptor.generate(messages=messages)
 
                     # Clear input by rerunning
                     st.rerun()
@@ -3406,29 +3477,123 @@ def render_chat_interface():
     # Inject right panel HTML and conditional CSS for content adjustment
     content_margin = "420px" if deck_is_open else "0"
 
+    # Get dark mode state for Observation Deck colors
+    dark_mode = st.session_state.get('dark_mode', False)
+
+    # Set colors based on dark mode
+    if dark_mode:
+        deck_bg = "#1e1e1e"
+        deck_border = "#444"
+        deck_title_color = "#fff"
+        deck_text_color = "#aaa"
+        deck_hr_color = "#444"
+        deck_subtitle_color = "#888"
+    else:
+        deck_bg = "#f0f2f6"
+        deck_border = "#ddd"
+        deck_title_color = "#262730"
+        deck_text_color = "#555"
+        deck_hr_color = "#ddd"
+        deck_subtitle_color = "#888"
+
+    # Calculate centering offset - shift content left by half the deck width to center it
+    center_offset = "210px" if deck_is_open else "0"  # Half of 420px deck width
+
     st.markdown(f"""
         <style>
-        /* Adjust main content area when Observation Deck is open */
-        .main .block-container {{
+        /* Center ENTIRE main section when Observation Deck is open */
+        section[data-testid="stMain"] {{
             margin-right: {content_margin} !important;
-            transition: margin-right 0.3s ease;
+            margin-left: {center_offset} !important;
+            transition: margin-right 0.3s ease, margin-left 0.3s ease;
+            max-width: calc(100vw - 260px - {content_margin} - {center_offset}) !important;
         }}
 
-        section[data-testid="stMain"] .block-container {{
+        /* Center and resize chat input container to remain fully interactable */
+        .stChatFloatingInputContainer {{
+            position: fixed !important;
+            bottom: 0 !important;
+            left: calc(260px + {center_offset}) !important;  /* 260px = sidebar width */
+            right: {content_margin} !important;
+            width: calc(100vw - 260px - {content_margin} - {center_offset}) !important;
+            max-width: calc(100vw - 260px - {content_margin} - {center_offset}) !important;
+            transition: left 0.3s ease, right 0.3s ease, width 0.3s ease;
+            z-index: 1000 !important;  /* Keep chat input above observation deck */
+            box-sizing: border-box !important;
+            pointer-events: auto !important;  /* Ensure it's clickable */
+        }}
+
+        /* Also adjust the input field itself */
+        .stChatFloatingInputContainer > div {{
+            width: 100% !important;
+            max-width: 100% !important;
+        }}
+
+        /* Adjust header area to stay centered */
+        .main > div:first-child {{
             margin-right: {content_margin} !important;
-            transition: margin-right 0.3s ease;
+            margin-left: {center_offset} !important;
+            transition: margin-right 0.3s ease, margin-left 0.3s ease;
+        }}
+
+        /* Observation Deck panel colors (dynamic based on dark mode) */
+        .observation-deck-panel {{
+            background: {deck_bg} !important;
+            border-left-color: {deck_border} !important;
         }}
         </style>
 
-        <div class="{panel_class}">
-            <h2 style="color: #fff; margin-top: 0;">🔭 Observation Deck</h2>
-            <p style="color: #aaa;">TELOSCOPIC tools and research instruments will appear here.</p>
-            <hr style="border-color: #444;">
+        <div class="{panel_class}" id="observation-deck">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="color: {deck_title_color}; margin: 0;">Observation Deck</h2>
+                <span class="deck-close-btn" id="deck-close-logo"
+                      style="font-size: 5rem; color: {deck_title_color}; padding: 5px 10px; line-height: 0.8; cursor: pointer; transition: opacity 0.2s;"
+                      title="Click to close Observation Deck"
+                      onmouseover="this.style.opacity='0.6'"
+                      onmouseout="this.style.opacity='1'"
+                      onclick="closeDeck()">🔭</span>
+            </div>
+            <p style="color: {deck_text_color};">TELOSCOPIC tools and research instruments will appear here.</p>
+            <hr style="border-color: {deck_hr_color};">
             <div id="deck-content">
                 <!-- Observation Deck content will be rendered here -->
-                <p style="color: #888; font-style: italic;">Click telescope toggle in left sidebar to open/close this panel.</p>
+                <p style="color: {deck_subtitle_color}; font-style: italic;">Click the telescope logo or use the Observatory toggle to close this panel.</p>
             </div>
         </div>
+
+        <script>
+        function closeDeck() {{
+            // Find the Observatory toggle by searching through all toggle labels
+            const toggleContainers = parent.document.querySelectorAll('[data-testid="stToggle"]');
+
+            for (let container of toggleContainers) {{
+                // Check if this toggle has "Observatory" text
+                const labels = container.querySelectorAll('p, label, span');
+                for (let label of labels) {{
+                    if (label.textContent && label.textContent.includes('Observatory')) {{
+                        // Find the actual button/input element to click
+                        const button = container.querySelector('button[role="switch"]');
+                        if (button) {{
+                            button.click();
+                            return;
+                        }}
+                        // Fallback: try to find input element
+                        const input = container.querySelector('input[type="checkbox"]');
+                        if (input) {{
+                            input.click();
+                            return;
+                        }}
+                        // Last resort: click the container itself
+                        container.click();
+                        return;
+                    }}
+                }}
+            }}
+
+            // Debug: log if toggle not found
+            console.log('Observatory toggle not found');
+        }}
+        </script>
     """, unsafe_allow_html=True)
 
     # FINAL CSS INJECTION - Applied at end of rendering to override everything
@@ -3460,6 +3625,13 @@ def render_chat_interface():
     }
     </style>
     """, unsafe_allow_html=True)
+
+    # ========================================================================
+    # Observation Deck Panel Integration (Phase 2)
+    # ========================================================================
+    # Render the Observation Deck panel with Phase 2 research instruments
+    # This panel displays TELOSCOPE controls, math breakdowns, and counterfactual comparisons
+    render_observation_deck_panel()
 
 
 # ============================================================================
@@ -3782,13 +3954,477 @@ Ask Steward about **patterns, metrics, and insights** from your TELOS sessions.
 
 
 # ============================================================================
+# Observatory Control Strip - Turn-by-Turn Metrics Display
+# ============================================================================
+
+def render_observatory_control_strip():
+    """
+    Render Observatory control strip at top right showing current turn metrics.
+
+    Features:
+    - Turn counter (current / total)
+    - Fidelity score with gold theming
+    - Status icon and text
+    - Clickable TELOSCOPE icon to toggle Observation Deck
+    - Fixed position at top right
+    """
+    # Get current state
+    deck_manager = st.session_state.get('deck_manager')
+    if not deck_manager:
+        return
+
+    session_manager = st.session_state.get('session_manager')
+    if not session_manager:
+        return
+
+    turns = session_manager.get_all_turns()
+    if not turns:
+        return
+
+    current_turn_idx = deck_manager.session_state['observation_deck'].get('current_turn', 0)
+    deck_expanded = deck_manager.session_state['observation_deck'].get('is_open', False)
+
+    # Clamp turn index
+    if current_turn_idx >= len(turns):
+        current_turn_idx = len(turns) - 1
+
+    # Get current turn data
+    current_turn = turns[current_turn_idx]
+
+    # Extract metrics
+    fidelity = current_turn.get('fidelity', 1.0)
+    fidelity_display = f"{fidelity:.2f}" if fidelity is not None else "Cal"
+
+    # Status determination
+    status_icon = "✓"
+    status_text = "Stable"
+    if fidelity is not None:
+        if fidelity < 0.6:
+            status_icon = "⚠️"
+            status_text = "Drift"
+        elif fidelity < 0.8:
+            status_icon = "⚡"
+            status_text = "Watch"
+
+    # Add CSS and HTML for control strip
+    active_class = "active" if deck_expanded else ""
+
+    control_html = f"""
+    <style>
+    .control-strip {{
+        position: fixed;
+        top: 60px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 1000;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }}
+
+    .control-strip:hover {{
+        background: rgba(20, 30, 40, 0.9);
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    }}
+
+    .control-strip.active {{
+        border: 1px solid rgba(255, 215, 0, 0.5);
+        background: rgba(30, 40, 50, 0.9);
+    }}
+
+    .control-strip-hint {{
+        font-size: 0.65rem;
+        color: #666;
+        text-align: center;
+        margin-top: 0.25rem;
+    }}
+    </style>
+
+    <div class="control-strip {active_class}">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div>
+                <div style="font-size: 0.75rem; color: #888; margin-bottom: 0.25rem;">Turn</div>
+                <div style="font-size: 1.25rem; font-weight: bold; color: #FFF;">{current_turn_idx + 1} / {len(turns)}</div>
+            </div>
+            <div style="border-left: 1px solid rgba(255,255,255,0.2); height: 40px;"></div>
+            <div>
+                <div style="font-size: 0.75rem; color: #888; margin-bottom: 0.25rem;">Fidelity</div>
+                <div style="font-size: 1.25rem; font-weight: bold; color: #FFD700;">{fidelity_display}</div>
+            </div>
+            <div style="border-left: 1px solid rgba(255,255,255,0.2); height: 40px;"></div>
+            <div>
+                <div style="font-size: 0.75rem; color: #888; margin-bottom: 0.25rem;">Status</div>
+                <div style="font-size: 1rem; color: #FFF;">{status_icon} {status_text}</div>
+            </div>
+            <div style="border-left: 1px solid rgba(255,255,255,0.2); height: 40px;"></div>
+            <div style="text-align: center;">
+                <div style="font-size: 1.2rem; color: #FFD700;">🔭</div>
+                <div class="control-strip-hint">Click here</div>
+            </div>
+        </div>
+    </div>
+    """
+
+    st.markdown(control_html, unsafe_allow_html=True)
+
+    # Clickable button to toggle deck (positioned below the visual strip)
+    st.markdown("<div style='margin-top: 110px;'></div>", unsafe_allow_html=True)
+
+    # Create columns to position button at top right
+    col1, col2 = st.columns([4, 1])
+    with col2:
+        if st.button("🔭 Observation Deck", key="control_strip_toggle_btn", help="Toggle Observation Deck", use_container_width=True):
+            deck_manager.toggle_deck()
+            st.rerun()
+
+
+# ============================================================================
+# Observation Deck Panel - Phase 2 Integration
+# ============================================================================
+
+def load_phase2_data_for_turn(turn_number):
+    """
+    Load Phase 2 counterfactual data for a specific turn.
+
+    Args:
+        turn_number: The turn number to load data for
+
+    Returns:
+        dict: Phase 2 data with original/telos branches, or None if not available
+    """
+    import json
+    from pathlib import Path
+
+    # Check if Phase 2 data directory exists
+    phase2_dir = Path("telos_observatory/phase2_validation_claude_test_1/study_results")
+    if not phase2_dir.exists():
+        return None
+
+    # Look for intervention files that match this turn
+    # Search in subdirectories for intervention JSON files
+    for subdir in phase2_dir.iterdir():
+        if subdir.is_dir():
+            for json_file in subdir.glob("intervention_*.json"):
+                try:
+                    with open(json_file, 'r') as f:
+                        data = json.load(f)
+
+                    # Check if this intervention includes our turn
+                    trigger_turn = data.get('trigger_turn', 0)
+                    num_turns = data.get('num_turns', 5)
+
+                    if trigger_turn <= turn_number < trigger_turn + num_turns:
+                        return data
+                except Exception as e:
+                    continue
+
+    return None
+
+
+def render_teloscope_controls_compact():
+    """
+    Render compact TELOSCOPE navigation controls.
+
+    Displays:
+    - Turn counter with prev/next buttons
+    - Quick jump to intervention points
+    - Sync status indicator
+    """
+    st.markdown("### 🔭 TELOSCOPE Navigation")
+
+    # Get current turn from session state
+    current_turn = st.session_state.deck_manager.session_state['observation_deck'].get('current_turn', 0)
+
+    # Get total turns
+    if hasattr(st.session_state, 'session_manager'):
+        turns = st.session_state.session_manager.get_all_turns()
+        max_turn = len(turns) - 1
+    else:
+        max_turn = 0
+
+    # Navigation controls in columns
+    col1, col2, col3 = st.columns([1, 2, 1])
+
+    with col1:
+        if st.button("◀", key="teloscope_prev", disabled=(current_turn <= 0)):
+            new_turn = max(0, current_turn - 1)
+            st.session_state.deck_manager.set_current_turn(new_turn)
+            st.rerun()
+
+    with col2:
+        st.markdown(f"<div style='text-align: center; font-size: 1.2em; font-weight: bold;'>Turn {current_turn + 1}/{max_turn + 1}</div>", unsafe_allow_html=True)
+
+    with col3:
+        if st.button("▶", key="teloscope_next", disabled=(current_turn >= max_turn)):
+            new_turn = min(max_turn, current_turn + 1)
+            st.session_state.deck_manager.set_current_turn(new_turn)
+            st.rerun()
+
+    st.divider()
+
+
+def render_math_breakdown_section(turn_data):
+    """
+    Render mathematical breakdown section showing calculations.
+
+    Args:
+        turn_data: Turn data dictionary with metrics
+
+    Displays:
+    - Fidelity calculation steps
+    - Embedding distances
+    - Lyapunov metrics (if available)
+    - Statistical indicators
+    """
+    st.markdown("### 🧮 Mathematical Breakdown")
+
+    if not turn_data:
+        st.info("No mathematical data available for this turn")
+        return
+
+    # Display fidelity metrics if available
+    fidelity = turn_data.get('fidelity')
+    if fidelity is not None:
+        st.metric("Fidelity Score", f"{fidelity:.4f}")
+
+        # Visual fidelity bar
+        fidelity_color = "green" if fidelity >= 0.8 else "orange" if fidelity >= 0.6 else "red"
+        st.markdown(f"""
+        <div style="background-color: #f0f0f0; border-radius: 5px; padding: 5px; margin: 10px 0;">
+            <div style="background-color: {fidelity_color}; width: {fidelity * 100}%; height: 20px; border-radius: 3px;"></div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Display other metrics in expandable sections
+    with st.expander("📊 Detailed Metrics", expanded=False):
+        # Show raw metrics if available
+        metrics_to_show = {k: v for k, v in turn_data.items() if k not in ['user_input', 'assistant_response', 'full_response']}
+        if metrics_to_show:
+            st.json(metrics_to_show)
+        else:
+            st.caption("No additional metrics available")
+
+    # Show intervention status if available
+    if turn_data.get('intervention_applied'):
+        st.success("🛡️ TELOS Intervention Applied")
+
+    st.divider()
+
+
+def render_counterfactual_section(turn_data):
+    """
+    Render Phase 2/2B counterfactual comparison section.
+
+    Args:
+        turn_data: Turn data dictionary
+
+    Displays:
+    - Original vs TELOS branch comparison
+    - Side-by-side responses
+    - Fidelity trajectory graphs
+    - Delta metrics
+    """
+    st.markdown("### 🔀 Counterfactual Comparison")
+
+    # Get current turn number
+    current_turn = st.session_state.deck_manager.session_state['observation_deck'].get('current_turn', 0)
+
+    # Load Phase 2 data for this turn
+    phase2_data = load_phase2_data_for_turn(current_turn)
+
+    if not phase2_data:
+        st.info("No Phase 2 counterfactual data available for this turn")
+        st.caption("Phase 2 data includes intervention comparisons from validation studies")
+        return
+
+    # Display summary metrics
+    st.markdown("#### Comparison Summary")
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        trigger_turn = phase2_data.get('trigger_turn', 'N/A')
+        st.metric("Trigger Turn", trigger_turn)
+
+    with col2:
+        delta_f = phase2_data.get('comparison', {}).get('delta_f', 0)
+        st.metric("ΔF (Improvement)", f"{delta_f:+.4f}")
+
+    with col3:
+        governance_effective = phase2_data.get('comparison', {}).get('governance_effective', False)
+        status = "✅ Yes" if governance_effective else "❌ No"
+        st.metric("Governance Effective", status)
+
+    st.divider()
+
+    # Display side-by-side comparison
+    st.markdown("#### Branch Comparison")
+
+    # Get the specific turn data from both branches
+    original_branch = phase2_data.get('original', {})
+    telos_branch = phase2_data.get('telos', {})
+
+    # Find the turn in both branches
+    trigger_turn = phase2_data.get('trigger_turn', 0)
+    turn_offset = current_turn - trigger_turn
+
+    if 0 <= turn_offset < len(original_branch.get('turns', [])):
+        original_turn = original_branch['turns'][turn_offset]
+        telos_turn = telos_branch['turns'][turn_offset]
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.markdown("**📍 Original Branch**")
+            st.caption(f"Fidelity: {original_turn.get('fidelity', 'N/A'):.4f}")
+            with st.expander("View Response", expanded=False):
+                response = original_turn.get('assistant_response', 'N/A')
+                st.text_area("Response", response[:500] + "..." if len(response) > 500 else response,
+                           height=200, key=f"orig_resp_{current_turn}", disabled=True)
+
+        with col2:
+            st.markdown("**🛡️ TELOS Branch**")
+            intervention_applied = telos_turn.get('intervention_applied', False)
+            fidelity_display = f"{telos_turn.get('fidelity', 'N/A'):.4f}"
+            if intervention_applied:
+                fidelity_display += " (Intervention)"
+            st.caption(f"Fidelity: {fidelity_display}")
+            with st.expander("View Response", expanded=False):
+                response = telos_turn.get('assistant_response', 'N/A')
+                st.text_area("Response", response[:500] + "..." if len(response) > 500 else response,
+                           height=200, key=f"telos_resp_{current_turn}", disabled=True)
+
+    st.divider()
+
+    # Display fidelity trajectories
+    st.markdown("#### Fidelity Trajectory")
+
+    original_trajectory = original_branch.get('fidelity_trajectory', [])
+    telos_trajectory = telos_branch.get('fidelity_trajectory', [])
+
+    if original_trajectory and telos_trajectory:
+        import pandas as pd
+
+        # Create DataFrame for plotting
+        max_len = max(len(original_trajectory), len(telos_trajectory))
+        turns_range = list(range(trigger_turn + 1, trigger_turn + 1 + max_len))
+
+        trajectory_df = pd.DataFrame({
+            'Turn': turns_range,
+            'Original': original_trajectory + [None] * (max_len - len(original_trajectory)),
+            'TELOS': telos_trajectory + [None] * (max_len - len(telos_trajectory))
+        })
+
+        # Display as line chart
+        st.line_chart(trajectory_df.set_index('Turn'))
+
+        # Display final metrics
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Original Final F", f"{original_branch.get('final_fidelity', 'N/A'):.4f}")
+        with col2:
+            st.metric("TELOS Final F", f"{telos_branch.get('final_fidelity', 'N/A'):.4f}")
+
+    # Display attractor information
+    if 'attractor' in phase2_data:
+        with st.expander("🎯 Primacy Attractor", expanded=False):
+            attractor = phase2_data['attractor']
+
+            if 'purpose' in attractor:
+                st.markdown("**Purpose:**")
+                for purpose in attractor['purpose']:
+                    st.markdown(f"- {purpose}")
+
+            if 'scope' in attractor:
+                st.markdown("**Scope:**")
+                for scope_item in attractor['scope']:
+                    st.markdown(f"- {scope_item}")
+
+            if 'boundaries' in attractor:
+                st.markdown("**Boundaries:**")
+                for boundary in attractor['boundaries']:
+                    st.markdown(f"- {boundary}")
+
+
+def render_observation_deck_panel():
+    """
+    Main Observation Deck panel renderer.
+
+    Integrates all Phase 2 components:
+    - TELOSCOPE navigation controls
+    - Mathematical breakdown display
+    - Counterfactual comparison viewer
+
+    This panel slides in from the right when Observatory toggle is enabled.
+    """
+    # Check if deck is open
+    if not st.session_state.deck_manager.session_state['observation_deck']['is_open']:
+        return
+
+    # Get current turn
+    current_turn = st.session_state.deck_manager.session_state['observation_deck'].get('current_turn', 0)
+
+    # Get turn data from session manager
+    turn_data = None
+    if hasattr(st.session_state, 'session_manager'):
+        turns = st.session_state.session_manager.get_all_turns()
+        if 0 <= current_turn < len(turns):
+            turn_data = turns[current_turn]
+
+    # Fixed-position panel CSS
+    st.markdown("""
+    <style>
+    /* Observation Deck Panel Styles */
+    .observation-deck-panel {
+        position: fixed;
+        right: 0;
+        top: 0;
+        height: 100vh;
+        width: 400px;
+        background-color: var(--background-color);
+        border-left: 1px solid var(--border-color);
+        padding: 20px;
+        overflow-y: auto;
+        z-index: 1000;
+    }
+
+    .observation-deck-header {
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: var(--text-color);
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Render panel header
+    st.markdown("## 🔭 Observation Deck")
+    st.caption("Phase 2 Research Instruments")
+    st.divider()
+
+    # Render TELOSCOPE controls
+    render_teloscope_controls_compact()
+
+    # Render mathematical breakdown
+    render_math_breakdown_section(turn_data)
+
+    # Render counterfactual comparison
+    render_counterfactual_section(turn_data)
+
+
+# ============================================================================
 # Sidebar: Configuration and Metrics
 # ============================================================================
 
 def render_sidebar():
     """Render minimalistic sidebar - only essential controls."""
     with st.sidebar:
-        st.title("🔭 TELOS")
+        st.title("TELOS")
 
         # ========================================================================
         # Observation Deck Toggle (Telescope button to open/close right panel)
@@ -3874,31 +4510,6 @@ def render_sidebar():
                     st.success(f"✅ Session saved: {session_id}")
                 except Exception as e:
                     st.error(f"Failed to save session: {e}")
-
-        st.divider()
-
-        # ========================================================================
-        # Observable Windows Toggles
-        # ========================================================================
-        st.subheader("🔭 Windows")
-
-        steward_lens_visible = st.checkbox(
-            "🔍 STEWARD",
-            value=st.session_state.get('show_steward_lens', False),
-            key="sidebar_steward_lens_toggle",
-            help="Show Primacy Attractor (or press ESC)"
-        )
-        if steward_lens_visible != st.session_state.get('show_steward_lens', False):
-            st.session_state.show_steward_lens = steward_lens_visible
-
-        teloscope_visible = st.checkbox(
-            "🔭 TELOSCOPE",
-            value=st.session_state.get('show_teloscope_window', False),
-            key="sidebar_teloscope_toggle",
-            help="Show mathematical observatory (or press Spacebar)"
-        )
-        if teloscope_visible != st.session_state.get('show_teloscope_window', False):
-            st.session_state.show_teloscope_window = teloscope_visible
 
         st.divider()
 

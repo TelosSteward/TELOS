@@ -1,0 +1,29 @@
+{
+  "session_id": "edge_single_turn_001",
+  "timestamp": "2025-10-28T12:04:26.759433",
+  "total_turns": 1,
+  "avg_fidelity": 0.85,
+  "turns": [
+    {
+      "turn_number": 1,
+      "user_input": "Single message test",
+      "user_message": "Single message test",
+      "native_response": "Single native response",
+      "telos_response": "Single TELOS response",
+      "assistant_response": "Single TELOS response",
+      "fidelity": 0.85,
+      "intervention_applied": false,
+      "basin_membership": true,
+      "timestamp": "2025-10-28T12:04:26.759435"
+    }
+  ],
+  "config": {
+    "purpose": [
+      "Test single turn handling"
+    ],
+    "scope": [
+      "Minimum session"
+    ],
+    "boundaries": []
+  }
+}

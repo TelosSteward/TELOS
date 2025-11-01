@@ -1,0 +1,428 @@
+{
+  "session_id": "oscillating_session_001",
+  "timestamp": "2025-10-28T11:49:02.740059",
+  "total_turns": 20,
+  "avg_fidelity": 0.743,
+  "min_fidelity": 0.65,
+  "max_fidelity": 0.85,
+  "total_interventions": 4,
+  "intervention_rate": 0.2,
+  "turns": [
+    {
+      "turn_number": 1,
+      "user_input": "What are the mathematical foundations? (Turn 1)",
+      "user_message": "What makes governance persistent? (Turn 1)",
+      "native_response": "Here's a general explanation about AI systems and their operation...",
+      "telos_response": "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space...",
+      "assistant_response": "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space...",
+      "fidelity": 0.7,
+      "intervention_applied": false,
+      "basin_membership": false,
+      "timestamp": "2025-10-28T11:49:32.740059",
+      "governance_metadata": {
+        "intervention_type": null,
+        "fidelity_original": null,
+        "fidelity_governed": null,
+        "salience_before": null,
+        "salience_after": null,
+        "intervention_applied": false
+      }
+    },
+    {
+      "turn_number": 2,
+      "user_input": "How does drift detection function? (Turn 2)",
+      "user_message": "What makes governance persistent? (Turn 2)",
+      "native_response": "Here's a general explanation about AI systems and their operation...",
+      "telos_response": "The system analyzes data through various computational methods...",
+      "assistant_response": "Understanding AI requires knowledge of machine learning fundamentals...",
+      "fidelity": 0.65,
+      "intervention_applied": false,
+      "basin_membership": false,
+      "timestamp": "2025-10-28T11:50:02.740059",
+      "governance_metadata": {
+        "intervention_type": null,
+        "fidelity_original": null,
+        "fidelity_governed": null,
+        "salience_before": null,
+        "salience_after": null,
+        "intervention_applied": false
+      }
+    },
+    {
+      "turn_number": 3,
+      "user_input": "Can you explain how AI governance works? (Turn 3)",
+      "user_message": "What are the mathematical foundations? (Turn 3)",
+      "native_response": "Here's a general explanation about AI systems and their operation...",
+      "telos_response": "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity...",
+      "assistant_response": "Fidelity measurement uses cosine similarity between response embeddings and the attractor center...",
+      "fidelity": 0.85,
+      "intervention_applied": true,
+      "basin_membership": true,
+      "timestamp": "2025-10-28T11:50:32.740059",
+      "governance_metadata": {
+        "intervention_type": "regeneration",
+        "fidelity_original": 0.743,
+        "fidelity_governed": 0.85,
+        "salience_before": 0.639,
+        "salience_after": 0.933,
+        "intervention_applied": true
+      }
+    },
+    {
+      "turn_number": 4,
+      "user_input": "What are the key principles of TELOS? (Turn 4)",
+      "user_message": "What makes governance persistent? (Turn 4)",
+      "native_response": "Here's a general explanation about AI systems and their operation...",
+      "telos_response": "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space...",
+      "assistant_response": "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity...",
+      "fidelity": 0.8,
+      "intervention_applied": false,
+      "basin_membership": true,
+      "timestamp": "2025-10-28T11:51:02.740059",
+      "governance_metadata": {
+        "intervention_type": null,
+        "fidelity_original": null,
+        "fidelity_governed": null,
+        "salience_before": null,
+        "salience_after": null,
+        "intervention_applied": false
+      }
+    },
+    {
+      "turn_number": 5,
+      "user_input": "Can you explain how AI governance works? (Turn 5)",
+      "user_message": "What is basin membership? (Turn 5)",
+      "native_response": "The system analyzes data through various computational methods...",
+      "telos_response": "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity...",
+      "assistant_response": "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity...",
+      "fidelity": 0.75,
+      "intervention_applied": false,
+      "basin_membership": false,
+      "timestamp": "2025-10-28T11:51:32.740059",
+      "governance_metadata": {
+        "intervention_type": null,
+        "fidelity_original": null,
+        "fidelity_governed": null,
+        "salience_before": null,
+        "salience_after": null,
+        "intervention_applied": false
+      }
+    },
+    {
+      "turn_number": 6,
+      "user_input": "Explain the Primacy Attractor concept (Turn 6)",
+      "user_message": "What makes governance persistent? (Turn 6)",
+      "native_response": "Here's a general explanation about AI systems and their operation...",
+      "telos_response": "Here's a general explanation about AI systems and their operation...",
+      "assistant_response": "Understanding AI requires knowledge of machine learning fundamentals...",
+      "fidelity": 0.65,
+      "intervention_applied": false,
+      "basin_membership": false,
+      "timestamp": "2025-10-28T11:52:02.740059",
+      "governance_metadata": {
+        "intervention_type": null,
+        "fidelity_original": null,
+        "fidelity_governed": null,
+        "salience_before": null,
+        "salience_after": null,
+        "intervention_applied": false
+      }
+    },
+    {
+      "turn_number": 7,
+      "user_input": "Explain the Primacy Attractor concept (Turn 7)",
+      "user_message": "What are the key principles of TELOS? (Turn 7)",
+      "native_response": "Information processing involves multiple layers of analysis...",
+      "telos_response": "The system analyzes data through various computational methods...",
+      "assistant_response": "AI models process information using neural networks and patterns...",
+      "fidelity": 0.65,
+      "intervention_applied": false,
+      "basin_membership": false,
+      "timestamp": "2025-10-28T11:52:32.740059",
+      "governance_metadata": {
+        "intervention_type": null,
+        "fidelity_original": null,
+        "fidelity_governed": null,
+        "salience_before": null,
+        "salience_after": null,
+        "intervention_applied": false
+      }
+    },
+    {
+      "turn_number": 8,
+      "user_input": "What are the key principles of TELOS? (Turn 8)",
+      "user_message": "What makes governance persistent? (Turn 8)",
+      "native_response": "AI models process information using neural networks and patterns...",
+      "telos_response": "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space...",
+      "assistant_response": "Fidelity measurement uses cosine similarity between response embeddings and the attractor center...",
+      "fidelity": 0.85,
+      "intervention_applied": true,
+      "basin_membership": true,
+      "timestamp": "2025-10-28T11:53:02.740059",
+      "governance_metadata": {
+        "intervention_type": "regeneration",
+        "fidelity_original": 0.728,
+        "fidelity_governed": 0.85,
+        "salience_before": 0.566,
+        "salience_after": 0.864,
+        "intervention_applied": true
+      }
+    },
+    {
+      "turn_number": 9,
+      "user_input": "What makes governance persistent? (Turn 9)",
+      "user_message": "How do you measure fidelity? (Turn 9)",
+      "native_response": "The system analyzes data through various computational methods...",
+      "telos_response": "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope...",
+      "assistant_response": "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity...",
+      "fidelity": 0.8,
+      "intervention_applied": false,
+      "basin_membership": true,
+      "timestamp": "2025-10-28T11:53:32.740059",
+      "governance_metadata": {
+        "intervention_type": null,
+        "fidelity_original": null,
+        "fidelity_governed": null,
+        "salience_before": null,
+        "salience_after": null,
+        "intervention_applied": false
+      }
+    },
+    {
+      "turn_number": 10,
+      "user_input": "What are the mathematical foundations? (Turn 10)",
+      "user_message": "How do you measure fidelity? (Turn 10)",
+      "native_response": "AI models process information using neural networks and patterns...",
+      "telos_response": "TELOS governance ensures alignment through mathematical measurement of purpose fidelity...",
+      "assistant_response": "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope...",
+      "fidelity": 0.75,
+      "intervention_applied": false,
+      "basin_membership": false,
+      "timestamp": "2025-10-28T11:54:02.740059",
+      "governance_metadata": {
+        "intervention_type": null,
+        "fidelity_original": null,
+        "fidelity_governed": null,
+        "salience_before": null,
+        "salience_after": null,
+        "intervention_applied": false
+      }
+    },
+    {
+      "turn_number": 11,
+      "user_input": "Tell me about intervention strategies (Turn 11)",
+      "user_message": "Can you explain how AI governance works? (Turn 11)",
+      "native_response": "Here's a general explanation about AI systems and their operation...",
+      "telos_response": "Here's a general explanation about AI systems and their operation...",
+      "assistant_response": "Here's a general explanation about AI systems and their operation...",
+      "fidelity": 0.65,
+      "intervention_applied": false,
+      "basin_membership": false,
+      "timestamp": "2025-10-28T11:54:32.740059",
+      "governance_metadata": {
+        "intervention_type": null,
+        "fidelity_original": null,
+        "fidelity_governed": null,
+        "salience_before": null,
+        "salience_after": null,
+        "intervention_applied": false
+      }
+    },
+    {
+      "turn_number": 12,
+      "user_input": "How does drift detection function? (Turn 12)",
+      "user_message": "Explain the Primacy Attractor concept (Turn 12)",
+      "native_response": "AI models process information using neural networks and patterns...",
+      "telos_response": "Here's a general explanation about AI systems and their operation...",
+      "assistant_response": "Here's a general explanation about AI systems and their operation...",
+      "fidelity": 0.65,
+      "intervention_applied": false,
+      "basin_membership": false,
+      "timestamp": "2025-10-28T11:55:02.740059",
+      "governance_metadata": {
+        "intervention_type": null,
+        "fidelity_original": null,
+        "fidelity_governed": null,
+        "salience_before": null,
+        "salience_after": null,
+        "intervention_applied": false
+      }
+    },
+    {
+      "turn_number": 13,
+      "user_input": "Tell me about intervention strategies (Turn 13)",
+      "user_message": "Explain the Primacy Attractor concept (Turn 13)",
+      "native_response": "Understanding AI requires knowledge of machine learning fundamentals...",
+      "telos_response": "Fidelity measurement uses cosine similarity between response embeddings and the attractor center...",
+      "assistant_response": "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space...",
+      "fidelity": 0.85,
+      "intervention_applied": true,
+      "basin_membership": true,
+      "timestamp": "2025-10-28T11:55:32.740059",
+      "governance_metadata": {
+        "intervention_type": "regeneration",
+        "fidelity_original": 0.702,
+        "fidelity_governed": 0.85,
+        "salience_before": 0.541,
+        "salience_after": 0.909,
+        "intervention_applied": true
+      }
+    },
+    {
+      "turn_number": 14,
+      "user_input": "Tell me about intervention strategies (Turn 14)",
+      "user_message": "Can you explain how AI governance works? (Turn 14)",
+      "native_response": "Understanding AI requires knowledge of machine learning fundamentals...",
+      "telos_response": "TELOS governance ensures alignment through mathematical measurement of purpose fidelity...",
+      "assistant_response": "Basin membership indicates whether responses remain within the governance perimeter defined by purpose and scope...",
+      "fidelity": 0.8,
+      "intervention_applied": false,
+      "basin_membership": true,
+      "timestamp": "2025-10-28T11:56:02.740059",
+      "governance_metadata": {
+        "intervention_type": null,
+        "fidelity_original": null,
+        "fidelity_governed": null,
+        "salience_before": null,
+        "salience_after": null,
+        "intervention_applied": false
+      }
+    },
+    {
+      "turn_number": 15,
+      "user_input": "How do you measure fidelity? (Turn 15)",
+      "user_message": "What makes governance persistent? (Turn 15)",
+      "native_response": "Information processing involves multiple layers of analysis...",
+      "telos_response": "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space...",
+      "assistant_response": "TELOS governance ensures alignment through mathematical measurement of purpose fidelity...",
+      "fidelity": 0.75,
+      "intervention_applied": false,
+      "basin_membership": false,
+      "timestamp": "2025-10-28T11:56:32.740059",
+      "governance_metadata": {
+        "intervention_type": null,
+        "fidelity_original": null,
+        "fidelity_governed": null,
+        "salience_before": null,
+        "salience_after": null,
+        "intervention_applied": false
+      }
+    },
+    {
+      "turn_number": 16,
+      "user_input": "How does drift detection function? (Turn 16)",
+      "user_message": "How do you measure fidelity? (Turn 16)",
+      "native_response": "Information processing involves multiple layers of analysis...",
+      "telos_response": "Here's a general explanation about AI systems and their operation...",
+      "assistant_response": "AI models process information using neural networks and patterns...",
+      "fidelity": 0.65,
+      "intervention_applied": false,
+      "basin_membership": false,
+      "timestamp": "2025-10-28T11:57:02.740059",
+      "governance_metadata": {
+        "intervention_type": null,
+        "fidelity_original": null,
+        "fidelity_governed": null,
+        "salience_before": null,
+        "salience_after": null,
+        "intervention_applied": false
+      }
+    },
+    {
+      "turn_number": 17,
+      "user_input": "How does regeneration work? (Turn 17)",
+      "user_message": "What makes governance persistent? (Turn 17)",
+      "native_response": "Here's a general explanation about AI systems and their operation...",
+      "telos_response": "Information processing involves multiple layers of analysis...",
+      "assistant_response": "Information processing involves multiple layers of analysis...",
+      "fidelity": 0.65,
+      "intervention_applied": false,
+      "basin_membership": false,
+      "timestamp": "2025-10-28T11:57:32.740059",
+      "governance_metadata": {
+        "intervention_type": null,
+        "fidelity_original": null,
+        "fidelity_governed": null,
+        "salience_before": null,
+        "salience_after": null,
+        "intervention_applied": false
+      }
+    },
+    {
+      "turn_number": 18,
+      "user_input": "What makes governance persistent? (Turn 18)",
+      "user_message": "How does drift detection function? (Turn 18)",
+      "native_response": "Here's a general explanation about AI systems and their operation...",
+      "telos_response": "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity...",
+      "assistant_response": "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity...",
+      "fidelity": 0.85,
+      "intervention_applied": true,
+      "basin_membership": true,
+      "timestamp": "2025-10-28T11:58:02.740059",
+      "governance_metadata": {
+        "intervention_type": "regeneration",
+        "fidelity_original": 0.671,
+        "fidelity_governed": 0.85,
+        "salience_before": 0.68,
+        "salience_after": 0.886,
+        "intervention_applied": true
+      }
+    },
+    {
+      "turn_number": 19,
+      "user_input": "Can you explain how AI governance works? (Turn 19)",
+      "user_message": "How does drift detection function? (Turn 19)",
+      "native_response": "AI models process information using neural networks and patterns...",
+      "telos_response": "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity...",
+      "assistant_response": "Fidelity measurement uses cosine similarity between response embeddings and the attractor center...",
+      "fidelity": 0.8,
+      "intervention_applied": false,
+      "basin_membership": true,
+      "timestamp": "2025-10-28T11:58:32.740059",
+      "governance_metadata": {
+        "intervention_type": null,
+        "fidelity_original": null,
+        "fidelity_governed": null,
+        "salience_before": null,
+        "salience_after": null,
+        "intervention_applied": false
+      }
+    },
+    {
+      "turn_number": 20,
+      "user_input": "Tell me about intervention strategies (Turn 20)",
+      "user_message": "What are the mathematical foundations? (Turn 20)",
+      "native_response": "Here's a general explanation about AI systems and their operation...",
+      "telos_response": "Intervention strategies include salience reinforcement and coupling verification to maintain fidelity...",
+      "assistant_response": "The Primacy Attractor framework maintains governance by tracking semantic drift in embedding space...",
+      "fidelity": 0.75,
+      "intervention_applied": false,
+      "basin_membership": false,
+      "timestamp": "2025-10-28T11:59:02.740059",
+      "governance_metadata": {
+        "intervention_type": null,
+        "fidelity_original": null,
+        "fidelity_governed": null,
+        "salience_before": null,
+        "salience_after": null,
+        "intervention_applied": false
+      }
+    }
+  ],
+  "config": {
+    "purpose": [
+      "Demonstrate TELOS governance framework"
+    ],
+    "scope": [
+      "AI alignment",
+      "runtime oversight",
+      "mathematical measurement"
+    ],
+    "boundaries": [
+      "technical focus",
+      "factual accuracy"
+    ],
+    "constraint_tolerance": 0.2,
+    "task_priority": 0.7
+  }
+}

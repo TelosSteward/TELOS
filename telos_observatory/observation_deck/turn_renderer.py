@@ -300,41 +300,38 @@ def render_control_strip():
     # Add "active" class if deck is expanded
     active_class = "active" if deck_expanded else ""
 
-    # Render as clickable button
-    col1, col2 = st.columns([10, 1])
-
-    with col1:
-        # This is just for layout - actual click handled by button below
-        control_html = f"""
-        <div class="control-strip {active_class}" title="Click to toggle Observation Deck (Shift+O)">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <div>
-                    <div style="font-size: 0.75rem; color: #888; margin-bottom: 0.25rem;">Turn</div>
-                    <div style="font-size: 1.25rem; font-weight: bold; color: #FFF;">{active_turn_index + 1} / {len(turns)}</div>
-                </div>
-                <div style="border-left: 1px solid rgba(255,255,255,0.2); height: 40px;"></div>
-                <div>
-                    <div style="font-size: 0.75rem; color: #888; margin-bottom: 0.25rem;">Fidelity</div>
-                    <div style="font-size: 1.25rem; font-weight: bold; color: #FFD700;">{fidelity_display}</div>
-                </div>
-                <div style="border-left: 1px solid rgba(255,255,255,0.2); height: 40px;"></div>
-                <div>
-                    <div style="font-size: 0.75rem; color: #888; margin-bottom: 0.25rem;">Status</div>
-                    <div style="font-size: 1rem; color: #FFF;">{status_icon} {status_text}</div>
-                </div>
-                <div style="border-left: 1px solid rgba(255,255,255,0.2); height: 40px;"></div>
-                <div style="text-align: center;">
-                    <div style="font-size: 1.2rem; color: #FFD700;">🔭</div>
-                    <div class="control-strip-hint">Click to observe</div>
-                </div>
+    # Render control strip display
+    control_html = f"""
+    <div class="control-strip {active_class}">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div>
+                <div style="font-size: 0.75rem; color: #888; margin-bottom: 0.25rem;">Turn</div>
+                <div style="font-size: 1.25rem; font-weight: bold; color: #FFF;">{active_turn_index + 1} / {len(turns)}</div>
+            </div>
+            <div style="border-left: 1px solid rgba(255,255,255,0.2); height: 40px;"></div>
+            <div>
+                <div style="font-size: 0.75rem; color: #888; margin-bottom: 0.25rem;">Fidelity</div>
+                <div style="font-size: 1.25rem; font-weight: bold; color: #FFD700;">{fidelity_display}</div>
+            </div>
+            <div style="border-left: 1px solid rgba(255,255,255,0.2); height: 40px;"></div>
+            <div>
+                <div style="font-size: 0.75rem; color: #888; margin-bottom: 0.25rem;">Status</div>
+                <div style="font-size: 1rem; color: #FFF;">{status_icon} {status_text}</div>
+            </div>
+            <div style="border-left: 1px solid rgba(255,255,255,0.2); height: 40px;"></div>
+            <div style="text-align: center;">
+                <div style="font-size: 1.2rem; color: #FFD700;">🔭</div>
+                <div class="control-strip-hint">Click here</div>
             </div>
         </div>
-        """
+    </div>
+    """
 
-        st.markdown(control_html, unsafe_allow_html=True)
+    st.markdown(control_html, unsafe_allow_html=True)
 
-    with col2:
-        # Invisible button overlay for Streamlit interaction
-        if st.button("🔭", key="control_strip_toggle", help="Toggle Observation Deck (Shift+O)"):
-            st.session_state.deck_expanded = not deck_expanded
-            st.rerun()
+    # Large clickable button below the control strip - MADE VERY VISIBLE
+    st.markdown("<div style='margin-top: 100px; text-align: center;'><h3 style='color: #FFD700;'>⬇️ CLICK BUTTON BELOW TO TOGGLE OBSERVATION DECK ⬇️</h3></div>", unsafe_allow_html=True)
+
+    if st.button("🔭 Toggle Observation Deck", key="control_strip_toggle", help="Toggle Observation Deck (Shift+O)", use_container_width=True):
+        st.session_state.deck_expanded = not deck_expanded
+        st.rerun()

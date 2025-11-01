@@ -7,6 +7,7 @@ Handles dynamic layout, component rendering, and turn marker synchronization.
 
 import streamlit as st
 from typing import Dict, Any, Optional
+from telos_purpose.dev_dashboard.observation_deck.teloscopic_tools.turn_navigator import TurnNavigator
 
 
 class DeckManager:
@@ -145,8 +146,36 @@ class DeckManager:
         """Render tool selection interface."""
         st.markdown("### 🔭 TELOSCOPIC Tools")
         st.markdown("Select a research instrument:")
-        # TODO: Implement tool selector buttons
-        pass
+
+        # Turn Navigator
+        if st.button("⏯️ Turn Navigator", use_container_width=True, key="select_navigator"):
+            self.set_active_tool('navigator')
+            st.rerun()
+
+        # Comparison Viewer
+        if st.button("🔀 Comparison Viewer", use_container_width=True, key="select_comparison", disabled=True):
+            self.set_active_tool('comparison')
+            st.rerun()
+
+        # Calculation Window
+        if st.button("🧮 Calculation Window", use_container_width=True, key="select_calculation", disabled=True):
+            self.set_active_tool('calculation')
+            st.rerun()
+
+        # Calibration Logger (only for turns 1-3)
+        total_turns = self.session_state.get('current_session', {}).get('metadata', {}).get('total_turns', 0)
+        if total_turns <= 3:
+            if st.button("📊 Calibration Logger", use_container_width=True, key="select_calibration", disabled=True):
+                self.set_active_tool('calibration')
+                st.rerun()
+
+        # Steward Chat
+        if st.button("💬 Steward Chat", use_container_width=True, key="select_steward", disabled=True):
+            self.set_active_tool('steward')
+            st.rerun()
+
+        st.markdown("---")
+        st.caption("🔨 Tools marked as disabled are coming soon")
 
     def _render_comparison_viewer(self):
         """Render Comparison Viewer tool."""
@@ -160,8 +189,16 @@ class DeckManager:
 
     def _render_turn_navigator(self):
         """Render Turn Navigator tool."""
-        # TODO: Wire to TurnNavigator component
-        pass
+        # Get web session manager from session state
+        web_session = self.session_state.get('web_session')
+        if web_session:
+            navigator = TurnNavigator(
+                session_manager=web_session,
+                deck_manager=self
+            )
+            navigator.render()
+        else:
+            st.error("⚠️ Session manager not initialized")
 
     def _render_steward_chat(self):
         """Render Steward Chat interface."""
