@@ -46,9 +46,14 @@ logger = logging.getLogger(__name__)
 
 # HUMAN-READABLE corpus files ONLY
 # These are curated, clean explanations - NOT technical docs
+# Includes BOTH technical knowledge (WHAT) and clinical empathy (HOW)
 HUMAN_CORPUS_FILES = [
-    "TELOS_HUMAN_EXPLAINER.md",
-    "TELOS_QUICK_ANSWERS.md"
+    # Clinical empathy - HOW to communicate with dignity and respect
+    "CLINICAL_COMMUNICATION.md",      # Evidence-based communication principles
+    "EMPATHIC_FACILITATION.md",       # Practical facilitation techniques
+    # TELOS knowledge - WHAT to explain
+    "TELOS_HUMAN_EXPLAINER.md",       # TELOS technical knowledge
+    "TELOS_QUICK_ANSWERS.md"          # TELOS quick reference
 ]
 
 # Corpus directory (relative to this file)

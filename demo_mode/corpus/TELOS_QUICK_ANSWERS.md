@@ -1,5 +1,19 @@
 # TELOS Quick Reference: Common Questions Answered
 
+## Why TELOS Exists
+
+### What's the point of TELOS?
+
+To give you control. AI should serve your purposes, not wander off on its own. TELOS keeps conversations focused on what actually matters to you.
+
+### Why does human dignity matter here?
+
+Because AI shouldn't lecture, explain itself, or make you feel managed. It should respond to what you ask, trust that you understand, and stay in the background as infrastructure. You're in control, not the machine.
+
+### How is TELOS different from other AI tools?
+
+Most AI either drifts anywhere or feels rigid and scripted. TELOS lets conversations feel natural while staying aligned with your actual purpose. You get both: natural conversation AND consistent focus.
+
 ## Basic Concepts
 
 ### What is a Primacy Attractor?

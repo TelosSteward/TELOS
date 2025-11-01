@@ -22,7 +22,7 @@ class ObservationDeck:
         turn_data = self.state_manager.get_current_turn_data()
 
         if not turn_data:
-            st.info("No data to display")
+            # No turns yet - don't show anything (clean state)
             return
 
         # Check if deck is expanded

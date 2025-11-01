@@ -55,22 +55,27 @@ class ConversationDisplay:
             enable_intro = st.session_state.get('enable_intro_examples', True)
             st.session_state.show_intro = enable_intro
 
-        # Show intro example ONLY if enabled and we have NO turns (blank start)
-        # Don't show intro when demo data is loaded
-        if st.session_state.show_intro and len(all_turns) == 0 and st.session_state.get('enable_intro_examples', True):
-            self._render_intro_example()
-            self._render_input_with_scroll_toggle()
-            return
-
         if len(all_turns) == 0:
-            # Blank session - check if we should show demo welcome
+            # Blank session - check Demo Mode FIRST
             demo_mode = st.session_state.get('telos_demo_mode', False)
-            if demo_mode and 'demo_welcome_shown' not in st.session_state:
-                # Show demo mode welcome message
-                self._render_demo_welcome()
-            # Show input area
-            self._render_input_with_scroll_toggle()
-            return
+
+            if demo_mode:
+                # DEMO MODE: Show demo welcome message
+                if 'demo_welcome_shown' not in st.session_state:
+                    self._render_demo_welcome()
+                # Show input area
+                self._render_input_with_scroll_toggle()
+                return
+            else:
+                # OPEN MODE: Show intro example if enabled
+                if st.session_state.show_intro and st.session_state.get('enable_intro_examples', True):
+                    self._render_intro_example()
+                    self._render_input_with_scroll_toggle()
+                    return
+                else:
+                    # Just show input area
+                    self._render_input_with_scroll_toggle()
+                    return
 
         # Render scrollable history window if enabled (at top of screen)
         if self.state_manager.state.scrollable_history_mode:
@@ -183,7 +188,11 @@ class ConversationDisplay:
 
         # Render user and assistant messages for this turn with turn number and metrics
         self._render_user_message(turn_data.get('user_input', ''), turn_number, turn_data)
-        self._render_assistant_message(turn_data.get('response', ''), turn_number)
+        self._render_assistant_message(
+            turn_data.get('response', ''),
+            turn_number,
+            is_loading=turn_data.get('is_loading', False)
+        )
 
     def _render_scrollable_history_window(self, current_turn_idx: int, all_turns: list):
         """Render scrollable read-only history window at top of screen."""
@@ -222,7 +231,11 @@ class ConversationDisplay:
 
             # Render messages with turn number and metrics
             self._render_user_message(turn_data.get('user_input', ''), turn_number, turn_data)
-            self._render_assistant_message(turn_data.get('response', ''), turn_number)
+            self._render_assistant_message(
+                turn_data.get('response', ''),
+                turn_number,
+                is_loading=turn_data.get('is_loading', False)
+            )
 
             # Add divider between turns (except after last turn)
             if idx < current_turn_idx:
@@ -318,12 +331,9 @@ class ConversationDisplay:
                         self.state_manager.toggle_scrollable_history()
                         st.rerun()
 
-    def _render_assistant_message(self, message: str, turn_number: int = None):
+    def _render_assistant_message(self, message: str, turn_number: int = None, is_loading: bool = False):
         """Render steward message bubble - aligned with User message."""
         import html
-
-        # Escape the message content
-        safe_message = html.escape(message)
 
         # Match User message structure: 0.5 (Turn badge space) + 9.5 (content area with 8.5:1.5 split)
         col_spacer, col_content = st.columns([0.5, 9.5])
@@ -336,7 +346,22 @@ class ConversationDisplay:
             col_msg, col_empty = st.columns([8.5, 1.5])
 
             with col_msg:
-                st.markdown(f"""
+                if is_loading:
+                    # Show loading spinner
+                    st.markdown(f"""
+<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700;">
+    <div style="color: #888; font-size: 18px; margin-bottom: 5px;">
+        <strong style="color: #FFD700;">Steward</strong>
+    </div>
+    <div style="color: #888; font-size: 18px; font-style: italic;">
+        ⏳ Thinking...
+    </div>
+</div>
+""", unsafe_allow_html=True)
+                else:
+                    # Escape the message content and show response
+                    safe_message = html.escape(message)
+                    st.markdown(f"""
 <div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700;">
     <div style="color: #888; font-size: 18px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">Steward</strong>

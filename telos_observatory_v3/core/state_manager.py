@@ -303,6 +303,34 @@ class StateManager:
         Args:
             message: User's input message
         """
+        # =====================================================================
+        # IMMEDIATE USER MESSAGE DISPLAY (Fix UI Lag)
+        # =====================================================================
+        # Add placeholder turn with user message IMMEDIATELY
+        # This allows conversation_display to show the user message right away
+        # with a loading spinner while we process the response
+        placeholder_turn = {
+            'turn': self.state.total_turns,
+            'timestamp': self.state.total_turns * 2.5,
+            'user_input': message,
+            'response': '',  # Empty response signals "loading" state
+            'fidelity': None,
+            'distance': None,
+            'threshold': 0.8,
+            'intervention_applied': False,
+            'drift_detected': False,
+            'status': "⏳",
+            'status_text': "Processing",
+            'in_basin': True,
+            'phase2_comparison': None,
+            'is_loading': True  # Special flag for loading state
+        }
+
+        self.state.turns.append(placeholder_turn)
+        self.state.total_turns += 1
+        self.state.current_turn = self.state.total_turns - 1
+        # =====================================================================
+
         # Import TELOS components here to avoid circular imports
         try:
             from telos_observatory_v3.utils.telos_demo_data import generate_telos_demo_session
@@ -503,32 +531,25 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             intervention_applied = False
             status_icon, status_text = "✓", "Good"
 
-        # Create turn with actual response
-        new_turn = {
-            'turn': self.state.total_turns,
-            'timestamp': self.state.total_turns * 2.5,
-            'user_input': message,
+        # Update the placeholder turn with actual response
+        # (We already added a placeholder turn at the beginning of this method)
+        current_turn_idx = len(self.state.turns) - 1
+        self.state.turns[current_turn_idx].update({
             'response': response_text,
             'fidelity': fidelity,
             'distance': distance,
-            'threshold': 0.8,
             'intervention_applied': intervention_applied,
             'drift_detected': fidelity < 0.8,
             'status': status_icon,
             'status_text': status_text,
             'in_basin': in_basin,
-            'phase2_comparison': None
-        }
+            'is_loading': False  # Response is ready
+        })
 
-        # Add the new turn to the list
-        self.state.turns.append(new_turn)
-        self.state.total_turns += 1
+        # Current turn is already set (done when we added placeholder)
 
-        # Jump to the new turn
-        self.state.current_turn = self.state.total_turns - 1
-
-        # Update statistics
-        fidelities = [t['fidelity'] for t in self.state.turns]
-        self.state.avg_fidelity = sum(fidelities) / len(fidelities)
+        # Update statistics (filter out None fidelity values)
+        fidelities = [t['fidelity'] for t in self.state.turns if t.get('fidelity') is not None]
+        self.state.avg_fidelity = sum(fidelities) / len(fidelities) if fidelities else 0.0
         self.state.total_interventions = sum(1 for t in self.state.turns if t.get('intervention_applied', False))
         self.state.drift_warnings = sum(1 for t in self.state.turns if t.get('drift_detected', False))

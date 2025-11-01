@@ -6,6 +6,7 @@ Built from scratch with native Streamlit layout.
 
 import sys
 from pathlib import Path
+from datetime import datetime
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -22,14 +23,28 @@ from telos_observatory_v3.components.teloscope_controls import TELOSCOPEControls
 
 
 def initialize_session():
-    """Initialize session state and load TELOS demo data with real calculations."""
+    """Initialize session state - starts fresh (no pre-loaded demo data)."""
     if 'state_manager' not in st.session_state:
+        # Set Demo Mode as DEFAULT (before anything else)
+        if 'telos_demo_mode' not in st.session_state:
+            st.session_state.telos_demo_mode = True
+
         # Create state manager
         state_manager = StateManager()
 
-        # Generate and load TELOS demo data with REAL purpose alignment calculations
-        telos_data = generate_telos_demo_session(num_turns=10)
-        state_manager.initialize(telos_data)
+        # Start with EMPTY session (no pre-loaded turns)
+        # Demo Mode will show welcome message and start fresh
+        # Open Mode will also start fresh
+        empty_data = {
+            'session_id': f"session_{int(datetime.now().timestamp())}",
+            'turns': [],
+            'total_turns': 0,
+            'current_turn': 0,
+            'avg_fidelity': 0.0,
+            'total_interventions': 0,
+            'drift_warnings': 0
+        }
+        state_manager.initialize(empty_data)
 
         # Store in session state
         st.session_state.state_manager = state_manager

@@ -19,6 +19,10 @@ class TELOSCOPEControls:
 
     def render(self):
         """Render TELOSCOPE controls panel."""
+        # Don't render if no turns yet
+        if self.state_manager.state.total_turns == 0:
+            return
+
         # Check if controls are expanded
         is_expanded = self.state_manager.is_teloscope_expanded()
 
