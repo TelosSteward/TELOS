@@ -388,23 +388,44 @@ class ConversationDisplay:
 </div>
 """, unsafe_allow_html=True)
             else:
-                # Show response with markdown rendering
-                # Use container with styling, then native markdown inside
+                # Show response with native markdown rendering
+                # Header with "Steward" label
                 st.markdown("""
-<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700;">
-    <div style="color: #888; font-size: 18px; margin-bottom: 10px;">
+<div style="background-color: #1a1a1a; padding: 15px 15px 5px 15px; border-radius: 10px 10px 0 0; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700; border-bottom: none;">
+    <div style="color: #888; font-size: 18px;">
         <strong style="color: #FFD700;">Steward</strong>
     </div>
 </div>
 """, unsafe_allow_html=True)
-                # Render markdown natively (supports **bold**, _italic_, etc.)
+
+                # Render markdown content natively (NOT inside HTML)
+                # Wrap in a styled container div, then render markdown separately
                 st.markdown(f"""
-<div style="background-color: #1a1a1a; padding: 0 15px 15px 15px; margin-top: -10px; border-radius: 0 0 10px 10px; border: 2px solid #FFD700; border-top: none; color: #fff; font-size: 18px;">
-
-{message}
-
-</div>
+<style>
+.steward-message {{
+    background-color: #1a1a1a;
+    padding: 10px 15px 15px 15px;
+    margin-top: 0;
+    margin-bottom: 0;
+    border: 2px solid #FFD700;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    color: #fff;
+    font-size: 18px;
+}}
+.steward-message p {{
+    color: #fff !important;
+    font-size: 18px !important;
+}}
+</style>
+<div class="steward-message">
 """, unsafe_allow_html=True)
+
+                # Native markdown rendering
+                st.markdown(message)
+
+                # Close the container
+                st.markdown("</div>", unsafe_allow_html=True)
         else:
             # Open Mode: Match User message structure with turn badge spacer
             col_spacer, col_content = st.columns([0.5, 9.5])
@@ -445,22 +466,43 @@ class ConversationDisplay:
 </div>
 """, unsafe_allow_html=True)
                     else:
-                        # Show response with markdown rendering
+                        # Show response with native markdown rendering
+                        # Header with "Steward" label
                         st.markdown("""
-<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700;">
-    <div style="color: #888; font-size: 18px; margin-bottom: 10px;">
+<div style="background-color: #1a1a1a; padding: 15px 15px 5px 15px; border-radius: 10px 10px 0 0; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700; border-bottom: none;">
+    <div style="color: #888; font-size: 18px;">
         <strong style="color: #FFD700;">Steward</strong>
     </div>
 </div>
 """, unsafe_allow_html=True)
-                        # Render markdown natively (supports **bold**, _italic_, etc.)
+
+                        # Render markdown content natively (NOT inside HTML)
                         st.markdown(f"""
-<div style="background-color: #1a1a1a; padding: 0 15px 15px 15px; margin-top: -10px; border-radius: 0 0 10px 10px; border: 2px solid #FFD700; border-top: none; color: #fff; font-size: 18px;">
-
-{message}
-
-</div>
+<style>
+.steward-message {{
+    background-color: #1a1a1a;
+    padding: 10px 15px 15px 15px;
+    margin-top: 0;
+    margin-bottom: 0;
+    border: 2px solid #FFD700;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    color: #fff;
+    font-size: 18px;
+}}
+.steward-message p {{
+    color: #fff !important;
+    font-size: 18px !important;
+}}
+</style>
+<div class="steward-message">
 """, unsafe_allow_html=True)
+
+                        # Native markdown rendering
+                        st.markdown(message)
+
+                        # Close the container
+                        st.markdown("</div>", unsafe_allow_html=True)
 
                 with col_empty:
                     # Empty column for alignment
