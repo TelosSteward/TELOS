@@ -2,9 +2,14 @@
 
 ## Version 1.00 Release Requirements
 
-**Last Updated**: 2025-10-29
+**Last Updated**: 2025-10-30
 **Target Release**: Q4 2025
-**Status**: 85% Complete
+**Status**: 87% Complete
+
+**Recent Progress**:
+- ✅ Observatory Phase 1 Complete (standalone app with TELOSCOPE)
+- ✅ 10/11 Phase 1 tasks complete (91%)
+- ⏳ Live testing pending
 
 ---
 
@@ -159,17 +164,59 @@ Version 1.00 is achieved when:
 
 ---
 
-### 6. Observation Deck 🔭
-**Status**: In Progress (Week of 2025-10-29)
-**Owner**: TBD
+### 6. TELOS Observatory with TELOSCOPE 🔭
+**Status**: Phase 1 Complete (91%), Phase 1.5 Foundation Complete (100%)
+**Owner**: Observatory Team
 **Dependencies**: Interface complete (✅), backend telemetry complete (✅)
 
-**Requirements**:
-- Transform TELOS Observatory into complete research platform
+**Phase 1 Deliverables** (✅ Complete):
+- **Standalone Observatory App**: `telos_observatory/` with complete architecture
+- **TELOSCOPE Navigation**: Frame-by-frame control system with timeline scrubber
+- **Distance-Based Dimming**: Visual focus system (opacity 1.0→0.7→0.4→0.2)
+- **Mock Data System**: 12-turn session demonstrating calibration, drift, intervention, recovery
+- **Complete Documentation**: Streamlit patterns, architecture guide, user guide
+- **Turn Synchronization**: All components read from unified `st.session_state.current_turn`
+
+**Phase 1.5 Deliverables** (✅ Foundation Complete, Core Components Pending):
+- **TELOSCOPE v2 Spec Implementation**: Production-grade control system in `teloscope_v2/`
+- **Centralized State Management**: Nested `st.session_state.teloscope` namespace
+- **Enhanced Mock Data**: Multiple session templates with rich metadata
+- **Advanced Components**: Turn indicator, marker generator, scroll controller
+- **Integration Reconciliation**: Coexistence strategy for Phase 1 and v2
+- **Documentation**: Complete reconciliation guide and architecture specs
+
+**Phase 1.5 Architecture**:
+```
+telos_observatory/
+├── teloscope/              # Phase 1 (working prototype - frozen)
+│   ├── teloscope_controller.py
+│   ├── navigation_controls.py
+│   └── timeline_scrubber.py
+└── teloscope_v2/           # Spec v2 (production build - active)
+    ├── components/
+    │   ├── navigation_controls.py    # Enhanced
+    │   ├── timeline_scrubber.py      # Enhanced
+    │   ├── tool_buttons.py           # NEW
+    │   ├── position_manager.py       # NEW
+    │   └── turn_indicator.py         # NEW (✅ Complete)
+    ├── state/
+    │   └── teloscope_state.py        # NEW (✅ Complete)
+    └── utils/
+        ├── mock_data.py              # Enhanced (✅ Complete)
+        ├── marker_generator.py       # NEW (✅ Complete)
+        └── scroll_controller.py      # NEW (✅ Complete)
+```
+
+**Phase 1.5 Progress**:
+- Week 1-2 Foundation: ✅ Complete (6/6 tasks, 100%)
+- Week 3-4 Core Components: ⏳ Pending (0/6 tasks, 0%)
+
+**Phase 2 Requirements** (⏳ Pending):
+- Transform standalone app into integrated research platform
 - Collapsible research panel with TELOSCOPIC Tools and Steward integration
 - Two control strip systems (Observatory + Observation Deck)
 - Dynamic layout system (4 column width states)
-- Turn marker synchronization across all tools
+- Integration with live TELOS sessions
 
 **Components**:
 - **Observatory Control Strip** (top-right thermometer): Turn counter, fidelity gauge, calibration progress
@@ -194,7 +241,19 @@ telos_purpose/dev_dashboard/observation_deck/
   └── symbolic_flow.py
 ```
 
-**Acceptance Criteria**:
+**Phase 1 Acceptance Criteria** (✅ Complete):
+- [x] Standalone Observatory app created (`telos_observatory/`)
+- [x] TELOSCOPE navigation controls implemented (First/Prev/Play/Next/Last)
+- [x] Timeline scrubber with color-coded markers (✓⚠️⚡⚙️)
+- [x] Distance-based dimming algorithm (opacity based on distance from active turn)
+- [x] Turn synchronization via `st.session_state.current_turn`
+- [x] Auto-play mode with configurable speed
+- [x] Control strip showing turn/fidelity/status
+- [x] Mock data system with 12 realistic turns
+- [x] Complete documentation (patterns, architecture, user guide)
+- [x] All imports validated, no syntax errors
+
+**Phase 2 Acceptance Criteria** (⏳ Pending):
 - [ ] Observatory Control Strip functional (top-right position)
 - [ ] Observation Deck Control Strip functional (sidebar header)
 - [ ] Deck opens/closes with dynamic width adjustment
@@ -202,9 +261,13 @@ telos_purpose/dev_dashboard/observation_deck/
 - [ ] Calibration Logger shows Turns 1-3 attractor formation
 - [ ] Basic Steward integration (text Q&A working)
 - [ ] All 4 layout states tested and functional
-- [ ] Turn marker synchronization verified
+- [ ] Turn marker synchronization with existing dashboard
 
-**Timeline**: 3-week implementation (Weeks 1-3: Foundation, Tools, Integration)
+**Timeline**:
+- Phase 1: ✅ Complete (10/11 tasks, 91%)
+- Phase 1.5 Foundation: ✅ Complete (6/6 tasks, 100%)
+- Phase 1.5 Core: ⏳ Pending (0/6 tasks, Week 3-4)
+- Phase 2: 3-week implementation (Integration with existing dashboard)
 
 ---
 

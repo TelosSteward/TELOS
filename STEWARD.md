@@ -2,10 +2,10 @@
 
 ## Quick Status
 
-**Current Phase**: Observation Deck Implementation (Weeks 1-3)
-**Overall Progress**: ~75% complete (Platform infrastructure ready, UI wiring in progress)
-**UI Progress**: 53.4% complete (57/107 UI overhaul tasks) + Observation Deck (0/15 tasks)
-**Task Progress**: 20.8% complete (11/53 tasks - added 15 Observation Deck tasks)
+**Current Phase**: Observatory Phase 1.5 - TELOSCOPE v2 Foundation
+**Overall Progress**: ~78% complete (Platform infrastructure ready, Observatory foundation complete)
+**Observatory Progress**: Phase 1 Complete (91%), Phase 1.5 Foundation Complete (100%)
+**Task Progress**: 33.0% complete (32/97 tasks)
 
 ## PM Documentation
 
@@ -38,16 +38,33 @@ python steward.py complete "task name"  # Mark task complete
 
 ## Current Focus
 
-**Observation Deck Implementation (Week of 2025-10-29)**
-- ✅ Completed minimalistic interface with Dark/TELOS toggles
-- ✅ Added Chats section for session saving/loading
-- ✅ Fixed font sizes, colors, and layout issues
-- ✅ Synced Observation Deck plan with Steward PM
-- 🔨 **In Progress:** Building Observation Deck research panel
-  - Week 1: Foundation & Control Strips (Observatory + Deck control strips, dynamic layout)
-  - Week 2: TELOSCOPIC Tools (Comparison Viewer, Calculation Window, Turn Navigator, Calibration Logger)
-  - Week 3: Steward Integration & Polish (Steward chat, Symbolic Flow, testing)
-- **After Observation Deck:** Run pilot conversations using the completed research instrument
+**Observatory Phase 1.5 - TELOSCOPE v2 Foundation (Week of 2025-10-30)**
+
+### Completed This Week:
+- ✅ **Phase 1 Observatory**: Standalone frame-by-frame analysis platform (10/11 tasks, 91%)
+  - Location: `telos_observatory/` with TELOSCOPE Phase 1 prototype
+  - Features: Navigation, dimming, timeline scrubber, autoplay
+  - Status: Ready for live testing
+
+- ✅ **Phase 1.5 Foundation**: Production-grade TELOSCOPE v2 components (6/6 tasks, 100%)
+  - Location: `telos_observatory/teloscope_v2/` (coexists with Phase 1)
+  - **Centralized State**: `state/teloscope_state.py` - Nested namespace management
+  - **Enhanced Mock Data**: `utils/mock_data.py` - 4 session templates, rich metadata
+  - **Turn Indicator**: `components/turn_indicator.py` - Turn X/Y display, jump-to
+  - **Marker Generator**: `utils/marker_generator.py` - Timeline markers with 3 styles
+  - **Scroll Controller**: `utils/scroll_controller.py` - Scrolling & dimming integration
+  - **Test Harness**: `main_observatory_v2.py` + `test_imports_v2.py`
+
+### Coexistence Strategy:
+- **Phase 1** (`teloscope/`): Working prototype, frozen for pilot testing
+- **v2 Spec** (`teloscope_v2/`): Production build, active development
+- **See**: `telos_observatory/docs/TELOSCOPE_INTEGRATION_RECONCILIATION.md`
+
+**Next Steps:**
+- ⏳ Week 3-4: Build TELOSCOPE v2 core components (navigation, timeline, tool buttons, controller)
+- ⏳ Live test Phase 1 Observatory
+- ⏳ Run pilot conversations using Phase 1 (don't wait for v2)
+- ⏳ Phase 2: Integrate Observatory with main dashboard
 
 ## Blockers
 
@@ -73,5 +90,5 @@ python steward.py complete "task name"  # Mark task complete
 
 ---
 
-*Last Updated: 2025-10-29*
-*Status: ~75% complete - Platform infrastructure ready, Observation Deck in progress (3-week implementation)*
+*Last Updated: 2025-10-30*
+*Status: ~78% complete - Platform infrastructure ready, Observatory Phase 1 & 1.5 Foundation complete, Week 3-4 core components pending*
