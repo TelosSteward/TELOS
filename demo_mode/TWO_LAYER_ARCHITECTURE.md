@@ -6,9 +6,12 @@
 
 ---
 
-## Architecture Overview
+## The Steward: AI that curates purpose-driven recall
 
-Demo Mode implements a **two-layer architecture** that combines governance with knowledge retrieval to create "The Steward" - an AI expert that never drifts from its domain.
+Demo Mode implements a **two-layer architecture** that combines governance with knowledge retrieval to create **The Steward** - AI that curates purpose-driven recall.
+
+**Not just AI with knowledge. Not just AI with guardrails.**
+**AI that curates what it recalls based on purpose.**
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -300,32 +303,35 @@ User sees: Natural redirection that demonstrates governance
 - Citation-backed info ✓
 - Deep knowledge ✓
 - BUT: Can still drift off-topic ✗
+- BUT: Recalls everything, not just what's relevant ✗
 
 **Layer 1 + Layer 2 (The Steward):**
+- **Curates** what to recall (PA defines relevance) ✓
+- **Purpose-driven recall** (RAG retrieves only what serves purpose) ✓
 - Fast governance (PA) ✓
 - Grounded knowledge (RAG) ✓
 - Observable metrics ✓
 - Never drifts ✓
 - Deep expertise ✓
-- Citation-backed ✓
 
 ### This IS The Steward Product
 
 **What We Built:**
-- PA: Governance framework (research-validated)
-- RAG: Knowledge retrieval (standard technique)
-- Integration: PA governs RAG responses (novel)
+- PA: Purpose curation (what's relevant vs. off-topic)
+- RAG: Knowledge recall (retrieval from corpus)
+- Integration: **Curated purpose-driven recall**
 
 **What We Discovered:**
-- This combination = **Configurable AI Docent**
-- PA defines domain → RAG provides content → LLM explains
+- This combination = **AI that curates purpose-driven recall**
+- PA curates → RAG recalls → LLM explains
 - Works for ANY domain (not just TELOS)
-- "Let Steward Explain" - expertise without drift
+- "Let Steward Explain" - curated expertise
 
 **Demo Mode Proves It:**
 - The Steward explaining The Steward
 - Self-demonstrating system
 - Observable governance in action
+- Curated recall in practice
 - Product validates infrastructure
 
 ---

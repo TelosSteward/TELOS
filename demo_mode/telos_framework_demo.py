@@ -87,29 +87,36 @@ def get_demo_welcome_message():
     """
     return """**Welcome to TELOS Observatory** 🔭
 
-You're experiencing **Demo Mode** – The Steward configured as a TELOS governance expert.
+You're experiencing **The Steward** – AI that curates purpose-driven recall.
 
-**Two-Layer Architecture in Action:**
+**What This Means:**
 
-**Layer 1: Primacy Attractor** (Governance)
-- Semantic boundary enforcement
-- Drift detection via embedding space geometry
-- Keeps conversations aligned with TELOS topics
+**The Steward combines:**
+- **Deep domain knowledge** (TELOS documentation corpus)
+- **Purpose-aligned governance** (Primacy Attractor)
+- **Curated recall** (retrieves only what serves the purpose)
 
-**Layer 2: RAG Corpus** (Knowledge Base)
-- Retrieves from actual TELOS documentation
-- Provides grounded, citation-backed responses
-- Prevents hallucination with real content
+**Two-Layer Architecture:**
 
-**What you'll see:**
-- Accurate answers drawn from TELOS documentation
-- Natural conversation that stays on-topic
-- Observable governance metrics (fidelity, drift detection)
-- The perfect "AI Docent" – expertise without drift
+**Layer 1: Primacy Attractor** (Curation)
+- Defines what's on-purpose vs. off-topic
+- Curates responses to stay aligned
+- Observable drift detection
 
-**Try this:** Ask me anything about TELOS – or even off-topic questions! Watch how the Primacy Attractor gently redirects while the RAG corpus provides grounded answers.
+**Layer 2: RAG Corpus** (Recall)
+- Recalls from TELOS documentation
+- Purpose-driven retrieval (not everything, just what's relevant)
+- Grounded, citation-backed responses
 
-Ready to explore? Ask me about TELOS governance, primacy attractors, or how The Steward works!
+**What you'll experience:**
+- Natural conversation that stays focused on TELOS
+- Answers drawn from curated knowledge base
+- Observable governance metrics (fidelity scoring)
+- AI that curates purpose-driven recall in action
+
+**Try this:** Ask me anything about TELOS – or even off-topic questions! Watch how The Steward curates responses to serve the purpose while recalling relevant knowledge.
+
+Ready to explore? Ask me about TELOS governance, primacy attractors, or how this curation works!
 
 ---
 *💡 Tip: Switch to **Open Mode** in Settings if you want TELOS to learn YOUR purpose instead of demonstrating itself.*"""

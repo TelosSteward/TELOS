@@ -3,14 +3,15 @@
 ## Product Discovery
 
 **What We Built:** Governance infrastructure for AI purpose alignment
-**What We Found:** A productizable AI docent category
+**What We Found:** AI that curates purpose-driven recall
 
 ### The Discovery Moment
 
 While building TELOS Observatory V3 Demo Mode, we realized:
 - Demo Mode isn't just a demo - it's a **Configurable AI Expert**
-- The Primacy Attractor isn't just governance - it's **Domain Embodiment**
-- TELOS isn't just preventing drift - it's **Ensuring Expertise Delivery**
+- The Primacy Attractor isn't just governance - it's **Purpose Curation**
+- RAG isn't just retrieval - it's **Purpose-Driven Recall**
+- Together they create: **The Steward**
 
 **The Steward emerged naturally from infrastructure validation.**
 
@@ -20,18 +21,22 @@ While building TELOS Observatory V3 Demo Mode, we realized:
 
 ### Positioning
 
-**"The Steward: AI Expertise That Never Drifts"**
+**The Steward: AI that curates purpose-driven recall**
 
-### Tagline Options
+### Tagline
 
-- **"Let Steward Explain."** (Primary candidate)
-- "Steward Never Drifts."
-- "Steward Always Guides."
-- "Steward Knows."
+**"Let Steward Explain."**
+
+### Core Description
+
+The Steward is AI that combines deep domain knowledge with purpose-aligned governance. It curates responses to stay on-topic, recalls information relevant to its purpose, and provides observable metrics proving alignment.
+
+**Not just AI with knowledge. Not just AI with guardrails.**
+**AI that curates purpose-driven recall.**
 
 ### What It Does
 
-The Steward is a **Configurable AI Docent** for any domain:
+The Steward is a **Configurable AI Expert** for any domain:
 
 1. **Domain Expert Defines Primacy Attractor**
    - Purpose: What should be explained
@@ -70,17 +75,19 @@ The Steward is a **Configurable AI Docent** for any domain:
 
 ### Why It Works
 
+**The Steward = Domain Expert + Curator of Purpose-Driven Recall**
+
 **vs. Traditional Chatbots:**
 - ❌ Keyword matching → ✅ Semantic understanding
 - ❌ Scripted responses → ✅ Natural conversation
 - ❌ Brittle failure modes → ✅ Graceful redirection
-- ❌ Obvious automation → ✅ Expert embodiment
+- ❌ No real knowledge → ✅ Curated domain expertise
 
 **vs. Generic AI:**
-- ❌ Drifts off-topic → ✅ Governed to purpose
-- ❌ Inconsistent expertise → ✅ Pre-established knowledge boundary
+- ❌ Drifts off-topic → ✅ Curates purpose-aligned responses
+- ❌ Recalls everything → ✅ Recalls only what serves the purpose
 - ❌ Black box → ✅ Observable governance (Observatory)
-- ❌ Unverified claims → ✅ Validated alignment (45 studies)
+- ❌ Ungrounded → ✅ Grounded in curated knowledge base
 
 ---
 
@@ -243,10 +250,10 @@ This is profound:
 ### The Steward
 
 **Core Message:**
-"AI expertise that never drifts from its purpose."
+"AI that curates purpose-driven recall."
 
 **Value Proposition:**
-"Get the conversational intelligence of modern AI with the reliability of a human expert. The Steward stays on-topic, handles any question, and always brings the conversation back to what matters."
+"The Steward combines deep domain knowledge with purpose-aligned governance. It doesn't just answer questions - it curates responses, recalls only what's relevant, and never drifts from its purpose. Get the conversational intelligence of modern AI with the focus of a domain expert."
 
 **Proof Statement:**
 "Powered by TELOS - validated in 45 studies showing 70% improvement in purpose alignment over baseline models."
@@ -257,13 +264,13 @@ This is profound:
 Generic AI drifts. Chatbots are brittle. Expertise is inconsistent.
 
 **Solution:**
-The Steward: Configurable AI that embodies your domain expertise and never strays from purpose.
+The Steward: AI that curates purpose-driven recall - combining domain knowledge with governance.
 
 **Proof:**
 Observable governance, academic validation, self-demonstrating (Demo Mode).
 
 **Call to Action:**
-"Let Steward Explain" your domain.
+"Let Steward Explain" - curated expertise, purpose-driven recall.
 
 ---
 
