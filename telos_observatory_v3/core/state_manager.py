@@ -457,11 +457,11 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             print(f"[DEBUG add_user_message] User message: {message}")
 
             # Determine max_tokens based on mode
-            # Demo Mode: Hard limit for brevity (2-4 paragraphs)
+            # Demo Mode: Hard limit for brevity (DEFAULT: 2 paragraphs, MAX: 3 paragraphs)
             # Open Mode: Standard limit
             if demo_mode:
-                max_tokens = 400  # HARD PROTOCOL: ~2-4 paragraphs maximum
-                logger.info("Demo Mode: Enforcing brevity protocol (max_tokens=400)")
+                max_tokens = 250  # HARD PROTOCOL: ~2 paragraphs default, ~3 max
+                logger.info("Demo Mode: Enforcing brevity protocol (max_tokens=250, target: 2 paragraphs)")
             else:
                 max_tokens = 500  # Standard limit for open mode
 
