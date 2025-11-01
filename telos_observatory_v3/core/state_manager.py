@@ -306,29 +306,39 @@ class StateManager:
         # =====================================================================
         # IMMEDIATE USER MESSAGE DISPLAY (Fix UI Lag)
         # =====================================================================
-        # Add placeholder turn with user message IMMEDIATELY
-        # This allows conversation_display to show the user message right away
-        # with a loading spinner while we process the response
-        placeholder_turn = {
-            'turn': self.state.total_turns,
-            'timestamp': self.state.total_turns * 2.5,
-            'user_input': message,
-            'response': '',  # Empty response signals "loading" state
-            'fidelity': None,
-            'distance': None,
-            'threshold': 0.8,
-            'intervention_applied': False,
-            'drift_detected': False,
-            'status': "⏳",
-            'status_text': "Processing",
-            'in_basin': True,
-            'phase2_comparison': None,
-            'is_loading': True  # Special flag for loading state
-        }
+        # Check if we're already processing this message (rerun after placeholder)
+        already_processing = False
+        if self.state.turns and self.state.turns[-1].get('is_loading', False):
+            # We're in the second run - already showed placeholder, now process response
+            already_processing = True
+            current_turn_idx = len(self.state.turns) - 1
 
-        self.state.turns.append(placeholder_turn)
-        self.state.total_turns += 1
-        self.state.current_turn = self.state.total_turns - 1
+        if not already_processing:
+            # First run - add placeholder and trigger immediate UI update
+            placeholder_turn = {
+                'turn': self.state.total_turns,
+                'timestamp': self.state.total_turns * 2.5,
+                'user_input': message,
+                'response': '',  # Empty response signals "loading" state
+                'fidelity': None,
+                'distance': None,
+                'threshold': 0.8,
+                'intervention_applied': False,
+                'drift_detected': False,
+                'status': "⏳",
+                'status_text': "Processing",
+                'in_basin': True,
+                'phase2_comparison': None,
+                'is_loading': True  # Special flag for loading state
+            }
+
+            self.state.turns.append(placeholder_turn)
+            self.state.total_turns += 1
+            self.state.current_turn = self.state.total_turns - 1
+
+            # CRITICAL: Rerun immediately to show user message + loading animation
+            # On next run, already_processing will be True and we'll generate response
+            st.rerun()
         # =====================================================================
 
         # Import TELOS components here to avoid circular imports
@@ -607,8 +617,9 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             status_icon, status_text = "✓", "Good"
 
         # Update the placeholder turn with actual response
-        # (We already added a placeholder turn at the beginning of this method)
-        current_turn_idx = len(self.state.turns) - 1
+        # current_turn_idx was set earlier (either in already_processing or when adding placeholder)
+        if not already_processing:
+            current_turn_idx = len(self.state.turns) - 1
         self.state.turns[current_turn_idx].update({
             'response': response_text,
             'fidelity': fidelity,

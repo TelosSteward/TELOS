@@ -347,14 +347,29 @@ class ConversationDisplay:
 
             with col_msg:
                 if is_loading:
-                    # Show loading spinner
+                    # Show contemplative pulsing animation (grey ↔ yellow)
                     st.markdown(f"""
-<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700;">
+<style>
+@keyframes contemplative-pulse {{
+    0%, 100% {{
+        border-color: #888;
+        box-shadow: 0 0 10px rgba(136, 136, 136, 0.3);
+    }}
+    50% {{
+        border-color: #FFD700;
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+    }}
+}}
+.contemplating {{
+    animation: contemplative-pulse 2s ease-in-out infinite;
+}}
+</style>
+<div class="contemplating" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888;">
     <div style="color: #888; font-size: 18px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">Steward</strong>
     </div>
-    <div style="color: #888; font-size: 18px; font-style: italic;">
-        ⏳ Thinking...
+    <div style="color: #888; font-size: 18px; font-style: italic; opacity: 0.7;">
+        Contemplating...
     </div>
 </div>
 """, unsafe_allow_html=True)
