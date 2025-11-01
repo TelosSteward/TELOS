@@ -468,12 +468,15 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             # =====================================================================
             # ASYNC + PARALLEL PROCESSING (Experimental)
             # =====================================================================
+            # IMPORTANT: Currently only supported in Demo Mode
+            # Open Mode needs separate implementation (no corpus_loader)
             # Check if experimental performance features are enabled
             enable_async = st.session_state.get('enable_async', False)
             enable_parallel = st.session_state.get('enable_parallel', False)
 
-            # If either feature is enabled, try async processor first
-            if enable_async or enable_parallel:
+            # Only use async/parallel in Demo Mode (Steward has corpus)
+            # Open Mode will be added after validation
+            if demo_mode and (enable_async or enable_parallel):
                 try:
                     import asyncio
                     from telos_observatory_v3.core.async_processor import AsyncStewardProcessor
