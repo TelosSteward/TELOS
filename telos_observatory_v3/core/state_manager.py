@@ -465,17 +465,89 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             else:
                 max_tokens = 500  # Standard limit for open mode
 
-            # Generate response using Mistral
-            response_text = self._telos_steward.llm_client.generate(
-                messages=conversation_history,
-                max_tokens=max_tokens
-            )
+            # =====================================================================
+            # ASYNC + PARALLEL PROCESSING (Experimental)
+            # =====================================================================
+            # Check if experimental performance features are enabled
+            enable_async = st.session_state.get('enable_async', False)
+            enable_parallel = st.session_state.get('enable_parallel', False)
 
-            # Process through TELOS to get fidelity metrics
-            result = self._telos_steward.process_turn(
-                user_input=message,
-                model_response=response_text
-            )
+            # If either feature is enabled, try async processor first
+            if enable_async or enable_parallel:
+                try:
+                    import asyncio
+                    from telos_observatory_v3.core.async_processor import AsyncStewardProcessor
+
+                    # Initialize async processor if not already done
+                    if not hasattr(self, '_async_processor'):
+                        self._async_processor = AsyncStewardProcessor(
+                            enable_async=enable_async,
+                            enable_parallel=enable_parallel,
+                            max_workers=4
+                        )
+                        logger.info(f"Async processor initialized: async={enable_async}, parallel={enable_parallel}")
+
+                    # Update processor settings if flags changed
+                    if self._async_processor.enable_async != enable_async or \
+                       self._async_processor.enable_parallel != enable_parallel:
+                        self._async_processor.enable_async = enable_async
+                        self._async_processor.enable_parallel = enable_parallel
+                        logger.info(f"Async processor settings updated: async={enable_async}, parallel={enable_parallel}")
+
+                    # Try async processing
+                    logger.info("→ Attempting async/parallel processing...")
+                    async_result = asyncio.run(
+                        self._async_processor.process_message(
+                            message=message,
+                            corpus_loader=self._corpus_loader,
+                            telos_steward=self._telos_steward,
+                            conversation_history=conversation_history,
+                            max_tokens=max_tokens
+                        )
+                    )
+
+                    # Check if async processing succeeded
+                    if async_result is not None:
+                        # Success! Use async results
+                        response_text = async_result['response']
+                        result = async_result['validation']
+                        logger.info("✓ Async/parallel processing succeeded")
+                        logger.info(f"  Performance: {async_result.get('processing_times', {})}")
+                    else:
+                        # Async processing failed, fall back to sync
+                        logger.warning("Async/parallel processing returned None, using sync fallback")
+                        raise Exception("Async processing fallback")
+
+                except Exception as async_error:
+                    # Async processing failed, fall back to sync
+                    logger.warning(f"Async/parallel processing failed: {async_error}, using sync")
+
+                    # FALLBACK: Synchronous processing (original code)
+                    response_text = self._telos_steward.llm_client.generate(
+                        messages=conversation_history,
+                        max_tokens=max_tokens
+                    )
+
+                    result = self._telos_steward.process_turn(
+                        user_input=message,
+                        model_response=response_text
+                    )
+            else:
+                # Performance features disabled - use sync processing
+                logger.info("→ Using synchronous processing (async/parallel disabled)")
+
+                # Generate response using Mistral
+                response_text = self._telos_steward.llm_client.generate(
+                    messages=conversation_history,
+                    max_tokens=max_tokens
+                )
+
+                # Process through TELOS to get fidelity metrics
+                result = self._telos_steward.process_turn(
+                    user_input=message,
+                    model_response=response_text
+                )
+            # =====================================================================
 
             fidelity = result.get("telic_fidelity", 0.85)
             distance = result.get("error_signal", 0.15)

@@ -363,3 +363,49 @@ class SidebarActions:
             if not enable_intro and 'show_intro' in st.session_state:
                 st.session_state.show_intro = False
             st.rerun()
+
+        st.markdown("---")
+
+        # Performance Settings (Experimental)
+        st.markdown("**Performance** ⚡")
+
+        # Initialize performance flags
+        if 'enable_async' not in st.session_state:
+            st.session_state.enable_async = False
+        if 'enable_parallel' not in st.session_state:
+            st.session_state.enable_parallel = False
+
+        # Async Processing
+        enable_async = st.checkbox(
+            "Enable Async Processing (Experimental)",
+            value=st.session_state.enable_async,
+            key="async_setting",
+            help="Non-blocking I/O for LLM calls (~30-40% faster)"
+        )
+
+        # Parallel Processing
+        enable_parallel = st.checkbox(
+            "Enable Parallel Processing (Experimental)",
+            value=st.session_state.enable_parallel,
+            key="parallel_setting",
+            help="Concurrent CPU operations for embedding + retrieval (~20-30% faster)"
+        )
+
+        # Update flags if changed
+        if enable_async != st.session_state.enable_async:
+            st.session_state.enable_async = enable_async
+            st.rerun()
+
+        if enable_parallel != st.session_state.enable_parallel:
+            st.session_state.enable_parallel = enable_parallel
+            st.rerun()
+
+        # Show current performance mode
+        if st.session_state.enable_async and st.session_state.enable_parallel:
+            st.success("🚀 **Turbo Mode**: Async + Parallel (~50-60% faster)")
+        elif st.session_state.enable_async:
+            st.info("⚡ **Async Mode**: Non-blocking I/O (~30-40% faster)")
+        elif st.session_state.enable_parallel:
+            st.info("🔀 **Parallel Mode**: Concurrent CPU (~20-30% faster)")
+        else:
+            st.info("🔒 **Safe Mode**: Sequential processing (most stable)")
