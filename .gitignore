@@ -235,12 +235,27 @@ logs/
 temp/
 tmp/
 
-# TELOS-specific: Test data
-test_sessions/
-*/test_sessions/
-edge_cases/
-*/edge_cases/
+# TELOS-specific: Phase 2B intermediate results (keep completed summaries)
+telos_observatory/phase2b_continuous_*/claude_test_1_clean/*/
+telos_observatory/phase2b_continuous_*/.incomplete
+
+# TELOS-specific: Test output
 test_output/
+
+# TELOS-specific: Phase 2 validation data (generated test runs)
+telos_observatory/phase2_study_results/
+telos_observatory/phase2_validation_*/
+telos_observatory/phase2b_continuous_*/
+
+# TELOS-specific: Test sessions and parsed data
+test_sessions/*.json
+test_sessions/*.py
+
+# TELOS-specific: Generated quality reports
+**/quality_analysis_report.md
+
+# TELOS-specific: Phase 2 run logs
+phase2_*.log
 
 # Claude Code
 .claude/
