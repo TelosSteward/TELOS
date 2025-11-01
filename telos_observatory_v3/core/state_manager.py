@@ -428,9 +428,19 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             print(f"[DEBUG add_user_message] Total messages in history: {len(conversation_history)}")
             print(f"[DEBUG add_user_message] User message: {message}")
 
+            # Determine max_tokens based on mode
+            # Demo Mode: Hard limit for brevity (2-4 paragraphs)
+            # Open Mode: Standard limit
+            if demo_mode:
+                max_tokens = 400  # HARD PROTOCOL: ~2-4 paragraphs maximum
+                logger.info("Demo Mode: Enforcing brevity protocol (max_tokens=400)")
+            else:
+                max_tokens = 500  # Standard limit for open mode
+
             # Generate response using Mistral
             response_text = self._telos_steward.llm_client.generate(
-                messages=conversation_history
+                messages=conversation_history,
+                max_tokens=max_tokens
             )
 
             # Process through TELOS to get fidelity metrics
