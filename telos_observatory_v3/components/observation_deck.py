@@ -167,6 +167,17 @@ class ObservationDeck:
         col1, col2, col3, col4 = st.columns(4)
 
         with col1:
+            # Primacy Attractor toggle (renamed from Steward Details)
+            pa_label = "✕ Close Primacy Attractor" if self.state_manager.state.show_primacy_attractor else "🎯 Primacy Attractor"
+            if st.button(
+                pa_label,
+                key="deck_toggle_pa_btn",
+                use_container_width=True
+            ):
+                self.state_manager.toggle_component('primacy_attractor')
+                st.rerun()
+
+        with col2:
             math_label = "✕ Close Math Breakdown" if self.state_manager.state.show_math_breakdown else "🔢 Math Breakdown"
             if st.button(
                 math_label,
@@ -176,7 +187,7 @@ class ObservationDeck:
                 self.state_manager.toggle_component('math_breakdown')
                 st.rerun()
 
-        with col2:
+        with col3:
             cf_label = "✕ Close Counterfactual" if self.state_manager.state.show_counterfactual else "🔀 Counterfactual"
             if st.button(
                 cf_label,
@@ -186,16 +197,7 @@ class ObservationDeck:
                 self.state_manager.toggle_component('counterfactual')
                 st.rerun()
 
-        with col3:
-            steward_label = "✕ Close Steward Details" if self.state_manager.state.show_steward else "👤 Steward Details"
-            if st.button(
-                steward_label,
-                key="deck_toggle_steward_btn",
-                use_container_width=True
-            ):
-                self.state_manager.toggle_component('steward')
-                st.rerun()
-
         with col4:
-            if st.button("🔬 Deep Dive", key="deck_deep_dive_btn", use_container_width=True):
-                st.info("Deep Dive feature - would show detailed Phase 2B comparison")
+            # Renamed Deep Dive to Observatory
+            if st.button("🔭 Observatory", key="deck_observatory_btn", use_container_width=True):
+                st.info("Observatory feature - detailed Phase 2 analysis and metrics")

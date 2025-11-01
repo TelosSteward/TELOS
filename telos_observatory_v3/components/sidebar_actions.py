@@ -115,6 +115,20 @@ class SidebarActions:
             if st.session_state.help_expanded:
                 self._show_help()
 
+            # Settings - Toggle
+            st.markdown("---")
+            if 'settings_expanded' not in st.session_state:
+                st.session_state.settings_expanded = False
+
+            settings_label = "✕ Close Settings" if st.session_state.settings_expanded else "⚙️ Settings"
+            if st.button(settings_label, use_container_width=True, key="toggle_settings"):
+                st.session_state.settings_expanded = not st.session_state.settings_expanded
+                st.rerun()
+
+            # Show settings if expanded
+            if st.session_state.settings_expanded:
+                self._show_settings()
+
     def _save_current_session(self):
         """Save current session state to file."""
         try:
@@ -136,29 +150,76 @@ class SidebarActions:
             st.error(f"Error saving session: {e}")
 
     def _get_saved_sessions(self):
-        """Get list of saved sessions from session state."""
-        # Initialize saved sessions list if not exists
-        if 'saved_sessions' not in st.session_state:
-            st.session_state.saved_sessions = []
+        """Get list of saved sessions from file system."""
+        from pathlib import Path
 
-        return st.session_state.saved_sessions
+        # Check for saved sessions directory
+        saved_sessions_dir = Path(__file__).parent.parent / 'saved_sessions'
+
+        if not saved_sessions_dir.exists():
+            return []
+
+        # Load session index if it exists
+        index_file = saved_sessions_dir / 'session_index.json'
+        if index_file.exists():
+            try:
+                with open(index_file, 'r') as f:
+                    index_data = json.load(f)
+                    return index_data.get('sessions', [])
+            except Exception as e:
+                st.error(f"Error loading session index: {e}")
+                return []
+
+        return []
 
     def _load_session_by_id(self, session_id):
         """Load a specific session by ID."""
-        # Find the session in saved sessions
-        saved_sessions = st.session_state.get('saved_sessions', [])
-        session_data = next((s for s in saved_sessions if s['id'] == session_id), None)
+        from pathlib import Path
 
-        if session_data:
-            st.success(f"Loaded session: {session_data['name']}")
+        # Find the session file
+        saved_sessions_dir = Path(__file__).parent.parent / 'saved_sessions'
+        session_file = saved_sessions_dir / f"{session_id}.json"
+
+        if not session_file.exists():
+            st.error(f"Session file not found: {session_id}")
+            return
+
+        try:
+            # Load session data from file
+            with open(session_file, 'r') as f:
+                session_data = json.load(f)
+
+            # Load into state manager
+            self.state_manager.load_from_session(session_data)
+
+            st.success(f"✅ Loaded: {session_data.get('name', session_id)}")
             st.rerun()
-        else:
-            st.error(f"Session not found: {session_id}")
+
+        except Exception as e:
+            st.error(f"Error loading session: {e}")
 
     def _reset_session(self):
-        """Reset session to beginning."""
+        """Reset session to beginning and close all panels."""
+        # Jump to first turn
         self.state_manager.jump_to_turn(0)
-        st.success("Session reset to turn 1")
+
+        # Close all analysis panels
+        self.state_manager.state.show_primacy_attractor = False
+        self.state_manager.state.show_math_breakdown = False
+        self.state_manager.state.show_counterfactual = False
+        self.state_manager.state.show_steward = False
+
+        # Close observation deck and teloscope
+        self.state_manager.state.deck_expanded = False
+        self.state_manager.state.teloscope_expanded = False
+
+        # Stop playback if running
+        self.state_manager.stop_playback()
+
+        # Turn off scrollable history mode
+        self.state_manager.state.scrollable_history_mode = False
+
+        st.success("✅ Session reset to Turn 1 - All panels closed")
         st.rerun()
 
     def _export_evidence(self):
@@ -190,3 +251,31 @@ class SidebarActions:
     def _show_help(self):
         """Show help information."""
         st.markdown("""<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #FFD700; border-radius: 8px; padding: 15px; margin: 10px 0;"><div style="color: #FFD700; font-size: 18px; font-weight: bold; margin-bottom: 10px;">TELOS Observatory V3</div><div style="color: #FFD700; font-size: 14px; font-weight: bold; margin-top: 10px;">Navigation:</div><div style="color: #e0e0e0; font-size: 13px; margin-left: 10px;">• Main chat window displays the conversation<br>• Click "Observation Deck" to view metrics and analysis toggles<br>• Click "TELOSCOPE Controls" for playback and turn navigation</div><div style="color: #FFD700; font-size: 14px; font-weight: bold; margin-top: 10px;">Observation Deck (🔭):</div><div style="color: #e0e0e0; font-size: 13px; margin-left: 10px;">• View turn metrics (Fidelity, Distance, Status, Interventions)<br>• Toggle analysis windows (Math Breakdown, Counterfactual, Steward Details)<br>• Access Deep Dive mode</div><div style="color: #FFD700; font-size: 14px; font-weight: bold; margin-top: 10px;">TELOSCOPE Controls:</div><div style="color: #e0e0e0; font-size: 13px; margin-left: 10px;">• Navigate turns with slider or Prev/Next buttons<br>• Jump between interventions<br>• Play/Pause automatic playback<br>• Adjust playback speed</div><div style="color: #FFD700; font-size: 14px; font-weight: bold; margin-top: 10px;">Sidebar Actions:</div><div style="color: #e0e0e0; font-size: 13px; margin-left: 10px;">• Save Current: Export session state<br>• Reset Session: Jump back to turn 1<br>• Export Evidence: Generate governance package</div></div>""", unsafe_allow_html=True)
+
+    def _show_settings(self):
+        """Show settings panel."""
+        st.markdown("""
+<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #FFD700; border-radius: 8px; padding: 15px; margin: 10px 0;">
+    <div style="color: #FFD700; font-size: 18px; font-weight: bold; margin-bottom: 10px;">⚙️ Settings</div>
+</div>
+""", unsafe_allow_html=True)
+
+        # Initialize settings defaults
+        if 'enable_intro_examples' not in st.session_state:
+            st.session_state.enable_intro_examples = True
+
+        # Intro Examples Toggle
+        enable_intro = st.checkbox(
+            "Show intro examples on session load",
+            value=st.session_state.enable_intro_examples,
+            key="intro_examples_setting",
+            help="Display random conversation examples when loading a session"
+        )
+
+        # Update setting if changed
+        if enable_intro != st.session_state.enable_intro_examples:
+            st.session_state.enable_intro_examples = enable_intro
+            # If disabling, also hide current intro if showing
+            if not enable_intro and 'show_intro' in st.session_state:
+                st.session_state.show_intro = False
+            st.rerun()

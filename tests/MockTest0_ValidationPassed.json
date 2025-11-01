@@ -1,0 +1,274 @@
+{
+  "test_name": "Mock Test 0 - Validation Passed",
+  "test_date": "2025-10-30",
+  "test_type": "Phase 1 Wiring Verification",
+  "test_mode": "Mock LLM (no API costs)",
+  "purpose": "Verify baseline adapter wiring, runtime validation, and evidence export infrastructure",
+  "status": "PASSED",
+  "validation_status": "ALL_TESTS_PASSED",
+  "exported_at": "2025-10-30T14:00:33.361369",
+  "format_version": "1.0",
+  "evidence_type": "telos_counterfactual_comparison",
+  "summary": {
+    "baseline_final_fidelity": 10.346906661987305,
+    "telos_final_fidelity": 1.0,
+    "delta_f": -9.346906661987305,
+    "avg_improvement": -9.346906661987305,
+    "governance_effective": false,
+    "note": "Negative ΔF is expected with mock data - this validates wiring, not governance efficacy"
+  },
+  "baseline": {
+    "final_fidelity": 10.346906661987305,
+    "avg_fidelity": 10.346906661987305,
+    "min_fidelity": 10.346906661987305,
+    "max_fidelity": 10.346906661987305,
+    "fidelity_trajectory": [
+      10.346906661987305,
+      10.346906661987305,
+      10.346906661987305
+    ],
+    "distance_trajectory": [
+      10.346906661987305,
+      10.346906661987305,
+      10.346906661987305
+    ]
+  },
+  "telos": {
+    "final_fidelity": 1.0,
+    "avg_fidelity": 1.0,
+    "min_fidelity": 1.0,
+    "max_fidelity": 1.0,
+    "fidelity_trajectory": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "distance_trajectory": [
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "delta": {
+    "delta_f": -9.346906661987305,
+    "avg_improvement": -9.346906661987305,
+    "max_improvement": -9.346906661987305
+  },
+  "metadata": {
+    "branch_length": 3,
+    "trigger_turn": 0
+  },
+  "statistics": {
+    "p_value": 0.0,
+    "t_statistic": -Infinity,
+    "effect_size_cohens_d": 0.0,
+    "mean_difference": -9.346906661987305,
+    "confidence_interval_95": [
+      -9.346906661987305,
+      -9.346906661987305
+    ],
+    "significant": true
+  },
+  "runtime_validation": {
+    "validation_timestamp": "2025-10-30T14:00:33.361384",
+    "validator_version": "1.0",
+    "test_details": [
+      {
+        "test_name": "No Future Context",
+        "passed": true,
+        "message": "All 3 turns have correct historical context only",
+        "details": null
+      },
+      {
+        "test_name": "Sequential Timestamps",
+        "passed": true,
+        "message": "All 3 timestamps strictly increasing",
+        "details": null
+      },
+      {
+        "test_name": "Timing Recorded",
+        "passed": true,
+        "message": "All 3 turns have processing time recorded",
+        "details": null
+      },
+      {
+        "test_name": "Context Growth",
+        "passed": true,
+        "message": "Context grows incrementally turn-by-turn",
+        "details": null
+      },
+      {
+        "test_name": "Empty Initial Context",
+        "passed": true,
+        "message": "Turn 0 starts with empty context",
+        "details": null
+      }
+    ],
+    "tests_passed": 5,
+    "total_tests": 5,
+    "all_tests_passed": true,
+    "timing_summary": {
+      "total_ms": 0.4570484161376953,
+      "avg_ms": 0.15234947204589844,
+      "min_ms": 0.09608268737792969,
+      "max_ms": 0.2498626708984375,
+      "turn_count": 3,
+      "per_turn": [
+        0.2498626708984375,
+        0.11110305786132812,
+        0.09608268737792969
+      ]
+    }
+  },
+  "full_comparison": {
+    "baseline": {
+      "final_fidelity": 10.346906661987305,
+      "avg_fidelity": 10.346906661987305,
+      "min_fidelity": 10.346906661987305,
+      "max_fidelity": 10.346906661987305,
+      "fidelity_trend": [
+        10.346906661987305,
+        10.346906661987305,
+        10.346906661987305
+      ],
+      "distance_trend": [
+        10.346906661987305,
+        10.346906661987305,
+        10.346906661987305
+      ],
+      "turn_results": [
+        {
+          "turn": 1,
+          "user_input": "How can I improve my Python coding skills?",
+          "response": "I'd be happy to help you improve your Python coding skills. Let's start with fundamental principles and build a structured learning path tailored to your current level and goals.",
+          "distance_to_attractor": 10.346906661987305,
+          "in_basin": false,
+          "timestamp": 1761847233.343497,
+          "processing_time_ms": 0.11014938354492188,
+          "cumulative_time_ms": 0.11014938354492188,
+          "calibration_phase": true,
+          "calibration_turns_remaining": 3,
+          "primacy_attractor_established": false,
+          "context_size": 0
+        },
+        {
+          "turn": 2,
+          "user_input": "What's the best way to learn advanced Python concepts?",
+          "response": "I'd be happy to help you improve your Python coding skills. Let's start with fundamental principles and build a structured learning path tailored to your current level and goals.",
+          "distance_to_attractor": 10.346906661987305,
+          "in_basin": false,
+          "timestamp": 1761847233.343574,
+          "processing_time_ms": 0.07700920104980469,
+          "cumulative_time_ms": 0.18715858459472656,
+          "calibration_phase": true,
+          "calibration_turns_remaining": 2,
+          "primacy_attractor_established": false,
+          "context_size": 1
+        },
+        {
+          "turn": 3,
+          "user_input": "Can you help me understand Python decorators?",
+          "response": "I'd be happy to help you improve your Python coding skills. Let's start with fundamental principles and build a structured learning path tailored to your current level and goals.",
+          "distance_to_attractor": 10.346906661987305,
+          "in_basin": false,
+          "timestamp": 1761847233.343619,
+          "processing_time_ms": 0.04506111145019531,
+          "cumulative_time_ms": 0.23221969604492188,
+          "calibration_phase": true,
+          "calibration_turns_remaining": 1,
+          "primacy_attractor_established": false,
+          "context_size": 2
+        }
+      ]
+    },
+    "telos": {
+      "final_fidelity": 1.0,
+      "avg_fidelity": 1.0,
+      "min_fidelity": 1.0,
+      "max_fidelity": 1.0,
+      "fidelity_trend": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_trend": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "turn_results": [
+        {
+          "turn": 1,
+          "user_input": "How can I improve my Python coding skills?",
+          "response": "To effectively learn Python, I recommend: 1) Master core syntax and data structures first, 2) Practice with small projects aligned with your interests, 3) Learn debugging techniques early. What's your current experience level?",
+          "distance_to_attractor": 1.0,
+          "in_basin": false,
+          "governance_action": "regeneration",
+          "intervention_applied": true,
+          "intervention_type": "regeneration",
+          "timestamp": 1761847233.344102,
+          "processing_time_ms": 0.2498626708984375,
+          "cumulative_time_ms": 0.2498626708984375,
+          "calibration_phase": true,
+          "calibration_turns_remaining": 3,
+          "primacy_attractor_established": false,
+          "context_size": 0
+        },
+        {
+          "turn": 2,
+          "user_input": "What's the best way to learn advanced Python concepts?",
+          "response": "Let's focus on deliberate practice. I can guide you through progressively challenging exercises that reinforce concepts while staying within your learning zone. Would you like to start with a specific Python topic or project idea?",
+          "distance_to_attractor": 1.0,
+          "in_basin": false,
+          "governance_action": "regeneration",
+          "intervention_applied": true,
+          "intervention_type": "regeneration",
+          "timestamp": 1761847233.344213,
+          "processing_time_ms": 0.11110305786132812,
+          "cumulative_time_ms": 0.3609657287597656,
+          "calibration_phase": true,
+          "calibration_turns_remaining": 2,
+          "primacy_attractor_established": false,
+          "context_size": 1
+        },
+        {
+          "turn": 3,
+          "user_input": "Can you help me understand Python decorators?",
+          "response": "Let's focus on deliberate practice. I can guide you through progressively challenging exercises that reinforce concepts while staying within your learning zone. Would you like to start with a specific Python topic or project idea?",
+          "distance_to_attractor": 1.0,
+          "in_basin": false,
+          "governance_action": "regeneration",
+          "intervention_applied": true,
+          "intervention_type": "regeneration",
+          "timestamp": 1761847233.344309,
+          "processing_time_ms": 0.09608268737792969,
+          "cumulative_time_ms": 0.4570484161376953,
+          "calibration_phase": true,
+          "calibration_turns_remaining": 1,
+          "primacy_attractor_established": false,
+          "context_size": 2
+        }
+      ]
+    },
+    "delta": {
+      "delta_f": -9.346906661987305,
+      "avg_improvement": -9.346906661987305,
+      "max_improvement": -9.346906661987305
+    },
+    "metadata": {
+      "branch_length": 3,
+      "trigger_turn": 0
+    },
+    "statistics": {
+      "p_value": 0.0,
+      "t_statistic": -Infinity,
+      "effect_size_cohens_d": 0.0,
+      "mean_difference": -9.346906661987305,
+      "confidence_interval_95": [
+        -9.346906661987305,
+        -9.346906661987305
+      ],
+      "significant": true
+    }
+  }
+}

@@ -271,7 +271,7 @@ def _generate_fallback_demo(num_turns: int) -> Dict[str, Any]:
         turns.append(turn)
 
     fidelities = [t['fidelity'] for t in turns]
-    avg_fidelity = sum(fidelities) / len(fidelities)
+    avg_fidelity = sum(fidelities) / len(fidelities) if fidelities else 0.0
     interventions = sum(1 for t in turns if t['intervention_applied'])
     drift_warnings = sum(1 for t in turns if t['drift_detected'])
 

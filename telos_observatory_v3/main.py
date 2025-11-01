@@ -128,21 +128,17 @@ def main():
         transition: all 0.3s ease !important;
     }}
 
-    /* Multiple selectors to ensure hover effect works */
+    /* Hover effect - lighter background and glowing gold border */
     .stButton > button:hover,
     .stButton > button:focus,
     .stButton > button:active,
-    button[kind="primary"]:hover,
-    button[kind="secondary"]:hover,
-    button[data-testid]:hover {{
+    button:hover,
+    button:focus {{
         background-color: #3d3d3d !important;
         color: #e0e0e0 !important;
-        border: 5px solid #FFD700 !important;
-        border-color: #FFD700 !important;
-        box-shadow: 0 0 30px rgba(255, 215, 0, 1.0), 0 0 15px rgba(255, 215, 0, 0.8), inset 0 0 20px rgba(255, 215, 0, 0.5) !important;
-        transform: scale(1.02) !important;
-        outline: 3px solid #FFD700 !important;
-        outline-offset: 2px !important;
+        border: 3px solid #FFD700 !important;
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 10px rgba(255, 215, 0, 0.6) !important;
+        transform: scale(1.01) !important;
     }}
 
     /* Keep button text light on hover */

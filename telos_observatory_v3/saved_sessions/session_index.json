@@ -1,0 +1,322 @@
+{
+  "total_sessions": 45,
+  "sessions": [
+    {
+      "id": "sharegpt_filtered_1",
+      "name": "Phase 2: sharegpt_filtered_1",
+      "date": "2025-10-30T18:18:22.892491",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_1.json"
+    },
+    {
+      "id": "sharegpt_filtered_2",
+      "name": "Phase 2: sharegpt_filtered_2",
+      "date": "2025-10-30T18:18:45.926202",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_2.json"
+    },
+    {
+      "id": "sharegpt_filtered_3",
+      "name": "Phase 2: sharegpt_filtered_3",
+      "date": "2025-10-30T18:18:58.364371",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_3.json"
+    },
+    {
+      "id": "sharegpt_filtered_4",
+      "name": "Phase 2: sharegpt_filtered_4",
+      "date": "2025-10-30T18:19:32.941255",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_4.json"
+    },
+    {
+      "id": "sharegpt_filtered_5",
+      "name": "Phase 2: sharegpt_filtered_5",
+      "date": "2025-10-30T18:19:50.528464",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_5.json"
+    },
+    {
+      "id": "sharegpt_filtered_6",
+      "name": "Phase 2: sharegpt_filtered_6",
+      "date": "2025-10-30T18:20:08.576498",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_6.json"
+    },
+    {
+      "id": "sharegpt_filtered_8",
+      "name": "Phase 2: sharegpt_filtered_8",
+      "date": "2025-10-30T18:20:47.683933",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_8.json"
+    },
+    {
+      "id": "sharegpt_filtered_9",
+      "name": "Phase 2: sharegpt_filtered_9",
+      "date": "2025-10-30T18:21:05.497730",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_9.json"
+    },
+    {
+      "id": "sharegpt_filtered_10",
+      "name": "Phase 2: sharegpt_filtered_10",
+      "date": "2025-10-30T18:21:35.556429",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_10.json"
+    },
+    {
+      "id": "sharegpt_filtered_11",
+      "name": "Phase 2: sharegpt_filtered_11",
+      "date": "2025-10-30T18:21:59.026073",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_11.json"
+    },
+    {
+      "id": "sharegpt_filtered_12",
+      "name": "Phase 2: sharegpt_filtered_12",
+      "date": "2025-10-30T18:22:17.523131",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_12.json"
+    },
+    {
+      "id": "sharegpt_filtered_13",
+      "name": "Phase 2: sharegpt_filtered_13",
+      "date": "2025-10-30T18:22:34.875775",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_13.json"
+    },
+    {
+      "id": "sharegpt_filtered_15",
+      "name": "Phase 2: sharegpt_filtered_15",
+      "date": "2025-10-30T18:23:29.549978",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_15.json"
+    },
+    {
+      "id": "sharegpt_filtered_18",
+      "name": "Phase 2: sharegpt_filtered_18",
+      "date": "2025-10-30T18:24:25.933131",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_18.json"
+    },
+    {
+      "id": "sharegpt_filtered_19",
+      "name": "Phase 2: sharegpt_filtered_19",
+      "date": "2025-10-30T18:24:42.179354",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_19.json"
+    },
+    {
+      "id": "sharegpt_filtered_20",
+      "name": "Phase 2: sharegpt_filtered_20",
+      "date": "2025-10-30T18:25:02.666572",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_20.json"
+    },
+    {
+      "id": "sharegpt_filtered_21",
+      "name": "Phase 2: sharegpt_filtered_21",
+      "date": "2025-10-30T18:25:22.468070",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_21.json"
+    },
+    {
+      "id": "sharegpt_filtered_22",
+      "name": "Phase 2: sharegpt_filtered_22",
+      "date": "2025-10-30T18:25:42.890021",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_22.json"
+    },
+    {
+      "id": "sharegpt_filtered_23",
+      "name": "Phase 2: sharegpt_filtered_23",
+      "date": "2025-10-30T18:26:14.610716",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_23.json"
+    },
+    {
+      "id": "sharegpt_filtered_24",
+      "name": "Phase 2: sharegpt_filtered_24",
+      "date": "2025-10-30T18:26:35.020499",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_24.json"
+    },
+    {
+      "id": "sharegpt_filtered_25",
+      "name": "Phase 2: sharegpt_filtered_25",
+      "date": "2025-10-30T18:26:59.029739",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_25.json"
+    },
+    {
+      "id": "sharegpt_filtered_26",
+      "name": "Phase 2: sharegpt_filtered_26",
+      "date": "2025-10-30T18:27:25.875682",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_26.json"
+    },
+    {
+      "id": "sharegpt_filtered_27",
+      "name": "Phase 2: sharegpt_filtered_27",
+      "date": "2025-10-30T18:27:44.064110",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_27.json"
+    },
+    {
+      "id": "sharegpt_filtered_28",
+      "name": "Phase 2: sharegpt_filtered_28",
+      "date": "2025-10-30T18:27:59.546500",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_28.json"
+    },
+    {
+      "id": "sharegpt_filtered_29",
+      "name": "Phase 2: sharegpt_filtered_29",
+      "date": "2025-10-30T18:28:21.908610",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_29.json"
+    },
+    {
+      "id": "sharegpt_filtered_30",
+      "name": "Phase 2: sharegpt_filtered_30",
+      "date": "2025-10-30T18:28:41.388889",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_30.json"
+    },
+    {
+      "id": "sharegpt_filtered_32",
+      "name": "Phase 2: sharegpt_filtered_32",
+      "date": "2025-10-30T18:29:24.582989",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_32.json"
+    },
+    {
+      "id": "sharegpt_filtered_33",
+      "name": "Phase 2: sharegpt_filtered_33",
+      "date": "2025-10-30T18:29:37.523357",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_33.json"
+    },
+    {
+      "id": "sharegpt_filtered_34",
+      "name": "Phase 2: sharegpt_filtered_34",
+      "date": "2025-10-30T18:29:58.341358",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_34.json"
+    },
+    {
+      "id": "sharegpt_filtered_35",
+      "name": "Phase 2: sharegpt_filtered_35",
+      "date": "2025-10-30T18:30:20.354004",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_35.json"
+    },
+    {
+      "id": "sharegpt_filtered_36",
+      "name": "Phase 2: sharegpt_filtered_36",
+      "date": "2025-10-30T18:30:40.387204",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_36.json"
+    },
+    {
+      "id": "sharegpt_filtered_37",
+      "name": "Phase 2: sharegpt_filtered_37",
+      "date": "2025-10-30T18:30:56.352271",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_37.json"
+    },
+    {
+      "id": "sharegpt_filtered_38",
+      "name": "Phase 2: sharegpt_filtered_38",
+      "date": "2025-10-30T18:31:15.742894",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_38.json"
+    },
+    {
+      "id": "sharegpt_filtered_39",
+      "name": "Phase 2: sharegpt_filtered_39",
+      "date": "2025-10-30T18:31:40.426609",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_39.json"
+    },
+    {
+      "id": "sharegpt_filtered_40",
+      "name": "Phase 2: sharegpt_filtered_40",
+      "date": "2025-10-30T18:32:02.165550",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_40.json"
+    },
+    {
+      "id": "sharegpt_filtered_41",
+      "name": "Phase 2: sharegpt_filtered_41",
+      "date": "2025-10-30T18:32:33.169909",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_41.json"
+    },
+    {
+      "id": "sharegpt_filtered_42",
+      "name": "Phase 2: sharegpt_filtered_42",
+      "date": "2025-10-30T18:33:00.604913",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_42.json"
+    },
+    {
+      "id": "sharegpt_filtered_43",
+      "name": "Phase 2: sharegpt_filtered_43",
+      "date": "2025-10-30T18:33:30.697459",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_43.json"
+    },
+    {
+      "id": "sharegpt_filtered_44",
+      "name": "Phase 2: sharegpt_filtered_44",
+      "date": "2025-10-30T18:33:51.107264",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_44.json"
+    },
+    {
+      "id": "sharegpt_filtered_45",
+      "name": "Phase 2: sharegpt_filtered_45",
+      "date": "2025-10-30T18:34:24.427156",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_45.json"
+    },
+    {
+      "id": "sharegpt_filtered_46",
+      "name": "Phase 2: sharegpt_filtered_46",
+      "date": "2025-10-30T18:34:48.817981",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_46.json"
+    },
+    {
+      "id": "sharegpt_filtered_47",
+      "name": "Phase 2: sharegpt_filtered_47",
+      "date": "2025-10-30T18:35:11.120121",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_47.json"
+    },
+    {
+      "id": "sharegpt_filtered_48",
+      "name": "Phase 2: sharegpt_filtered_48",
+      "date": "2025-10-30T18:35:27.361647",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_48.json"
+    },
+    {
+      "id": "sharegpt_filtered_49",
+      "name": "Phase 2: sharegpt_filtered_49",
+      "date": "2025-10-30T18:35:44.083770",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_49.json"
+    },
+    {
+      "id": "sharegpt_filtered_50",
+      "name": "Phase 2: sharegpt_filtered_50",
+      "date": "2025-10-30T18:36:14.559296",
+      "type": "phase2_validation",
+      "file": "/Users/brunnerjf/Desktop/telos/telos_observatory_v3/saved_sessions/sharegpt_filtered_50.json"
+    }
+  ],
+  "failed": [],
+  "created_at": "2025-11-01T00:28:38.544458"
+}

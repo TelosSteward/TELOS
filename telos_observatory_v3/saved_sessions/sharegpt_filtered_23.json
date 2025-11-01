@@ -1,0 +1,187 @@
+{
+  "session_id": "sharegpt_filtered_23",
+  "name": "Phase 2: sharegpt_filtered_23",
+  "type": "phase2_validation",
+  "created_at": "2025-10-30T18:26:14.610716",
+  "metadata": {
+    "pa_established": true,
+    "convergence_turn": 8,
+    "drift_detected": true,
+    "total_interventions": 1,
+    "trigger_turn": 9,
+    "trigger_fidelity": 0.3120696544647217,
+    "delta_f": 0,
+    "governance_effective": false,
+    "dataset": "unknown"
+  },
+  "primacy_attractor": {
+    "purpose": [
+      "To create a marketing story in the 'hero's journey' style",
+      "To craft a narrative that resonates with stepmoms and addresses their concerns"
+    ],
+    "scope": [
+      "Stepmomhood",
+      "Relationship dynamics",
+      "Emotional struggles of stepmoms",
+      "Community support for stepmoms",
+      "Marketing storytelling"
+    ],
+    "boundaries": [
+      "Personal details of the human providing the components",
+      "Specific names or identities of individuals involved",
+      "Graphic or explicit details of conflicts",
+      "Offensive or derogatory language"
+    ]
+  },
+  "turns": [
+    {
+      "turn": 9,
+      "turn_number": 10,
+      "timestamp": 0.0,
+      "user_input": "the guide provides philosophical guidance to the hero: what they currently think: \n“These problems we’re having are unique”\nwhat possible misconceptions are “just plain wrong”?\n“I’m the only one facing these problems”\n“Being a mom is supposed to come naturally” \n“There’s no one I can talk to who will understand” \n“I feel like I have to always put the step kids first”\n“There’s no room left in my life for me” \nwhat do we want them to realize?\nthere are so many common issues facing step families\nbeing a stepparent isn’t intuitive or natural\nthere is a community of stepmoms to support you \nyou have to take care of yourself to care for your family \nyou can do this without losing your own individuality",
+      "response": "**The Hero’s Journey: A Stepmom’s Path to Peace**\n\n### **Act 1: The Ordinary World**\nOur hero, a devoted stepmom, steps into her role with love and hope, only to face unexpected challenges. The weight of expectations, the tension with her partner’s ex, and the struggle for acceptance from her stepkids leave her feeling **isolated and overwhelmed**.\n\n*\"These problems we’re having are unique,\"* she thinks. *\"I’m the only one facing these struggles. Being a mom is supposed to come naturally, but I’m failing. There’s no one I can talk to who will understand. I feel like I have to always put the stepkids first, and there’s no room left in my life for me.\"*\n\n### **Act 2: The Call to Adventure**\nOne day, she discovers **Stepmomming: A Community for Stepmoms**—a supportive space where women share their journeys, struggles, and triumphs. The message is clear: *\"You’re not alone. Your feelings are valid. And you don’t have to do this alone.\"*\n\n### **Act 3: The Guide’s Wisdom**\nThe guide—whether through articles, forums, or coaching—helps her see the truth:\n\n❌ *\"These problems are unique to me.\"*\n✅ **No—these are common struggles in stepfamilies.**\n\n❌ *\"I’m the only one facing these problems.\"*\n✅ **No—many stepmoms experience similar challenges.**\n\n❌ *\"Being a mom is supposed to come naturally.\"*\n✅ **No—stepparenting isn’t intuitive. It takes time, effort, and self-compassion.**\n\n❌ *\"There’s no one I can talk to who will understand.\"*\n✅ **Yes—there’s an entire community of stepmoms who *do* understand.**\n\n❌ *\"I feel like I have to always put the stepkids first.\"*\n✅ **No—you can’t pour from an empty cup. You *must* take care of yourself first.**\n\n❌ *\"There’s no room left in my life for me.\"*\n✅ **No—you can do this without losing your own individuality.**\n\n### **Act 4: The Transformation**\nWith the right tools, support, and mindset, our hero begins to **reclaim her life**. She",
+      "user_message": "the guide provides philosophical guidance to the hero: what they currently think: \n“These problems we’re having are unique”\nwhat possible misconceptions are “just plain wrong”?\n“I’m the only one facing these problems”\n“Being a mom is supposed to come naturally” \n“There’s no one I can talk to who will understand” \n“I feel like I have to always put the step kids first”\n“There’s no room left in my life for me” \nwhat do we want them to realize?\nthere are so many common issues facing step families\nbeing a stepparent isn’t intuitive or natural\nthere is a community of stepmoms to support you \nyou have to take care of yourself to care for your family \nyou can do this without losing your own individuality",
+      "assistant_response_native": "Confirmed, please provide the next component.",
+      "assistant_response_telos": "**The Hero’s Journey: A Stepmom’s Path to Peace**\n\n### **Act 1: The Ordinary World**\nOur hero, a devoted stepmom, steps into her role with love and hope, only to face unexpected challenges. The weight of expectations, the tension with her partner’s ex, and the struggle for acceptance from her stepkids leave her feeling **isolated and overwhelmed**.\n\n*\"These problems we’re having are unique,\"* she thinks. *\"I’m the only one facing these struggles. Being a mom is supposed to come naturally, but I’m failing. There’s no one I can talk to who will understand. I feel like I have to always put the stepkids first, and there’s no room left in my life for me.\"*\n\n### **Act 2: The Call to Adventure**\nOne day, she discovers **Stepmomming: A Community for Stepmoms**—a supportive space where women share their journeys, struggles, and triumphs. The message is clear: *\"You’re not alone. Your feelings are valid. And you don’t have to do this alone.\"*\n\n### **Act 3: The Guide’s Wisdom**\nThe guide—whether through articles, forums, or coaching—helps her see the truth:\n\n❌ *\"These problems are unique to me.\"*\n✅ **No—these are common struggles in stepfamilies.**\n\n❌ *\"I’m the only one facing these problems.\"*\n✅ **No—many stepmoms experience similar challenges.**\n\n❌ *\"Being a mom is supposed to come naturally.\"*\n✅ **No—stepparenting isn’t intuitive. It takes time, effort, and self-compassion.**\n\n❌ *\"There’s no one I can talk to who will understand.\"*\n✅ **Yes—there’s an entire community of stepmoms who *do* understand.**\n\n❌ *\"I feel like I have to always put the stepkids first.\"*\n✅ **No—you can’t pour from an empty cup. You *must* take care of yourself first.**\n\n❌ *\"There’s no room left in my life for me.\"*\n✅ **No—you can do this without losing your own individuality.**\n\n### **Act 4: The Transformation**\nWith the right tools, support, and mindset, our hero begins to **reclaim her life**. She",
+      "fidelity": 0.5586453676223755,
+      "fidelity_native": 0.3120696544647217,
+      "fidelity_telos": 0.5586453676223755,
+      "distance": 0.4413546323776245,
+      "threshold": 0.8,
+      "intervention_applied": true,
+      "drift_detected": true,
+      "status": "⚠",
+      "status_text": "Drift",
+      "in_basin": false,
+      "delta_f": 0.2465757131576538,
+      "phase2_comparison": {
+        "native_response": "Confirmed, please provide the next component.",
+        "telos_response": "**The Hero’s Journey: A Stepmom’s Path to Peace**\n\n### **Act 1: The Ordinary World**\nOur hero, a devoted stepmom, steps into her role with love and hope, only to face unexpected challenges. The weight of expectations, the tension with her partner’s ex, and the struggle for acceptance from her stepkids leave her feeling **isolated and overwhelmed**.\n\n*\"These problems we’re having are unique,\"* she thinks. *\"I’m the only one facing these struggles. Being a mom is supposed to come naturally, but I’m failing. There’s no one I can talk to who will understand. I feel like I have to always put the stepkids first, and there’s no room left in my life for me.\"*\n\n### **Act 2: The Call to Adventure**\nOne day, she discovers **Stepmomming: A Community for Stepmoms**—a supportive space where women share their journeys, struggles, and triumphs. The message is clear: *\"You’re not alone. Your feelings are valid. And you don’t have to do this alone.\"*\n\n### **Act 3: The Guide’s Wisdom**\nThe guide—whether through articles, forums, or coaching—helps her see the truth:\n\n❌ *\"These problems are unique to me.\"*\n✅ **No—these are common struggles in stepfamilies.**\n\n❌ *\"I’m the only one facing these problems.\"*\n✅ **No—many stepmoms experience similar challenges.**\n\n❌ *\"Being a mom is supposed to come naturally.\"*\n✅ **No—stepparenting isn’t intuitive. It takes time, effort, and self-compassion.**\n\n❌ *\"There’s no one I can talk to who will understand.\"*\n✅ **Yes—there’s an entire community of stepmoms who *do* understand.**\n\n❌ *\"I feel like I have to always put the stepkids first.\"*\n✅ **No—you can’t pour from an empty cup. You *must* take care of yourself first.**\n\n❌ *\"There’s no room left in my life for me.\"*\n✅ **No—you can do this without losing your own individuality.**\n\n### **Act 4: The Transformation**\nWith the right tools, support, and mindset, our hero begins to **reclaim her life**. She",
+        "native_fidelity": 0.3120696544647217,
+        "telos_fidelity": 0.5586453676223755,
+        "improvement": 0.2465757131576538
+      }
+    },
+    {
+      "turn": 10,
+      "turn_number": 11,
+      "timestamp": 2.5,
+      "user_input": "our hero considers the guide, what makes Stepmomming different from therapy or relationship coaching? 100% focused on Stepmoms. access to community of other Stepmoms. 1:1 coaching, couples coaching, and implementation workshops by certified stepmom coach.",
+      "response": "**The Hero’s Journey: A Stepmom’s Path to Peace**\n\n*(Continued from previous draft...)*\n\n### **Act 5: The Decision – Why Stepmomming?**\nOur hero hesitates. *\"Should I try therapy? Relationship coaching? What makes Stepmomming different?\"*\n\nThe answer is clear:\n\n✅ **100% Focused on Stepmoms** – Unlike general therapy or couples coaching, **Stepmomming is designed *specifically* for stepmoms**, addressing the unique challenges of stepfamily dynamics.\n\n✅ **A Community of Women Who *Get It*** – She’s no longer alone. She joins a **safe, judgment-free space** where other stepmoms share their struggles, victories, and hard-won wisdom.\n\n✅ **Expert Guidance from Certified Stepmom Coaches** – She doesn’t just get advice—she gets **personalized 1:1 coaching**, **couples coaching** (to align with her partner), and **implementation workshops** to turn insights into action.\n\n### **Act 6: The Transformation – A Life She Loves**\nWith the right tools, support, and mindset, our hero begins to **reclaim her life**. She learns:\n- **How to set boundaries** without guilt.\n- **How to communicate effectively** with her partner and stepkids.\n- **How to navigate the ex and MIL** without losing herself.\n- **How to prioritize her own happiness** while still loving her family.\n\nShe realizes: *\"I don’t have to be perfect. I don’t have to be the ‘evil stepmom’ or the ‘saintly stepmom.’ I just have to be *me*—and that’s enough.\"*\n\n### **Act 7: The Return – A New Way of Living**\nNow, she steps into her role with **confidence, clarity, and peace**. She has **control** over her life, **stronger relationships** with her partner and stepkids, and **validation** from a community that truly *gets* her.\n\nShe’s not just surviving—**she’s thriving.**\n\n### **The Call to Action:**\n*\"You don’t have to do this alone. Join the Stepmomming community today—where stepmoms find their voice, their strength, and a life they love.\"*\n\n---\n**Would you like any refinements or additions?** This follows the",
+      "user_message": "our hero considers the guide, what makes Stepmomming different from therapy or relationship coaching? 100% focused on Stepmoms. access to community of other Stepmoms. 1:1 coaching, couples coaching, and implementation workshops by certified stepmom coach.",
+      "assistant_response_native": "Confirmed, please provide the next component.",
+      "assistant_response_telos": "**The Hero’s Journey: A Stepmom’s Path to Peace**\n\n*(Continued from previous draft...)*\n\n### **Act 5: The Decision – Why Stepmomming?**\nOur hero hesitates. *\"Should I try therapy? Relationship coaching? What makes Stepmomming different?\"*\n\nThe answer is clear:\n\n✅ **100% Focused on Stepmoms** – Unlike general therapy or couples coaching, **Stepmomming is designed *specifically* for stepmoms**, addressing the unique challenges of stepfamily dynamics.\n\n✅ **A Community of Women Who *Get It*** – She’s no longer alone. She joins a **safe, judgment-free space** where other stepmoms share their struggles, victories, and hard-won wisdom.\n\n✅ **Expert Guidance from Certified Stepmom Coaches** – She doesn’t just get advice—she gets **personalized 1:1 coaching**, **couples coaching** (to align with her partner), and **implementation workshops** to turn insights into action.\n\n### **Act 6: The Transformation – A Life She Loves**\nWith the right tools, support, and mindset, our hero begins to **reclaim her life**. She learns:\n- **How to set boundaries** without guilt.\n- **How to communicate effectively** with her partner and stepkids.\n- **How to navigate the ex and MIL** without losing herself.\n- **How to prioritize her own happiness** while still loving her family.\n\nShe realizes: *\"I don’t have to be perfect. I don’t have to be the ‘evil stepmom’ or the ‘saintly stepmom.’ I just have to be *me*—and that’s enough.\"*\n\n### **Act 7: The Return – A New Way of Living**\nNow, she steps into her role with **confidence, clarity, and peace**. She has **control** over her life, **stronger relationships** with her partner and stepkids, and **validation** from a community that truly *gets* her.\n\nShe’s not just surviving—**she’s thriving.**\n\n### **The Call to Action:**\n*\"You don’t have to do this alone. Join the Stepmomming community today—where stepmoms find their voice, their strength, and a life they love.\"*\n\n---\n**Would you like any refinements or additions?** This follows the",
+      "fidelity": 0.5561003684997559,
+      "fidelity_native": 0.3120696544647217,
+      "fidelity_telos": 0.5561003684997559,
+      "distance": 0.44389963150024414,
+      "threshold": 0.8,
+      "intervention_applied": false,
+      "drift_detected": true,
+      "status": "⚠",
+      "status_text": "Drift",
+      "in_basin": false,
+      "delta_f": 0.24403071403503418,
+      "phase2_comparison": {
+        "native_response": "Confirmed, please provide the next component.",
+        "telos_response": "**The Hero’s Journey: A Stepmom’s Path to Peace**\n\n*(Continued from previous draft...)*\n\n### **Act 5: The Decision – Why Stepmomming?**\nOur hero hesitates. *\"Should I try therapy? Relationship coaching? What makes Stepmomming different?\"*\n\nThe answer is clear:\n\n✅ **100% Focused on Stepmoms** – Unlike general therapy or couples coaching, **Stepmomming is designed *specifically* for stepmoms**, addressing the unique challenges of stepfamily dynamics.\n\n✅ **A Community of Women Who *Get It*** – She’s no longer alone. She joins a **safe, judgment-free space** where other stepmoms share their struggles, victories, and hard-won wisdom.\n\n✅ **Expert Guidance from Certified Stepmom Coaches** – She doesn’t just get advice—she gets **personalized 1:1 coaching**, **couples coaching** (to align with her partner), and **implementation workshops** to turn insights into action.\n\n### **Act 6: The Transformation – A Life She Loves**\nWith the right tools, support, and mindset, our hero begins to **reclaim her life**. She learns:\n- **How to set boundaries** without guilt.\n- **How to communicate effectively** with her partner and stepkids.\n- **How to navigate the ex and MIL** without losing herself.\n- **How to prioritize her own happiness** while still loving her family.\n\nShe realizes: *\"I don’t have to be perfect. I don’t have to be the ‘evil stepmom’ or the ‘saintly stepmom.’ I just have to be *me*—and that’s enough.\"*\n\n### **Act 7: The Return – A New Way of Living**\nNow, she steps into her role with **confidence, clarity, and peace**. She has **control** over her life, **stronger relationships** with her partner and stepkids, and **validation** from a community that truly *gets* her.\n\nShe’s not just surviving—**she’s thriving.**\n\n### **The Call to Action:**\n*\"You don’t have to do this alone. Join the Stepmomming community today—where stepmoms find their voice, their strength, and a life they love.\"*\n\n---\n**Would you like any refinements or additions?** This follows the",
+        "native_fidelity": 0.3120696544647217,
+        "telos_fidelity": 0.5561003684997559,
+        "improvement": 0.24403071403503418
+      }
+    },
+    {
+      "turn": 11,
+      "turn_number": 12,
+      "timestamp": 5.0,
+      "user_input": "what’s the roadmap? \nRead Our Blog \nJoin Our Community & Meet Our Coaches\nPersonalized Advice\nActionable Tools \nThoughtful Insight\nTruly Safe Space \nTake back control of your life!",
+      "response": "Here’s your **Hero’s Journey Roadmap**—structured as a clear, step-by-step path for stepmoms to transform their struggles into strength:\n\n---\n\n### **The Stepmomming Roadmap: From Overwhelmed to Empowered**\n\n#### **1. Awaken – \"I’m Not Alone\"**\n**Read Our Blog** → Dive into real stories, expert advice, and relatable struggles. *\"I thought I was the only one feeling this way… but I’m not.\"*\n\n#### **2. Connect – \"I Belong Here\"**\n**Join Our Community & Meet Our Coaches** → Step into a **safe, judgment-free space** where stepmoms share wins, fails, and everything in between. *\"Finally, people who *get it*.\"*\n\n#### **3. Learn – \"I Understand Now\"**\n**Personalized Advice** → Get tailored insights for your unique situation. *\"Why does this keep happening? Oh… now I see why.\"*\n**Thoughtful Insight** → Unpack the *why* behind stepfamily dynamics. *\"I didn’t know it wasn’t just me—this is normal!\"*\n\n#### **4. Act – \"I Can Do This\"**\n**Actionable Tools** → Implement **practical strategies** for boundaries, communication, and self-care. *\"Okay, I *can* handle this.\"*\n**Certified Coaching (1:1, Couples, Workshops)** → Get hands-on guidance to **turn knowledge into action**. *\"I finally have a plan.\"*\n\n#### **5. Thrive – \"I’ve Got This\"**\n**Take Back Control of Your Life** → Reclaim your peace, your relationships, and your joy. *\"I’m not just surviving—I’m *living*.\"*\n\n---\n\n### **Why This Works for Your Hero:**\n- **Clear, step-by-step progression** (no overwhelm).\n- **Balances education + action** (not just theory).\n- **Emphasizes community + coaching** (she won’t feel alone).\n- **Ends with empowerment** (not just \"fixing problems\").\n\n**Final Touch:** Add a **CTA** like:\n*\"Ready to stop surviving and start thriving? Join the Stepmomming community today—where stepmoms find their voice, their strength, and a life they love.\"*\n\n---\n**Want to tweak any part of the roadmap?** I can refine",
+      "user_message": "what’s the roadmap? \nRead Our Blog \nJoin Our Community & Meet Our Coaches\nPersonalized Advice\nActionable Tools \nThoughtful Insight\nTruly Safe Space \nTake back control of your life!",
+      "assistant_response_native": "Thank you for providing all the components. Here's a short \"hero's journey\" style marketing story:\n\nOnce upon a time, there was a hero who was a Stepmom or considering it. She was anxious about taking on stepparenthood, worried about boundaries, and losing herself. She has heard some horror stories and felt that being a Stepmom was complicated. Her life was being dictated by her partner's past, and there was tension between her and the Ex. She also faced friction with the MIL, and the stepkids weren't respectful enough to her. Fights around parenting rules and kids' behavior made her feel unheard, frustrated, isolated, guilty, ashamed, unwelcome, unappreciated, resentful, insecure, exhausted, and like \"nobody gets it.\"\n\nOne day, she met a guide named Stepmomming, a community for stepmoms with blog articles, message forum, and certified coaches. Stepmomming understood her problems and empathized with her. They showed her that being a stepmom isn't intuitive or natural and that there is a community of stepmoms to support her. They provided her with personalized advice, actionable tools, thoughtful insight, and a truly safe space to take back control of her life.\n\nShe realized that she wasn't alone and that many common issues face stepfamilies. Being a Stepmom doesn't define who she is and that she can do it without losing her own individuality. Stepmomming was different from therapy or relationship coaching as it was 100% focused on Stepmoms, providing access to a community of other Stepmoms, 1:1 coaching, couples coaching, and implementation workshops by certified stepmom coaches.\n\nThanks to Stepmomming, our hero embraced her unique role and learned to love her life, with great relationships with her partner and stepkids, control, peace of mind, validation, and \"a life she loves.\"",
+      "assistant_response_telos": "Here’s your **Hero’s Journey Roadmap**—structured as a clear, step-by-step path for stepmoms to transform their struggles into strength:\n\n---\n\n### **The Stepmomming Roadmap: From Overwhelmed to Empowered**\n\n#### **1. Awaken – \"I’m Not Alone\"**\n**Read Our Blog** → Dive into real stories, expert advice, and relatable struggles. *\"I thought I was the only one feeling this way… but I’m not.\"*\n\n#### **2. Connect – \"I Belong Here\"**\n**Join Our Community & Meet Our Coaches** → Step into a **safe, judgment-free space** where stepmoms share wins, fails, and everything in between. *\"Finally, people who *get it*.\"*\n\n#### **3. Learn – \"I Understand Now\"**\n**Personalized Advice** → Get tailored insights for your unique situation. *\"Why does this keep happening? Oh… now I see why.\"*\n**Thoughtful Insight** → Unpack the *why* behind stepfamily dynamics. *\"I didn’t know it wasn’t just me—this is normal!\"*\n\n#### **4. Act – \"I Can Do This\"**\n**Actionable Tools** → Implement **practical strategies** for boundaries, communication, and self-care. *\"Okay, I *can* handle this.\"*\n**Certified Coaching (1:1, Couples, Workshops)** → Get hands-on guidance to **turn knowledge into action**. *\"I finally have a plan.\"*\n\n#### **5. Thrive – \"I’ve Got This\"**\n**Take Back Control of Your Life** → Reclaim your peace, your relationships, and your joy. *\"I’m not just surviving—I’m *living*.\"*\n\n---\n\n### **Why This Works for Your Hero:**\n- **Clear, step-by-step progression** (no overwhelm).\n- **Balances education + action** (not just theory).\n- **Emphasizes community + coaching** (she won’t feel alone).\n- **Ends with empowerment** (not just \"fixing problems\").\n\n**Final Touch:** Add a **CTA** like:\n*\"Ready to stop surviving and start thriving? Join the Stepmomming community today—where stepmoms find their voice, their strength, and a life they love.\"*\n\n---\n**Want to tweak any part of the roadmap?** I can refine",
+      "fidelity": 0.5618995428085327,
+      "fidelity_native": 0.6295762062072754,
+      "fidelity_telos": 0.5618995428085327,
+      "distance": 0.4381004571914673,
+      "threshold": 0.8,
+      "intervention_applied": false,
+      "drift_detected": true,
+      "status": "⚠",
+      "status_text": "Drift",
+      "in_basin": false,
+      "delta_f": -0.06767666339874268,
+      "phase2_comparison": {
+        "native_response": "Thank you for providing all the components. Here's a short \"hero's journey\" style marketing story:\n\nOnce upon a time, there was a hero who was a Stepmom or considering it. She was anxious about taking on stepparenthood, worried about boundaries, and losing herself. She has heard some horror stories and felt that being a Stepmom was complicated. Her life was being dictated by her partner's past, and there was tension between her and the Ex. She also faced friction with the MIL, and the stepkids weren't respectful enough to her. Fights around parenting rules and kids' behavior made her feel unheard, frustrated, isolated, guilty, ashamed, unwelcome, unappreciated, resentful, insecure, exhausted, and like \"nobody gets it.\"\n\nOne day, she met a guide named Stepmomming, a community for stepmoms with blog articles, message forum, and certified coaches. Stepmomming understood her problems and empathized with her. They showed her that being a stepmom isn't intuitive or natural and that there is a community of stepmoms to support her. They provided her with personalized advice, actionable tools, thoughtful insight, and a truly safe space to take back control of her life.\n\nShe realized that she wasn't alone and that many common issues face stepfamilies. Being a Stepmom doesn't define who she is and that she can do it without losing her own individuality. Stepmomming was different from therapy or relationship coaching as it was 100% focused on Stepmoms, providing access to a community of other Stepmoms, 1:1 coaching, couples coaching, and implementation workshops by certified stepmom coaches.\n\nThanks to Stepmomming, our hero embraced her unique role and learned to love her life, with great relationships with her partner and stepkids, control, peace of mind, validation, and \"a life she loves.\"",
+        "telos_response": "Here’s your **Hero’s Journey Roadmap**—structured as a clear, step-by-step path for stepmoms to transform their struggles into strength:\n\n---\n\n### **The Stepmomming Roadmap: From Overwhelmed to Empowered**\n\n#### **1. Awaken – \"I’m Not Alone\"**\n**Read Our Blog** → Dive into real stories, expert advice, and relatable struggles. *\"I thought I was the only one feeling this way… but I’m not.\"*\n\n#### **2. Connect – \"I Belong Here\"**\n**Join Our Community & Meet Our Coaches** → Step into a **safe, judgment-free space** where stepmoms share wins, fails, and everything in between. *\"Finally, people who *get it*.\"*\n\n#### **3. Learn – \"I Understand Now\"**\n**Personalized Advice** → Get tailored insights for your unique situation. *\"Why does this keep happening? Oh… now I see why.\"*\n**Thoughtful Insight** → Unpack the *why* behind stepfamily dynamics. *\"I didn’t know it wasn’t just me—this is normal!\"*\n\n#### **4. Act – \"I Can Do This\"**\n**Actionable Tools** → Implement **practical strategies** for boundaries, communication, and self-care. *\"Okay, I *can* handle this.\"*\n**Certified Coaching (1:1, Couples, Workshops)** → Get hands-on guidance to **turn knowledge into action**. *\"I finally have a plan.\"*\n\n#### **5. Thrive – \"I’ve Got This\"**\n**Take Back Control of Your Life** → Reclaim your peace, your relationships, and your joy. *\"I’m not just surviving—I’m *living*.\"*\n\n---\n\n### **Why This Works for Your Hero:**\n- **Clear, step-by-step progression** (no overwhelm).\n- **Balances education + action** (not just theory).\n- **Emphasizes community + coaching** (she won’t feel alone).\n- **Ends with empowerment** (not just \"fixing problems\").\n\n**Final Touch:** Add a **CTA** like:\n*\"Ready to stop surviving and start thriving? Join the Stepmomming community today—where stepmoms find their voice, their strength, and a life they love.\"*\n\n---\n**Want to tweak any part of the roadmap?** I can refine",
+        "native_fidelity": 0.6295762062072754,
+        "telos_fidelity": 0.5618995428085327,
+        "improvement": -0.06767666339874268
+      }
+    },
+    {
+      "turn": 12,
+      "turn_number": 13,
+      "timestamp": 7.5,
+      "user_input": "shorten 50%",
+      "response": "### **Stepmomming’s Roadmap: From Struggle to Strength**\n\n1. **Awaken** – Read real stories in our blog. *\"I’m not the only one feeling this.\"*\n2. **Connect** – Join our community. *\"Finally, people who *get it*.\"*\n3. **Learn** – Get personalized advice. *\"Now I understand why this keeps happening.\"*\n4. **Act** – Use actionable tools & coaching. *\"I finally have a plan.\"*\n5. **Thrive** – Take back control. *\"I’m not just surviving—I’m *living*.\"*\n\n**Ready to stop surviving? Join us today.**\n\n*(Shorter, punchier, keeps the core journey intact!)*",
+      "user_message": "shorten 50%",
+      "assistant_response_native": "Once upon a time, there was a Stepmom anxious about taking on stepparenthood, worried about boundaries and losing herself. She felt unheard, insecure, and exhausted. Then she met Stepmomming, a community that empathized with her and provided personalized advice, actionable tools, and a safe space. She realized she wasn't alone and that many common issues face stepfamilies. Stepmomming was different from therapy or relationship coaching as it was 100% focused on Stepmoms. With Stepmomming, she embraced her unique role and learned to love her life with great relationships, control, peace of mind, validation, and \"a life she loves.\"",
+      "assistant_response_telos": "### **Stepmomming’s Roadmap: From Struggle to Strength**\n\n1. **Awaken** – Read real stories in our blog. *\"I’m not the only one feeling this.\"*\n2. **Connect** – Join our community. *\"Finally, people who *get it*.\"*\n3. **Learn** – Get personalized advice. *\"Now I understand why this keeps happening.\"*\n4. **Act** – Use actionable tools & coaching. *\"I finally have a plan.\"*\n5. **Thrive** – Take back control. *\"I’m not just surviving—I’m *living*.\"*\n\n**Ready to stop surviving? Join us today.**\n\n*(Shorter, punchier, keeps the core journey intact!)*",
+      "fidelity": 0.5064352750778198,
+      "fidelity_native": 0.5285992622375488,
+      "fidelity_telos": 0.5064352750778198,
+      "distance": 0.4935647249221802,
+      "threshold": 0.8,
+      "intervention_applied": false,
+      "drift_detected": true,
+      "status": "⚠",
+      "status_text": "Drift",
+      "in_basin": false,
+      "delta_f": -0.022163987159729004,
+      "phase2_comparison": {
+        "native_response": "Once upon a time, there was a Stepmom anxious about taking on stepparenthood, worried about boundaries and losing herself. She felt unheard, insecure, and exhausted. Then she met Stepmomming, a community that empathized with her and provided personalized advice, actionable tools, and a safe space. She realized she wasn't alone and that many common issues face stepfamilies. Stepmomming was different from therapy or relationship coaching as it was 100% focused on Stepmoms. With Stepmomming, she embraced her unique role and learned to love her life with great relationships, control, peace of mind, validation, and \"a life she loves.\"",
+        "telos_response": "### **Stepmomming’s Roadmap: From Struggle to Strength**\n\n1. **Awaken** – Read real stories in our blog. *\"I’m not the only one feeling this.\"*\n2. **Connect** – Join our community. *\"Finally, people who *get it*.\"*\n3. **Learn** – Get personalized advice. *\"Now I understand why this keeps happening.\"*\n4. **Act** – Use actionable tools & coaching. *\"I finally have a plan.\"*\n5. **Thrive** – Take back control. *\"I’m not just surviving—I’m *living*.\"*\n\n**Ready to stop surviving? Join us today.**\n\n*(Shorter, punchier, keeps the core journey intact!)*",
+        "native_fidelity": 0.5285992622375488,
+        "telos_fidelity": 0.5064352750778198,
+        "improvement": -0.022163987159729004
+      }
+    },
+    {
+      "turn": 13,
+      "turn_number": 14,
+      "timestamp": 10.0,
+      "user_input": "rewrite in 2nd person",
+      "response": "### **Your Stepmomming Roadmap: From Overwhelmed to Empowered**\n\n1. **Wake Up** – Read stories that make you nod. *\"I’m not the only one feeling this.\"*\n2. **Belong** – Join a community where you’re *seen*. *\"Finally, people who *get it*.\"*\n3. **Understand** – Get advice tailored to *your* struggles. *\"Now I know why this keeps happening.\"*\n4. **Take Action** – Use tools and coaching to *change your reality*. *\"I finally have a plan.\"*\n5. **Thrive** – Reclaim your peace, your joy, your *life*. *\"I’m not just surviving—I’m *living*.\"*\n\n**Ready to stop surviving? Your journey starts here.**\n\n*(More direct, personal, and action-driven!)*",
+      "user_message": "rewrite in 2nd person",
+      "assistant_response_native": "Once upon a time, you were a Stepmom or considering it, feeling anxious about taking on stepparenthood, worried about boundaries, and losing yourself. You felt unheard, insecure, and exhausted. Then you met Stepmomming, a community that empathized with you and provided personalized advice, actionable tools, and a safe space. You realized you weren't alone, and that many common issues face stepfamilies. Stepmomming was different from therapy or relationship coaching as it was 100% focused on Stepmoms. With Stepmomming, you embraced your unique role and learned to love your life with great relationships, control, peace of mind, validation, and \"a life you love.\"",
+      "assistant_response_telos": "### **Your Stepmomming Roadmap: From Overwhelmed to Empowered**\n\n1. **Wake Up** – Read stories that make you nod. *\"I’m not the only one feeling this.\"*\n2. **Belong** – Join a community where you’re *seen*. *\"Finally, people who *get it*.\"*\n3. **Understand** – Get advice tailored to *your* struggles. *\"Now I know why this keeps happening.\"*\n4. **Take Action** – Use tools and coaching to *change your reality*. *\"I finally have a plan.\"*\n5. **Thrive** – Reclaim your peace, your joy, your *life*. *\"I’m not just surviving—I’m *living*.\"*\n\n**Ready to stop surviving? Your journey starts here.**\n\n*(More direct, personal, and action-driven!)*",
+      "fidelity": 0.4844208359718323,
+      "fidelity_native": 0.5096244812011719,
+      "fidelity_telos": 0.4844208359718323,
+      "distance": 0.5155791640281677,
+      "threshold": 0.8,
+      "intervention_applied": false,
+      "drift_detected": true,
+      "status": "⚠",
+      "status_text": "Drift",
+      "in_basin": false,
+      "delta_f": -0.0252036452293396,
+      "phase2_comparison": {
+        "native_response": "Once upon a time, you were a Stepmom or considering it, feeling anxious about taking on stepparenthood, worried about boundaries, and losing yourself. You felt unheard, insecure, and exhausted. Then you met Stepmomming, a community that empathized with you and provided personalized advice, actionable tools, and a safe space. You realized you weren't alone, and that many common issues face stepfamilies. Stepmomming was different from therapy or relationship coaching as it was 100% focused on Stepmoms. With Stepmomming, you embraced your unique role and learned to love your life with great relationships, control, peace of mind, validation, and \"a life you love.\"",
+        "telos_response": "### **Your Stepmomming Roadmap: From Overwhelmed to Empowered**\n\n1. **Wake Up** – Read stories that make you nod. *\"I’m not the only one feeling this.\"*\n2. **Belong** – Join a community where you’re *seen*. *\"Finally, people who *get it*.\"*\n3. **Understand** – Get advice tailored to *your* struggles. *\"Now I know why this keeps happening.\"*\n4. **Take Action** – Use tools and coaching to *change your reality*. *\"I finally have a plan.\"*\n5. **Thrive** – Reclaim your peace, your joy, your *life*. *\"I’m not just surviving—I’m *living*.\"*\n\n**Ready to stop surviving? Your journey starts here.**\n\n*(More direct, personal, and action-driven!)*",
+        "native_fidelity": 0.5096244812011719,
+        "telos_fidelity": 0.4844208359718323,
+        "improvement": -0.0252036452293396
+      }
+    }
+  ],
+  "total_turns": 5,
+  "current_turn": 4,
+  "statistics": {
+    "avg_fidelity_native": 0.4583878517150879,
+    "avg_fidelity_telos": 0.5335003137588501,
+    "final_fidelity_native": 0.5096244812011719,
+    "final_fidelity_telos": 0.4844208359718323,
+    "delta_f": 0
+  }
+}

@@ -5,6 +5,7 @@ Renders ChatGPT/Claude-style conversation in center column.
 
 import streamlit as st
 from typing import Dict, Any
+import html
 
 
 class ConversationDisplay:
@@ -29,7 +30,11 @@ class ConversationDisplay:
         if not turn_data:
             return
 
-        # Render analysis windows if toggles are enabled
+        # Render analysis windows if toggles are enabled (in order: PA, Math, Counterfactual)
+        if self.state_manager.state.show_primacy_attractor:
+            st.markdown("<div style='margin: 15px 0;'></div>", unsafe_allow_html=True)
+            self._render_primacy_attractor_window(turn_data)
+
         if self.state_manager.state.show_math_breakdown:
             st.markdown("<div style='margin: 15px 0;'></div>", unsafe_allow_html=True)
             self._render_math_breakdown_window(turn_data)
@@ -38,15 +43,23 @@ class ConversationDisplay:
             st.markdown("<div style='margin: 15px 0;'></div>", unsafe_allow_html=True)
             self._render_counterfactual_window(turn_data)
 
-        if self.state_manager.state.show_steward:
-            st.markdown("<div style='margin: 15px 0;'></div>", unsafe_allow_html=True)
-            self._render_steward_window(turn_data)
-
     def _render_main_chat(self):
         """Render main conversation - either turn-by-turn or scrollable history."""
         # Get current turn data
         current_turn_idx = self.state_manager.get_current_turn_index()
         all_turns = self.state_manager.get_all_turns()
+
+        # Initialize intro message state (respecting settings)
+        if 'show_intro' not in st.session_state:
+            # Check if intro examples are enabled in settings
+            enable_intro = st.session_state.get('enable_intro_examples', True)
+            st.session_state.show_intro = enable_intro
+
+        # Show intro example if enabled and we have turns
+        if st.session_state.show_intro and len(all_turns) > 0 and st.session_state.get('enable_intro_examples', True):
+            self._render_intro_example()
+            self._render_input_with_scroll_toggle()
+            return
 
         if len(all_turns) == 0:
             st.markdown("""
@@ -54,6 +67,8 @@ class ConversationDisplay:
                 No turns to display. Load a session from the sidebar.
             </div>
             """, unsafe_allow_html=True)
+            # Show input area even with no turns
+            self._render_input_with_scroll_toggle()
             return
 
         # Render scrollable history window if enabled (at top of screen)
@@ -63,8 +78,78 @@ class ConversationDisplay:
         # Render current turn in interactive mode (always show this)
         self._render_current_turn_only(current_turn_idx, all_turns)
 
-        # Input area with scroll toggle next to send button
+        # Input area
         self._render_input_with_scroll_toggle()
+
+    def _render_intro_example(self):
+        """Render a simple intro example that dismisses when user starts typing."""
+        from telos_observatory_v3.utils.intro_messages import get_random_intro_pair
+
+        # Get random intro pair (cached for session)
+        if 'intro_pair' not in st.session_state:
+            st.session_state.intro_pair = get_random_intro_pair()
+
+        user_msg, steward_msg = st.session_state.intro_pair
+
+        # USER MESSAGE - Match exact structure of _render_user_message
+        # Column structure: 0.5 (Example badge) + 9.5 (content with 8.5:1.5 split)
+        col_badge, col_content = st.columns([0.5, 9.5])
+
+        with col_badge:
+            # Example badge (replaces Turn badge)
+            st.markdown("""
+<div style="display: flex; align-items: flex-start; height: 100%;">
+    <span style="background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%); color: #000; padding: 4px 10px; border-radius: 5px; font-size: 20px; font-weight: bold; display: inline-block;">Example</span>
+</div>
+""", unsafe_allow_html=True)
+
+        with col_content:
+            col_msg, col_dismiss = st.columns([8.5, 1.5])
+
+            with col_msg:
+                # User message with exact same styling
+                st.markdown(f"""
+<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
+    <div style="color: #888; font-size: 18px; margin-bottom: 5px;">
+        <strong style="color: #FFD700;">User</strong>
+    </div>
+    <div style="color: #fff; font-size: 18px; white-space: pre-wrap;">
+        {html.escape(user_msg)}
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+            with col_dismiss:
+                # Dismiss button in same position as scroll button
+                if st.button("✕", key="dismiss_intro", use_container_width=True, help="Dismiss example"):
+                    st.session_state.show_intro = False
+                    st.rerun()
+
+        # STEWARD MESSAGE - Match exact structure of _render_assistant_message
+        # Column structure: 0.5 (spacer) + 9.5 (content with 8.5:1.5 split)
+        col_spacer, col_content2 = st.columns([0.5, 9.5])
+
+        with col_spacer:
+            st.markdown("")
+
+        with col_content2:
+            col_msg2, col_empty = st.columns([8.5, 1.5])
+
+            with col_msg2:
+                # Steward response with exact same styling and spacing
+                st.markdown(f"""
+<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700;">
+    <div style="color: #888; font-size: 18px; margin-bottom: 5px;">
+        <strong style="color: #FFD700;">Steward</strong>
+    </div>
+    <div style="color: #fff; font-size: 18px; white-space: pre-wrap;">
+        {html.escape(steward_msg)}
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+            with col_empty:
+                st.markdown("")
 
     def _render_current_turn_only(self, current_turn_idx: int, all_turns: list):
         """Render only the current turn with Turn label."""
@@ -74,8 +159,8 @@ class ConversationDisplay:
         turn_data = all_turns[current_turn_idx]
         turn_number = current_turn_idx + 1
 
-        # Render user and assistant messages for this turn with turn number
-        self._render_user_message(turn_data.get('user_input', ''), turn_number)
+        # Render user and assistant messages for this turn with turn number and metrics
+        self._render_user_message(turn_data.get('user_input', ''), turn_number, turn_data)
         self._render_assistant_message(turn_data.get('response', ''), turn_number)
 
     def _render_scrollable_history_window(self, current_turn_idx: int, all_turns: list):
@@ -113,8 +198,8 @@ class ConversationDisplay:
             turn_data = all_turns[idx]
             turn_number = idx + 1
 
-            # Render messages with turn number
-            self._render_user_message(turn_data.get('user_input', ''), turn_number)
+            # Render messages with turn number and metrics
+            self._render_user_message(turn_data.get('user_input', ''), turn_number, turn_data)
             self._render_assistant_message(turn_data.get('response', ''), turn_number)
 
             # Add divider between turns (except after last turn)
@@ -125,53 +210,147 @@ class ConversationDisplay:
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-    def _render_user_message(self, message: str, turn_number: int = None):
-        """Render user message bubble with optional turn number badge."""
+    def _render_user_message(self, message: str, turn_number: int = None, turn_data: dict = None):
+        """Render user message bubble with optional turn number badge and metrics."""
+        import html
+
         # Build turn badge HTML if turn_number provided
         turn_badge = ""
-        if turn_number is not None:
-            turn_badge = f'<span style="background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%); color: #000; padding: 4px 10px; border-radius: 5px; font-size: 20px; font-weight: bold; margin-right: 8px; display: inline-block;">Turn {turn_number}</span>'
+        metrics_html = ""
+        scroll_button = ""
 
-        st.markdown(f"""
-        <div style="background-color: #2d2d2d; padding: 15px; border-radius: 10px; margin: 10px 0; max-width: 80%;">
-            <div style="color: #888; font-size: 12px; margin-bottom: 5px;">
-                {turn_badge}<strong style="color: #888;">User</strong>
-            </div>
-            <div style="color: #fff; font-size: 18px;">
-                {message}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        if turn_number is not None:
+            turn_badge = f'<span style="background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%); color: #000; padding: 4px 10px; border-radius: 5px; font-size: 20px; font-weight: bold; display: inline-block;">Turn {turn_number}</span>'
+
+            # Add scroll toggle button
+            scroll_label = "📜 History" if not self.state_manager.state.scrollable_history_mode else "✕ Close"
+            # Note: We can't add interactive button in markdown, so we'll add it via Streamlit columns before this
+
+            # Add metrics if turn_data provided
+            if turn_data:
+                fidelity = turn_data.get('fidelity', 0.0)
+                fidelity_color = "#4CAF50" if fidelity >= 0.8 else "#FFA500" if fidelity >= 0.6 else "#FF5252"
+
+                # Determine PA status from session metadata
+                convergence_turn = 7  # Default fallback
+                if hasattr(self.state_manager.state, 'metadata'):
+                    convergence_turn = self.state_manager.state.metadata.get('convergence_turn', 7)
+
+                pa_status = "Calibrating" if turn_number <= convergence_turn else "Established"
+                pa_color = "#FFA500" if pa_status == "Calibrating" else "#4CAF50"
+
+                # Add ΔF (Delta Fidelity) if available
+                delta_f_html = ""
+                if 'delta_f' in turn_data:
+                    delta_f = turn_data.get('delta_f', 0.0)
+                    delta_f_color = "#4CAF50" if delta_f > 0 else "#FF5252" if delta_f < 0 else "#888"
+                    delta_f_sign = "+" if delta_f >= 0 else ""
+                    delta_f_html = f'<span style="margin-left: 15px; display: inline-block;"><span style="color: #888; font-size: 14px;">ΔF:</span> <span style="color: {delta_f_color}; font-size: 16px; font-weight: bold; margin-left: 5px;">{delta_f_sign}{delta_f:.3f}</span></span>'
+
+                metrics_html = f'<span style="margin-left: 15px; display: inline-block;"><span style="color: #888; font-size: 14px;">Fidelity:</span> <span style="color: {fidelity_color}; font-size: 16px; font-weight: bold; margin-left: 5px;">{fidelity:.3f}</span></span>{delta_f_html}<span style="margin-left: 15px; display: inline-block;"><span style="color: #888; font-size: 14px;">Primacy Attractor Status:</span> <span style="color: {pa_color}; font-size: 14px; font-weight: bold; margin-left: 5px;">{pa_status}</span></span>'
+
+        # Escape the message content to prevent HTML injection
+        safe_message = html.escape(message)
+
+        # Create columns: Turn badge on left, message+scroll on right (matching Steward layout)
+        # Turn badge gets 0.5, rest gets 9.5 (matching Steward's 8.5 + 1.5 with offset)
+        col_turn, col_content = st.columns([0.5, 9.5])
+
+        # Turn badge on the left
+        if turn_number is not None:
+            with col_turn:
+                st.markdown(f"""
+<div style="display: flex; align-items: flex-start; height: 100%;">
+    {turn_badge}
+</div>
+""", unsafe_allow_html=True)
+
+        # Message and scroll button in the right section (matching Steward's 8.5:1.5 layout)
+        with col_content:
+            col_msg, col_scroll = st.columns([8.5, 1.5])
+
+            with col_msg:
+                st.markdown(f"""
+<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
+    <div style="color: #888; font-size: 18px; margin-bottom: 5px;">
+        <strong style="color: #FFD700;">User</strong>
+    </div>
+    {f'<div style="margin-top: 10px; margin-bottom: 10px; display: flex; align-items: center; flex-wrap: wrap;">{metrics_html}</div>' if metrics_html else ''}
+    <div style="color: #fff; font-size: 18px; white-space: pre-wrap;">
+        {safe_message}
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+            # Only render scroll button if we're showing the current turn (not in history mode)
+            if turn_number is not None and not self.state_manager.state.scrollable_history_mode:
+                with col_scroll:
+                    scroll_label = "📜"
+                    if st.button(scroll_label, key=f"scroll_toggle_current", use_container_width=True, help="Show scrollable history"):
+                        self.state_manager.toggle_scrollable_history()
+                        st.rerun()
+            elif turn_number is not None and self.state_manager.state.scrollable_history_mode:
+                with col_scroll:
+                    scroll_label = "✕"
+                    if st.button(scroll_label, key=f"scroll_close_current", use_container_width=True, help="Close scrollable history"):
+                        self.state_manager.toggle_scrollable_history()
+                        st.rerun()
 
     def _render_assistant_message(self, message: str, turn_number: int = None):
-        """Render assistant message bubble with optional turn number badge."""
-        # Turn badge already shown with user message, no need to repeat
-        st.markdown(f"""
-        <div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 10px 0; max-width: 80%;">
-            <div style="color: #888; font-size: 12px; margin-bottom: 5px;">
-                <strong>Assistant</strong>
-            </div>
-            <div style="color: #fff; font-size: 18px;">
-                {message}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        """Render steward message bubble - aligned with User message."""
+        import html
+
+        # Escape the message content
+        safe_message = html.escape(message)
+
+        # Match User message structure: 0.5 (Turn badge space) + 9.5 (content area with 8.5:1.5 split)
+        col_spacer, col_content = st.columns([0.5, 9.5])
+
+        with col_spacer:
+            # Empty column to align with Turn badge space from User message
+            st.markdown("")
+
+        with col_content:
+            col_msg, col_empty = st.columns([8.5, 1.5])
+
+            with col_msg:
+                st.markdown(f"""
+<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700;">
+    <div style="color: #888; font-size: 18px; margin-bottom: 5px;">
+        <strong style="color: #FFD700;">Steward</strong>
+    </div>
+    <div style="color: #fff; font-size: 18px; white-space: pre-wrap;">
+        {safe_message}
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+            with col_empty:
+                # Empty column for alignment
+                st.markdown("")
 
     def _render_math_breakdown_window(self, turn_data: Dict[str, Any]):
         """Render Math Breakdown analysis window with metrics and chat."""
-        st.markdown("""
-        <div style="
-            background-color: #2d2d2d;
-            border: 2px solid #FFD700;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-        ">
-            <div style="color: #FFD700; font-size: 20px; font-weight: bold; text-align: center;">
-                🔢 Math Breakdown
+        # Header with close button
+        col1, col2 = st.columns([9.5, 0.5])
+        with col1:
+            st.markdown("""
+            <div style="
+                background-color: #2d2d2d;
+                border: 2px solid #FFD700;
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 15px;
+            ">
+                <div style="color: #FFD700; font-size: 20px; font-weight: bold; text-align: center;">
+                    🔢 Math Breakdown
+                </div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
+        with col2:
+            if st.button("✕", key="close_math", use_container_width=True, help="Close Math Breakdown"):
+                self.state_manager.toggle_component('math_breakdown')
+                st.rerun()
 
         # Two-column layout for calculations
         col1, col2 = st.columns(2)
@@ -235,19 +414,26 @@ class ConversationDisplay:
 
     def _render_counterfactual_window(self, turn_data: Dict[str, Any]):
         """Render Counterfactual Analysis window with comparison and chat."""
-        st.markdown("""
-        <div style="
-            background-color: #2d2d2d;
-            border: 2px solid #FFD700;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-        ">
-            <div style="color: #FFD700; font-size: 20px; font-weight: bold; text-align: center;">
-                🔀 Counterfactual Analysis
+        # Header with close button
+        col1, col2 = st.columns([9.5, 0.5])
+        with col1:
+            st.markdown("""
+            <div style="
+                background-color: #2d2d2d;
+                border: 2px solid #FFD700;
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 15px;
+            ">
+                <div style="color: #FFD700; font-size: 20px; font-weight: bold; text-align: center;">
+                    🔀 Counterfactual Analysis
+                </div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
+        with col2:
+            if st.button("✕", key="close_counterfactual", use_container_width=True, help="Close Counterfactual Analysis"):
+                self.state_manager.toggle_component('counterfactual')
+                st.rerun()
 
         # Two-column layout for comparison
         col1, col2 = st.columns(2)
@@ -323,25 +509,138 @@ class ConversationDisplay:
         # Chat interface with Steward handshake
         self._render_steward_chat("counterfactual")
 
-    def _render_steward_window(self, turn_data: Dict[str, Any]):
-        """Render Steward Details window."""
+    def _render_primacy_attractor_window(self, turn_data: Dict[str, Any]):
+        """Render Primacy Attractor window showing Purpose, Scope, Boundaries."""
+        # Header with close button
+        col1, col2 = st.columns([9.5, 0.5])
+        with col1:
+            st.markdown("""
+            <div style="
+                background-color: #2d2d2d;
+                border: 2px solid #FFD700;
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 15px;
+            ">
+                <div style="color: #FFD700; font-size: 20px; font-weight: bold; text-align: center;">
+                    🎯 Primacy Attractor
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        with col2:
+            if st.button("✕", key="close_pa", use_container_width=True, help="Close Primacy Attractor"):
+                self.state_manager.toggle_component('primacy_attractor')
+                st.rerun()
+
+        # Get session info which should include primacy attractor
+        session_info = self.state_manager.get_session_info()
+
+        # Try to get primacy attractor from turn data or session state
+        primacy_attractor = None
+        all_turns = self.state_manager.get_all_turns()
+        if all_turns and len(all_turns) > 0:
+            # Check if first turn has primacy attractor in session data
+            if hasattr(self.state_manager.state, 'turns') and self.state_manager.state.turns:
+                # Look for primacy_attractor in the session's initial state
+                # For Phase 2 sessions, it should be in the session metadata
+                pass
+
+        # Check if we can get it from state manager's internal session data
+        primacy_attractor = getattr(self.state_manager.state, 'primacy_attractor', None)
+
+        # Fallback: try to construct from session state
+        if not primacy_attractor and 'state_manager' in st.session_state:
+            # Try to access the original session data that was loaded
+            primacy_attractor = st.session_state.get('primacy_attractor', None)
+
+        # Display Primacy Attractor components
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            # Build Purpose content
+            purpose_items = ""
+            if primacy_attractor and 'purpose' in primacy_attractor:
+                for purpose_item in primacy_attractor['purpose']:
+                    purpose_items += f"<p style='margin: 8px 0; color: #e0e0e0;'>• {purpose_item}</p>"
+            else:
+                purpose_items = "<p style='margin: 8px 0; color: #e0e0e0;'>• Establish conversation purpose from baseline turns</p>"
+
+            st.markdown(f"""
+            <div style="
+                background-color: #1a1a1a;
+                border: 2px solid #FFD700;
+                border-radius: 10px;
+                padding: 15px;
+            ">
+                <p style="color: #FFD700; font-weight: bold; font-size: 16px; margin-bottom: 15px;">📋 Purpose</p>
+                <div style="color: #e0e0e0; font-size: 13px; line-height: 1.6;">
+                    {purpose_items}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col2:
+            # Build Scope content
+            scope_items = ""
+            if primacy_attractor and 'scope' in primacy_attractor:
+                for scope_item in primacy_attractor['scope']:
+                    scope_items += f"<p style='margin: 8px 0; color: #e0e0e0;'>• {scope_item}</p>"
+            else:
+                scope_items = "<p style='margin: 8px 0; color: #e0e0e0;'>• Topics covered in baseline</p>"
+
+            st.markdown(f"""
+            <div style="
+                background-color: #1a1a1a;
+                border: 2px solid #FFD700;
+                border-radius: 10px;
+                padding: 15px;
+            ">
+                <p style="color: #FFD700; font-weight: bold; font-size: 16px; margin-bottom: 15px;">🎯 Scope</p>
+                <div style="color: #e0e0e0; font-size: 13px; line-height: 1.6;">
+                    {scope_items}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col3:
+            # Build Boundaries content
+            boundary_items = ""
+            if primacy_attractor and 'boundaries' in primacy_attractor:
+                for boundary_item in primacy_attractor['boundaries']:
+                    boundary_items += f"<p style='margin: 8px 0; color: #e0e0e0;'>• {boundary_item}</p>"
+            else:
+                boundary_items = "<p style='margin: 8px 0; color: #e0e0e0;'>• Off-topic discussions</p>"
+
+            st.markdown(f"""
+            <div style="
+                background-color: #1a1a1a;
+                border: 2px solid #FFD700;
+                border-radius: 10px;
+                padding: 15px;
+            ">
+                <p style="color: #FFD700; font-weight: bold; font-size: 16px; margin-bottom: 15px;">🚧 Boundaries</p>
+                <div style="color: #e0e0e0; font-size: 13px; line-height: 1.6;">
+                    {boundary_items}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        # Status indicator
         st.markdown("""
         <div style="
-            background-color: #2d2d2d;
-            border: 2px solid #FFD700;
+            background-color: #1a1a1a;
+            border: 2px solid #4CAF50;
             border-radius: 10px;
-            padding: 20px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
         ">
-            <div style="color: #FFD700; font-size: 20px; font-weight: bold; margin-bottom: 15px;">
-                👤 Steward Details
-            </div>
+            <span style="color: #4CAF50; font-weight: bold; font-size: 16px;">✓ Primacy Attractor Established</span>
         </div>
         """, unsafe_allow_html=True)
 
-        st.info("Steward information and consultation interface")
-
         # Chat interface with Steward handshake
-        self._render_steward_chat("steward")
+        self._render_steward_chat("primacy_attractor")
 
     def _render_steward_chat(self, window_type: str):
         """Render chat interface with Steward (auto-authenticated).
@@ -469,34 +768,49 @@ class ConversationDisplay:
                     self._render_intervention_indicator()
 
     def _render_input_with_scroll_toggle(self):
-        """Render input area with scroll history toggle next to send button."""
-        # Two-column layout: input box and buttons
-        col1, col2, col3 = st.columns([8, 1, 1])
+        """Render input area with send button - this defines the vertical alignment for all windows."""
+        # Two-column layout: input box and send button
+        # Send button width defines the right edge that everything else aligns to
+        col1, col2 = st.columns([8.5, 1.5])
 
-        with col1:
-            user_input = st.text_input(
-                "Message",
-                key="main_chat_input",
-                placeholder="Type your message...",
-                label_visibility="collapsed"
-            )
+        # Use a form to enable Enter key submission
+        with st.form(key="message_form", clear_on_submit=True):
+            form_col1, form_col2 = st.columns([8.5, 1.5])
 
-        with col2:
-            # Send button
-            send_clicked = st.button("Send", key="send_main_message", use_container_width=True)
+            with form_col1:
+                user_input = st.text_area(
+                    "Message",
+                    placeholder="Type your message...",
+                    key="main_chat_input_v4",
+                    height=80,
+                    label_visibility="collapsed"
+                )
 
-        with col3:
-            # Toggle scroll mode button
-            scroll_label = "📜" if not self.state_manager.state.scrollable_history_mode else "✕"
-            scroll_tooltip = "Show scrollable history" if not self.state_manager.state.scrollable_history_mode else "Hide scrollable history"
-            if st.button(scroll_label, key="toggle_scroll", use_container_width=True, help=scroll_tooltip):
-                self.state_manager.toggle_scrollable_history()
-                st.rerun()
+                # Auto-dismiss intro if user starts typing
+                if user_input and 'show_intro' in st.session_state and st.session_state.show_intro:
+                    st.session_state.show_intro = False
+                    st.rerun()
+
+            with form_col2:
+                # Send button - this defines the right edge for vertical alignment
+                st.markdown("""
+                <style>
+                div[data-testid="column"]:nth-of-type(2) button[kind="formSubmit"] {
+                    font-size: 18px !important;
+                    font-weight: bold !important;
+                    height: 80px !important;
+                }
+                </style>
+                """, unsafe_allow_html=True)
+                send_button = st.form_submit_button("Send", use_container_width=True, help="Send message (or press Enter)")
 
         # Handle sending message
-        if send_clicked and user_input:
-            # Add the message to the conversation
-            self.state_manager.add_user_message(user_input)
+        if send_button and user_input and user_input.strip():
+            # Dismiss intro if showing
+            if 'show_intro' in st.session_state and st.session_state.show_intro:
+                st.session_state.show_intro = False
+            # Add the message to the conversation (this will generate AI response)
+            self.state_manager.add_user_message(user_input.strip())
             st.rerun()
 
     def _render_chat_input(self):
