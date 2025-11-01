@@ -445,9 +445,14 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                 }
             ]
 
-            # Build history from existing turns
+            # Build history from existing turns (exclude loading turn)
             print(f"[DEBUG add_user_message] Building history from {len(self.state.turns)} turns")
             for turn in self.state.turns:
+                # Skip the placeholder turn (is_loading=True, empty response)
+                if turn.get('is_loading', False):
+                    print(f"[DEBUG add_user_message] Skipping loading turn")
+                    continue
+
                 conversation_history.append({
                     "role": "user",
                     "content": turn.get('user_input', '')
