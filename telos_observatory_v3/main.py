@@ -14,7 +14,7 @@ import streamlit as st
 
 # Import V3 components
 from telos_observatory_v3.core.state_manager import StateManager
-from telos_observatory_v3.utils.mock_data import generate_mock_session
+from telos_observatory_v3.utils.telos_demo_data import generate_telos_demo_session
 from telos_observatory_v3.components.sidebar_actions import SidebarActions
 from telos_observatory_v3.components.conversation_display import ConversationDisplay
 from telos_observatory_v3.components.observation_deck import ObservationDeck
@@ -22,14 +22,14 @@ from telos_observatory_v3.components.teloscope_controls import TELOSCOPEControls
 
 
 def initialize_session():
-    """Initialize session state and load mock data."""
+    """Initialize session state and load TELOS demo data with real calculations."""
     if 'state_manager' not in st.session_state:
         # Create state manager
         state_manager = StateManager()
 
-        # Generate and load mock data
-        mock_data = generate_mock_session(num_turns=10)
-        state_manager.initialize(mock_data)
+        # Generate and load TELOS demo data with REAL purpose alignment calculations
+        telos_data = generate_telos_demo_session(num_turns=10)
+        state_manager.initialize(telos_data)
 
         # Store in session state
         st.session_state.state_manager = state_manager
