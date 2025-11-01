@@ -261,8 +261,12 @@ class ConversationDisplay:
             scroll_label = "📜 History" if not self.state_manager.state.scrollable_history_mode else "✕ Close"
             # Note: We can't add interactive button in markdown, so we'll add it via Streamlit columns before this
 
-            # Add metrics if turn_data provided
-            if turn_data:
+            # Add metrics if turn_data provided AND NOT in Demo Mode
+            # Demo Mode: PA is pre-established, metrics are internal (not user-facing)
+            # Observatory/Open Mode: PA is calibrating, show governance metrics
+            demo_mode = st.session_state.get('telos_demo_mode', False)
+
+            if turn_data and not demo_mode:
                 fidelity = turn_data.get('fidelity', 0.0)
                 fidelity_color = "#4CAF50" if fidelity >= 0.8 else "#FFA500" if fidelity >= 0.6 else "#FF5252"
 
