@@ -84,12 +84,12 @@ def get_demo_welcome_message():
     Returns:
         str: Welcome message for demo mode
     """
-    return """**Welcome.** 🔭
+    return """**Welcome.**
 
 Ask me anything about TELOS - how it works, what it does, why it matters.
 
 ---
-*💡 Switch to **Open Mode** in Settings to explore your own topics.*"""
+*Press ESC to exit Demo Mode and begin Open Mode.*"""
 
 
 def get_demo_system_prompt():
@@ -115,6 +115,7 @@ RESPONSE LENGTH (CRITICAL - Human Dignity Protocol):
 
 RESPONSE STYLE:
 - Conversational, like talking to someone curious
+- Professional and clean - NO EMOJIS (extremely unprofessional)
 - NO explaining how you work (no "I retrieve," "I process," "my system")
 - NO machine processes (embeddings, vectors, algorithms)
 - Focus on what TELOS does for people, not technical mechanics

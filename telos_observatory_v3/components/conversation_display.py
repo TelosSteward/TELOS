@@ -389,43 +389,40 @@ class ConversationDisplay:
 """, unsafe_allow_html=True)
             else:
                 # Show response with native markdown rendering
-                # Header with "Steward" label
-                st.markdown("""
-<div style="background-color: #1a1a1a; padding: 15px 15px 5px 15px; border-radius: 10px 10px 0 0; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700; border-bottom: none;">
-    <div style="color: #888; font-size: 18px;">
+                # Use a container to group the header and content
+                with st.container():
+                    # Add CSS for styling this container's content
+                    st.markdown("""
+<style>
+.steward-container {
+    background-color: #1a1a1a;
+    border: 2px solid #FFD700;
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+.steward-container p {
+    color: #fff !important;
+    font-size: 18px !important;
+    margin-bottom: 10px;
+}
+.steward-container strong {
+    color: #fff !important;
+}
+.steward-container em {
+    color: #fff !important;
+}
+</style>
+<div class="steward-container">
+    <div style="color: #888; font-size: 18px; margin-bottom: 10px;">
         <strong style="color: #FFD700;">Steward</strong>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-                # Render markdown content natively (NOT inside HTML)
-                # Wrap in a styled container div, then render markdown separately
-                st.markdown(f"""
-<style>
-.steward-message {{
-    background-color: #1a1a1a;
-    padding: 10px 15px 15px 15px;
-    margin-top: 0;
-    margin-bottom: 0;
-    border: 2px solid #FFD700;
-    border-top: none;
-    border-radius: 0 0 10px 10px;
-    color: #fff;
-    font-size: 18px;
-}}
-.steward-message p {{
-    color: #fff !important;
-    font-size: 18px !important;
-}}
-</style>
-<div class="steward-message">
-""", unsafe_allow_html=True)
-
-                # Native markdown rendering
-                st.markdown(message)
-
-                # Close the container
-                st.markdown("</div>", unsafe_allow_html=True)
+                    # Render markdown OUTSIDE of any HTML wrapper
+                    st.markdown(message)
         else:
             # Open Mode: Match User message structure with turn badge spacer
             col_spacer, col_content = st.columns([0.5, 9.5])
