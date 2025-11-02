@@ -109,7 +109,8 @@ class ConversationDisplay:
         is_loading = False
         if len(all_turns) > 0:
             current_turn = all_turns[-1]
-            is_loading = current_turn.get('is_loading', False)
+            # Check for BOTH is_loading AND is_streaming flags
+            is_loading = current_turn.get('is_loading', False) or current_turn.get('is_streaming', False)
 
         # FORCE HIDE input form during loading - inject CSS to completely hide it
         if is_loading:
@@ -179,38 +180,6 @@ class ConversationDisplay:
         # Render current turn in interactive mode (always show this)
         self._render_current_turn_only(current_turn_idx, all_turns)
 
-        # Exit Demo Mode button - ALWAYS show when in Demo Mode with active conversation
-        # This button should remain visible even during loading/contemplating
-        demo_mode = st.session_state.get('telos_demo_mode', False)
-        if demo_mode and len(all_turns) > 0:
-            # Add some spacing above button
-            st.markdown("<div style='margin: 15px 0;'></div>", unsafe_allow_html=True)
-
-            # Center the Exit Demo Mode button
-            col1, col2, col3 = st.columns([3, 2, 3])
-            with col2:
-                if st.button("Exit Demo Mode", key="exit_demo_button_bottom", use_container_width=True):
-                    # Switch to Open Mode AND clear conversation data
-                    st.session_state.telos_demo_mode = False
-                    st.session_state.demo_welcome_shown = False
-
-                    # Clear Demo Mode conversation - start fresh in Open Mode
-                    from datetime import datetime
-                    empty_data = {
-                        'session_id': f"session_{int(datetime.now().timestamp())}",
-                        'turns': [],
-                        'total_turns': 0,
-                        'current_turn': 0,
-                        'avg_fidelity': 0.0,
-                        'total_interventions': 0,
-                        'drift_warnings': 0
-                    }
-                    self.state_manager.initialize(empty_data)
-                    st.rerun()
-
-            # Add spacing below button
-            st.markdown("<div style='margin: 15px 0;'></div>", unsafe_allow_html=True)
-
         # Input area - ONLY render when NOT loading (during contemplating, completely omit)
         if not is_loading:
             self._render_input_with_scroll_toggle()
@@ -234,28 +203,6 @@ class ConversationDisplay:
     {welcome_msg}
 </div>
 """, unsafe_allow_html=True)
-
-        # Add Exit Demo Mode button
-        col1, col2, col3 = st.columns([3, 2, 3])
-        with col2:
-            if st.button("Exit Demo Mode", key="exit_demo_button", use_container_width=True):
-                # Switch to Open Mode AND clear conversation data
-                st.session_state.telos_demo_mode = False
-                st.session_state.demo_welcome_shown = False
-
-                # Clear Demo Mode conversation - start fresh in Open Mode
-                from datetime import datetime
-                empty_data = {
-                    'session_id': f"session_{int(datetime.now().timestamp())}",
-                    'turns': [],
-                    'total_turns': 0,
-                    'current_turn': 0,
-                    'avg_fidelity': 0.0,
-                    'total_interventions': 0,
-                    'drift_warnings': 0
-                }
-                self.state_manager.initialize(empty_data)
-                st.rerun()
 
         # Mark as shown
         st.session_state.demo_welcome_shown = True
