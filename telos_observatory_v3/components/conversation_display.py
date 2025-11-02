@@ -7,6 +7,7 @@ import streamlit as st
 from typing import Dict, Any
 import html
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +22,32 @@ class ConversationDisplay:
             state_manager: StateManager instance for accessing turn data
         """
         self.state_manager = state_manager
+
+    def _markdown_to_html(self, text: str) -> str:
+        """Convert markdown to HTML while escaping dangerous content.
+
+        Args:
+            text: Markdown text to convert
+
+        Returns:
+            HTML-formatted text
+        """
+        # First escape HTML to prevent XSS
+        text = html.escape(text)
+
+        # Convert markdown patterns to HTML
+        # Bold: **text** or __text__
+        text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
+        text = re.sub(r'__(.+?)__', r'<strong>\1</strong>', text)
+
+        # Italic: *text* or _text_
+        text = re.sub(r'\*(.+?)\*', r'<em>\1</em>', text)
+        text = re.sub(r'_(.+?)_', r'<em>\1</em>', text)
+
+        # Line breaks
+        text = text.replace('\n', '<br>')
+
+        return text
 
     def render(self):
         """Render the conversation display with main chat and analysis windows."""
@@ -415,15 +442,15 @@ class ConversationDisplay:
 </div>
 """, unsafe_allow_html=True)
             else:
-                # Show response - escape and include in HTML for proper positioning
-                safe_message = html.escape(message)
+                # Show response - convert markdown to HTML for proper rendering
+                html_message = self._markdown_to_html(message)
                 st.markdown(f"""
 <div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 15px; border: 2px solid #FFD700;">
     <div style="color: #888; font-size: 21px; margin-bottom: 10px;">
         <strong style="color: #FFD700;">Steward</strong>
     </div>
     <div style="color: #fff; font-size: 21px; white-space: pre-wrap;">
-        {safe_message}
+        {html_message}
     </div>
 </div>
 """, unsafe_allow_html=True)
