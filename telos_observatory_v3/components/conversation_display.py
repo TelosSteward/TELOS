@@ -75,6 +75,32 @@ class ConversationDisplay:
 
     def _render_main_chat(self):
         """Render main conversation - either turn-by-turn or scrollable history."""
+        # ESC key handler for Demo Mode -> Open Mode switch
+        demo_mode = st.session_state.get('telos_demo_mode', False)
+        if demo_mode:
+            # Inject JavaScript to handle ESC key press
+            st.components.v1.html("""
+            <script>
+            // Prevent duplicate listeners
+            if (!window.telosEscListenerAdded) {
+                window.telosEscListenerAdded = true;
+
+                document.addEventListener('keydown', function(event) {
+                    if (event.key === 'Escape') {
+                        // Find the "Open Mode" radio button in the sidebar and click it
+                        const radioButtons = window.parent.document.querySelectorAll('input[type="radio"]');
+                        radioButtons.forEach(radio => {
+                            const label = radio.parentElement;
+                            if (label && label.textContent.includes('Open Mode')) {
+                                radio.click();
+                            }
+                        });
+                    }
+                });
+            }
+            </script>
+            """, height=0)
+
         # Get current turn data
         current_turn_idx = self.state_manager.get_current_turn_index()
         all_turns = self.state_manager.get_all_turns()
