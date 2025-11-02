@@ -293,12 +293,18 @@ class ConversationDisplay:
         ">
         """, unsafe_allow_html=True)
 
+        # Check if Demo Mode
+        demo_mode = st.session_state.get('telos_demo_mode', False)
+
         # Render all turns up to and including current
         for idx in range(current_turn_idx + 1):
             turn_data = all_turns[idx]
-            turn_number = idx + 1
 
-            # Render messages with turn number and metrics
+            # In Demo Mode: pass None for turn_number (no turn badges, no metrics, no scroll buttons in history)
+            # In Open Mode: pass turn_number (show turn badges and metrics in history)
+            turn_number = None if demo_mode else (idx + 1)
+
+            # Render messages
             self._render_user_message(turn_data.get('user_input', ''), turn_number, turn_data)
             self._render_assistant_message(
                 turn_data.get('response', ''),
@@ -364,8 +370,39 @@ class ConversationDisplay:
         demo_mode = st.session_state.get('telos_demo_mode', False)
 
         if demo_mode:
-            # Demo Mode: Clean layout - just the message, no turn badge, no scroll button
-            st.markdown(f"""
+            # Demo Mode: Clean layout
+            # If turn_number is provided: show scroll button (current turn)
+            # If turn_number is None: no scroll button (in history window)
+            if turn_number is not None:
+                # Current turn - include scroll toggle button
+                col_msg, col_scroll = st.columns([8.5, 1.5])
+
+                with col_msg:
+                    st.markdown(f"""
+<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
+    <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
+        <strong style="color: #FFD700;">User</strong>
+    </div>
+    <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
+        {safe_message}
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+                # Show scroll toggle button
+                if not self.state_manager.state.scrollable_history_mode:
+                    with col_scroll:
+                        if st.button("📜", key=f"scroll_toggle_demo_{turn_number}", use_container_width=True, help="Show conversation history"):
+                            self.state_manager.toggle_scrollable_history()
+                            st.rerun()
+                else:
+                    with col_scroll:
+                        if st.button("✕", key=f"scroll_close_demo_{turn_number}", use_container_width=True, help="Close conversation history"):
+                            self.state_manager.toggle_scrollable_history()
+                            st.rerun()
+            else:
+                # In history window - no scroll button, just clean message
+                st.markdown(f"""
 <div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">User</strong>
