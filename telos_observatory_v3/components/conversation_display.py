@@ -157,9 +157,22 @@ class ConversationDisplay:
             col1, col2, col3 = st.columns([3, 2, 3])
             with col2:
                 if st.button("Exit Demo Mode", key="exit_demo_button_bottom", use_container_width=True):
-                    # Switch to Open Mode
+                    # Switch to Open Mode AND clear conversation data
                     st.session_state.telos_demo_mode = False
                     st.session_state.demo_welcome_shown = False
+
+                    # Clear Demo Mode conversation - start fresh in Open Mode
+                    from datetime import datetime
+                    empty_data = {
+                        'session_id': f"session_{int(datetime.now().timestamp())}",
+                        'turns': [],
+                        'total_turns': 0,
+                        'current_turn': 0,
+                        'avg_fidelity': 0.0,
+                        'total_interventions': 0,
+                        'drift_warnings': 0
+                    }
+                    self.state_manager.initialize(empty_data)
                     st.rerun()
 
             # Add spacing below button
@@ -193,9 +206,22 @@ class ConversationDisplay:
         col1, col2, col3 = st.columns([3, 2, 3])
         with col2:
             if st.button("Exit Demo Mode", key="exit_demo_button", use_container_width=True):
-                # Switch to Open Mode
+                # Switch to Open Mode AND clear conversation data
                 st.session_state.telos_demo_mode = False
                 st.session_state.demo_welcome_shown = False
+
+                # Clear Demo Mode conversation - start fresh in Open Mode
+                from datetime import datetime
+                empty_data = {
+                    'session_id': f"session_{int(datetime.now().timestamp())}",
+                    'turns': [],
+                    'total_turns': 0,
+                    'current_turn': 0,
+                    'avg_fidelity': 0.0,
+                    'total_interventions': 0,
+                    'drift_warnings': 0
+                }
+                self.state_manager.initialize(empty_data)
                 st.rerun()
 
         # Mark as shown
