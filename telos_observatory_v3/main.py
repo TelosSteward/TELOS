@@ -344,6 +344,7 @@ def main():
     sidebar_actions.render()
 
     # Main conversation display - shows main chat and analysis windows
+    demo_mode = st.session_state.get('telos_demo_mode', False)
     conversation_display.render()
 
     # More spacing to push control bars down and give chat window more room
@@ -351,7 +352,6 @@ def main():
 
     # Observatory controls (Observation Deck + TELOSCOPE) - ONLY in Open Mode
     # Demo Mode: Pure conversation experience (no Observatory UI)
-    demo_mode = st.session_state.get('telos_demo_mode', False)
 
     if not demo_mode:
         # Observation Deck (collapsible) - Contains metrics and view options for analysis windows

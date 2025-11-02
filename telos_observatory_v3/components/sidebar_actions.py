@@ -337,6 +337,11 @@ class SidebarActions:
             if 'demo_welcome_shown' in st.session_state:
                 del st.session_state.demo_welcome_shown
 
+            # Disable intro examples when switching from Demo to Open Mode
+            if not st.session_state.telos_demo_mode:
+                st.session_state.show_intro = False
+                st.session_state.enable_intro_examples = False
+
             st.success(f"✅ Switched to {selected_mode} - Session reset")
             st.rerun()
 

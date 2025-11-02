@@ -1003,34 +1003,47 @@ class ConversationDisplay:
                     self._render_intervention_indicator()
 
     def _render_input_with_scroll_toggle(self):
-        """Render input area with send button - this defines the vertical alignment for all windows."""
-        # Two-column layout: input box and send button
-        # Send button width defines the right edge that everything else aligns to
-        col1, col2 = st.columns([8.5, 1.5])
+        """Render input area with send button - clean, simple implementation."""
+        # Simple CSS for clean alignment
+        st.markdown("""
+        <style>
+        /* Clean input styling */
+        div[data-testid="stForm"] {
+            background: transparent !important;
+        }
+
+        div[data-testid="stForm"] input[type="text"] {
+            font-size: 21px !important;
+            background-color: #2d2d2d !important;
+            color: #ffffff !important;
+            border: 1px solid #FFD700 !important;
+        }
+
+        div[data-testid="stForm"] button[kind="formSubmit"] {
+            font-size: 21px !important;
+            font-weight: bold !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
         # Use a form to enable Enter key submission
         with st.form(key="message_form", clear_on_submit=True):
-            form_col1, form_col2 = st.columns([8.5, 1.5])
+            col1, col2 = st.columns([8.5, 1.5])
 
-            with form_col1:
+            with col1:
                 user_input = st.text_input(
                     "Message",
                     placeholder="Type your message and press Enter...",
-                    key="main_chat_input_v4",
+                    key="main_chat_input_clean",
                     label_visibility="collapsed"
                 )
 
-            with form_col2:
-                # Send button - this defines the right edge for vertical alignment
-                st.markdown("""
-                <style>
-                div[data-testid="column"]:nth-of-type(2) button[kind="formSubmit"] {
-                    font-size: 21px !important;
-                    font-weight: bold !important;
-                }
-                </style>
-                """, unsafe_allow_html=True)
-                send_button = st.form_submit_button("Send", use_container_width=True, help="Send message (or press Enter)")
+            with col2:
+                send_button = st.form_submit_button(
+                    "Send",
+                    use_container_width=True,
+                    help="Send message (or press Enter)"
+                )
 
         # Handle sending message
         if send_button and user_input and user_input.strip():
