@@ -87,10 +87,7 @@ def get_demo_welcome_message():
     """
     return """Hello. My name is Steward and I am your TELOS guide.
 
-Ask me anything about TELOS - how it works, what it does, or why it matters.
-
----
-*Press ESC to exit Demo Mode and begin Open Mode.*"""
+Ask me anything about TELOS - how it works, what it does, or why it matters."""
 
 
 def get_demo_system_prompt():

@@ -163,6 +163,15 @@ class ConversationDisplay:
 </div>
 """, unsafe_allow_html=True)
 
+        # Add Exit Demo Mode button
+        col1, col2, col3 = st.columns([3, 2, 3])
+        with col2:
+            if st.button("Exit Demo Mode", key="exit_demo_button", use_container_width=True):
+                # Switch to Open Mode
+                st.session_state.telos_demo_mode = False
+                st.session_state.demo_welcome_shown = False
+                st.rerun()
+
         # Mark as shown
         st.session_state.demo_welcome_shown = True
 
