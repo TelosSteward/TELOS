@@ -1158,6 +1158,7 @@ class ConversationDisplay:
         # In Demo Mode with active conversation: show Exit Demo Mode button
         # Only show when NOT in loading/streaming state (already checked above)
         demo_mode = st.session_state.get('telos_demo_mode', False)
+        all_turns = self.state_manager.get_all_turns()
 
         if demo_mode and len(all_turns) > 0:
             # Add some spacing above button
