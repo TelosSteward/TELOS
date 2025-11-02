@@ -123,14 +123,16 @@ class ConversationDisplay:
 
         welcome_msg = get_demo_welcome_message()
 
-        # Render in a gold-bordered welcome box
+        # Render in a gold-bordered welcome box with 21px font to match messages
         st.markdown(f"""
 <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             border: 3px solid #FFD700;
             border-radius: 15px;
             padding: 25px;
             margin: 20px 0;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);">
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            font-size: 21px;
+            color: #fff;">
     {welcome_msg}
 </div>
 """, unsafe_allow_html=True)
