@@ -149,15 +149,15 @@ class ConversationDisplay:
 
         welcome_msg = get_demo_welcome_message()
 
-        # Render in a gold-bordered welcome box with 20px font to match messages
+        # Render in a gold-bordered welcome box with 19px font to match messages
         st.markdown(f"""
 <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             border: 3px solid #FFD700;
             border-radius: 15px;
             padding: 25px;
-            margin: 20px 0;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-            font-size: 20px;
+            margin: 19px 0;
+            box-shadow: 0 0 19px rgba(255, 215, 0, 0.3);
+            font-size: 19px;
             color: #fff;">
     {welcome_msg}
 </div>
@@ -184,7 +184,7 @@ class ConversationDisplay:
             # Example badge (replaces Turn badge)
             st.markdown("""
 <div style="display: flex; align-items: flex-start; height: 100%;">
-    <span style="background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%); color: #000; padding: 4px 10px; border-radius: 5px; font-size: 20px; font-weight: bold; display: inline-block;">Example</span>
+    <span style="background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%); color: #000; padding: 4px 10px; border-radius: 5px; font-size: 19px; font-weight: bold; display: inline-block;">Example</span>
 </div>
 """, unsafe_allow_html=True)
 
@@ -195,10 +195,10 @@ class ConversationDisplay:
                 # User message with exact same styling
                 st.markdown(f"""
 <div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
-    <div style="color: #888; font-size: 20px; margin-bottom: 5px;">
+    <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">User</strong>
     </div>
-    <div style="color: #fff; font-size: 20px; white-space: pre-wrap;">
+    <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {html.escape(user_msg)}
     </div>
 </div>
@@ -224,10 +224,10 @@ class ConversationDisplay:
                 # Steward response with exact same styling and spacing
                 st.markdown(f"""
 <div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700;">
-    <div style="color: #888; font-size: 20px; margin-bottom: 5px;">
+    <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">Steward</strong>
     </div>
-    <div style="color: #fff; font-size: 20px; white-space: pre-wrap;">
+    <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {html.escape(steward_msg)}
     </div>
 </div>
@@ -274,7 +274,7 @@ class ConversationDisplay:
             padding: 10px;
             margin-bottom: 15px;
         ">
-            <div style="color: #FFD700; font-size: 20px; font-weight: bold; text-align: center;">
+            <div style="color: #FFD700; font-size: 19px; font-weight: bold; text-align: center;">
                 📜 Conversation History (Read-Only)
             </div>
         </div>
@@ -289,7 +289,7 @@ class ConversationDisplay:
             background-color: #1a1a1a;
             border: 2px solid #FFD700;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 19px;
         ">
         """, unsafe_allow_html=True)
 
@@ -309,7 +309,7 @@ class ConversationDisplay:
             # Add divider between turns (except after last turn)
             if idx < current_turn_idx:
                 st.markdown("""
-                <div style="border-bottom: 1px solid #444; margin: 20px 0;"></div>
+                <div style="border-bottom: 1px solid #444; margin: 19px 0;"></div>
                 """, unsafe_allow_html=True)
 
         st.markdown("</div>", unsafe_allow_html=True)
@@ -324,7 +324,7 @@ class ConversationDisplay:
         scroll_button = ""
 
         if turn_number is not None:
-            turn_badge = f'<span style="background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%); color: #000; padding: 4px 10px; border-radius: 5px; font-size: 20px; font-weight: bold; display: inline-block;">Turn {turn_number}</span>'
+            turn_badge = f'<span style="background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%); color: #000; padding: 4px 10px; border-radius: 5px; font-size: 19px; font-weight: bold; display: inline-block;">Turn {turn_number}</span>'
 
             # Add scroll toggle button
             scroll_label = "📜 History" if not self.state_manager.state.scrollable_history_mode else "✕ Close"
@@ -367,10 +367,10 @@ class ConversationDisplay:
             # Demo Mode: Clean layout - just the message, no turn badge, no scroll button
             st.markdown(f"""
 <div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
-    <div style="color: #888; font-size: 20px; margin-bottom: 5px;">
+    <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">User</strong>
     </div>
-    <div style="color: #fff; font-size: 20px; white-space: pre-wrap;">
+    <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {safe_message}
     </div>
 </div>
@@ -396,11 +396,11 @@ class ConversationDisplay:
                 with col_msg:
                     st.markdown(f"""
 <div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
-    <div style="color: #888; font-size: 20px; margin-bottom: 5px;">
+    <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">User</strong>
     </div>
     {f'<div style="margin-top: 10px; margin-bottom: 10px; display: flex; align-items: center; flex-wrap: wrap;">{metrics_html}</div>' if metrics_html else ''}
-    <div style="color: #fff; font-size: 20px; white-space: pre-wrap;">
+    <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {safe_message}
     </div>
 </div>
@@ -442,7 +442,7 @@ class ConversationDisplay:
     }}
     50% {{
         border-color: #FFD700;
-        box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        box-shadow: 0 0 19px rgba(255, 215, 0, 0.4);
     }}
 }}
 @keyframes text-pulse {{
@@ -461,10 +461,10 @@ class ConversationDisplay:
 }}
 </style>
 <div class="contemplating-border" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888;">
-    <div style="color: #888; font-size: 20px; margin-bottom: 5px;">
+    <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">Steward</strong>
     </div>
-    <div class="contemplating-text" style="font-size: 20px; font-style: italic; opacity: 0.9;">
+    <div class="contemplating-text" style="font-size: 19px; font-style: italic; opacity: 0.9;">
         Contemplating...
     </div>
 </div>
@@ -474,10 +474,10 @@ class ConversationDisplay:
                 html_message = self._markdown_to_html(message)
                 st.markdown(f"""
 <div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 15px; border: 2px solid #FFD700;">
-    <div style="color: #888; font-size: 20px; margin-bottom: 10px;">
+    <div style="color: #888; font-size: 19px; margin-bottom: 10px;">
         <strong style="color: #FFD700;">Steward</strong>
     </div>
-    <div style="color: #fff; font-size: 20px; white-space: pre-wrap;">
+    <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {html_message}
     </div>
 </div>
@@ -507,7 +507,7 @@ class ConversationDisplay:
     }}
     50% {{
         border-color: #FFD700;
-        box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        box-shadow: 0 0 19px rgba(255, 215, 0, 0.4);
     }}
 }}
 @keyframes text-pulse {{
@@ -526,10 +526,10 @@ class ConversationDisplay:
 }}
 </style>
 <div class="contemplating-border" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888;">
-    <div style="color: #888; font-size: 20px; margin-bottom: 5px;">
+    <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">Steward</strong>
     </div>
-    <div class="contemplating-text" style="font-size: 20px; font-style: italic; opacity: 0.9;">
+    <div class="contemplating-text" style="font-size: 19px; font-style: italic; opacity: 0.9;">
         Contemplating...
     </div>
 </div>
@@ -539,7 +539,7 @@ class ConversationDisplay:
                         # Header with "Steward" label
                         st.markdown("""
 <div style="background-color: #1a1a1a; padding: 15px 15px 5px 15px; border-radius: 10px 10px 0 0; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700; border-bottom: none;">
-    <div style="color: #888; font-size: 20px;">
+    <div style="color: #888; font-size: 19px;">
         <strong style="color: #FFD700;">Steward</strong>
     </div>
 </div>
@@ -557,11 +557,11 @@ class ConversationDisplay:
     border-top: none;
     border-radius: 0 0 10px 10px;
     color: #fff;
-    font-size: 20px;
+    font-size: 19px;
 }}
 .steward-message p {{
     color: #fff !important;
-    font-size: 20px !important;
+    font-size: 19px !important;
 }}
 </style>
 <div class="steward-message">
@@ -602,10 +602,10 @@ class ConversationDisplay:
                 background-color: #2d2d2d;
                 border: 2px solid #FFD700;
                 border-radius: 10px;
-                padding: 20px;
+                padding: 19px;
                 margin-bottom: 15px;
             ">
-                <div style="color: #FFD700; font-size: 20px; font-weight: bold; text-align: center;">
+                <div style="color: #FFD700; font-size: 19px; font-weight: bold; text-align: center;">
                     🔢 Math Breakdown
                 </div>
             </div>
@@ -637,7 +637,7 @@ class ConversationDisplay:
                         <strong style="color: #FFD700;">Final Fidelity: 0.873</strong>
                     </li>
                 </ul>
-                <div style="margin-top: 20px; padding: 10px; background-color: #2d2d2d; border-radius: 5px;">
+                <div style="margin-top: 19px; padding: 10px; background-color: #2d2d2d; border-radius: 5px;">
                     <p style="color: #888; font-size: 11px; margin: 0;">
                         Alignment Fidelity measures how well the response matches the user's deeper preferences and values.
                     </p>
@@ -664,7 +664,7 @@ class ConversationDisplay:
                         <strong style="color: #4CAF50;">Status: Nominal</strong>
                     </li>
                 </ul>
-                <div style="margin-top: 20px; padding: 10px; background-color: #2d2d2d; border-radius: 5px;">
+                <div style="margin-top: 19px; padding: 10px; background-color: #2d2d2d; border-radius: 5px;">
                     <p style="color: #888; font-size: 11px; margin: 0;">
                         Distance metrics quantify how far the response is from the ideal aligned output.
                     </p>
@@ -685,10 +685,10 @@ class ConversationDisplay:
                 background-color: #2d2d2d;
                 border: 2px solid #FFD700;
                 border-radius: 10px;
-                padding: 20px;
+                padding: 19px;
                 margin-bottom: 15px;
             ">
-                <div style="color: #FFD700; font-size: 20px; font-weight: bold; text-align: center;">
+                <div style="color: #FFD700; font-size: 19px; font-weight: bold; text-align: center;">
                     🔀 Counterfactual Analysis
                 </div>
             </div>
@@ -782,10 +782,10 @@ class ConversationDisplay:
                 background-color: #2d2d2d;
                 border: 2px solid #FFD700;
                 border-radius: 10px;
-                padding: 20px;
+                padding: 19px;
                 margin-bottom: 15px;
             ">
-                <div style="color: #FFD700; font-size: 20px; font-weight: bold; text-align: center;">
+                <div style="color: #FFD700; font-size: 19px; font-weight: bold; text-align: center;">
                     🎯 Primacy Attractor
                 </div>
             </div>
@@ -992,12 +992,12 @@ class ConversationDisplay:
             padding: 10px;
             text-align: center;
         ">
-            <div style="font-size: 20px; margin-bottom: 5px;">{icon}</div>
+            <div style="font-size: 19px; margin-bottom: 5px;">{icon}</div>
             <div style="color: #FFD700; font-size: 10px; font-weight: bold; margin-bottom: 5px;">
                 {title}
             </div>
             <div style="
-                font-size: 20px;
+                font-size: 19px;
                 font-weight: bold;
                 color: {value_color};
                 margin: 5px 0;
@@ -1041,14 +1041,14 @@ class ConversationDisplay:
         }
 
         div[data-testid="stForm"] input[type="text"] {
-            font-size: 20px !important;
+            font-size: 19px !important;
             background-color: #2d2d2d !important;
             color: #ffffff !important;
             border: 1px solid #FFD700 !important;
         }
 
         div[data-testid="stForm"] button[kind="formSubmit"] {
-            font-size: 20px !important;
+            font-size: 19px !important;
             font-weight: bold !important;
         }
         </style>
@@ -1069,8 +1069,7 @@ class ConversationDisplay:
             with col2:
                 send_button = st.form_submit_button(
                     "Send",
-                    use_container_width=True,
-                    help="Send message (or press Enter)"
+                    use_container_width=True
                 )
 
         # Handle sending message

@@ -475,8 +475,8 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             # Demo Mode: Hard limit for brevity (DEFAULT: 2 paragraphs, MAX: 3 paragraphs)
             # Open Mode: Standard limit
             if demo_mode:
-                max_tokens = 250  # HARD PROTOCOL: ~2 paragraphs default, ~3 max
-                logger.info("Demo Mode: Enforcing brevity protocol (max_tokens=250, target: 2 paragraphs)")
+                max_tokens = 350  # HARD PROTOCOL: ~2 paragraphs default, ~3 max
+                logger.info("Demo Mode: Enforcing brevity protocol (max_tokens=350, target: 2 paragraphs)")
             else:
                 max_tokens = 500  # Standard limit for open mode
 
@@ -780,7 +780,7 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
         conversation_history.append({"role": "user", "content": message})
 
         # Determine max_tokens based on mode
-        max_tokens = 250 if demo_mode else 500
+        max_tokens = 350 if demo_mode else 500
 
         # Generate response (non-streaming for now - streaming has API issues)
         full_response = ""
