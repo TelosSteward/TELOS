@@ -1148,6 +1148,26 @@ class ConversationDisplay:
         </script>
         """, height=0)
 
+        # In Demo Mode with active conversation: show Exit Demo Mode button
+        demo_mode = st.session_state.get('telos_demo_mode', False)
+        all_turns = self.state_manager.get_all_turns()
+
+        if demo_mode and len(all_turns) > 0:
+            # Add some spacing above button
+            st.markdown("<div style='margin: 15px 0;'></div>", unsafe_allow_html=True)
+
+            # Center the Exit Demo Mode button
+            col1, col2, col3 = st.columns([3, 2, 3])
+            with col2:
+                if st.button("Exit Demo Mode", key="exit_demo_button_bottom", use_container_width=True):
+                    # Switch to Open Mode
+                    st.session_state.telos_demo_mode = False
+                    st.session_state.demo_welcome_shown = False
+                    st.rerun()
+
+            # Add spacing below button
+            st.markdown("<div style='margin: 15px 0;'></div>", unsafe_allow_html=True)
+
         # Use a form to enable Enter key submission
         with st.form(key="message_form", clear_on_submit=True):
             col1, col2 = st.columns([8.5, 1.5])
