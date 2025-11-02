@@ -1078,6 +1078,14 @@ class ConversationDisplay:
 
     def _render_input_with_scroll_toggle(self):
         """Render input area with send button - clean, simple implementation."""
+        # Check if currently in loading state - if so, don't render input
+        all_turns = self.state_manager.get_all_turns()
+        if len(all_turns) > 0:
+            current_turn = all_turns[-1]
+            if current_turn.get('is_loading', False):
+                # Don't render input during loading/streaming
+                return
+
         # Simple CSS for clean alignment
         st.markdown("""
         <style>
