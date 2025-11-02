@@ -146,6 +146,25 @@ class ConversationDisplay:
         # Render current turn in interactive mode (always show this)
         self._render_current_turn_only(current_turn_idx, all_turns)
 
+        # Exit Demo Mode button - ALWAYS show when in Demo Mode with active conversation
+        # This button should remain visible even during loading/contemplating
+        demo_mode = st.session_state.get('telos_demo_mode', False)
+        if demo_mode and len(all_turns) > 0:
+            # Add some spacing above button
+            st.markdown("<div style='margin: 15px 0;'></div>", unsafe_allow_html=True)
+
+            # Center the Exit Demo Mode button
+            col1, col2, col3 = st.columns([3, 2, 3])
+            with col2:
+                if st.button("Exit Demo Mode", key="exit_demo_button_bottom", use_container_width=True):
+                    # Switch to Open Mode
+                    st.session_state.telos_demo_mode = False
+                    st.session_state.demo_welcome_shown = False
+                    st.rerun()
+
+            # Add spacing below button
+            st.markdown("<div style='margin: 15px 0;'></div>", unsafe_allow_html=True)
+
         # Input area - ONLY render when NOT loading (during contemplating, completely omit)
         if not is_loading:
             self._render_input_with_scroll_toggle()
@@ -1154,27 +1173,6 @@ class ConversationDisplay:
         observer.observe(document.body, { childList: true, subtree: true });
         </script>
         """, height=0)
-
-        # In Demo Mode with active conversation: show Exit Demo Mode button
-        # Only show when NOT in loading/streaming state (already checked above)
-        demo_mode = st.session_state.get('telos_demo_mode', False)
-        all_turns = self.state_manager.get_all_turns()
-
-        if demo_mode and len(all_turns) > 0:
-            # Add some spacing above button
-            st.markdown("<div style='margin: 15px 0;'></div>", unsafe_allow_html=True)
-
-            # Center the Exit Demo Mode button
-            col1, col2, col3 = st.columns([3, 2, 3])
-            with col2:
-                if st.button("Exit Demo Mode", key="exit_demo_button_bottom", use_container_width=True):
-                    # Switch to Open Mode
-                    st.session_state.telos_demo_mode = False
-                    st.session_state.demo_welcome_shown = False
-                    st.rerun()
-
-            # Add spacing below button
-            st.markdown("<div style='margin: 15px 0;'></div>", unsafe_allow_html=True)
 
         # Use a form to enable Enter key submission
         with st.form(key="message_form", clear_on_submit=True):
