@@ -171,7 +171,9 @@ class ConversationDisplay:
                     return
 
         # Render scrollable history window if enabled (at top of screen)
-        if self.state_manager.state.scrollable_history_mode:
+        # NOT available in Demo Mode - Demo Mode is conversation-focused only
+        demo_mode = st.session_state.get('telos_demo_mode', False)
+        if self.state_manager.state.scrollable_history_mode and not demo_mode:
             self._render_scrollable_history_window(current_turn_idx, all_turns)
 
         # Render current turn in interactive mode (always show this)
@@ -462,39 +464,8 @@ class ConversationDisplay:
         demo_mode = st.session_state.get('telos_demo_mode', False)
 
         if demo_mode:
-            # Demo Mode: Clean layout
-            # If turn_number is provided: show scroll button (current turn)
-            # If turn_number is None: no scroll button (in history window)
-            if turn_number is not None:
-                # Current turn - include scroll toggle button
-                col_msg, col_scroll = st.columns([8.5, 1.5])
-
-                with col_msg:
-                    st.markdown(f"""
-<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
-    <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
-        <strong style="color: #FFD700;">User</strong>
-    </div>
-    <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
-        {safe_message}
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-                # Show scroll toggle button
-                if not self.state_manager.state.scrollable_history_mode:
-                    with col_scroll:
-                        if st.button("📜", key=f"scroll_toggle_demo_{turn_number}", use_container_width=True, help="Show conversation history"):
-                            self.state_manager.toggle_scrollable_history()
-                            st.rerun()
-                else:
-                    with col_scroll:
-                        if st.button("✕", key=f"scroll_close_demo_{turn_number}", use_container_width=True, help="Close conversation history"):
-                            self.state_manager.toggle_scrollable_history()
-                            st.rerun()
-            else:
-                # In history window - no scroll button, just clean message
-                st.markdown(f"""
+            # Demo Mode: Clean, simple layout - NO scroll buttons (scrollable history disabled in Demo Mode)
+            st.markdown(f"""
 <div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">User</strong>
