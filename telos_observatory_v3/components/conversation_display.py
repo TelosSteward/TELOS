@@ -1051,6 +1051,15 @@ class ConversationDisplay:
             font-size: 19px !important;
             font-weight: bold !important;
         }
+
+        /* Hide Streamlit's "Press Enter to submit form" message */
+        div[data-testid="stForm"] > div > div > small {
+            display: none !important;
+        }
+
+        .stForm small {
+            display: none !important;
+        }
         </style>
         """, unsafe_allow_html=True)
 
