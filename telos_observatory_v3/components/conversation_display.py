@@ -111,6 +111,26 @@ class ConversationDisplay:
             current_turn = all_turns[-1]
             is_loading = current_turn.get('is_loading', False)
 
+        # FORCE HIDE input form during loading - inject CSS to completely hide it
+        if is_loading:
+            st.markdown("""
+            <style>
+            /* Completely hide ALL forms during loading/contemplating */
+            form[data-testid="stForm"] {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                overflow: hidden !important;
+            }
+
+            /* Hide any text input areas */
+            div[data-testid="stForm"] {
+                display: none !important;
+                visibility: hidden !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+
         # Initialize intro message state (respecting settings)
         if 'show_intro' not in st.session_state:
             # Check if intro examples are enabled in settings
