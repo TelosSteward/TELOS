@@ -85,9 +85,11 @@ def get_demo_welcome_message():
     Returns:
         str: Welcome message for demo mode
     """
-    return """Hello. My name is Steward and I am your TELOS guide.
+    return """Hello. My name is Steward and welcome to TELOS Demo Mode. I'll be your guide.
 
-Ask me anything about TELOS - how it works, what it does, or why it matters."""
+Ask me anything about TELOS - how it works, what it does, or why it matters.
+
+To exit Demo Mode and enter Open Mode, click "Exit Demo Mode" in the sidebar at any time."""
 
 
 def get_demo_system_prompt():
