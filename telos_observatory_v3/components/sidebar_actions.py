@@ -72,6 +72,12 @@ class SidebarActions:
                 else:
                     st.info("No saved sessions")
 
+            # Exit Demo Mode Button (only shown in Demo Mode)
+            if st.session_state.get('telos_demo_mode', False):
+                st.markdown("---")
+                if st.button("🚪 Exit Demo Mode", use_container_width=True, key="exit_demo_sidebar"):
+                    self._exit_demo_mode()
+
             # Action Buttons
             st.markdown("### Actions")
 
@@ -254,6 +260,39 @@ class SidebarActions:
             del st.session_state.demo_welcome_shown
 
         st.success("✅ Session reset - All conversation data cleared")
+        st.rerun()
+
+    def _exit_demo_mode(self):
+        """Exit Demo Mode and switch to Open Mode with clean session."""
+        # Clear all conversation data
+        empty_data = {
+            'session_id': f"session_{int(datetime.now().timestamp())}",
+            'turns': [],
+            'total_turns': 0,
+            'current_turn': 0,
+            'avg_fidelity': 0.0,
+            'total_interventions': 0,
+            'drift_warnings': 0
+        }
+        # Use load_from_session to properly re-initialize (resets _initialized flag)
+        self.state_manager.load_from_session(empty_data)
+
+        # Switch to Open Mode
+        st.session_state.telos_demo_mode = False
+
+        # Clear demo-specific session state
+        if 'demo_welcome_shown' in st.session_state:
+            del st.session_state.demo_welcome_shown
+
+        # Clear user conversation flag
+        if 'user_started_conversation' in st.session_state:
+            del st.session_state.user_started_conversation
+
+        # Disable intro examples when switching to Open Mode
+        st.session_state.show_intro = False
+        st.session_state.enable_intro_examples = False
+
+        st.success("✅ Exited Demo Mode - Switched to Open Mode")
         st.rerun()
 
     def _export_evidence(self):
