@@ -771,7 +771,8 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
 
         # Build history from existing turns (exclude current streaming turn)
         for turn in self.state.turns[:turn_idx]:
-            if not turn.get('is_loading', False) and not turn.get('is_streaming', False):
+            # Only include completed turns with actual responses
+            if not turn.get('is_loading', False) and not turn.get('is_streaming', False) and turn.get('response'):
                 conversation_history.append({"role": "user", "content": turn.get('user_input', '')})
                 conversation_history.append({"role": "assistant", "content": turn.get('response', '')})
 
