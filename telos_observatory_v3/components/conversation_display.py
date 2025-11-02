@@ -105,29 +105,11 @@ class ConversationDisplay:
         current_turn_idx = self.state_manager.get_current_turn_index()
         all_turns = self.state_manager.get_all_turns()
 
-        # CRITICAL: Hide all input forms during loading state via CSS
+        # Check if currently loading (for conditional rendering)
         is_loading = False
         if len(all_turns) > 0:
             current_turn = all_turns[-1]
             is_loading = current_turn.get('is_loading', False)
-
-        if is_loading:
-            # Inject CSS to forcibly hide all forms and input areas during loading
-            st.markdown("""
-            <style>
-            /* Hide ALL forms and inputs during loading state */
-            div[data-testid="stForm"],
-            form,
-            div[data-testid="stChatInput"],
-            .stTextInput,
-            button[kind="formSubmit"] {
-                display: none !important;
-                visibility: hidden !important;
-                height: 0 !important;
-                overflow: hidden !important;
-            }
-            </style>
-            """, unsafe_allow_html=True)
 
         # Initialize intro message state (respecting settings)
         if 'show_intro' not in st.session_state:
@@ -1103,17 +1085,6 @@ class ConversationDisplay:
 
     def _render_input_with_scroll_toggle(self):
         """Render input area with send button - clean, simple implementation."""
-        # Check if currently in loading state - if so, don't render ANYTHING
-        all_turns = self.state_manager.get_all_turns()
-        is_loading = False
-        if len(all_turns) > 0:
-            current_turn = all_turns[-1]
-            is_loading = current_turn.get('is_loading', False)
-
-        if is_loading:
-            # Don't render anything during loading/streaming - completely exit
-            return
-
         # Simple CSS for clean alignment
         st.markdown("""
         <style>
