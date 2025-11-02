@@ -164,8 +164,9 @@ class ConversationDisplay:
         # Render current turn in interactive mode (always show this)
         self._render_current_turn_only(current_turn_idx, all_turns)
 
-        # Input area
-        self._render_input_with_scroll_toggle()
+        # Input area - ONLY render when NOT loading (during contemplating, completely omit)
+        if not is_loading:
+            self._render_input_with_scroll_toggle()
 
     def _render_demo_welcome(self):
         """Render Demo Mode welcome message."""
