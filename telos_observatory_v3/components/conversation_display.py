@@ -1053,15 +1053,54 @@ class ConversationDisplay:
         }
 
         /* Hide Streamlit's "Press Enter to submit form" message */
-        div[data-testid="stForm"] > div > div > small {
+        div[data-testid="stForm"] small {
             display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            overflow: hidden !important;
         }
 
-        .stForm small {
+        form small {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        /* Hide any element containing form submission text */
+        small:contains("Enter") {
             display: none !important;
         }
         </style>
         """, unsafe_allow_html=True)
+
+        # JavaScript to completely remove the form submission message
+        st.components.v1.html("""
+        <script>
+        // Remove Streamlit's form submission message
+        function hideFormMessage() {
+            const allSmalls = document.querySelectorAll('small');
+            allSmalls.forEach(small => {
+                if (small.textContent && small.textContent.toLowerCase().includes('enter')) {
+                    small.style.display = 'none';
+                    small.style.visibility = 'hidden';
+                    small.style.height = '0';
+                    small.style.overflow = 'hidden';
+                    small.remove();
+                }
+            });
+        }
+
+        // Run immediately
+        hideFormMessage();
+
+        // Run after a delay to catch dynamically added elements
+        setTimeout(hideFormMessage, 100);
+        setTimeout(hideFormMessage, 500);
+
+        // Observe DOM changes and remove message when it appears
+        const observer = new MutationObserver(hideFormMessage);
+        observer.observe(document.body, { childList: true, subtree: true });
+        </script>
+        """, height=0)
 
         # Use a form to enable Enter key submission
         with st.form(key="message_form", clear_on_submit=True):
