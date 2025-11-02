@@ -115,16 +115,27 @@ class ConversationDisplay:
         if is_loading:
             st.markdown("""
             <style>
-            /* Completely hide ALL forms during loading/contemplating */
-            form[data-testid="stForm"] {
+            /* Nuclear option: hide ALL forms on the page during loading */
+            form {
                 display: none !important;
                 visibility: hidden !important;
                 height: 0 !important;
                 overflow: hidden !important;
+                opacity: 0 !important;
+                position: absolute !important;
+                left: -9999px !important;
             }
 
-            /* Hide any text input areas */
-            div[data-testid="stForm"] {
+            /* Hide form containers */
+            div[data-testid="stForm"],
+            form[data-testid="stForm"] {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+            }
+
+            /* Hide text inputs */
+            input[type="text"] {
                 display: none !important;
                 visibility: hidden !important;
             }
