@@ -1061,7 +1061,7 @@ class ConversationDisplay:
             with col1:
                 user_input = st.text_input(
                     "Message",
-                    placeholder="Type your message and press Enter...",
+                    placeholder="Type your message...",
                     key="main_chat_input_clean",
                     label_visibility="collapsed"
                 )
