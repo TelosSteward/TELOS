@@ -6,6 +6,9 @@ Renders ChatGPT/Claude-style conversation in center column.
 import streamlit as st
 from typing import Dict, Any
 import html
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ConversationDisplay:
@@ -186,13 +189,24 @@ class ConversationDisplay:
         turn_data = all_turns[current_turn_idx]
         turn_number = current_turn_idx + 1
 
-        # Render user and assistant messages for this turn with turn number and metrics
+        # Render user message
         self._render_user_message(turn_data.get('user_input', ''), turn_number, turn_data)
-        self._render_assistant_message(
-            turn_data.get('response', ''),
-            turn_number,
-            is_loading=turn_data.get('is_loading', False)
-        )
+
+        # Check if this turn needs streaming
+        if turn_data.get('is_streaming', False) and not turn_data.get('response'):
+            # First, show the animation
+            self._render_assistant_message('', turn_number, is_loading=True)
+            # Then trigger streaming on next render
+            import time
+            time.sleep(0.1)  # Small delay to show animation
+            self._process_streaming_turn(turn_data.get('user_input', ''), current_turn_idx)
+        else:
+            # Normal rendering (either completed or already has response)
+            self._render_assistant_message(
+                turn_data.get('response', ''),
+                turn_number,
+                is_loading=turn_data.get('is_loading', False)
+            )
 
     def _render_scrollable_history_window(self, current_turn_idx: int, all_turns: list):
         """Render scrollable read-only history window at top of screen."""
@@ -401,41 +415,18 @@ class ConversationDisplay:
 </div>
 """, unsafe_allow_html=True)
             else:
-                # Show response with native markdown rendering
-                # Use a container to group the header and content
-                with st.container():
-                    # Add CSS for styling this container's content
-                    st.markdown("""
-<style>
-.steward-container {
-    background-color: #1a1a1a;
-    border: 2px solid #FFD700;
-    border-radius: 10px;
-    padding: 15px;
-    margin-top: 15px;
-    margin-bottom: 15px;
-}
-.steward-container p {
-    color: #fff !important;
-    font-size: 18px !important;
-    margin-bottom: 10px;
-}
-.steward-container strong {
-    color: #fff !important;
-}
-.steward-container em {
-    color: #fff !important;
-}
-</style>
-<div class="steward-container">
+                # Show response - escape and include in HTML for proper positioning
+                safe_message = html.escape(message)
+                st.markdown(f"""
+<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 15px; border: 2px solid #FFD700;">
     <div style="color: #888; font-size: 18px; margin-bottom: 10px;">
         <strong style="color: #FFD700;">Steward</strong>
     </div>
+    <div style="color: #fff; font-size: 18px; white-space: pre-wrap;">
+        {safe_message}
+    </div>
 </div>
 """, unsafe_allow_html=True)
-
-                    # Render markdown OUTSIDE of any HTML wrapper
-                    st.markdown(message)
         else:
             # Open Mode: Match User message structure with turn badge spacer
             col_spacer, col_content = st.columns([0.5, 9.5])
@@ -530,6 +521,21 @@ class ConversationDisplay:
                 with col_empty:
                     # Empty column for alignment
                     st.markdown("")
+
+    def _process_streaming_turn(self, user_message: str, turn_idx: int):
+        """Process a streaming turn by generating the response and updating state."""
+        # Collect the full response from the stream
+        full_response = ""
+        try:
+            for chunk in self.state_manager.generate_response_stream(user_message, turn_idx):
+                full_response += chunk
+        except Exception as e:
+            logger.error(f"Streaming error: {e}")
+            full_response = "I apologize, but I encountered an error generating a response. Please try again."
+
+        # After streaming completes, the state is already updated by generate_response_stream
+        # Just trigger a rerun to show the completed response
+        st.rerun()
 
     def _render_math_breakdown_window(self, turn_data: Dict[str, Any]):
         """Render Math Breakdown analysis window with metrics and chat."""
@@ -1009,15 +1015,13 @@ class ConversationDisplay:
             # Demo data should NOT be part of primacy attractor calibration
             if 'user_started_conversation' not in st.session_state:
                 # This is the user's first message - clear ALL demo data
-                print(f"[DEBUG] Before clear: {len(self.state_manager.state.turns)} turns")
                 self.state_manager.clear_demo_data()
-                print(f"[DEBUG] After clear: {len(self.state_manager.state.turns)} turns")
                 st.session_state.user_started_conversation = True
 
-            # Add the message to the conversation (this will generate AI response)
-            print(f"[DEBUG] Before add_user_message: {len(self.state_manager.state.turns)} turns")
-            self.state_manager.add_user_message(user_input.strip())
-            print(f"[DEBUG] After add_user_message: {len(self.state_manager.state.turns)} turns")
+            # Add the user message and get turn index
+            turn_idx = self.state_manager.add_user_message_streaming(user_input.strip())
+
+            # Show user message immediately
             st.rerun()
 
     def _render_chat_input(self):

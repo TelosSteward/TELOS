@@ -644,3 +644,200 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
         self.state.avg_fidelity = sum(fidelities) / len(fidelities) if fidelities else 0.0
         self.state.total_interventions = sum(1 for t in self.state.turns if t.get('intervention_applied', False))
         self.state.drift_warnings = sum(1 for t in self.state.turns if t.get('drift_detected', False))
+
+    def add_user_message_streaming(self, message: str):
+        """
+        Add user message and prepare for streaming response.
+        Returns turn_index for the conversation display to use.
+
+        Args:
+            message: User's input message
+
+        Returns:
+            int: Index of the new turn
+        """
+        # Add new turn with user message and empty response
+        new_turn = {
+            'turn': self.state.total_turns,
+            'timestamp': self.state.total_turns * 2.5,
+            'user_input': message,
+            'response': '',  # Will be filled by streaming
+            'fidelity': None,
+            'distance': None,
+            'threshold': 0.8,
+            'intervention_applied': False,
+            'drift_detected': False,
+            'status': "⏳",
+            'status_text': "Streaming",
+            'in_basin': True,
+            'phase2_comparison': None,
+            'is_streaming': True  # Flag to indicate streaming in progress
+        }
+
+        self.state.turns.append(new_turn)
+        self.state.total_turns += 1
+        self.state.current_turn = self.state.total_turns - 1
+
+        return self.state.current_turn
+
+    def generate_response_stream(self, message: str, turn_idx: int):
+        """
+        Generator that yields response chunks for streaming display.
+        After streaming completes, updates the turn with TELOS metrics.
+
+        Args:
+            message: User's input message
+            turn_idx: Index of the turn to update
+
+        Yields:
+            str: Response text chunks
+        """
+        # Initialize TELOS if not already done
+        if not hasattr(self, '_telos_steward'):
+            from telos_observatory_v3.utils.telos_demo_data import generate_telos_demo_session
+            from telos_purpose.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
+            from telos_purpose.core.embedding_provider import SentenceTransformerProvider
+            from telos_purpose.llm_clients.mistral_client import MistralClient
+
+            try:
+                logger.info("Initializing TELOS engine...")
+                embedding_provider = SentenceTransformerProvider()
+
+                # Check if demo mode
+                demo_mode = st.session_state.get('telos_demo_mode', False)
+
+                if demo_mode:
+                    from demo_mode.telos_framework_demo import get_demo_attractor_config
+                    config = get_demo_attractor_config()
+                    attractor = PrimacyAttractor(**config)
+
+                    logger.info("Loading TELOS documentation corpus for Demo Mode...")
+                    from demo_mode.telos_corpus_loader import TELOSCorpusLoader
+                    self._corpus_loader = TELOSCorpusLoader(embedding_provider)
+                    num_chunks = self._corpus_loader.load_corpus()
+                    logger.info(f"✓ Corpus loaded: {num_chunks} chunks")
+                else:
+                    attractor = None
+                    self._corpus_loader = None
+
+                mistral_client = MistralClient(
+                    api_key="NxFBck0mkmGhM9vn0bvJzHf1scagv44f",
+                    model="mistral-large-latest"
+                )
+
+                self._telos_steward = UnifiedGovernanceSteward(
+                    attractor=attractor,
+                    llm_client=mistral_client,
+                    embedding_provider=embedding_provider,
+                    enable_interventions=False
+                )
+                self._telos_steward.start_session(session_id=self.state.session_id)
+                logger.info("TELOS engine initialized successfully")
+            except Exception as init_error:
+                logger.error(f"Failed to initialize TELOS engine: {init_error}")
+                self._telos_steward = None
+                self._corpus_loader = None
+                yield "I apologize, but I'm having trouble initializing. Please try again."
+                return
+
+        # Build conversation history
+        demo_mode = st.session_state.get('telos_demo_mode', False)
+
+        # Get system prompt with RAG context if available
+        retrieved_context = ""
+        if demo_mode and hasattr(self, '_corpus_loader') and self._corpus_loader:
+            try:
+                from demo_mode.telos_corpus_loader import format_context_for_llm
+                chunks = self._corpus_loader.retrieve(message, top_k=3)
+                retrieved_context = format_context_for_llm(chunks)
+                logger.info(f"Retrieved {len(chunks)} corpus chunks for context")
+            except Exception as corpus_error:
+                logger.warning(f"Corpus retrieval failed: {corpus_error}")
+                retrieved_context = ""
+
+        if demo_mode:
+            from demo_mode.telos_framework_demo import get_demo_system_prompt
+            base_system_prompt = get_demo_system_prompt()
+            if retrieved_context:
+                system_prompt = f"{retrieved_context}\n\n{base_system_prompt}\n\nIMPORTANT: Use the documentation context above to provide accurate, grounded responses."
+            else:
+                system_prompt = base_system_prompt
+        else:
+            system_prompt = """You are a helpful AI assistant. Engage naturally with the user's questions and topics.
+
+Be informative, conversational, and adapt to what the user wants to discuss."""
+
+        conversation_history = [{"role": "system", "content": system_prompt}]
+
+        # Build history from existing turns (exclude current streaming turn)
+        for turn in self.state.turns[:turn_idx]:
+            if not turn.get('is_loading', False) and not turn.get('is_streaming', False):
+                conversation_history.append({"role": "user", "content": turn.get('user_input', '')})
+                conversation_history.append({"role": "assistant", "content": turn.get('response', '')})
+
+        # Add current message
+        conversation_history.append({"role": "user", "content": message})
+
+        # Determine max_tokens based on mode
+        max_tokens = 250 if demo_mode else 500
+
+        # Generate response (non-streaming for now - streaming has API issues)
+        full_response = ""
+        try:
+            # Use regular generate for reliability
+            full_response = self._telos_steward.llm_client.generate(
+                messages=conversation_history,
+                max_tokens=max_tokens
+            )
+            yield full_response  # Yield complete response
+        except Exception as gen_error:
+            logger.error(f"Generation error: {gen_error}", exc_info=True)
+            full_response = "I apologize, but I encountered an error generating a response. Please try again."
+            yield full_response
+
+        # After streaming completes, process through TELOS for metrics
+        try:
+            result = self._telos_steward.process_turn(
+                user_input=message,
+                model_response=full_response
+            )
+
+            fidelity = result.get("telic_fidelity", 0.85)
+            distance = result.get("error_signal", 0.15)
+            in_basin = result.get("in_basin", True)
+            intervention_applied = result.get("intervention_applied", False)
+
+            if fidelity >= 0.9:
+                status_icon, status_text = "✓", "Excellent"
+            elif fidelity >= 0.8:
+                status_icon, status_text = "✓", "Good"
+            elif fidelity >= 0.7:
+                status_icon, status_text = "⚠", "Acceptable"
+            else:
+                status_icon, status_text = "⚠", "Drift"
+        except Exception as telos_error:
+            logger.error(f"TELOS processing error: {telos_error}")
+            fidelity = 0.85
+            distance = 0.15
+            in_basin = True
+            intervention_applied = False
+            status_icon, status_text = "✓", "Good"
+
+        # Update turn with final response and metrics
+        self.state.turns[turn_idx].update({
+            'response': full_response,
+            'fidelity': fidelity,
+            'distance': distance,
+            'intervention_applied': intervention_applied,
+            'drift_detected': fidelity < 0.8,
+            'status': status_icon,
+            'status_text': status_text,
+            'in_basin': in_basin,
+            'is_streaming': False  # Streaming complete
+        })
+
+        # Update statistics
+        fidelities = [t['fidelity'] for t in self.state.turns if t.get('fidelity') is not None]
+        self.state.avg_fidelity = sum(fidelities) / len(fidelities) if fidelities else 0.0
+        self.state.total_interventions = sum(1 for t in self.state.turns if t.get('intervention_applied', False))
+        self.state.drift_warnings = sum(1 for t in self.state.turns if t.get('drift_detected', False))

@@ -147,6 +147,60 @@ class MistralClient:
         """
         return self.generate(messages, temperature, max_tokens, **kwargs)
 
+    def generate_stream(
+        self,
+        messages: List[Dict[str, str]],
+        temperature: float = 0.7,
+        max_tokens: int = 500,
+        **kwargs
+    ):
+        """
+        Generate streaming response from Mistral API.
+
+        Args:
+            messages: List of message dicts with 'role' and 'content'
+            temperature: Sampling temperature (0.0-1.0)
+            max_tokens: Maximum tokens to generate
+            **kwargs: Additional arguments to pass to API
+
+        Yields:
+            Text chunks as they arrive from the API
+
+        Raises:
+            APIResponseError: If API returns an error
+            APIConnectionError: If connection fails
+        """
+        try:
+            # Call Mistral API with streaming
+            stream = self.client.chat.stream(
+                model=self.model,
+                messages=messages,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                **kwargs
+            )
+
+            # Yield chunks as they arrive
+            for chunk in stream:
+                if hasattr(chunk, 'data') and hasattr(chunk.data, 'choices'):
+                    if chunk.data.choices and len(chunk.data.choices) > 0:
+                        delta = chunk.data.choices[0].delta
+                        if hasattr(delta, 'content') and delta.content:
+                            yield delta.content
+
+        except Exception as e:
+            if "rate limit" in str(e).lower():
+                from telos_purpose.exceptions import APIRateLimitError
+                raise APIRateLimitError("Mistral") from e
+            elif hasattr(e, 'status_code'):
+                raise APIResponseError(
+                    "Mistral",
+                    status_code=e.status_code,
+                    message=str(e)
+                ) from e
+            else:
+                raise APIConnectionError("Mistral", str(e)) from e
+
     def test_connection(self) -> bool:
         """
         Test connection to Mistral API.
