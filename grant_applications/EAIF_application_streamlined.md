@@ -113,10 +113,10 @@ Budget spreadsheet: [Link to EA Funds template - to be created]
 **Other funding sought:** None currently.
 
 **If not funded:**
-Project would pivot to incremental product development without institutional validation. Build domain-specific governance deployments commercially (museums, legal, medical) to demonstrate value, then pursue institutional partnerships from position of proven commercial traction. Slower path, higher risk, forgoes IRB-compliant research infrastructure.
+TELOS LABS would prioritize commercial product track over research validation. Deploy domain-specific governance solutions (museums, legal, medical) to generate revenue and build credibility through market traction, then pursue institutional partnerships later from position of proven commercial value. This path forgoes early IRB infrastructure development and federated research framework, but maintains organizational sustainability through revenue.
 
 **Project viability without funding:**
-Platform is functional and deployable now. Alternative path is product-first rather than research-first - establish credibility through commercial success in specific verticals, use revenue to fund institutional collaboration later. More difficult but viable route.
+Platform is functional and commercially deployable now. Revenue-generating products in development. Grant funding accelerates research infrastructure track and enables institutional partnerships that would be difficult to establish from pure commercial position. Without grants, project remains viable through PBC dual-track model - product revenue sustains development while research validation proceeds more slowly.
 
 **Applying to LTFF concurrently:**
 Yes, submitting separate application. TELOS bridges direct AI safety research (LTFF focus: alignment governance methodology) and enabling infrastructure (EAIF focus: federated research platform for EA ecosystem). Both framings fit project goals.
@@ -168,6 +168,21 @@ Infrastructure projects benefit from transparent documentation of progress, chal
 - Document what works/doesn't in runtime monitoring adoption
 
 ## ADDITIONAL INFORMATION
+
+**Organizational Structure and Sustainability Model:**
+
+TELOS LABS operates as a tech think tank/research lab prioritizing open source and public good while maintaining commercial sustainability. This follows the Public Benefit Corporation (PBC) model - the only proven approach for sustaining AI safety work beyond grant cycles (demonstrated by OpenAI's original structure, Anthropic, and other leading organizations).
+
+Dual-track strategy:
+- **Research track (grant-funded)**: Open source methodology, institutional validation, IRB-compliant protocols, federated infrastructure for EA ecosystem benefit. All research findings published transparently.
+- **Product track (revenue-generating)**: Domain-specific governance deployments (museums, legal, medical) applying validated research to real-world contexts, generating revenue for sustained development.
+
+Why this model:
+1. Cannot rely on grants indefinitely - need commercial sustainability for long-term viability
+2. Research validates governance approach; products apply it in specific domains (no conflict)
+3. Revenue enables continued development when grants end or are denied
+4. Standard PBC approach for organizations balancing public benefit with sustainability
+5. Products provide real-world testing grounds that inform research (virtuous cycle)
 
 **Theory of change:**
 EA AI safety work lacks federated research infrastructure for multi-site governance studies. As AI advances toward general intelligence, empirical research on alignment becomes critical but current approaches either:
