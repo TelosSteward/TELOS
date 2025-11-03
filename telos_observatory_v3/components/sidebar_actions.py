@@ -156,19 +156,51 @@ class SidebarActions:
     def _save_current_session(self):
         """Save current session state to file."""
         try:
+            from pathlib import Path
+            import json
+
+            # Determine if we're in Demo Mode
+            demo_mode = st.session_state.get('telos_demo_mode', False)
+
+            # Build session data
             session_data = {
                 'session_id': self.state_manager.state.session_id,
                 'timestamp': datetime.now().isoformat(),
+                'mode': 'demo' if demo_mode else 'open',
                 'current_turn': self.state_manager.state.current_turn,
                 'total_turns': self.state_manager.state.total_turns,
+                'avg_fidelity': self.state_manager.state.avg_fidelity,
+                'total_interventions': self.state_manager.state.total_interventions,
+                'drift_warnings': self.state_manager.state.drift_warnings,
                 'turns': self.state_manager.state.turns
             }
 
-            filename = f"session_{self.state_manager.state.session_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            # If Demo Mode, include PA configuration
+            if demo_mode:
+                from demo_mode.telos_framework_demo import get_demo_attractor_config
+                session_data['pa_config'] = get_demo_attractor_config()
 
-            # In a real app, this would save to file
-            # For now, just show success message
-            st.success(f"Session saved: {filename}")
+            # Choose save directory based on mode
+            if demo_mode:
+                save_dir = Path(__file__).parent.parent.parent / 'demo_mode_logs'
+                prefix = 'demo'
+            else:
+                save_dir = Path(__file__).parent.parent / 'saved_sessions'
+                prefix = 'session'
+
+            # Create directory if it doesn't exist
+            save_dir.mkdir(exist_ok=True)
+
+            # Generate filename
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f"{prefix}_{self.state_manager.state.session_id}_{timestamp}.json"
+            filepath = save_dir / filename
+
+            # Save to file
+            with open(filepath, 'w') as f:
+                json.dump(session_data, f, indent=2)
+
+            st.success(f"✅ Session saved: {filename}")
 
         except Exception as e:
             st.error(f"Error saving session: {e}")
@@ -264,6 +296,14 @@ class SidebarActions:
 
     def _exit_demo_mode(self):
         """Exit Demo Mode and switch to Open Mode with clean session."""
+        # Auto-save Demo Mode session before exiting (if there's any conversation data)
+        if self.state_manager.state.total_turns > 0:
+            try:
+                self._save_current_session()
+            except Exception as e:
+                # Don't block exit if save fails, but show warning
+                st.warning(f"Could not auto-save demo session: {e}")
+
         # Clear all conversation data
         empty_data = {
             'session_id': f"session_{int(datetime.now().timestamp())}",
