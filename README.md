@@ -1,17 +1,25 @@
 # TELOS Observatory
 **Runtime Governance Transparency for Large Language Models**
 
-![Version](https://img.shields.io/badge/version-0.9.7-blue)
-![Python](https://img.shields.io/badge/python-3.9+-green)
+![Version](https://img.shields.io/badge/version-1.0--experimental-blue)
+![Python](https://img.shields.io/badge/python-3.8+-green)
 ![License](https://img.shields.io/badge/license-MIT-orange)
+![Status](https://img.shields.io/badge/status-experimental--launch-gold)
 
 ## What is TELOS Observatory?
 
-TELOS Observatory is a research-grade dashboard for observing, measuring, and analyzing AI governance in real-time. Built on the TELOS mathematical framework, it provides unprecedented visibility into how governance persists or drifts across multi-turn LLM conversations.
+TELOS Observatory is the first mathematically governed AI conversation platform. Watch your conversations stay on purpose in real-time, measure governance fidelity turn-by-turn, and export evidence-grade telemetry for research or compliance.
 
-**The Problem:** Studies show 20-40% governance fidelity loss in multi-turn sessions as context drifts.
+**The Problem:** LLMs drift from their purpose across conversations. Studies show 20-40% governance loss in multi-turn sessions.
 
-**The Solution:** Mathematical measurement + visual transparency + exportable evidence.
+**The Solution:** Mathematical primacy attractors + real-time intervention + observable transparency.
+
+## Try It Now
+
+**Demo Mode**: 5 free messages, no signup required
+- [Launch Demo](https://your-app.streamlit.app) (Streamlit Cloud)
+- See governance in action with live TELOS demo conversation
+- Upgrade anytime with your Anthropic API key for unlimited usage
 
 ## Key Features
 
@@ -35,27 +43,35 @@ TELOS Observatory is a research-grade dashboard for observing, measuring, and an
 
 ## Quick Start
 
-### Installation
+### Try Online (Easiest)
+1. Visit [Demo Mode](https://your-app.streamlit.app) (no signup)
+2. Get 5 free governed messages to explore
+3. Add your Anthropic API key for unlimited usage
+
+### Run Locally
+
 ```bash
 git clone https://github.com/TelosSteward/TELOS-Observatory.git
 cd telos
-pip install -e .
+pip install -r requirements.txt
+streamlit run telos_observatory_v3/main.py
 ```
 
-### Run Dashboard
-```bash
-streamlit run telos_purpose/dev_dashboard/streamlit_live_comparison.py
-```
+Opens in browser at `http://localhost:8501`
 
-The dashboard will open in your browser at `http://localhost:8501`
+### First Session
 
-### First Conversation
+**Demo Mode** (default):
+1. App loads with TELOS demo conversation
+2. Send messages to see governance in real-time
+3. Watch fidelity metrics in Observation Deck
+4. 5-message limit (add API key for more)
 
-1. Type a message in the chat input
-2. Watch governance in action via Steward Lens
-3. Toggle between Native and TELOS responses
-4. Navigate through turns to see evolution
-5. Export evidence when done
+**Open Mode** (with API key):
+1. Click "Exit Demo Mode" in sidebar
+2. Enter your Anthropic API key
+3. Configure your Primacy Attractor (purpose/scope/boundaries)
+4. Start governed conversation - unlimited messages
 
 ## Architecture
 
@@ -137,36 +153,57 @@ See `/docs/mathematical_foundations.md` for complete derivations.
 
 ## Current Status
 
-**Version**: 0.9.7 (89% complete)
-**Status**: Production-ready UI, research validation phase
+**Version**: 1.0-experimental (Dual Attractor Launch)
+**Branch**: `experimental/dual-attractor`
+**Status**: Public beta - experimental dual PA architecture
 **License**: MIT
 
 ### Completed Features
-✅ ChatGPT-style interface
-✅ Real-time governance observation
-✅ Side-by-side Native vs TELOS comparison
-✅ Turn navigation (time travel)
-✅ Visual analytics (trends, metrics, timelines)
-✅ Evidence export (5 formats)
-✅ Cross-session analytics
-✅ Pattern detection
-✅ Statistical summaries
+✅ Observatory v3 interface with demo mode
+✅ 5-message demo cap with upgrade path
+✅ Real-time governance observation (Observation Deck)
+✅ Mathematical transparency (TELOSCOPE controls)
+✅ Single PA mode (proven, stable)
+✅ Dual PA mode (experimental - see DUAL_ATTRACTOR_ARCHITECTURE.md)
+✅ UnifiedOrchestratorSteward with fallback logic (9/9 tests passing)
+✅ Streamlit Cloud deployment ready
 
-### Roadmap to V1.0
-⏳ Documentation completion
-⏳ Comprehensive testing
-⏳ Final polish
+### Experimental Features (v1.2-dual-attractor)
+⚡ **Dual Primacy Attractor**: Governs BOTH topic AND AI behavior
+⚡ **Lock-On Derivation**: AI PA auto-computed from User PA
+⚡ **Dual Fidelity Metrics**: Track user purpose + AI role adherence
+⚡ **Smart Fallback**: Degrades gracefully to single PA if needed
+
+### Next Milestones
+🎯 **Validate Dual PA** via public beta testing
+🎯 **Discord Bot** - Autonomous TELOS governance for Discord servers
+🎯 **Production Release** - Promote dual PA to stable (if validated)
+
+## Deployment
+
+Want to deploy your own instance?
+
+- **Streamlit Cloud** (easiest): See [DEPLOYMENT.md](DEPLOYMENT.md) for step-by-step guide
+- **Local Development**: `streamlit run telos_observatory_v3/main.py`
+- **Docker** (coming soon): Containerized deployment for production
+
+## Documentation
+
+- **Architecture**: [DUAL_ATTRACTOR_ARCHITECTURE.md](DUAL_ATTRACTOR_ARCHITECTURE.md) - Evolution from single to dual PA
+- **Deployment**: [DEPLOYMENT.md](DEPLOYMENT.md) - Streamlit Cloud setup guide
+- **Tests**: `/tests` - Unit tests for orchestration layer (9/9 passing)
 
 ## Citation
 
 If you use TELOS Observatory in your research:
 ```bibtex
 @software{telos_observatory_2025,
-  title = {TELOS Observatory: Runtime Governance Transparency for LLMs},
+  title = {TELOS Observatory: Mathematically Governed AI Conversations},
   author = {TELOS Labs},
   year = {2025},
   url = {https://github.com/TelosSteward/TELOS-Observatory},
-  version = {0.9.7}
+  version = {1.0-experimental},
+  note = {Dual Primacy Attractor Architecture}
 }
 ```
 
@@ -174,11 +211,14 @@ If you use TELOS Observatory in your research:
 
 MIT License - See LICENSE file
 
-## Contact
+## Contact & Feedback
 
+- **Demo**: https://your-app.streamlit.app
 - **Issues**: https://github.com/TelosSteward/TELOS-Observatory/issues
 - **Email**: telos.steward@gmail.com
 
 ---
 
 **Built for researchers who demand evidence, not promises.**
+
+**Experimental Launch**: This is experimental dual PA architecture. Single PA mode is stable and proven. Dual PA is in public beta for validation.
