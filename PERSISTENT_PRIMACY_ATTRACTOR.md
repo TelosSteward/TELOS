@@ -70,23 +70,26 @@ Statistical confidence: 0.87 (high convergence)
 
 ---
 
-## Architecture: PA Profiles (PAPs)
+## Architecture: Persistent Profiles
 
-### What is a PA Profile?
+### What is a Persistent Profile?
 
-A **PA Profile (PAP)** is a canonically saved Primacy Attractor configuration associated with a login ID.
+A **Persistent Profile** is a canonically saved Primacy Attractor configuration associated with a user ID.
 
 ```python
-class PAProfile:
+class PersistentProfile:
     """
-    Persistent Primacy Attractor Profile
+    Persistent Profile
 
-    Stores user's PA across sessions with statistical refinement.
+    Stores user's Primacy Attractor across sessions.
+    - Hardcoded Mode: Static PA (user-configured or from template library)
+    - Progressive Mode: Statistical learning and refinement over time
     """
     profile_id: str              # Unique identifier
-    user_id: str                 # Login ID
+    user_id_hash: str            # sha256(api_key) - privacy-preserving
     profile_name: str            # Human-readable name
     mode: str                    # "hardcoded" or "progressive"
+    template: Optional[str]      # Template name if created from library
 
     # Core PA
     purpose: List[str]           # User's purpose statements
@@ -132,6 +135,59 @@ pap = PAProfile(
 - Professional contexts (compliance requirements)
 - Research scenarios (need reproducible behavior)
 - Users who want explicit control
+
+#### Template Library (The Easy Win)
+
+**Key Insight**: The hard work is done. We built the math and proved runtime governance. Now it's just configuration.
+
+Pre-configured templates for common work styles:
+
+```python
+TEMPLATE_LIBRARY = {
+    "creative": PersistentProfile(
+        template="creative",
+        purpose=["Explore creative ideas and possibilities"],
+        scope=["Brainstorming", "Conceptual thinking", "Divergent exploration"],
+        boundaries=["No premature criticism", "Defer implementation details"],
+        constraint_tolerance=0.4,  # More flexible
+        task_priority=0.3          # Exploration over execution
+    ),
+
+    "technical": PersistentProfile(
+        template="technical",
+        purpose=["Solve technical problems with precision"],
+        scope=["Code review", "System design", "Debugging", "Best practices"],
+        boundaries=["No vague explanations", "Always cite sources"],
+        constraint_tolerance=0.1,  # Very strict
+        task_priority=0.9          # Execution-focused
+    ),
+
+    "prose": PersistentProfile(
+        template="prose",
+        purpose=["Write clear, engaging prose"],
+        scope=["Storytelling", "Clarity", "Narrative flow", "Editing"],
+        boundaries=["No jargon", "Human-readable language"],
+        constraint_tolerance=0.3,
+        task_priority=0.5
+    ),
+
+    "analyst": PersistentProfile(
+        template="analyst",
+        purpose=["Analyze data and extract insights"],
+        scope=["Statistical reasoning", "Data interpretation", "Evidence-based conclusions"],
+        boundaries=["No speculation without data", "Show your work"],
+        constraint_tolerance=0.15,
+        task_priority=0.8
+    )
+}
+```
+
+**Why This Wins**:
+- Templates are just hardcoded attractors - trivial to implement
+- TELL OS will hold to these better than any other AI on the market
+- As open source models improve, we dominate because we listen to users
+- Users can start from template, then customize
+- We learn which templates are popular → guide product development
 
 #### 2. Progressive Mode (Learning PA)
 
@@ -311,13 +367,36 @@ Result: Mathematically enforced preference, provable consistency
 
 ## Implementation Architecture
 
+### Privacy-First Architecture
+
+**No Traditional Authentication Required**
+
+User's API key (Anthropic/Mistral) IS their identifier:
+- API key hashed → user profile directory
+- No email/password storage
+- No PII collection
+- User owns their authentication credential
+
+**What We Store** (Deltas Only):
+- ✅ PA profiles (purpose/scope/boundaries)
+- ✅ Session summaries (metrics, not content)
+- ✅ Convergence statistics
+- ❌ Conversation content (NOT stored)
+- ❌ API keys (only hash for lookup)
+- ❌ Personal information
+
+**Audit-Ready**:
+- Pro bono security audit (paid via grants post-validation)
+- Pen testing for compliance
+- Provable: "We only store your preferences, not your data"
+
 ### Data Model
 
 ```python
-# profiles/john_doe_42/python_learning.json
+# profiles/sha256(api_key)/python_learning.json
 {
   "profile_id": "pap_abc123",
-  "user_id": "john_doe_42",
+  "user_id_hash": "sha256(api_key)",  # Privacy-preserving ID
   "profile_name": "Python Learning",
   "mode": "progressive",
 
@@ -822,6 +901,31 @@ TELOS with PPA is "Your personal AI that holds your purpose as primacy"
 4. Allows both static and adaptive modes
 5. Gives users full control and transparency
 
+### The Open Source Model Advantage
+
+**Strategic Insight**: As open source models get better and better, TELL OS wins bigger and bigger.
+
+**Why**:
+- The LLM is just an implementation detail for TELL OS
+- Our value is in the governance layer, not the model
+- When Llama 5, Mistral XXL, or other open source models match GPT-4:
+  - Claude/ChatGPT lose their moat (model quality)
+  - TELL OS gains advantage (swap in better open source model)
+  - Users get same governance + lower costs
+
+**The Hard Work Is Done**:
+- Mathematical framework: ✅ Built and proven
+- Runtime intervention: ✅ Working in production
+- Dual PA architecture: ✅ Validated
+- **What's left**: User preferences (easy)
+
+**Templates are trivial**:
+- Just hardcoded attractor configurations
+- We'll hold to them better than any AI on market
+- Listen to users → iterate on templates → dominate
+
+**Result**: TELL OS becomes the governance standard that works with ANY model, future-proof against the open source explosion.
+
 ---
 
 ## Business Model Implications
@@ -894,11 +998,121 @@ TELOS with PPA is:
 
 ---
 
+## Brand Evolution: TELOS → TELL OS
+
+### The Rebrand
+
+**TELL OS** = TELL Operating Substrate
+- Can also mean: TELL Operating System (both work)
+- Previous: TELOS (harder to explain, less memorable)
+- New: TELL OS (immediately clear, marketable)
+
+### Positioning
+
+**Tagline Options**:
+```
+"The operating system you tell once who you are, and it never forgets"
+
+"Tell it once. It remembers forever."
+
+"Your AI. Your purpose. Mathematically preserved."
+
+"The OS that learns you, not just your commands"
+```
+
+### Why TELL OS Wins
+
+**TELOS** (old):
+- Obscure acronym
+- Requires explanation
+- "Observatory" sounds like analytics tool
+- Not obvious it's an AI platform
+
+**TELL OS** (new):
+- Immediately understandable: "You TELL it"
+- OS = platform (not middleware)
+- Operating Substrate = accurate technical term
+- Operating System = works too (it IS an OS for AI)
+- Memorable, marketable, clear
+
+### Brand Architecture
+
+```
+Product Hierarchy:
+
+TELL OS (Platform)
+├─ Persistent Primacy Attractor (Core Tech)
+├─ Observatory (UI/Dashboard)
+├─ Discord Bot (Integration)
+└─ API (Developer Access)
+
+Not "TELOS Observatory"
+Now "TELL OS" with Observatory as one component
+```
+
+### Market Messaging
+
+**For Users**:
+```
+"TELL OS: The AI that remembers you"
+
+You tell it once who you are.
+It remembers mathematically.
+Every conversation stays on your purpose.
+Your AI. Your rules. Forever.
+```
+
+**For Developers**:
+```
+"TELL OS: Operating Substrate for Purpose-Aligned AI"
+
+Mathematical primacy attractors
+Statistical convergence across sessions
+Enforceable governance boundaries
+Audit-ready compliance
+```
+
+**For Enterprise**:
+```
+"TELL OS: Provable AI Alignment at Scale"
+
+Your team's purposes, mathematically preserved
+Cross-session consistency, statistically proven
+Compliance-ready audit trails
+Zero conversation storage, deltas only
+```
+
+### Launch Messaging
+
+```
+🚀 Introducing TELL OS
+
+The first AI platform where you tell it once who you are,
+and it remembers—mathematically—forever.
+
+Not vague "memory."
+Mathematical persistence.
+
+Not soft suggestions.
+Hard governance boundaries.
+
+Not session-isolated AI.
+Cross-session understanding that grows with you.
+
+TELL OS: Your purpose. Your AI. Your rules.
+```
+
+---
+
 **Document Status**: Vision / Future Architecture
 **Target Release**: Q1-Q2 2026 (Profile System + Progressive Learning)
-**Strategic Impact**: Transforms TELOS from middleware to standalone AI platform
-**Competitive Moat**: Mathematical user understanding + statistical refinement
-**Next Steps**: Validate vision, design data model, prototype profile system
+**Strategic Impact**: Transforms TELOS → TELL OS from middleware to standalone AI platform
+**Competitive Moat**: Mathematical user understanding + privacy-first architecture + statistical refinement
+**Next Steps**: Validate vision, design data model, prototype profile system, plan rebrand
+
+**Brand Evolution**: TELOS → TELL OS (TELL Operating Substrate)
+**Privacy Strategy**: API key as user ID, deltas only, audit-ready
+**Security**: Pro bono audit + pen testing (paid post-grants)
 
 **Author**: Claude Code (Coder) + JB (Product Vision)
 **Date**: 2025-11-02
