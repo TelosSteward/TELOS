@@ -1,258 +1,188 @@
-# TELOS — Governance That Holds Through the Conversation
-*A runtime mathematical framework for governance persistence in large language model sessions.*
+# TELOS Documentation
 
------
+Comprehensive documentation for the TELOS dual PA architecture and validation research.
 
-## What TELOS Does
+## Core Documentation
 
-TELOS provides **runtime governance for LLM sessions** through mathematical measurement and intervention. Rather than assuming alignment persists across multi-turn conversations, TELOS makes governance persistence **observable, quantifiable, and testable**—transforming AI oversight from declarative policy into empirical science.
+### Whitepaper
 
-**The Problem:** Empirical studies across major model families (OpenAI, Anthropic, Google, Mistral) report 20–40% governance fidelity loss in multi-turn sessions as context drifts and initial instructions lose salience. Current approaches rely on static prompts or universal safety guidelines, leaving session-level governance claims unverified and unmeasured.
+**Current Version**: [TELOS_Whitepaper.md](TELOS_Whitepaper.md) (v2.2)
+- Complete technical specification of dual PA architecture
+- Mathematical formulation of governance mechanisms
+- Validation methodology and results
+- Philosophical foundations of purpose alignment
 
-**The Approach:** TELOS applies established mathematical tools—embedding-based similarity, attractor dynamics, and Lyapunov stability analysis—to convert purpose, scope, and boundary declarations into measurable attractors in embedding space. It continuously tracks semantic drift, computes fidelity metrics, and applies proportional corrections only when deviation exceeds mathematical thresholds.
+**Version History**:
+- [TELOS_Whitepaper_v2.2.md](TELOS_Whitepaper_v2.2.md) - Current (November 2024)
+- [archive/TELOS_Whitepaper_v2.1.md](archive/TELOS_Whitepaper_v2.1.md) - Previous version
 
-**The Architecture:** While the mathematical foundations draw from systems theory and vector-space methods, TELOS’s contribution lies in operational synthesis: embedding these dynamics into a live orchestration loop that measures drift turn-by-turn and exports research-grade telemetry. This enables governance to be studied as a continuous dynamical process rather than a static configuration, providing transparent, reproducible measurement infrastructure that supports human oversight and interpretability.
+**Formats Available**:
+- Markdown: `TELOS_Whitepaper_v2.2.md`
+- Microsoft Word: `TELOS_Whitepaper_v2.2.docx`
 
-**The Goal:** TELOS establishes a rigorous approach toward evidence-based AI oversight—one where alignment claims can be verified, challenged, and improved through reproducible measurement rather than institutional assumption.
+### Active Documentation
 
------
+**Technical Specifications**:
+- [PERSISTENT_PRIMACY_ATTRACTOR.md](PERSISTENT_PRIMACY_ATTRACTOR.md) - Deep dive into PA architecture and persistence mechanisms
 
-## Core Components
+**Deployment Guides**:
+- [STREAMLIT_CLOUD_DEPLOYMENT.md](STREAMLIT_CLOUD_DEPLOYMENT.md) - Observatory v3 deployment to Streamlit Cloud
+- [REPO_MIGRATION_PLAN.md](REPO_MIGRATION_PLAN.md) - Plan for dual-repository split (telos-purpose + telos-privacy)
 
-|Component                  |Function                                                                           |
-|---------------------------|-----------------------------------------------------------------------------------|
-|**Primacy Attractor Math** |Defines governance center, basin radius, and stability metrics                     |
-|**Intervention Controller**|Triggers proportional corrections (reminder/regeneration) based on drift thresholds|
-|**Unified Steward**        |Orchestrates runtime loop and exports telemetry                                    |
-|**Health Monitor**         |Runtime diagnostics - catches bugs, config errors, math anomalies                  |
-|**Validation Runners**     |Comparative testing across governance modes (stateless/prompt-only/cadence/TELOS)  |
+**Development Notes**:
+- [WHITEPAPER_UPDATE_NOTES.md](WHITEPAPER_UPDATE_NOTES.md) - Changes and improvements in v2.2
 
------
+## Quick Reference
 
-## Install
+### Key Concepts
 
-```bash
-git clone https://github.com/your-org/telos.git
-cd telos
-pip install -e .
+**Dual Primacy Attractor (PA) Architecture**:
+- **User PA**: Governs conversation intent (WHAT we're trying to accomplish)
+- **AI PA**: Governs communication style (HOW we communicate)
+- **Emergent Stability**: Two attractors create self-regulating alignment
 
-# Optional dependencies
-pip install -e ".[embeddings]"   # sentence-transformers for semantic analysis
-pip install -e ".[dev]"          # pytest and development tools
+**Minimum Bayes-Like (MBL) Intervention**:
+- Minimal correction mechanism when drift occurs
+- Formula: δ_MBL = α · (â - x_t)
+- Only activates when fidelity drops below threshold
+
+**Fidelity Metrics**:
+- **User Fidelity** (f_u): Alignment between user responses and user PA
+- **AI Fidelity** (f_a): Alignment between AI responses and AI PA
+- **Correlation** (ρ): Cross-alignment between PAs
+
+### Validation Results Summary
+
+**Dual PA vs Single PA** (46 sessions):
+- User Fidelity: 0.6744 vs 0.3639 → **+85.32% improvement**
+- AI Fidelity: 0.7939 vs 0.4154 → **+91.09% improvement**
+- Correlation: 0.9168 vs 0.4970 → **+84.47% improvement**
+- Statistical Significance: p < 0.001, Cohen's d = 0.87
+
+**Claude Scenario** (counterfactual validation):
+- Perfect 1.0000 across all metrics
+- Zero interventions needed
+- Demonstrates dual PA prevents drift from conversation start
+
+See [../DUAL_PA_VALIDATION_SUMMARY.md](../DUAL_PA_VALIDATION_SUMMARY.md) for complete analysis.
+
+## Archive
+
+Historical documentation and research artifacts preserved for reference:
+
+### Archived Documentation (`archive/`)
+
+**Completed Build Documentation**:
+- `BUILD_NOTES_v1.1.md` - Version 1.1 development notes
+- `DEPLOYMENT.md` - Early deployment planning
+- `GITHUB_CLEANUP_PLAN.md` - Repository organization planning
+- `GITHUB_READY.md` - Pre-publication checklist
+- `ORGANIZATION_COMPLETE.md` - File organization completion notes
+- `TASKS.md` - Historical task tracking
+- `REPO_MANIFEST.md` - Original repository structure documentation
+
+### Research Archive (`archive/research/`)
+
+**Architecture Research**:
+- `DUAL_ATTRACTOR_ARCHITECTURE.md` - Original dual PA architecture design
+- `DEMO_MODE_TWO_LAYER_IMPLEMENTATION.md` - Demo mode technical design
+- `GOVERNANCE_MODES.md` - Governance mode specifications
+
+**Observatory Development**:
+- `OBSERVATORY_ADVANCED_FEATURES.md` - Advanced feature planning for Observatory v3
+- `WIRING_PLAN.md` - Component integration planning
+
+**Discovery Documentation**:
+- `PRODUCT_DISCOVERY_TRANSCRIPT.md` - Early product discovery sessions
+
+## Repository Structure
+
+```
+telos/
+├── docs/                          # This directory
+│   ├── TELOS_Whitepaper.md       # Canonical whitepaper
+│   ├── TELOS_Whitepaper_v2.2.md  # Current version
+│   ├── TELOS_Whitepaper_v2.2.docx
+│   ├── PERSISTENT_PRIMACY_ATTRACTOR.md
+│   ├── STREAMLIT_CLOUD_DEPLOYMENT.md
+│   ├── REPO_MIGRATION_PLAN.md
+│   ├── WHITEPAPER_UPDATE_NOTES.md
+│   └── archive/                   # Historical docs
+├── validation/                    # Validation studies
+│   ├── briefs/                   # Research briefs
+│   ├── results/                  # Raw results
+│   └── scripts/                  # Validation scripts
+├── DUAL_PA_VALIDATION_SUMMARY.md # Main validation summary
+├── DEPLOYMENT_ROADMAP.md         # Production deployment plan
+└── DUAL_DROP_STRATEGY.md         # Dual-repo strategy
 ```
 
-**Requirements:** Python 3.9+, numpy≥1.23.0
+## Related Resources
 
------
+### Root Documentation
 
-## Configure
+High-visibility strategic documents kept in repository root:
 
-Edit `config.json` to define governance parameters:
+**Validation**:
+- [../DUAL_PA_VALIDATION_SUMMARY.md](../DUAL_PA_VALIDATION_SUMMARY.md) - Complete validation analysis
 
-```json
-{
-  "purpose": ["explain AI governance mechanisms"],
-  "scope": ["AI alignment", "runtime oversight"],
-  "boundaries": ["no harmful content", "stay technical"],
-  "privacy_level": 0.8,
-  "constraint_tolerance": 0.2,
-  "task_priority": 0.7
+**Deployment Strategy**:
+- [../DEPLOYMENT_ROADMAP.md](../DEPLOYMENT_ROADMAP.md) - 6-week production deployment plan
+- [../DUAL_DROP_STRATEGY.md](../DUAL_DROP_STRATEGY.md) - Dual-repository launch strategy
+
+**Organization**:
+- [../FILE_ORGANIZATION_PLAN.md](../FILE_ORGANIZATION_PLAN.md) - Repository organization plan (this document's genesis)
+
+### Validation Data
+
+See [../validation/README.md](../validation/README.md) for:
+- 46 research briefs analyzing individual sessions
+- Raw validation results (JSON)
+- Validation and analysis scripts
+- Methodology details
+
+### Code
+
+**Core Implementation**:
+- `dual_pa_engine.py` - Main dual PA governance engine
+- `unified_orchestrator_steward.py` - Orchestrator with intervention logic
+- `telos_observatory_v3/` - Interactive visualization and testing platform
+
+## Contributing
+
+For development documentation and contribution guidelines, see repository root.
+
+## Citation
+
+```bibtex
+@misc{telos2024whitepaper,
+  title={TELOS: Dual Primacy Attractor Architecture for AI Purpose Alignment},
+  author={TELOS Research},
+  year={2024},
+  version={2.2},
+  note={Whitepaper with validation results: +85.32\% improvement over single PA}
 }
 ```
 
-**Key Parameter:** `constraint_tolerance`
+## Version History
 
-- `0.0` = strict adherence (small basin, frequent interventions)
-- `1.0` = permissive adherence (large basin, infrequent interventions)
+### v2.2 (November 2024)
+- Added comprehensive dual PA validation results
+- Enhanced MBL intervention explanation
+- Refined philosophical foundations
+- Improved technical specifications
 
------
-
-## Quick Start
-
-**Interactive session with dashboard:**
-
-```bash
-python -m telos_purpose.sessions.run_with_dashboard --config config.json
-```
-
-**Run test conversation:**
-
-```bash
-python -m telos_purpose.runners.TELOS_runner_script \
-  --config config.json \
-  --conversation telos_purpose/test_conversations/test_convo_001.json
-```
-
-**Internal Test 0 (5-condition validation):**
-
-```bash
-python -m telos_purpose.validation.run_internal_test0
-```
-
------
-
-## Python API
-
-```python
-from telos_purpose.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
-from telos_purpose.core.embedding_provider import DeterministicEmbeddingProvider
-from telos_purpose.llm_clients.mistral_client import TelosMistralClient
-
-# Define governance perimeter
-attractor = PrimacyAttractor(
-    purpose=["explain AI governance"],
-    scope=["AI alignment", "runtime oversight"],
-    boundaries=["no harmful content"],
-    constraint_tolerance=0.2
-)
-
-# Initialize components
-llm = TelosMistralClient()
-embeddings = DeterministicEmbeddingProvider()
-
-steward = UnifiedGovernanceSteward(
-    attractor=attractor,
-    llm_client=llm,
-    embedding_provider=embeddings
-)
-
-# Run governed session
-steward.start_session()
-result = steward.process_turn(
-    user_input="What is TELOS?",
-    model_response="[LLM output here]"
-)
-summary = steward.end_session()
-```
-
------
-
-## System Health Monitoring
-
-TELOS includes runtime diagnostics that catch bugs and configuration errors during sessions.
-
-### Enable Live Monitoring (Development)
-
-```python
-steward.health.enable_live_monitoring()
-steward.start_session()
-# Prints: [T1] F=0.873 | E=0.234 | Action=none
-```
-
-### Mid-Session Health Checks
-
-```python
-report = steward.health.generate_instant_report()
-if report['event_summary']['critical'] > 0:
-    print("Critical issues detected")
-```
-
-### Export Diagnostics
-
-```python
-steward.end_session()
-
-# Multiple export formats
-steward.health.export_diagnostic_data(format="json")  # Full data
-steward.health.export_diagnostic_data(format="csv")   # Turn-by-turn
-steward.health.plot_vital_signs(show=True)            # Visual plots (requires matplotlib)
-```
-
-### Disable for Production
-
-```python
-steward = UnifiedGovernanceSteward(..., enable_health_monitor=False)
-```
-
-**Note:** Health monitor catches code errors. Telemetry validates whether TELOS works.
-
------
-
-## Internal Test 0: Five-Condition Validation
-
-Minimal internal test verifying runtime behavior across governance modes:
-
-|Condition        |Description                             |Tests                        |
-|-----------------|----------------------------------------|-----------------------------|
-|**Stateless**    |No governance                           |Baseline drift behavior      |
-|**Prompt-Only**  |Governance declared once                |Effect of initial declaration|
-|**Cadence**      |Fixed-interval reminders (every 3 turns)|Scheduled reinforcement      |
-|**Observation**  |TELOS math active, no interventions     |Pure drift detection         |
-|**TELOS Runtime**|Full adaptive governance                |Proportional intervention    |
-
-**Run:** `python -m telos_purpose.validation.run_internal_test0`
-
-**Output:** 5 CSV files (turn-level telemetry) + 5 JSON files (session summaries) in `validation_results/internal_test0/`
-
------
-
-## Mathematical Foundations
-
-|Concept         |Formula                                |Meaning                                |
-|----------------|---------------------------------------|---------------------------------------|
-|Attractor Center|`â = (τ·p + (1-τ)·s) / ‖τ·p + (1-τ)·s‖`|Purpose/scope weighted center          |
-|Basin Radius    |`r = 2/max(ρ,0.25)` where `ρ = 1-τ`    |Tolerance determines basin size        |
-|Error Signal    |`e = ‖x - â‖ / r`                      |Normalized drift distance              |
-|Fidelity        |`F = (1/T) Σ [x ∈ basin]`              |Fraction of turns within governance    |
-|Lyapunov        |`V(x) = ‖x - â‖²`                      |Stability measure (ΔV < 0 = convergent)|
-
------
-
-## Outputs
-
-- **Session telemetry:** `purpose_protocol_exports/session_*.json`
-- **Health diagnostics:** `purpose_protocol_exports/health/system_health_*.json`
-- **Validation results:** `validation_results/`
-- **Streaming logs:** `logs/telemetry_log.jsonl`
-
------
-
-## Project Structure
-
-```
-telos_purpose/
-├── core/                    # Mathematical foundations
-│   ├── primacy_math.py
-│   ├── intervention_controller.py
-│   └── unified_steward.py
-├── validation/              # Comparative testing
-│   ├── baseline_runners.py
-│   ├── system_health_monitor.py
-│   ├── run_internal_test0.py
-│   └── telemetry_utils.py
-├── sessions/                # Interactive runtime
-└── dev_dashboard/           # Developer telemetry
-```
-
-See `TELOS_Project_Structure.md` for complete file tree.
-
------
-
-## Makefile Commands
-
-```bash
-make run        # Interactive governed session
-make validate   # Comparative validation study
-make smoke      # Quick pytest tests
-make clean      # Remove logs/results
-```
-
------
-
-## Summary
-
-TELOS moves alignment from declaration to measurement.
-It doesn’t assume purpose holds — it quantifies when it does and when it drifts.
-By turning aspirational governance principles into observable runtime data,
-TELOS makes purpose persistence a measurable property of LLM sessions.
-
------
+### v2.1 (Previous)
+- Initial dual PA architecture documentation
+- Basic validation methodology
+- Core concept introduction
 
 ## License
 
-MIT License. Research infrastructure for studying runtime governance in LLMs.
+See repository root for license information.
 
-© 2025 TELOS Labs
-</artifact>
+---
 
------
+**Last Updated**: November 2024
+**Status**: Active Development
+**Next Milestone**: Production deployment (Telegram, Streamlit, Discord)
