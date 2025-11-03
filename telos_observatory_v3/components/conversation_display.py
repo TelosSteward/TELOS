@@ -987,8 +987,62 @@ class ConversationDisplay:
                 'content': user_input
             })
 
-            # Placeholder response (would call Mistral API here with MISTRAL_API_KEY)
-            ai_response = f"Steward response to: '{user_input}' (using Mistral API)"
+            # Generate Steward response using Mistral API
+            try:
+                import os
+                from telos_purpose.llm_clients.mistral_client import MistralClient
+
+                # Get API key from environment
+                mistral_api_key = os.getenv('MISTRAL_API_KEY', "NxFBck0mkmGhM9vn0bvJzHf1scagv44f")
+
+                # Initialize Mistral client
+                mistral_client = MistralClient(
+                    api_key=mistral_api_key,
+                    model="mistral-large-latest"
+                )
+
+                # Build Steward system prompt (same as Demo Mode)
+                system_prompt = """You are Steward, the TELOS research assistant. Your role is to help users understand their TELOS governance session data.
+
+Key responsibilities:
+- Explain what happened in specific turns
+- Clarify fidelity scores and metrics
+- Describe interventions and why they occurred
+- Help users understand drift patterns
+- Keep explanations clear and concise (2-3 paragraphs max)
+- Avoid deep technical jargon unless asked
+- Focus on actionable insights
+
+You have access to the current turn's data. Use it to provide grounded, specific answers."""
+
+                # Add current turn context if available
+                turn_context = ""
+                if turn_data:
+                    turn_context = f"""
+
+Current Turn Data:
+- Turn: {turn_data.get('turn', 'N/A')}
+- Fidelity: {turn_data.get('fidelity', 'N/A')}
+- Status: {turn_data.get('status_text', 'N/A')}
+- Intervention: {'Yes' if turn_data.get('intervention_applied') else 'No'}
+- User Input: {turn_data.get('user_input', 'N/A')[:100]}..."""
+
+                # Build messages for API call
+                steward_messages = [
+                    {"role": "system", "content": system_prompt + turn_context}
+                ] + st.session_state[f'chat_history_{window_type}']
+
+                # Call Mistral API
+                ai_response = mistral_client.generate(
+                    messages=steward_messages,
+                    max_tokens=300,  # Keep responses concise
+                    temperature=0.7
+                )
+
+            except Exception as e:
+                logger.error(f"Steward AI chat error: {e}")
+                ai_response = f"I'm having trouble connecting right now. Could you try rephrasing your question? (Error: {type(e).__name__})"
+
             st.session_state[f'chat_history_{window_type}'].append({
                 'role': 'assistant',
                 'content': ai_response

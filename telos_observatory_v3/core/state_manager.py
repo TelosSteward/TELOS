@@ -33,6 +33,13 @@ class ObservatoryState:
     primacy_attractor: Dict[str, Any] = field(default_factory=dict)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
+    # PA Establishment State (Calibration Phase)
+    user_pa_established: bool = False
+    ai_pa_established: bool = False
+    calibration_phase: bool = True  # True until both PAs established
+    calibration_turn_count: int = 0  # Turns spent in calibration
+    convergence_turn: Optional[int] = None  # Turn when PA converged
+
     # UI state
     deck_expanded: bool = False
     teloscope_playing: bool = False
@@ -378,8 +385,13 @@ class StateManager:
                         self._corpus_loader = None  # No corpus in open mode
 
                     # Initialize Mistral client (Assistant Steward)
+                    # API key from environment (with fallback for beta testing)
+                    import os
+                    mistral_api_key = os.getenv('MISTRAL_API_KEY', "NxFBck0mkmGhM9vn0bvJzHf1scagv44f")
+                    # TODO: Future PIP feature - API key will become user identity/auth
+
                     mistral_client = MistralClient(
-                        api_key="NxFBck0mkmGhM9vn0bvJzHf1scagv44f",
+                        api_key=mistral_api_key,
                         model="mistral-large-latest"
                     )
 
@@ -387,7 +399,7 @@ class StateManager:
                         attractor=attractor,
                         llm_client=mistral_client,
                         embedding_provider=embedding_provider,
-                        enable_interventions=False  # Demo mode - measure but don't modify
+                        enable_interventions=True  # Enable interventions for drift detection and correction
                     )
                     self._telos_steward.start_session(session_id=self.state.session_id)
                     logger.info("TELOS engine initialized successfully")
