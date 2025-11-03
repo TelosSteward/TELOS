@@ -1,53 +1,59 @@
 # EA Funds Grant Application - Long-Term Future Fund
 
 ## SHORT DESCRIPTION (120 chars max)
-6-month salary to validate TELOS runtime AI alignment framework and publish empirical proof of concept.
+Build institutional partnerships for IRB-compliant AI governance research using TELOS Observatory platform.
 
 ## SUMMARY (1000 chars max)
 
-TELOS is a runtime governance framework for AI systems that detects and mitigates alignment drift during conversations. Unlike post-deployment evaluation, TELOS operates continuously at inference time, measuring when AI responses drift from established conversational purposes and intervening before compounding errors occur.
+TELOS Observatory is a research instrumentation platform for studying AI governance in real-time interactions. As AI systems advance toward general intelligence, understanding how to maintain alignment during deployment becomes critical. TELOS provides the experimental infrastructure needed for institutional collaboration on this challenge.
 
-Core innovation: "Primacy Attractors" - mathematical representations of conversation purpose that enable real-time fidelity measurement. When fidelity drops below threshold, lightweight interventions realign responses without full retraining.
+Core innovation: Dual Primacy Attractors (user purpose + AI role governance) enabling measurable fidelity tracking during conversations. Empirical validation across 45 studies demonstrates +85.32% mean improvement in alignment maintenance compared to single-attractor baseline.
 
-Current status: Working prototype (github.com/brunnerjf/telos) with empirical validation showing positive results across 56 conversations. Phase 2B continuous monitoring demonstrates mean improvement of 2-3% in alignment fidelity per intervention.
+Deployed proof-of-concept: The Steward - multi-layer governance system (PA validation → corpus verification → human escalation) currently functional in Demo Mode, demonstrating production viability.
 
-Risk: Effect sizes are modest; may not scale to production systems. Framework assumes coherent conversational purpose can be extracted, which may fail for adversarial or ambiguous interactions.
+Institutional validation need: Current results require cross-institutional replication, IRB-compliant study design, and security review of proposed telemetric cryptographic containerization approach for federated research.
 
-Funding request: $75,000 for 6 months to complete validation studies, publish findings, and develop production-ready implementation. Success metric: Peer-reviewed publication demonstrating statistical significance of alignment improvements.
+Funding request: $75,000 for 6 months to establish institutional partnerships, develop IRB-compliant research protocols, and build toward universal compliance infrastructure enabling multi-site federated governance studies.
 
-This addresses AI x-risk by providing continuous monitoring that catches drift before catastrophic failures accumulate.
+Success metric: 2+ institutional partnerships established, IRB approval obtained, research protocol validated for federated deployment.
 
 ## PROJECT GOALS
 
 **Specific Actions:**
-1. Complete Phase 2B continuous monitoring validation across 200+ conversations (2 months)
-2. Implement production-grade TELOS runtime for integration testing with existing LLM deployments (2 months)
-3. Write and submit peer-reviewed paper documenting methodology and empirical results (2 months)
+1. Establish institutional partnerships for governance research validation (2 academic/research institutions) (2 months)
+2. Develop IRB-compliant research protocols for multi-site federated governance studies (2 months)
+3. Build telemetric cryptographic containerization infrastructure enabling secure cross-institutional data sovereignty (2 months)
 
 **Impact:**
-Runtime alignment monitoring provides safety layer missing from current AI systems. While Constitutional AI and RLHF train models toward desired behavior, they cannot detect when deployed systems drift from user intent during specific conversations. TELOS fills this gap.
+Creates research infrastructure for studying AI governance as systems approach general intelligence. Current empirical results (+85.32% improvement in dual PA configuration) require institutional validation. Framework enables:
+- Cross-institutional replication studies maintaining data sovereignty
+- IRB-compliant experimental design for governance research
+- Federated learning from governance deltas across deployments
+- Proposed novel cryptographic approach (telemetric keys) for securing sensitive research data
 
 **Success Metrics:**
-- Statistically significant improvement in alignment fidelity (p < 0.05)
-- Open-source implementation with <100ms latency overhead
-- Publication in ML safety venue (NeurIPS, ICML, or alignment-focused workshop)
+- 2+ institutional research partnerships established
+- IRB approval obtained for governance study protocol
+- Containerized deployment validated at partner institution
+- Research protocol documentation published for broader adoption
 
 **Path to Impact:**
-1. Empirical proof → adoption by safety-conscious AI labs
-2. Integration into deployment pipelines → real-world drift detection
-3. Reduced catastrophic failures from compounding misalignment
+1. Institutional validation → credibility for governance approach
+2. IRB-compliant infrastructure → enables human subjects research on AI alignment
+3. Federated research framework → multi-site studies without centralized data collection
+4. Governance primitives library → cross-domain best practices emerge from aggregate insights
 
 **Relation to LTFF goals:**
-Direct work on AI alignment through novel runtime monitoring approach. Addresses x-risk by preventing drift accumulation that could lead to value misalignment in deployed systems.
+Addresses AI x-risk by building research infrastructure needed to study alignment in deployed systems. As AI advances toward AGI, understanding real-time governance becomes critical. Institutional collaboration ensures rigorous validation and broad applicability of findings.
 
 ## TRACK RECORD
 
 **Solo developer, 4 months development:**
-- Built complete TELOS framework from concept to working prototype
-- Developed three-phase validation methodology (primacy extraction, drift detection, counterfactual branching)
-- Completed Phase 1 validation: 56 studies, 100% PA establishment success
-- Completed Phase 2 single-intervention: positive ΔF in 45/45 successful studies (100% effectiveness)
-- Implemented Phase 2B continuous monitoring: testing in progress
+- Built complete TELOS Observatory platform from concept to working deployment
+- Developed dual primacy attractor methodology with empirical validation
+- Completed validation: 45 studies, +85.32% mean improvement over single PA baseline
+- Deployed The Steward: Multi-layer governance (PA → corpus validation → human escalation) functional in Demo Mode
+- Created research instrumentation: Streamlit observatory, automated telemetry, intervention tracking
 
 **Technical background:**
 - 15+ years software engineering (healthcare systems, data infrastructure)
@@ -65,9 +71,10 @@ Direct work on AI alignment through novel runtime monitoring approach. Addresses
 
 **Honest limitations:**
 - No prior peer-reviewed publications in ML/AI safety
-- Working independently without institutional affiliation
-- Effect sizes currently modest (2-5% improvements typical)
-- Validation limited to conversational AI; unclear if framework generalizes to other modalities
+- Working independently without institutional affiliation (hence partnership focus)
+- Validation conducted on self-generated studies - requires independent institutional replication
+- Telemetric cryptographic approach is proposed novel method requiring security review
+- Federated infrastructure untested at multi-institutional scale
 
 ## FUNDING AMOUNT AND BREAKDOWN
 
@@ -75,16 +82,16 @@ Direct work on AI alignment through novel runtime monitoring approach. Addresses
 
 Budget breakdown:
 - 60% - Personal salary/stipend ($45,000 for 6 months at $90K annual equivalent, includes self-employment tax)
-- 15% - Computing infrastructure ($11,250: API costs for 200+ validation studies, embedding compute, cloud hosting)
-- 10% - Professional services ($7,500: statistical consultation, peer review editing, conference travel if accepted)
-- 10% - Contingency buffer ($7,500)
-- 5% - Software/tools ($3,750: GitHub enterprise, visualization tools, citation management)
+- 15% - Institutional partnership development ($11,250: travel for in-person meetings, legal review for data sharing agreements, IRB application fees)
+- 10% - Computing infrastructure ($7,500: containerized deployment infrastructure, telemetric key implementation, federated testing environment)
+- 10% - Professional services ($7,500: security consultation for cryptographic approach, IRB protocol development expertise)
+- 5% - Contingency buffer ($3,750: unexpected institutional requirements, additional compliance needs)
 
 **Minimal scenario ($50,000):**
-Complete validation and publication without production implementation. Focus on empirical proof and academic contribution.
+1 institutional partnership, basic IRB protocol, limited containerization infrastructure. Sufficient for proof-of-concept validation but not full federated deployment.
 
 **Optimal scenario ($100,000):**
-Add production hardening, integration examples with major LLM APIs, developer documentation, and potential conference presentations.
+3+ institutional partnerships, comprehensive federated infrastructure, security audit of telemetric key approach, dedicated legal support for multi-site data agreements, conference presentations to recruit additional research partners.
 
 Budget spreadsheet: [Link to EA Funds template - to be created]
 
@@ -93,23 +100,23 @@ Budget spreadsheet: [Link to EA Funds template - to be created]
 **Other funding sought:** None currently.
 
 **If not funded:**
-Project would continue at reduced pace using personal savings (runway ~3 months). Publication timeline would extend to 12+ months. Production implementation likely abandoned in favor of proof-of-concept only.
+Project would pivot to incremental product development without institutional validation. Build governance tools commercially (uphill without research credibility), forgo IRB-compliant infrastructure, pursue direct-to-market approach with individual deployments rather than federated research framework.
 
 **Project viability without funding:**
-Academic validation paper could be completed independently, but production-ready implementation requires full-time focus that personal finances cannot sustain beyond 3 months.
+Platform is functional and deployable now. Alternative path is product-focused rather than research-focused - slower credibility building, higher risk, but viable through commercial traction in specific domains (museums, legal, medical) where governance ROI is clear.
 
 **Applying to EA Infrastructure Fund concurrently:**
-Yes, submitting separate application. TELOS could fit either fund - direct AI safety work (LTFF) or infrastructure enabling safer AI development (EAIF).
+Yes, submitting separate application. TELOS bridges direct safety research (LTFF focus: AI alignment governance) and enabling infrastructure (EAIF focus: research tooling for EA AI safety ecosystem).
 
 ## USE FOR ADDITIONAL FUNDING
 
 Additional funding beyond $75K would enable:
-1. **Hiring technical collaborator** ($50K): Accelerate production implementation and expand validation scope
-2. **Extended timeline** (12 months vs 6): More comprehensive validation including adversarial testing, multi-modal exploration
-3. **Integration partnerships** ($25K): Work directly with AI labs to pilot TELOS in production environments
-4. **Patent/IP protection** ($15K): Ensure framework remains open-source but properly attributed
+1. **Additional institutional partnerships** ($25K): Expand from 2 to 5+ research sites, increasing validation scope and replication power
+2. **Dedicated IRB/compliance specialist** ($35K part-time): Navigate multi-site IRB coordination, accelerate approval timelines
+3. **Security audit of telemetric key approach** ($20K): Professional cryptographic review before recommending for sensitive research data
+4. **Extended timeline** (12 months vs 6): Allow for IRB approval delays, more comprehensive federated testing, iterative protocol refinement based on institutional feedback
 
-Marginal value diminishes above $150K total without expanding team.
+Marginal value strong up to $150K, then diminishes without full team expansion.
 
 ## LOCATION
 
@@ -146,16 +153,22 @@ Transparent documentation of results serves AI safety community. Comfortable wit
 ## ADDITIONAL INFORMATION
 
 **Key uncertainties:**
-1. Effect sizes remain modest - unclear if 2-5% improvements justify deployment overhead
-2. Framework assumes extractable conversational purpose - may fail for adversarial users
-3. Validation limited to text conversations - generalization to other modalities unproven
-4. No institutional backing for peer review credibility
+1. Institutional partnerships may be difficult to establish without existing academic credentials
+2. IRB approval timeline unpredictable - could extend beyond 6-month grant period
+3. Telemetric cryptographic approach is proposed novel method - may not withstand security review
+4. Federated infrastructure technically complex - multi-site deployment may reveal unforeseen challenges
+5. Self-validated results (+85.32% improvement) require independent replication to establish credibility
 
-**Why this matters despite uncertainties:**
-Runtime monitoring is fundamentally different from training-time alignment. Even modest improvements compound over millions of conversations. Early empirical work establishes proof of concept that better-resourced teams can build upon.
+**Why pursue institutional validation approach:**
+Without research credibility, governance claims appear as product marketing. Institutional collaboration provides:
+- Independent validation of methodology and results
+- IRB oversight ensuring ethical research practices
+- Academic rigor for peer review and publication
+- Foundation for broader adoption across safety-critical domains
+- Path to universal IRB compliance infrastructure as AI advances
 
 **Honest assessment:**
-TELOS is unlikely to be a complete solution to AI alignment. It addresses a specific failure mode (conversational drift) with a novel approach (runtime monitoring via attractors). Value proposition is empirical validation of this approach, not immediate production deployment at scale.
+TELOS Observatory demonstrates governance is measurable and improvable in real-time. Whether this approach scales to AGI-level systems is unknown. Value proposition is building research infrastructure NOW while systems are still manageable, establishing protocols and partnerships that will be critical as capabilities advance. Institutional validation converts promising results into credible foundation for AI safety work.
 
 ---
 

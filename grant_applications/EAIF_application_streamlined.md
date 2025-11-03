@@ -1,84 +1,93 @@
 # EA Funds Grant Application - EA Infrastructure Fund
 
 ## SHORT DESCRIPTION (120 chars max)
-6-month salary to build TELOS runtime monitoring infrastructure enabling safer AI system deployment.
+Build federated research infrastructure for IRB-compliant AI governance studies across institutions.
 
 ## SUMMARY (1000 chars max)
 
-TELOS is open-source infrastructure for runtime AI alignment monitoring. It provides deployment-ready tools for detecting when AI systems drift from intended behavior during production use, enabling continuous safety oversight missing from current ML pipelines.
+TELOS Observatory provides federated research infrastructure for studying AI governance across institutions while maintaining data sovereignty. As AI systems advance, multi-site empirical research on alignment becomes critical - but current approaches centralize sensitive data or lack standardized methodologies.
 
-Core contribution: Production infrastructure (not just research prototype) that any AI deployment can integrate to monitor alignment in real-time. Fills gap between training-time alignment (RLHF, Constitutional AI) and deployment reality where systems interact with diverse users and edge cases.
+Core contribution: Containerized research platform enabling IRB-compliant governance studies with telemetric cryptographic security (proposed novel approach requiring institutional security review). Institutions deploy local TELOS instances, contribute governance insights to federated knowledge base without exposing raw interaction data.
 
-Current status: Working implementation with validated methodology across 56 conversations. Designing production API for integration with major LLM providers (OpenAI, Anthropic, etc.).
+Current status: Functional platform with deployed proof-of-concept (The Steward - multi-layer PA + corpus governance). Validated across 45 studies (+85.32% improvement in dual PA configuration). Ready for institutional partnership and replication.
 
-Value proposition: Makes alignment monitoring accessible to entire EA AI safety ecosystem - from researchers studying drift patterns to labs deploying safety-critical systems. Lowers barrier to empirical alignment research.
+Value proposition: Creates shared research infrastructure for EA AI safety ecosystem - standardized governance metrics, IRB-compliant protocols, federated learning from cross-institutional deployments. Enables rigorous empirical work on alignment that no single institution could conduct alone.
 
-Risk: Adoption depends on proving value exceeds latency/cost overhead. May become redundant if major labs build proprietary alternatives.
+Funding request: $75,000 for 6 months to establish institutional partnerships, build containerized deployment infrastructure, develop IRB protocols for multi-site federated governance research.
 
-Funding request: $75,000 for 6 months to build production infrastructure, create developer documentation, and establish community of practice around runtime monitoring.
-
-Success metric: 5+ external teams actively using TELOS in research or production within 12 months of launch.
+Success metric: 2+ institutional deployments, IRB approval, federated research protocol validated.
 
 ## PROJECT GOALS
 
 **Specific Actions:**
-1. Build production-ready TELOS API with <100ms latency, comprehensive error handling, monitoring dashboards (2 months)
-2. Create developer infrastructure: SDKs for Python/JS, integration guides for major LLM platforms, example implementations (2 months)
-3. Establish community infrastructure: Documentation site, Discord/forum for users, monthly office hours, case study library (2 months)
+1. Establish partnerships with 2+ academic/research institutions for governance research collaboration (2 months)
+2. Build containerized TELOS deployment infrastructure with telemetric cryptographic security for federated multi-site research (2 months)
+3. Develop IRB-compliant research protocols enabling human subjects studies on AI governance across institutions (2 months)
 
 **Impact on EA Ecosystem:**
-Multiplies effectiveness of AI safety work by providing shared infrastructure. Instead of each team building custom alignment monitoring, TELOS provides:
-- Standard methodology for measuring drift
-- Validated metrics (primacy attractors, fidelity scores)
-- Ready-to-deploy integration code
-- Community knowledge base of patterns and solutions
+Creates research infrastructure no single institution could build alone. EA AI safety work is bottlenecked by:
+- Lack of standardized governance metrics across different research groups
+- Inability to conduct multi-site studies without centralizing sensitive data
+- Missing IRB protocols for AI governance research (becomes critical as systems advance)
+- No federated learning infrastructure for sharing governance insights while maintaining data sovereignty
+
+TELOS Observatory provides:
+- Standardized methodology (dual primacy attractors, fidelity tracking) validated across institutions
+- Containerized deployments enabling local data control with federated knowledge aggregation
+- IRB-compliant protocols accelerating approval for governance research
+- Foundation for universal compliance infrastructure as AI capabilities advance
 
 **Success Metrics:**
-- 5+ external teams using TELOS (labs, academic groups, safety orgs)
-- 1,000+ downloads of SDK packages
-- 3+ published papers citing TELOS methodology
-- Active community (100+ Discord members, regular contributions)
+- 2+ institutional partnerships established with signed data sharing agreements
+- IRB approval obtained for multi-site governance study protocol
+- Containerized deployment validated at partner institution
+- Federated knowledge aggregation demonstrated (governance deltas flowing from multiple sites)
+- Research protocol documentation published for EA community adoption
 
 **Path to Impact:**
-1. Production infrastructure → easy adoption
-2. Multiple teams using TELOS → accumulated safety insights
-3. Shared learnings → better alignment practices across ecosystem
-4. Network effects → TELOS becomes standard for runtime monitoring
+1. Institutional partnerships → independent validation of governance approach
+2. IRB-compliant infrastructure → enables rigorous human subjects research on alignment
+3. Federated framework → multi-site studies generate insights no single institution could achieve
+4. Network effects → more deployments improve governance for all (shared primitives library)
+5. Universal IRB compliance foundation → prepared for AGI governance research challenges
 
 **Relation to EAIF goals:**
-Provides intellectual infrastructure (shared methodology, metrics, code) that increases EA community's capacity to work on AI safety. Enables recruitment by making alignment monitoring accessible to engineers without deep ML expertise. Improves community health through transparent, reproducible safety practices.
+Provides intellectual infrastructure (standardized metrics, validated methodology, IRB protocols) AND community infrastructure (federated research network, shared governance knowledge base). Increases EA capacity for empirical AI safety work by lowering barriers to rigorous multi-site studies. Improves community health through transparent, institutionally-validated practices building credibility for AI governance research.
 
 ## TRACK RECORD
 
 **Solo developer, 4 months development:**
-- Built complete TELOS framework from concept to working prototype
-- Developed validation methodology used across 56 empirical studies
-- Created automated analysis pipeline and interactive visualization tools
-- Wrote comprehensive documentation (12,000+ words across guides)
+- Built complete TELOS Observatory platform from concept to functional deployment
+- Developed and validated dual primacy attractor methodology across 45 empirical studies (+85.32% improvement over baseline)
+- Deployed The Steward: Multi-layer governance (PA → corpus validation → human escalation) functional in Demo Mode, demonstrating production viability
+- Created research instrumentation: Streamlit observatory, automated telemetry, intervention tracking, fidelity measurement
 
 **Infrastructure development experience:**
-- 15+ years building production systems (healthcare, data platforms)
-- Strong track record of systems design, API architecture, developer tooling
-- Experience with open-source community building and technical documentation
+- 15+ years building production systems (healthcare data platforms, DeFi infrastructure at scale)
+- Strong systems design and architecture capabilities
+- Experience coordinating across technical and institutional stakeholders (WaultFinance: $2B valuation DeFi project)
+- Track record delivering complex projects requiring robust infrastructure
 
 **Evidence of execution capability:**
-- Full working prototype at github.com/brunnerjf/telos
-- Modular architecture designed for extensibility
-- Already includes: Streamlit observatory, automated testing, research brief generation
-- Clear separation between core framework and validation tools
+- Functional platform at github.com/brunnerjf/telos with working deployments
+- Modular architecture designed for institutional deployment and federated research
+- Comprehensive research methodology with transparent validation studies
+- Clean UI prioritizing functionality over flourish (demonstrable now via Demo Mode)
 
-**Community engagement readiness:**
-- Transparent research methodology with publicly documented studies
-- Teaching background (clear technical communication)
-- Active engagement with AI safety concepts and EA principles
+**Institutional collaboration readiness:**
+- Transparent methodology suitable for academic review and replication
+- Understanding of IRB requirements and compliance needs
+- Clear communication of technical concepts for interdisciplinary collaboration
+- Realistic assessment of limitations and validation needs
 
 **Current status:** $0 budget (self-funded), 1.0 FTE
 
 **Honest limitations:**
-- No prior experience managing open-source community at scale
-- Limited network in EA/AI safety ecosystem (newer entrant)
-- Infrastructure needs may be under-scoped - real production use reveals unexpected requirements
-- Single developer - bus factor risk if project gains traction
+- No existing academic credentials or institutional affiliation (hence partnership focus)
+- Limited network in EA/AI safety research ecosystem (newer entrant to community)
+- Telemetric cryptographic approach is proposed novel method requiring security review before recommending for sensitive data
+- Federated infrastructure untested at multi-institutional scale - deployment may reveal unexpected technical or compliance challenges
+- Single developer - sustainability depends on successful institutional partnerships and potential future team expansion
 
 ## FUNDING AMOUNT AND BREAKDOWN
 
@@ -86,16 +95,16 @@ Provides intellectual infrastructure (shared methodology, metrics, code) that in
 
 Budget breakdown:
 - 60% - Personal salary/stipend ($45,000 for 6 months at $90K annual, includes self-employment tax)
-- 15% - Infrastructure ($11,250: API hosting, monitoring, embeddings compute, GitHub enterprise)
-- 10% - Community building ($7,500: documentation site hosting, Discord/forum setup, community management tools)
-- 10% - Contingency buffer ($7,500: unexpected technical requirements, security audits, legal review for open-source licensing)
-- 5% - Developer tools ($3,750: CI/CD, testing infrastructure, analytics for adoption tracking)
+- 15% - Institutional partnership development ($11,250: travel for in-person meetings, legal review for data sharing agreements, IRB application fees, institutional compliance consultations)
+- 10% - Federated infrastructure ($7,500: containerization development, telemetric key implementation, multi-site testing environment, secure communication infrastructure)
+- 10% - Professional services ($7,500: security consultation for cryptographic approach, IRB protocol development expertise, legal review of compliance frameworks)
+- 5% - Contingency buffer ($3,750: unexpected institutional requirements, additional security audits, extended IRB approval processes)
 
 **Minimal scenario ($50,000):**
-Core production API and basic documentation. Community infrastructure would be minimal (GitHub discussions only, no dedicated site or forum).
+1 institutional partnership, basic containerized deployment, limited IRB protocol development. Sufficient for proof-of-concept federated research but not comprehensive multi-site infrastructure.
 
 **Optimal scenario ($100,000):**
-Add: part-time community manager ($15K), comprehensive example integrations with 5+ platforms, video tutorials, office hours program, travel to AI safety conferences for adoption outreach.
+3+ institutional partnerships, comprehensive security audit of telemetric key approach, dedicated IRB/compliance specialist (part-time), extended timeline for IRB approval processes, conference presentations to recruit additional research partners, full federated knowledge aggregation demonstration.
 
 Budget spreadsheet: [Link to EA Funds template - to be created]
 
@@ -104,23 +113,23 @@ Budget spreadsheet: [Link to EA Funds template - to be created]
 **Other funding sought:** None currently.
 
 **If not funded:**
-Would focus on research publication (validation results) rather than production infrastructure. Working prototype would remain available on GitHub but without production hardening, integration guides, or community support. Adoption would be limited to highly technical teams willing to adapt research code.
+Project would pivot to incremental product development without institutional validation. Build domain-specific governance deployments commercially (museums, legal, medical) to demonstrate value, then pursue institutional partnerships from position of proven commercial traction. Slower path, higher risk, forgoes IRB-compliant research infrastructure.
 
 **Project viability without funding:**
-Research contribution could proceed using personal savings (~3 months runway), but infrastructure development requires full-time focus that isn't sustainable without funding.
+Platform is functional and deployable now. Alternative path is product-first rather than research-first - establish credibility through commercial success in specific verticals, use revenue to fund institutional collaboration later. More difficult but viable route.
 
 **Applying to LTFF concurrently:**
-Yes, submitting separate application. TELOS bridges direct safety work (LTFF) and enabling infrastructure (EAIF). Either framing fits project goals.
+Yes, submitting separate application. TELOS bridges direct AI safety research (LTFF focus: alignment governance methodology) and enabling infrastructure (EAIF focus: federated research platform for EA ecosystem). Both framings fit project goals.
 
 ## USE FOR ADDITIONAL FUNDING
 
 Additional funding beyond $75K would enable:
-1. **Part-time community manager** ($25K): Essential if adoption exceeds expectations - responding to issues, coordinating contributions, running office hours
-2. **Security audit** ($15K): Professional review of infrastructure before recommending for production use by safety-critical deployments
-3. **Integration partnerships** ($35K): Dedicate time to work directly with 3-5 EA orgs piloting TELOS, creating case studies that drive further adoption
-4. **Extended runway** (12 months vs 6): More time for ecosystem maturation, responding to user needs, iterating based on real-world feedback
+1. **Additional institutional partnerships** ($25K): Expand from 2 to 5+ research sites, increasing federated network scale and replication power
+2. **Comprehensive security audit** ($20K): Professional cryptographic review of telemetric key approach before recommending for sensitive research data
+3. **Dedicated IRB/compliance specialist** ($35K part-time): Navigate multi-site IRB coordination, accelerate approval timelines, develop standardized protocols for EA ecosystem
+4. **Extended timeline** (12 months vs 6): Account for IRB approval delays (often 3-6 months), allow iterative refinement based on institutional feedback, build more comprehensive federated infrastructure
 
-Diminishing returns above $150K without expanding team significantly.
+Marginal value strong up to $150K, then diminishes without full team expansion.
 
 ## LOCATION
 
@@ -161,29 +170,44 @@ Infrastructure projects benefit from transparent documentation of progress, chal
 ## ADDITIONAL INFORMATION
 
 **Theory of change:**
-EA AI safety work is bottlenecked by lack of shared infrastructure. Each team reinvents alignment monitoring, wastes effort, and produces incompatible insights. TELOS provides commons infrastructure that:
-- Reduces duplicated effort across ecosystem
-- Enables smaller teams to work on alignment without building tooling from scratch
-- Standardizes metrics for comparing approaches
-- Accelerates research through shared methodology
+EA AI safety work lacks federated research infrastructure for multi-site governance studies. As AI advances toward general intelligence, empirical research on alignment becomes critical but current approaches either:
+- Centralize sensitive data (privacy/sovereignty concerns for institutions)
+- Lack standardized methodologies (incompatible results across research groups)
+- Have no IRB protocols for AI governance research (becomes blocking issue for human subjects studies)
+
+TELOS Observatory provides infrastructure enabling:
+- Multi-site studies with local data sovereignty (federated knowledge aggregation)
+- Standardized governance metrics (dual PA, fidelity tracking, intervention measurement)
+- IRB-compliant protocols accelerating approval across institutions
+- Foundation for universal compliance infrastructure as AI capabilities advance
 
 **Key uncertainties:**
-1. Unclear if external teams will adopt - may prefer building custom solutions
-2. Maintenance burden unknown - production use reveals edge cases and support needs
-3. Competitive landscape: major labs may build proprietary alternatives that fragment ecosystem
-4. Technical uncertainty: production latency requirements may be incompatible with current approach
+1. Institutional partnerships may be difficult to establish without existing academic credentials
+2. IRB approval timeline unpredictable - could extend significantly beyond 6-month timeline
+3. Telemetric cryptographic approach is proposed novel method - may not withstand security review
+4. Federated infrastructure technically complex - multi-site deployment may reveal unforeseen challenges
+5. EA ecosystem adoption uncertain - institutions may prefer building custom solutions
 
 **Why fund despite uncertainties:**
-Cost of trying is low ($75K, 6 months). Upside is high if adoption succeeds - entire EA AI safety ecosystem gains shared infrastructure. Worst case: research publication documenting approach, codebase available for others to learn from or fork.
+Cost of trying is modest ($75K, 6 months). Upside is significant if successful - EA AI safety ecosystem gains:
+- Validated governance methodology with institutional credibility
+- IRB protocols enabling rigorous human subjects research on alignment
+- Federated infrastructure no single institution could build alone
+- Network effects as more sites join (governance primitives improve for all)
+
+Worst case: functional platform remains available, research methodology documented, lessons learned about institutional collaboration barriers inform future attempts.
 
 **Honest assessment:**
-TELOS is not guaranteed to become widely-adopted infrastructure. It represents a bet that:
-- Runtime monitoring is important enough to justify dedicated tooling
-- Open-source commons approach works better than proprietary solutions
-- EA ecosystem benefits from standardized alignment metrics
-- One developer can bootstrap community infrastructure that becomes self-sustaining
+TELOS Observatory federated infrastructure is not guaranteed to achieve widespread institutional adoption. Success depends on:
+- Ability to establish partnerships without existing academic credentials
+- IRB approval processes that may be slow or blocked entirely
+- Technical validation of telemetric cryptographic approach
+- Institutional willingness to collaborate on federated research
+- EA ecosystem seeing value in standardized governance infrastructure
 
-Failure modes: low adoption, maintenance burden exceeds capacity, major technical barriers to production use. Success requires both technical execution and community building - risks on both fronts.
+Failure modes: partnerships don't materialize, IRB approval blocked, security approach invalidated, technical barriers to multi-site deployment, low ecosystem adoption. Success requires execution on institutional collaboration (unfamiliar territory), technical infrastructure (familiar territory), and community building - risks across all three dimensions.
+
+Alternative path if research approach fails: pivot to product development, establish credibility through commercial deployments, pursue institutional partnerships later from position of proven traction.
 
 ---
 
