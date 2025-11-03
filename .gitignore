@@ -264,3 +264,4 @@ phase2_*.log
 *:
 .tmp.drivedownload/
 .tmp.driveupload/
+.streamlit/secrets.toml
