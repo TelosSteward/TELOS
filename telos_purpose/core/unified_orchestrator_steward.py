@@ -332,9 +332,8 @@ class UnifiedOrchestratorSteward:
             # Calculate dual PA fidelity
             dual_fidelity = check_dual_pa_fidelity(
                 response_embedding=response_embedding,
-                user_pa_embedding=self.user_pa_embedding,
-                ai_pa_embedding=self.ai_pa_embedding,
-                dual_pa=self.dual_pa
+                dual_pa=self.dual_pa,
+                embedding_provider=self.embedding_provider
             )
 
             # Enhance result with dual PA metrics
@@ -387,9 +386,8 @@ class UnifiedOrchestratorSteward:
             # Calculate dual PA fidelity
             dual_fidelity = check_dual_pa_fidelity(
                 response_embedding=response_embedding,
-                user_pa_embedding=self.user_pa_embedding,
-                ai_pa_embedding=self.ai_pa_embedding,
-                dual_pa=self.dual_pa
+                dual_pa=self.dual_pa,
+                embedding_provider=self.embedding_provider
             )
 
             # Enhance result with dual PA metrics

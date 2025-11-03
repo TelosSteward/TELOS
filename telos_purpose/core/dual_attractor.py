@@ -15,9 +15,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import List, Optional, Dict, Any
 import numpy as np
-from anthropic import Anthropic
 import logging
 import asyncio
+
+from telos_purpose.core.primacy_math import PrimacyAttractorMath, MathematicalState
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +84,7 @@ class DualPrimacyAttractor:
 
 async def detect_user_intent(
     user_pa: Dict[str, Any],
-    client: Anthropic
+    client: Any
 ) -> str:
     """
     Detect primary user intent from PA purpose statements.
@@ -92,7 +93,7 @@ async def detect_user_intent(
 
     Args:
         user_pa: User's primacy attractor configuration
-        client: Anthropic client for LLM calls
+        client: Any client for LLM calls
 
     Returns:
         Primary intent verb (e.g., 'learn', 'solve', 'create')
@@ -135,7 +136,7 @@ Respond with ONLY the single word intent verb, nothing else."""
 
 async def derive_ai_pa_from_user_pa(
     user_pa: Dict[str, Any],
-    client: Anthropic,
+    client: Any,
     template: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """
@@ -146,7 +147,7 @@ async def derive_ai_pa_from_user_pa(
 
     Args:
         user_pa: User's primacy attractor configuration
-        client: Anthropic client for LLM calls
+        client: Any client for LLM calls
         template: Optional role customization (e.g., professional vs friendly)
 
     Returns:
@@ -205,7 +206,7 @@ async def derive_ai_pa_from_user_pa(
 async def check_pa_correlation(
     user_pa: Dict[str, Any],
     ai_pa: Dict[str, Any],
-    client: Anthropic
+    client: Any
 ) -> float:
     """
     Check alignment between user PA and AI PA.
@@ -215,7 +216,7 @@ async def check_pa_correlation(
     Args:
         user_pa: User's primacy attractor
         ai_pa: AI's role attractor
-        client: Anthropic client for embeddings
+        client: Any client for embeddings
 
     Returns:
         Correlation score in [0, 1] where higher = better alignment
@@ -253,7 +254,7 @@ async def check_pa_correlation(
 
 async def create_dual_pa(
     user_pa: Dict[str, Any],
-    client: Anthropic,
+    client: Any,
     enable_dual_mode: bool = True,
     template: Optional[Dict[str, Any]] = None
 ) -> DualPrimacyAttractor:
@@ -264,7 +265,7 @@ async def create_dual_pa(
 
     Args:
         user_pa: User's primacy attractor configuration
-        client: Anthropic client for LLM calls
+        client: Any client for LLM calls
         enable_dual_mode: If True, derive AI PA. If False, single PA mode.
         template: Optional AI role customization
 
@@ -358,27 +359,43 @@ class DualFidelityResult:
 
 def check_dual_pa_fidelity(
     response_embedding: np.ndarray,
-    user_pa_embedding: np.ndarray,
-    ai_pa_embedding: Optional[np.ndarray],
-    dual_pa: DualPrimacyAttractor
+    dual_pa: DualPrimacyAttractor,
+    embedding_provider: Any
 ) -> DualFidelityResult:
     """
-    Check fidelity against both user PA and AI PA.
+    Check fidelity against both user PA and AI PA using proper attractor math.
+
+    This uses the same mathematical formula as single PA:
+    â = (τ·p + (1-τ)·s) / ||τ·p + (1-τ)·s||
 
     Args:
         response_embedding: Embedding of LLM response
-        user_pa_embedding: Embedding of user PA purpose
-        ai_pa_embedding: Embedding of AI PA purpose (None in single mode)
         dual_pa: Dual PA configuration
+        embedding_provider: Embedding provider for encoding purpose/scope
 
     Returns:
         DualFidelityResult with pass/fail for both PAs
     """
-    # Calculate user PA fidelity (cosine similarity)
-    user_similarity = np.dot(response_embedding, user_pa_embedding) / (
-        np.linalg.norm(response_embedding) * np.linalg.norm(user_pa_embedding)
+    # Build user PA attractor using proper mathematical formula
+    user_purpose_text = ' '.join(dual_pa.user_pa['purpose']) if isinstance(dual_pa.user_pa['purpose'], list) else str(dual_pa.user_pa['purpose'])
+    user_scope_text = ' '.join(dual_pa.user_pa['scope']) if isinstance(dual_pa.user_pa['scope'], list) else str(dual_pa.user_pa['scope'])
+
+    user_p_vec = embedding_provider.encode(user_purpose_text)
+    user_s_vec = embedding_provider.encode(user_scope_text)
+
+    user_attractor = PrimacyAttractorMath(
+        purpose_vector=user_p_vec,
+        scope_vector=user_s_vec,
+        privacy_level=dual_pa.user_pa.get('privacy_level', 0.8),
+        constraint_tolerance=dual_pa.user_pa.get('constraint_tolerance', 0.2),
+        task_priority=dual_pa.user_pa.get('task_priority', 0.7)
     )
-    user_fidelity = float(user_similarity)
+
+    # Calculate user PA fidelity (distance to attractor center)
+    user_distance = np.linalg.norm(response_embedding - user_attractor.attractor_center)
+    user_in_basin = user_distance <= user_attractor.basin_radius
+    user_fidelity = 1.0 if user_in_basin else (1.0 - (user_distance / (2 * user_attractor.basin_radius)))
+    user_fidelity = float(max(0.0, min(1.0, user_fidelity)))  # Clamp to [0, 1]
     user_pass = user_fidelity >= dual_pa.get_user_threshold()
 
     # Single PA mode
@@ -393,14 +410,26 @@ def check_dual_pa_fidelity(
             governance_mode='single'
         )
 
-    # Dual PA mode - check AI PA too
-    if ai_pa_embedding is None:
-        raise ValueError("ai_pa_embedding required in dual PA mode")
+    # Dual PA mode - build AI PA attractor
+    ai_purpose_text = ' '.join(dual_pa.ai_pa['purpose']) if isinstance(dual_pa.ai_pa['purpose'], list) else str(dual_pa.ai_pa['purpose'])
+    ai_scope_text = ' '.join(dual_pa.ai_pa['scope']) if isinstance(dual_pa.ai_pa['scope'], list) else str(dual_pa.ai_pa['scope'])
 
-    ai_similarity = np.dot(response_embedding, ai_pa_embedding) / (
-        np.linalg.norm(response_embedding) * np.linalg.norm(ai_pa_embedding)
+    ai_p_vec = embedding_provider.encode(ai_purpose_text)
+    ai_s_vec = embedding_provider.encode(ai_scope_text)
+
+    ai_attractor = PrimacyAttractorMath(
+        purpose_vector=ai_p_vec,
+        scope_vector=ai_s_vec,
+        privacy_level=dual_pa.ai_pa.get('privacy_level', 0.8),
+        constraint_tolerance=dual_pa.ai_pa.get('constraint_tolerance', 0.2),
+        task_priority=dual_pa.ai_pa.get('task_priority', 0.7)
     )
-    ai_fidelity = float(ai_similarity)
+
+    # Calculate AI PA fidelity (distance to attractor center)
+    ai_distance = np.linalg.norm(response_embedding - ai_attractor.attractor_center)
+    ai_in_basin = ai_distance <= ai_attractor.basin_radius
+    ai_fidelity = 1.0 if ai_in_basin else (1.0 - (ai_distance / (2 * ai_attractor.basin_radius)))
+    ai_fidelity = float(max(0.0, min(1.0, ai_fidelity)))  # Clamp to [0, 1]
     ai_pass = ai_fidelity >= dual_pa.get_ai_threshold()
 
     # Determine overall pass and dominant failure
