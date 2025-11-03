@@ -4,7 +4,8 @@
 
 # LLM API Clients
 
-mistralai>=0.1.0  # Powers both TELOS governance and Steward research analysis
+anthropic>=0.18.0  # Powers TELOS governance and AI PA derivation
+mistralai>=0.1.0   # Optional: Alternative LLM backend
 
 # Embedding Models
 
