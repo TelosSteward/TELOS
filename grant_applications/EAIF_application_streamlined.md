@@ -141,19 +141,23 @@ Marginal value strong up to $150K, then diminishes without full team expansion.
 
 ## REFERENCES
 
-**Technical/Development References:**
+**Security/Cryptographic Review:**
 
-1. **Twiddles** - Blockchain developer, creator of BobbyBuyBot (first Telegram-based BuyBot for multi-network blockchain transactions). Collaborated for ~1 year on DeFi infrastructure. Can speak to: technical execution ability, system architecture skills, ability to deliver production-ready infrastructure. [Email to be provided]
+1. **[Security Auditor Name]** - Independent security researcher conducting preliminary cryptographic audit of Telemetric Keys proof-of-concept. Previously collaborated on multiple security-critical projects. Can speak to: technical rigor, results-driven execution, tenacity in solving complex problems, character and professional integrity. Will provide audit findings report validating TELOS cryptographic approach for EA ecosystem adoption. [Email to be provided]
 
-2. **RDAuditors Team Member** - Professional contact who can vouch for technical competence, code quality, and professional work standards. [Email to be provided]
+**Technical Development References:**
+
+2. **Twiddles** - Blockchain developer, creator of BobbyBuyBot (first Telegram-based BuyBot for multi-network blockchain transactions). Collaborated for ~1 year on DeFi infrastructure. Can speak to: technical execution ability, system architecture skills, ability to deliver production-ready infrastructure under tight deadlines. [Email to be provided]
+
+3. **RDAuditors Team Member** - Professional contact who can vouch for technical competence, code quality, professional work standards, and ability to execute complex projects. [Email to be provided]
 
 **Infrastructure/Community Building References:**
 
-3. **TELOS Core Team Members** - Current collaborators working on production deployment and community ecosystem. Can speak to: infrastructure development capability, community engagement, documentation quality, team leadership. [Emails to be provided]
+4. **TELOS Core Team Members** - Current collaborators working on production deployment and community ecosystem. Can speak to: infrastructure development capability, community engagement, documentation quality, team leadership, stakeholder coordination. [Emails to be provided]
 
 **High-Stakes Project Experience:**
 
-4. **WaultFinance (2021)** - Core team member (marketing) for $2B valuation DeFi infrastructure project during DeFi summer. Project required robust infrastructure, community management, and coordination across technical and business teams. Demonstrates ability to contribute to high-value, production-critical projects at scale.
+5. **WaultFinance (2021)** - Core team member (marketing) for $2B valuation DeFi infrastructure project during DeFi summer. Project required robust infrastructure, community management, and coordination across technical and business teams. Demonstrates ability to contribute to high-value, production-critical projects at scale.
 
 ## TIMELINE
 
