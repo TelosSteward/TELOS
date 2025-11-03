@@ -143,7 +143,7 @@ Marginal value strong up to $150K, then diminishes without full team expansion.
 
 **Security/Cryptographic Review:**
 
-1. **[Security Auditor Name]** - Independent security researcher conducting preliminary cryptographic audit of Telemetric Keys proof-of-concept. Previously collaborated on multiple security-critical projects. Can speak to: technical rigor, results-driven execution, tenacity in solving complex problems, character and professional integrity. Will provide audit findings report validating TELOS cryptographic approach for EA ecosystem adoption. [Email to be provided]
+1. **[Security Auditor Name]** - Independent security researcher conducting preliminary cryptographic audit of Telemetric Keys proof-of-concept. Originally collaborated during WaultFinance ($2B DeFi project, 2021), worked together on multiple security-critical projects since. Can speak to: technical rigor, results-driven execution, tenacity in solving complex problems, character and professional integrity developed over 3+ years of collaboration. Will provide audit findings report validating TELOS cryptographic approach for EA ecosystem adoption. [Email to be provided]
 
 **Technical Development References:**
 
@@ -157,7 +157,7 @@ Marginal value strong up to $150K, then diminishes without full team expansion.
 
 **High-Stakes Project Experience:**
 
-5. **WaultFinance (2021)** - Core team member (marketing) for $2B valuation DeFi infrastructure project during DeFi summer. Project required robust infrastructure, community management, and coordination across technical and business teams. Demonstrates ability to contribute to high-value, production-critical projects at scale.
+5. **WaultFinance (2021)** - Core team member (marketing) for $2B valuation DeFi infrastructure project during DeFi summer. Project required robust infrastructure, community management, and coordination across technical and business teams. Demonstrates ability to contribute to high-value, production-critical projects at scale. Note: Security auditor reference (above) originated from this collaboration, establishing 3+ year professional relationship.
 
 ## TIMELINE
 
