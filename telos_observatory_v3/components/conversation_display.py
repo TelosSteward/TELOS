@@ -1167,11 +1167,53 @@ class ConversationDisplay:
                     use_container_width=True
                 )
 
+        # Check if Demo Mode and enforce 5-message limit
+        demo_mode = st.session_state.get('telos_demo_mode', False)
+
+        # Initialize demo message counter
+        if 'demo_message_count' not in st.session_state:
+            st.session_state.demo_message_count = 0
+
+        # Show warning at message 4 in Demo Mode
+        if demo_mode and st.session_state.demo_message_count == 4:
+            st.warning("⚠️ One message remaining in Demo Mode. Add your API key to continue unlimited usage.")
+
+        # Block at message 5 in Demo Mode
+        if demo_mode and st.session_state.demo_message_count >= 5:
+            st.markdown("""
+            <div style="
+                background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+                border: 3px solid #FFD700;
+                border-radius: 15px;
+                padding: 25px;
+                margin: 19px 0;
+                box-shadow: 0 0 19px rgba(255, 215, 0, 0.3);
+                text-align: center;
+            ">
+                <div style="font-size: 48px; margin-bottom: 15px;">🔒</div>
+                <div style="color: #FFD700; font-size: 24px; font-weight: bold; margin-bottom: 15px;">
+                    Demo Limit Reached
+                </div>
+                <div style="color: #e0e0e0; font-size: 19px; line-height: 1.6; margin-bottom: 19px;">
+                    You've reached the 5-message demo limit.<br>
+                    Add your Anthropic API key to continue with unlimited TELOS governance.
+                </div>
+                <div style="color: #888; font-size: 16px; margin-top: 19px;">
+                    Click "Exit Demo Mode" in the sidebar to add your API key →
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            return  # Stop rendering input form
+
         # Handle sending message
         if send_button and user_input and user_input.strip():
             # Dismiss intro if showing
             if 'show_intro' in st.session_state and st.session_state.show_intro:
                 st.session_state.show_intro = False
+
+            # Increment demo message counter in Demo Mode
+            if demo_mode:
+                st.session_state.demo_message_count += 1
 
             # CRITICAL: Clear demo data on first user message to prevent contamination
             # Demo data should NOT be part of primacy attractor calibration

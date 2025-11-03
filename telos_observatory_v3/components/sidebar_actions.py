@@ -328,6 +328,10 @@ class SidebarActions:
         if 'user_started_conversation' in st.session_state:
             del st.session_state.user_started_conversation
 
+        # Reset demo message counter
+        if 'demo_message_count' in st.session_state:
+            st.session_state.demo_message_count = 0
+
         # Disable intro examples when switching to Open Mode
         st.session_state.show_intro = False
         st.session_state.enable_intro_examples = False
