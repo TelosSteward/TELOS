@@ -184,7 +184,7 @@ TEMPLATE_LIBRARY = {
 
 **Why This Wins**:
 - Templates are just hardcoded attractors - trivial to implement
-- TELL OS will hold to these better than any other AI on the market
+- TELOS will hold to these better than any other AI on the market
 - As open source models improve, we dominate because we listen to users
 - Users can start from template, then customize
 - We learn which templates are popular → guide product development
@@ -903,14 +903,14 @@ TELOS with PPA is "Your personal AI that holds your purpose as primacy"
 
 ### The Open Source Model Advantage
 
-**Strategic Insight**: As open source models get better and better, TELL OS wins bigger and bigger.
+**Strategic Insight**: As open source models get better and better, TELOS wins bigger and bigger.
 
 **Why**:
-- The LLM is just an implementation detail for TELL OS
+- The LLM is just an implementation detail for TELOS
 - Our value is in the governance layer, not the model
 - When Llama 5, Mistral XXL, or other open source models match GPT-4:
   - Claude/ChatGPT lose their moat (model quality)
-  - TELL OS gains advantage (swap in better open source model)
+  - TELOS gains advantage (swap in better open source model)
   - Users get same governance + lower costs
 
 **The Hard Work Is Done**:
@@ -924,7 +924,7 @@ TELOS with PPA is "Your personal AI that holds your purpose as primacy"
 - We'll hold to them better than any AI on market
 - Listen to users → iterate on templates → dominate
 
-**Result**: TELL OS becomes the governance standard that works with ANY model, future-proof against the open source explosion.
+**Result**: TELOS becomes the governance standard that works with ANY model, future-proof against the open source explosion.
 
 ---
 
@@ -998,63 +998,34 @@ TELOS with PPA is:
 
 ---
 
-## Brand Evolution: TELOS → TELL OS
+## Marketing & Positioning
 
-### The Rebrand
+### Product Name
 
-**TELL OS** = TELL Operating Substrate
-- Can also mean: TELL Operating System (both work)
-- Previous: TELOS (harder to explain, less memorable)
-- New: TELL OS (immediately clear, marketable)
+**TELOS** (stays the same)
+- TELOS Observatory (current product)
+- TELOS Persistent Profiles (future feature)
+- TELOS Discord Bot (future integration)
 
-### Positioning
+### Tagline Options
 
-**Tagline Options**:
-```
-"The operating system you tell once who you are, and it never forgets"
-
-"Tell it once. It remembers forever."
-
-"Your AI. Your purpose. Mathematically preserved."
-
-"The OS that learns you, not just your commands"
-```
-
-### Why TELL OS Wins
-
-**TELOS** (old):
-- Obscure acronym
-- Requires explanation
-- "Observatory" sounds like analytics tool
-- Not obvious it's an AI platform
-
-**TELL OS** (new):
-- Immediately understandable: "You TELL it"
-- OS = platform (not middleware)
-- Operating Substrate = accurate technical term
-- Operating System = works too (it IS an OS for AI)
-- Memorable, marketable, clear
-
-### Brand Architecture
+The "tell it once" angle for marketing:
 
 ```
-Product Hierarchy:
+"You tell it once. TELOS never forgets."
 
-TELL OS (Platform)
-├─ Persistent Primacy Attractor (Core Tech)
-├─ Observatory (UI/Dashboard)
-├─ Discord Bot (Integration)
-└─ API (Developer Access)
+"Tell TELOS once who you are. It remembers mathematically."
 
-Not "TELOS Observatory"
-Now "TELL OS" with Observatory as one component
+"The AI you tell once. It stays true forever."
+
+"Your purpose. Told once. Preserved mathematically."
 ```
 
 ### Market Messaging
 
 **For Users**:
 ```
-"TELL OS: The AI that remembers you"
+"TELOS: The AI that remembers you"
 
 You tell it once who you are.
 It remembers mathematically.
@@ -1064,9 +1035,9 @@ Your AI. Your rules. Forever.
 
 **For Developers**:
 ```
-"TELL OS: Operating Substrate for Purpose-Aligned AI"
+"TELOS: Mathematical Governance for AI"
 
-Mathematical primacy attractors
+Primacy attractors as code
 Statistical convergence across sessions
 Enforceable governance boundaries
 Audit-ready compliance
@@ -1074,7 +1045,7 @@ Audit-ready compliance
 
 **For Enterprise**:
 ```
-"TELL OS: Provable AI Alignment at Scale"
+"TELOS: Provable AI Alignment at Scale"
 
 Your team's purposes, mathematically preserved
 Cross-session consistency, statistically proven
@@ -1085,7 +1056,7 @@ Zero conversation storage, deltas only
 ### Launch Messaging
 
 ```
-🚀 Introducing TELL OS
+🚀 Introducing TELOS Persistent Profiles
 
 The first AI platform where you tell it once who you are,
 and it remembers—mathematically—forever.
@@ -1099,18 +1070,19 @@ Hard governance boundaries.
 Not session-isolated AI.
 Cross-session understanding that grows with you.
 
-TELL OS: Your purpose. Your AI. Your rules.
+TELOS: You tell it once. It never forgets.
 ```
 
 ---
 
 **Document Status**: Vision / Future Architecture
 **Target Release**: Q1-Q2 2026 (Profile System + Progressive Learning)
-**Strategic Impact**: Transforms TELOS → TELL OS from middleware to standalone AI platform
+**Strategic Impact**: Transforms TELOS from middleware to standalone AI platform
 **Competitive Moat**: Mathematical user understanding + privacy-first architecture + statistical refinement
-**Next Steps**: Validate vision, design data model, prototype profile system, plan rebrand
+**Next Steps**: Validate vision, design data model, prototype profile system
 
-**Brand Evolution**: TELOS → TELL OS (TELL Operating Substrate)
+**Product Name**: TELOS (stays the same)
+**Marketing Tagline**: "You tell it once. TELOS never forgets."
 **Privacy Strategy**: API key as user ID, deltas only, audit-ready
 **Security**: Pro bono audit + pen testing (paid post-grants)
 
