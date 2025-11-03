@@ -54,7 +54,7 @@ class DualPrimacyAttractor:
     user_pa: Dict[str, Any]  # Purpose, scope, boundaries, thresholds
     ai_pa: Optional[Dict[str, Any]] = None  # AI role configuration
     correlation: float = 0.0  # Correlation between PAs
-    governance_mode: str = 'single'  # 'single' or 'dual'
+    governance_mode: str = 'dual'  # 'single' or 'dual' - Default to 'dual' (canonical implementation)
 
     def __post_init__(self):
         """Validate configuration."""

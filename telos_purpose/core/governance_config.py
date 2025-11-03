@@ -33,10 +33,10 @@ class GovernanceConfig:
     """
 
     # Core mode selection
-    mode: GovernanceMode = GovernanceMode.SINGLE_PA
+    mode: GovernanceMode = GovernanceMode.DUAL_PA  # Default to Dual PA (canonical implementation)
 
     # Dual PA settings
-    dual_pa_enabled: bool = False
+    dual_pa_enabled: bool = True  # Dual PA is now the default
     ai_pa_template: Optional[Dict[str, Any]] = None
 
     # Thresholds
@@ -242,8 +242,8 @@ def get_global_config() -> GovernanceConfig:
     """Get global governance configuration (creates default if not set)."""
     global _global_config
     if _global_config is None:
-        _global_config = GovernanceConfig.single_pa_config()
-        logger.info("Using default single PA configuration")
+        _global_config = GovernanceConfig.dual_pa_config()
+        logger.info("Using default dual PA configuration (canonical implementation)")
     return _global_config
 
 

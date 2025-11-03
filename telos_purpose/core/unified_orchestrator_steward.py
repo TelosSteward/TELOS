@@ -97,7 +97,7 @@ class UnifiedOrchestratorSteward:
         self.dual_pa: Optional[DualPrimacyAttractor] = None
         self.user_pa_embedding: Optional[Any] = None
         self.ai_pa_embedding: Optional[Any] = None
-        self.actual_governance_mode: str = "single"  # Actual mode after initialization
+        self.actual_governance_mode: str = "dual"  # Actual mode after initialization - Default to dual
 
         # Governance executor
         self.governance_steward: Optional[UnifiedGovernanceSteward] = None
