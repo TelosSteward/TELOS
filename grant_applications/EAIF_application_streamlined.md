@@ -20,9 +20,10 @@ Success metric: 2+ institutional deployments, IRB approval, federated research p
 ## PROJECT GOALS
 
 **Specific Actions:**
-1. Establish partnerships with 2+ academic/research institutions for governance research collaboration (2 months)
-2. Build containerized TELOS deployment infrastructure with telemetric cryptographic security for federated multi-site research (2 months)
-3. Develop IRB-compliant research protocols enabling human subjects studies on AI governance across institutions (2 months)
+1. Conduct preliminary cryptographic audit of Telemetric Keys proof-of-concept with approved auditor (Trail of Bits, NCC Group, or equivalent) to validate novel approach before ecosystem deployment (Month 1-2)
+2. Establish partnerships with 2+ academic/research institutions for governance research collaboration, using audit findings to address institutional security concerns (Month 2-4)
+3. Build containerized TELOS deployment infrastructure with audited telemetric cryptographic security for federated multi-site research (Month 3-5)
+4. Develop IRB-compliant research protocols enabling human subjects studies on AI governance across institutions, incorporating audit recommendations (Month 4-6)
 
 **Impact on EA Ecosystem:**
 Creates research infrastructure no single institution could build alone. EA AI safety work is bottlenecked by:
@@ -32,17 +33,19 @@ Creates research infrastructure no single institution could build alone. EA AI s
 - No federated learning infrastructure for sharing governance insights while maintaining data sovereignty
 
 TELOS Observatory provides:
+- Preliminary cryptographic audit validates novel Telemetric Keys approach, de-risks EA ecosystem adoption
 - Standardized methodology (dual primacy attractors, fidelity tracking) validated across institutions
 - Containerized deployments enabling local data control with federated knowledge aggregation
 - IRB-compliant protocols accelerating approval for governance research
 - Foundation for universal compliance infrastructure as AI capabilities advance
 
 **Success Metrics:**
-- 2+ institutional partnerships established with signed data sharing agreements
-- IRB approval obtained for multi-site governance study protocol
-- Containerized deployment validated at partner institution
-- Federated knowledge aggregation demonstrated (governance deltas flowing from multiple sites)
-- Research protocol documentation published for EA community adoption
+- Preliminary cryptographic audit completed with public findings report (Month 2)
+- 2+ institutional partnerships established with signed data sharing agreements (Month 4)
+- IRB approval obtained for multi-site governance study protocol (Month 5)
+- Containerized deployment validated at partner institution (Month 6)
+- Federated knowledge aggregation demonstrated (governance deltas flowing from multiple sites) (Month 6)
+- Research protocol documentation published for EA community adoption (Month 6)
 
 **Path to Impact:**
 1. Institutional partnerships → independent validation of governance approach
@@ -95,16 +98,16 @@ Provides intellectual infrastructure (standardized metrics, validated methodolog
 
 Budget breakdown:
 - 60% - Personal salary/stipend ($45,000 for 6 months at $90K annual, includes self-employment tax)
-- 15% - Institutional partnership development ($11,250: travel for in-person meetings, legal review for data sharing agreements, IRB application fees, institutional compliance consultations)
-- 10% - Federated infrastructure ($7,500: containerization development, telemetric key implementation, multi-site testing environment, secure communication infrastructure)
-- 10% - Professional services ($7,500: security consultation for cryptographic approach, IRB protocol development expertise, legal review of compliance frameworks)
-- 5% - Contingency buffer ($3,750: unexpected institutional requirements, additional security audits, extended IRB approval processes)
+- 20% - Preliminary cryptographic audit ($15,000: Trail of Bits/NCC Group/Cure53 professional security review of Telemetric Keys, validates novel cryptographic approach for EA ecosystem)
+- 10% - Institutional partnership development ($7,500: travel for in-person meetings, legal review for data sharing agreements, IRB application fees)
+- 5% - Federated infrastructure ($3,750: containerization development, multi-site testing environment)
+- 5% - Contingency buffer ($3,750: unexpected institutional requirements, extended IRB approval processes)
 
 **Minimal scenario ($50,000):**
-1 institutional partnership, basic containerized deployment, limited IRB protocol development. Sufficient for proof-of-concept federated research but not comprehensive multi-site infrastructure.
+Preliminary audit ($15K) + 1 institutional partnership + basic containerized deployment. Validates cryptographic approach and establishes initial federated research capability but limits multi-site infrastructure scope.
 
 **Optimal scenario ($100,000):**
-3+ institutional partnerships, comprehensive security audit of telemetric key approach, dedicated IRB/compliance specialist (part-time), extended timeline for IRB approval processes, conference presentations to recruit additional research partners, full federated knowledge aggregation demonstration.
+Comprehensive audit ($20K) + 3+ institutional partnerships + dedicated IRB/compliance specialist (part-time) + extended timeline (12 months) for IRB approval cycles + conference presentations to recruit EA community partners + full federated knowledge aggregation demonstration across multiple domains.
 
 Budget spreadsheet: [Link to EA Funds template - to be created]
 

@@ -20,22 +20,25 @@ Success metric: 2+ institutional partnerships established, IRB approval obtained
 ## PROJECT GOALS
 
 **Specific Actions:**
-1. Establish institutional partnerships for governance research validation (2 academic/research institutions) (2 months)
-2. Develop IRB-compliant research protocols for multi-site federated governance studies (2 months)
-3. Build telemetric cryptographic containerization infrastructure enabling secure cross-institutional data sovereignty (2 months)
+1. Conduct preliminary cryptographic audit of Telemetric Keys proof-of-concept with approved auditor (Trail of Bits, NCC Group, or equivalent) to validate conceptual framework before institutional deployment (Month 1-2)
+2. Establish institutional partnerships for governance research validation (2 academic/research institutions) using audit findings to address security committee concerns (Month 2-4)
+3. Develop IRB-compliant research protocols for multi-site federated governance studies incorporating audit recommendations (Month 3-5)
+4. Deploy containerized telemetric cryptographic infrastructure at partner institutions enabling secure cross-institutional data sovereignty (Month 4-6)
 
 **Impact:**
 Creates research infrastructure for studying AI governance as systems approach general intelligence. Current empirical results (+85.32% improvement in dual PA configuration) require institutional validation. Framework enables:
+- Preliminary audit validates cryptographic soundness, de-risks institutional adoption
 - Cross-institutional replication studies maintaining data sovereignty
 - IRB-compliant experimental design for governance research
 - Federated learning from governance deltas across deployments
-- Proposed novel cryptographic approach (telemetric keys) for securing sensitive research data
+- Novel cryptographic approach (telemetric keys) validated by independent security review
 
 **Success Metrics:**
-- 2+ institutional research partnerships established
-- IRB approval obtained for governance study protocol
-- Containerized deployment validated at partner institution
-- Research protocol documentation published for broader adoption
+- Preliminary cryptographic audit completed with findings report (Month 2)
+- 2+ institutional research partnerships established (Month 4)
+- IRB approval obtained for governance study protocol (Month 5)
+- Containerized deployment validated at partner institution (Month 6)
+- Research protocol documentation published for broader adoption (Month 6)
 
 **Path to Impact:**
 1. Institutional validation → credibility for governance approach
@@ -82,16 +85,16 @@ Addresses AI x-risk by building research infrastructure needed to study alignmen
 
 Budget breakdown:
 - 60% - Personal salary/stipend ($45,000 for 6 months at $90K annual equivalent, includes self-employment tax)
-- 15% - Institutional partnership development ($11,250: travel for in-person meetings, legal review for data sharing agreements, IRB application fees)
-- 10% - Computing infrastructure ($7,500: containerized deployment infrastructure, telemetric key implementation, federated testing environment)
-- 10% - Professional services ($7,500: security consultation for cryptographic approach, IRB protocol development expertise)
+- 20% - Preliminary cryptographic audit ($15,000: Trail of Bits/NCC Group/Cure53 professional review of Telemetric Keys proof-of-concept, validates conceptual framework for institutional partnerships)
+- 10% - Institutional partnership development ($7,500: travel for in-person meetings, legal review for data sharing agreements, IRB application fees)
+- 5% - Computing infrastructure ($3,750: containerized deployment infrastructure, federated testing environment)
 - 5% - Contingency buffer ($3,750: unexpected institutional requirements, additional compliance needs)
 
 **Minimal scenario ($50,000):**
-1 institutional partnership, basic IRB protocol, limited containerization infrastructure. Sufficient for proof-of-concept validation but not full federated deployment.
+Preliminary audit ($15K) + 1 institutional partnership + basic IRB protocol. Validates cryptographic approach and establishes initial research collaboration but limits federated deployment scope.
 
 **Optimal scenario ($100,000):**
-3+ institutional partnerships, comprehensive federated infrastructure, security audit of telemetric key approach, dedicated legal support for multi-site data agreements, conference presentations to recruit additional research partners.
+Comprehensive audit ($20K) + 3+ institutional partnerships + dedicated IRB/compliance specialist (part-time) + extended timeline (12 months) for IRB approval cycles + conference presentations to recruit additional research partners + full federated infrastructure demonstration.
 
 Budget spreadsheet: [Link to EA Funds template - to be created]
 
