@@ -204,31 +204,25 @@ Every session generates evidence. "TELOS governed its own development."
 
 ## Commands Reference
 
-**`/telos init`** or **`/telos`**
+**`/telos`**
 - Full project recall
 - PA establishment
 - Governance activation
-- Steward PM clarity
 - Use at every session start
 
-**`/telos status`**
-- Check if PA established
-- Show current metrics
-- Quick status check
-
-**`/telos check`**
-- Manual fidelity check
-- For testing/demonstration
-
-**`/monitor export`**
+**`/monitor-export`**
 - Generate grant validation data
 - Dashboard export
 - Session summary
 - Use at session end (optional)
 
-**`/monitor status`**
+**`/monitor-status`**
 - Check monitoring state
 - View session stats
+
+**`/steward`**
+- Steward PM checks
+- Git status and recommendations
 
 ---
 
@@ -236,16 +230,15 @@ Every session generates evidence. "TELOS governed its own development."
 
 Just type:
 ```
-/telos init
+/telos
 ```
 
 And you get:
 1. ✅ Full `.claude_project.md` (complete context)
 2. ✅ Git status (where we are)
-3. ✅ Steward PM clarity (what to do)
-4. ✅ PA established (ℝ³⁸⁴ mathematical)
-5. ✅ Governance active (real-time monitoring)
-6. ✅ Ready to execute immediately
+3. ✅ PA established (ℝ³⁸⁴ mathematical)
+4. ✅ Governance active (real-time monitoring)
+5. ✅ Ready to execute immediately
 
 **No re-explaining. No cold start. Full context. Full governance. From turn 1.**
 
@@ -270,4 +263,4 @@ And you get:
 
 **Status:** ✅ Fully implemented and ready to use
 
-**Next step:** Type `/telos init` at start of next session
+**Next step:** Restart Claude Code, then type `/telos` at start of next session
