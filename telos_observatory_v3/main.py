@@ -63,6 +63,7 @@ def main():
     # Dark theme styling and hide Streamlit defaults
     st.markdown("""
     <style>
+    /* Cache buster: v2024-11-04-19:10 */
     /* Hide Streamlit's built-in sidebar collapse button */
     button[kind="header"] {{
         display: none !important;
@@ -143,17 +144,30 @@ def main():
         transition: all 0.3s ease !important;
     }}
 
-    /* Hover effect - lighter background and glowing gold border */
+    /* ULTRA AGGRESSIVE HOVER - Target EVERYTHING */
+    *:hover {{
+        /* This will apply to all elements, then we'll override for buttons */
+    }}
+
+    /* Hover effect - lighter background and bright yellow border replaces gold */
     .stButton > button:hover,
     .stButton > button:focus,
     .stButton > button:active,
+    div[data-testid*="stButton"] > button:hover,
+    div[class*="stButton"] > button:hover,
     button:hover,
-    button:focus {{
+    button:focus,
+    button:active {{
         background-color: #3d3d3d !important;
         color: #e0e0e0 !important;
-        border: 3px solid #FFD700 !important;
-        box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 10px rgba(255, 215, 0, 0.6) !important;
-        transform: scale(1.01) !important;
+        border-width: 4px !important;
+        border-style: solid !important;
+        border-color: #FFFF00 !important;
+        outline: 3px solid #FFFF00 !important;
+        outline-offset: 2px !important;
+        box-shadow: 0 0 40px #FFFF00, 0 0 30px #FFFF00, 0 0 20px #FFFF00, inset 0 0 20px rgba(255, 255, 0, 0.5) !important;
+        transform: scale(1.03) !important;
+        filter: brightness(1.3) saturate(1.5) !important;
     }}
 
     /* Keep button text light on hover */
@@ -362,6 +376,23 @@ def main():
 
         # TELOSCOPE Controls at bottom (collapsible)
         teloscope_controls.render()
+
+    # FINAL CSS OVERRIDE - Inject with highest specificity at runtime
+    st.html("""
+    <style>
+    /* Runtime CSS injection - v19:35 */
+    button:hover {
+        border: 1px solid #FFD700 !important;
+        box-shadow: 0 0 40px #FFD700 !important;
+    }
+
+    /* Message container hover glow */
+    .message-container:hover {
+        box-shadow: 0 0 40px #FFD700 !important;
+        transition: box-shadow 0.3s ease !important;
+    }
+    </style>
+    """)
 
 
 if __name__ == "__main__":

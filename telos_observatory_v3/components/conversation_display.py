@@ -413,7 +413,7 @@ class ConversationDisplay:
         if demo_mode:
             # Demo Mode: Clean, simple layout - NO scroll buttons (scrollable history disabled in Demo Mode)
             st.markdown(f"""
-<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
+<div class="message-container" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">User</strong>
     </div>
@@ -520,7 +520,7 @@ class ConversationDisplay:
                 # Show response - convert markdown to HTML for proper rendering
                 html_message = self._markdown_to_html(message)
                 st.markdown(f"""
-<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 15px; border: 2px solid #FFD700;">
+<div class="message-container" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 15px; border: 2px solid #FFD700;">
     <div style="color: #888; font-size: 19px; margin-bottom: 10px;">
         <strong style="color: #FFD700;">Steward</strong>
     </div>

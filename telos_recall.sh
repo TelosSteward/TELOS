@@ -26,3 +26,29 @@ echo ""
 echo "============================================================"
 echo "✅ TELOS SESSION READY"
 echo "============================================================"
+echo ""
+echo "## 4. LAUNCHING TELOS OBSERVATORY"
+echo ""
+echo "🔭 Starting TELOS Observatory v3 (Demo Mode)..."
+echo "   Cleaning up any existing Streamlit processes..."
+
+# Kill any existing streamlit processes
+pkill -f streamlit 2>/dev/null
+sleep 1
+
+# Set Python path
+export PYTHONPATH=/Users/brunnerjf/Desktop/telos_privacy
+
+# Launch Observatory in background
+echo "   Launching at http://localhost:8501"
+echo ""
+nohup /Users/brunnerjf/Library/Python/3.9/bin/streamlit run telos_observatory_v3/main.py --server.port 8501 > /dev/null 2>&1 &
+
+# Wait a moment for startup
+sleep 3
+
+echo "✅ TELOS Observatory running at: http://localhost:8501"
+echo ""
+echo "============================================================"
+echo "🚀 READY TO WORK"
+echo "============================================================"
