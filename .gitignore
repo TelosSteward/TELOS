@@ -265,3 +265,4 @@ phase2_*.log
 .tmp.drivedownload/
 .tmp.driveupload/
 .streamlit/secrets.toml
+docs/sanitized_public_repo/
