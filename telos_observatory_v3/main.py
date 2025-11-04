@@ -380,15 +380,15 @@ def main():
     # FINAL CSS OVERRIDE - Inject with highest specificity at runtime
     st.html("""
     <style>
-    /* Runtime CSS injection - v19:35 */
+    /* Runtime CSS injection - v20:35 - Further reduced glow */
     button:hover {
         border: 1px solid #FFD700 !important;
-        box-shadow: 0 0 40px #FFD700 !important;
+        box-shadow: 0 0 15px #FFD700 !important;
     }
 
     /* Message container hover glow */
     .message-container:hover {
-        box-shadow: 0 0 40px #FFD700 !important;
+        box-shadow: 0 0 15px #FFD700 !important;
         transition: box-shadow 0.3s ease !important;
     }
     </style>
