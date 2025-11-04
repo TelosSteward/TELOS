@@ -7,3 +7,10 @@ textColor="#ffffff"
 
 [server]
 headless = true
+
+[client]
+toolbarMode = "minimal"
+showErrorDetails = false
+
+[browser]
+gatherUsageStats = false

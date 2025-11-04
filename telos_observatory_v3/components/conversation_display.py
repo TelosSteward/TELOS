@@ -442,7 +442,7 @@ class ConversationDisplay:
 
                 with col_msg:
                     st.markdown(f"""
-<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
+<div class="message-container" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">User</strong>
     </div>
