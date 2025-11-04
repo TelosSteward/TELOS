@@ -4,18 +4,17 @@ This directory contains custom slash commands for TELOS development.
 
 ## Available Commands
 
-### `/telos init` or `/telos`
+### `/telos`
 **Full project recall protocol**
 - Display complete `.claude_project.md` (PA, values, scope, boundaries)
 - Show git status and recent commits
-- Run Steward PM status checks
 - Establish mathematical PA (ℝ³⁸⁴ embedding)
 - Activate real-time governance
 - Provide immediate action clarity
 
 **Use at start of EVERY new session.**
 
-### `/monitor export`
+### `/monitor-export`
 **Generate grant validation data**
 - Analyze conversation with TELOS governance
 - Generate fidelity measurements for each turn
@@ -24,7 +23,7 @@ This directory contains custom slash commands for TELOS development.
 
 **Use at end of sessions (optional) to generate evidence.**
 
-### `/monitor status`
+### `/monitor-status`
 **Check monitoring state**
 - Show if PA established
 - Display current session metrics
