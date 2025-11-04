@@ -261,8 +261,9 @@ test_sessions/*.py
 # TELOS-specific: Phase 2 run logs
 phase2_*.log
 
-# Claude Code
-.claude/
+# Claude Code (settings only, keep commands tracked)
+.claude/settings.local.json
+.claude/skills/
 
 # macOS artifacts (directories with colons)
 *:
