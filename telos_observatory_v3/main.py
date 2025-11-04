@@ -101,48 +101,6 @@ def main():
         display: none !important;
     }}
 
-    /* Hide Deploy button and top menu - AGGRESSIVE */
-    [data-testid="stToolbar"] {{
-        display: none !important;
-        visibility: hidden !important;
-        height: 0 !important;
-        opacity: 0 !important;
-    }}
-
-    div[data-testid="stToolbar"] {{
-        display: none !important;
-        visibility: hidden !important;
-        height: 0 !important;
-    }}
-
-    /* Hide the entire top toolbar */
-    .stApp > header {{
-        display: none !important;
-        background-color: transparent !important;
-        height: 0 !important;
-    }}
-
-    /* Target all header elements */
-    header[data-testid="stHeader"] {{
-        display: none !important;
-        visibility: hidden !important;
-    }}
-
-    /* Hide toolbar buttons */
-    button[kind="header"] {{
-        display: none !important;
-    }}
-
-    /* Hide main menu button */
-    [data-testid="stMainMenu"] {{
-        display: none !important;
-    }}
-
-    /* Remove top padding caused by hidden header */
-    .main .block-container {{
-        padding-top: 2rem !important;
-    }}
-
     /* Main content: dark grey background */
     .stApp {{
         background-color: #1a1a1a !important;
@@ -420,27 +378,21 @@ def main():
         teloscope_controls.render()
 
     # FINAL CSS OVERRIDE - Inject with highest specificity at runtime
-    st.markdown("""
+    st.html("""
     <style>
-    /* Runtime CSS injection - v21:15 - Cache buster */
-
-    /* Button hover with gold glow */
+    /* Runtime CSS injection - v19:35 */
     button:hover {
         border: 1px solid #FFD700 !important;
         box-shadow: 0 0 40px #FFD700 !important;
     }
 
-    /* Message container hover glow - using filter for better compatibility with existing border */
-    .message-container {
-        transition: filter 0.3s ease, box-shadow 0.3s ease !important;
-    }
-
+    /* Message container hover glow */
     .message-container:hover {
-        filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)) !important;
-        box-shadow: 0 0 40px rgba(255, 215, 0, 0.6) !important;
+        box-shadow: 0 0 40px #FFD700 !important;
+        transition: box-shadow 0.3s ease !important;
     }
     </style>
-    """, unsafe_allow_html=True)
+    """)
 
 
 if __name__ == "__main__":
