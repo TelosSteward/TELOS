@@ -227,6 +227,10 @@ sessions/
 *.db
 *.sqlite
 
+# TELOS-specific: Runtime session files (temporary)
+.telos_session_pa.json
+.telos_session_log.json
+
 # TELOS-specific: Logs
 logs/
 
