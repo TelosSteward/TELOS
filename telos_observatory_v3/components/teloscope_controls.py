@@ -37,7 +37,7 @@ class TELOSCOPEControls:
         st.markdown("""
         <div style="
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-            border: 2px solid #FFD700;
+            border: 1px solid #FFD700;
             border-radius: 10px;
             padding: 15px;
             margin-top: 20px;

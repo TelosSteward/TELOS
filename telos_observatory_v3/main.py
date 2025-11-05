@@ -119,15 +119,15 @@ def main():
     [data-testid="stSidebar"] .stButton > button {{
         background-color: #2d2d2d !important;
         color: #e0e0e0 !important;
-        border: 2px solid #FFD700 !important;
+        border: 1px solid #FFD700 !important;
         transition: all 0.3s ease !important;
     }}
 
     [data-testid="stSidebar"] .stButton > button:hover {{
         background-color: #3d3d3d !important;
         color: #e0e0e0 !important;
-        border: 2px solid #FFD700 !important;
-        box-shadow: 0 0 10px rgba(255, 215, 0, 0.5) !important;
+        border: 1px solid #FFD700 !important;
+        box-shadow: 0 0 6px rgba(255, 215, 0, 0.5) !important;
     }}
 
     /* Increase top padding to provide proper spacing */
@@ -140,7 +140,7 @@ def main():
     .stButton > button {{
         background-color: #2d2d2d !important;
         color: #e0e0e0 !important;
-        border: 2px solid #FFD700 !important;
+        border: 1px solid #FFD700 !important;
         transition: all 0.3s ease !important;
     }}
 
@@ -165,7 +165,7 @@ def main():
         border-color: #FFFF00 !important;
         outline: 3px solid #FFFF00 !important;
         outline-offset: 2px !important;
-        box-shadow: 0 0 40px #FFFF00, 0 0 30px #FFFF00, 0 0 20px #FFFF00, inset 0 0 20px rgba(255, 255, 0, 0.5) !important;
+        box-shadow: 0 0 6px #FFFF00, 0 0 6px #FFFF00, 0 0 6px #FFFF00, inset 0 0 6px rgba(255, 255, 0, 0.5) !important;
         transform: scale(1.03) !important;
         filter: brightness(1.3) saturate(1.5) !important;
     }}
@@ -190,7 +190,7 @@ def main():
 
     /* Gold border for main content */
     .main .block-container {{
-        border: 2px solid #FFD700;
+        border: 1px solid #FFD700;
         border-radius: 10px;
         padding: 20px;
     }}
@@ -383,12 +383,12 @@ def main():
     /* Runtime CSS injection - v20:35 - Further reduced glow */
     button:hover {
         border: 1px solid #FFD700 !important;
-        box-shadow: 0 0 15px #FFD700 !important;
+        box-shadow: 0 0 6px #FFD700 !important;
     }
 
     /* Message container hover glow */
     .message-container:hover {
-        box-shadow: 0 0 15px #FFD700 !important;
+        box-shadow: 0 0 6px #FFD700 !important;
         transition: box-shadow 0.3s ease !important;
     }
     </style>

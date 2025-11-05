@@ -193,11 +193,11 @@ class ConversationDisplay:
         # Render in a gold-bordered welcome box with 19px font to match messages
         st.markdown(f"""
 <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border: 3px solid #FFD700;
+            border: 1px solid #FFD700;
             border-radius: 15px;
             padding: 25px;
             margin: 19px 0;
-            box-shadow: 0 0 19px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
             font-size: 19px;
             color: #fff;">
     {welcome_msg}
@@ -235,7 +235,7 @@ class ConversationDisplay:
             with col_msg:
                 # User message with exact same styling
                 st.markdown(f"""
-<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
+<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 1px solid #FFD700;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">User</strong>
     </div>
@@ -264,7 +264,7 @@ class ConversationDisplay:
             with col_msg2:
                 # Steward response with exact same styling and spacing
                 st.markdown(f"""
-<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700;">
+<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 1px solid #FFD700;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">Steward</strong>
     </div>
@@ -310,7 +310,7 @@ class ConversationDisplay:
         st.markdown("""
         <div style="
             background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
-            border: 2px solid #FFD700;
+            border: 1px solid #FFD700;
             border-radius: 8px;
             padding: 10px;
             margin-bottom: 15px;
@@ -328,7 +328,7 @@ class ConversationDisplay:
             overflow-y: auto;
             padding: 15px;
             background-color: #1a1a1a;
-            border: 2px solid #FFD700;
+            border: 1px solid #FFD700;
             border-radius: 8px;
             margin-bottom: 19px;
         ">
@@ -485,11 +485,11 @@ class ConversationDisplay:
 @keyframes border-pulse {{
     0%, 100% {{
         border-color: #888;
-        box-shadow: 0 0 10px rgba(136, 136, 136, 0.3);
+        box-shadow: 0 0 6px rgba(136, 136, 136, 0.3);
     }}
     50% {{
         border-color: #FFD700;
-        box-shadow: 0 0 19px rgba(255, 215, 0, 0.4);
+        box-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
     }}
 }}
 @keyframes text-pulse {{
@@ -550,11 +550,11 @@ class ConversationDisplay:
 @keyframes border-pulse {{
     0%, 100% {{
         border-color: #888;
-        box-shadow: 0 0 10px rgba(136, 136, 136, 0.3);
+        box-shadow: 0 0 6px rgba(136, 136, 136, 0.3);
     }}
     50% {{
         border-color: #FFD700;
-        box-shadow: 0 0 19px rgba(255, 215, 0, 0.4);
+        box-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
     }}
 }}
 @keyframes text-pulse {{
@@ -647,7 +647,7 @@ class ConversationDisplay:
             st.markdown("""
             <div style="
                 background-color: #2d2d2d;
-                border: 2px solid #FFD700;
+                border: 1px solid #FFD700;
                 border-radius: 10px;
                 padding: 19px;
                 margin-bottom: 15px;
@@ -670,7 +670,7 @@ class ConversationDisplay:
             st.markdown("""
             <div style="
                 background-color: #1a1a1a;
-                border: 2px solid #FFD700;
+                border: 1px solid #FFD700;
                 border-radius: 10px;
                 padding: 15px;
                 min-height: 300px;
@@ -697,7 +697,7 @@ class ConversationDisplay:
             st.markdown("""
             <div style="
                 background-color: #1a1a1a;
-                border: 2px solid #FFD700;
+                border: 1px solid #FFD700;
                 border-radius: 10px;
                 padding: 15px;
                 min-height: 300px;
@@ -730,7 +730,7 @@ class ConversationDisplay:
             st.markdown("""
             <div style="
                 background-color: #2d2d2d;
-                border: 2px solid #FFD700;
+                border: 1px solid #FFD700;
                 border-radius: 10px;
                 padding: 19px;
                 margin-bottom: 15px;
@@ -787,7 +787,7 @@ class ConversationDisplay:
             st.markdown("""
             <div style="
                 background-color: #1a1a1a;
-                border: 2px solid #FFD700;
+                border: 1px solid #FFD700;
                 border-radius: 10px;
                 padding: 15px;
                 min-height: 350px;
@@ -808,7 +808,7 @@ class ConversationDisplay:
                         <li>Intent match: <span style="color: #4CAF50;">95%</span></li>
                     </ul>
                 </div>
-                <div style="margin-top: 15px; padding: 10px; background-color: #2d2d2d; border-radius: 5px; border-left: 3px solid #FFD700;">
+                <div style="margin-top: 15px; padding: 10px; background-color: #2d2d2d; border-radius: 5px; border-left: 1px solid #FFD700;">
                     <p style="color: #4CAF50; font-size: 11px; margin: 0;">
                         <strong>Improvement: +34% alignment</strong>
                     </p>
@@ -827,7 +827,7 @@ class ConversationDisplay:
             st.markdown("""
             <div style="
                 background-color: #2d2d2d;
-                border: 2px solid #FFD700;
+                border: 1px solid #FFD700;
                 border-radius: 10px;
                 padding: 19px;
                 margin-bottom: 15px;
@@ -878,7 +878,7 @@ class ConversationDisplay:
             st.markdown(f"""
             <div style="
                 background-color: #1a1a1a;
-                border: 2px solid #FFD700;
+                border: 1px solid #FFD700;
                 border-radius: 10px;
                 padding: 15px;
             ">
@@ -901,7 +901,7 @@ class ConversationDisplay:
             st.markdown(f"""
             <div style="
                 background-color: #1a1a1a;
-                border: 2px solid #FFD700;
+                border: 1px solid #FFD700;
                 border-radius: 10px;
                 padding: 15px;
             ">
@@ -924,7 +924,7 @@ class ConversationDisplay:
             st.markdown(f"""
             <div style="
                 background-color: #1a1a1a;
-                border: 2px solid #FFD700;
+                border: 1px solid #FFD700;
                 border-radius: 10px;
                 padding: 15px;
             ">
@@ -1088,7 +1088,7 @@ Current Turn Data:
         st.markdown(f"""
         <div style="
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border: 2px solid #FFD700;
+            border: 1px solid #FFD700;
             border-radius: 8px;
             padding: 10px;
             text-align: center;
@@ -1237,11 +1237,11 @@ Current Turn Data:
             st.markdown("""
             <div style="
                 background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
-                border: 3px solid #FFD700;
+                border: 1px solid #FFD700;
                 border-radius: 15px;
                 padding: 25px;
                 margin: 19px 0;
-                box-shadow: 0 0 19px rgba(255, 215, 0, 0.3);
+                box-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
                 text-align: center;
             ">
                 <div style="font-size: 48px; margin-bottom: 15px;">🔒</div>
@@ -1335,7 +1335,7 @@ Current Turn Data:
             st.markdown("""
             <div style="
                 background-color: #2d2d2d;
-                border: 2px solid #FFD700;
+                border: 1px solid #FFD700;
                 border-radius: 10px;
                 padding: 15px;
                 min-height: 200px;

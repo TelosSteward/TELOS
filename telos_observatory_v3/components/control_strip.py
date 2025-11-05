@@ -48,7 +48,7 @@ class ControlStrip:
             st.markdown(f"""
             <div style="
                 background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
-                border: 2px solid #FFD700;
+                border: 1px solid #FFD700;
                 border-radius: 8px;
                 padding: 10px 15px;
                 text-align: center;

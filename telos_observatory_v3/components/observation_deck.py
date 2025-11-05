@@ -63,11 +63,11 @@ class ObservationDeck:
         st.markdown(f"""
         <div style="
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border: 2px solid #FFD700;
+            border: 1px solid #FFD700;
             border-radius: 8px;
             padding: 6px 8px;
             margin-bottom: 6px;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.15);
+            box-shadow: 0 0 6px rgba(255, 215, 0, 0.15);
         ">
             <div style="display: flex; align-items: center; margin-bottom: 3px;">
                 <span style="font-size: 16px; margin-right: 6px;">{icon}</span>
@@ -137,7 +137,7 @@ class ObservationDeck:
         st.markdown(f"""
         <div style="
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border: 2px solid #FFD700;
+            border: 1px solid #FFD700;
             border-radius: 8px;
             padding: 10px;
             text-align: center;
