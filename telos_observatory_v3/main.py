@@ -21,6 +21,7 @@ from telos_observatory_v3.components.conversation_display import ConversationDis
 from telos_observatory_v3.components.observation_deck import ObservationDeck
 from telos_observatory_v3.components.teloscope_controls import TELOSCOPEControls
 from telos_observatory_v3.components.beta_onboarding import BetaOnboarding
+from telos_observatory_v3.components.steward_panel import StewardPanel
 
 
 def initialize_session():
@@ -377,9 +378,17 @@ def main():
     observation_deck = ObservationDeck(state_manager)
     teloscope_controls = TELOSCOPEControls(state_manager)
     beta_onboarding = BetaOnboarding(state_manager)
+    steward_panel = StewardPanel(state_manager)
 
     # Check if user has given beta consent
     has_beta_consent = st.session_state.get('beta_consent_given', False)
+
+    # Hide sidebar if Steward panel is open
+    steward_panel.hide_sidebar_when_open()
+
+    # Render Steward button (always visible after consent)
+    if has_beta_consent:
+        steward_panel.render_button()
 
     # Only render sidebar and tabs if user has consented
     if has_beta_consent:
@@ -436,24 +445,68 @@ def main():
         # Simple single-content approach: show content based on selected tab via radio buttons
         st.markdown("<div style='margin: 20px 0;'></div>", unsafe_allow_html=True)
 
+        # Active tab styling
+        st.markdown("""
+        <style>
+        /* Active tab - just bright gold border, no fill */
+        button[kind="primary"] {
+            background-color: #2d2d2d !important;
+            color: #e0e0e0 !important;
+            border: 2px solid #FFD700 !important;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.5) !important;
+        }
+
+        /* When hovering over active tab, dim the border */
+        button[kind="primary"]:hover {
+            background-color: #3d3d3d !important;
+            color: #e0e0e0 !important;
+            border: 1px solid #FFD700 !important;
+            box-shadow: 0 0 6px #FFD700 !important;
+        }
+
+        /* Inactive tabs - normal thin border */
+        button[kind="secondary"] {
+            background-color: #2d2d2d !important;
+            color: #e0e0e0 !important;
+            border: 1px solid #FFD700 !important;
+        }
+
+        /* Inactive tabs get hover effect */
+        button[kind="secondary"]:hover {
+            background-color: #3d3d3d !important;
+            border: 1px solid #FFD700 !important;
+            box-shadow: 0 0 6px #FFD700 !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
         # Tab selection using columns for custom styling
+        # Initialize active tab if not set - default to BETA for new users
+        if 'active_tab' not in st.session_state:
+            st.session_state.active_tab = "BETA"
+
+        # Get current active tab
+        active_tab = st.session_state.active_tab
+
         col_beta, col_demo, col_telos = st.columns(3)
 
         with col_beta:
-            if st.button("BETA", key="tab_beta", use_container_width=True):
+            beta_active = active_tab == "BETA"
+            if st.button("BETA", key="tab_beta", use_container_width=True, type="primary" if beta_active else "secondary"):
                 st.session_state.active_tab = "BETA"
+                st.rerun()
 
         with col_demo:
-            if st.button("DEMO", key="tab_demo", use_container_width=True):
+            demo_active = active_tab == "DEMO"
+            if st.button("DEMO", key="tab_demo", use_container_width=True, type="primary" if demo_active else "secondary"):
                 st.session_state.active_tab = "DEMO"
+                st.rerun()
 
         with col_telos:
-            if st.button("TELOS", key="tab_telos", use_container_width=True):
+            telos_active = active_tab == "TELOS"
+            if st.button("TELOS", key="tab_telos", use_container_width=True, type="primary" if telos_active else "secondary"):
                 st.session_state.active_tab = "TELOS"
-
-        # Initialize active tab if not set
-        if 'active_tab' not in st.session_state:
-            st.session_state.active_tab = "TELOS"
+                st.rerun()
 
         st.markdown("<hr style='border: 1px solid #FFD700; margin: 10px 0;'>", unsafe_allow_html=True)
     else:
@@ -479,23 +532,48 @@ def main():
         # No consent yet - show full-screen consent page
         beta_onboarding.render()
     else:
-        # User has consented - show normal tab interface
-        # Render content based on active tab
-        if st.session_state.active_tab == "BETA":
-            # Beta Tab - simple chat interface
-            conversation_display.render()
+        # Check if Steward panel is open
+        steward_open = st.session_state.get('steward_panel_open', False)
 
-        elif st.session_state.active_tab == "DEMO":
-            # Demo Tab
-            st.info("Demo Tab - Coming Soon")
+        if steward_open:
+            # Two-column layout: Main content (70%) | Steward chat (30%)
+            col_main, col_steward = st.columns([7, 3])
 
-        elif st.session_state.active_tab == "TELOS":
-            # TELOS Tab - full Observatory
-            conversation_display.render()
-            st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
-            observation_deck.render()
-            st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
-            teloscope_controls.render()
+            with col_main:
+                # Render content based on active tab
+                if st.session_state.active_tab == "BETA":
+                    conversation_display.render()
+                elif st.session_state.active_tab == "DEMO":
+                    st.info("Demo Tab - Coming Soon")
+                elif st.session_state.active_tab == "TELOS":
+                    conversation_display.render()
+                    st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
+                    observation_deck.render()
+                    st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
+                    teloscope_controls.render()
+
+            with col_steward:
+                # Render Steward chat panel
+                steward_panel.render_panel()
+
+        else:
+            # Normal full-width layout
+            # Render content based on active tab
+            if st.session_state.active_tab == "BETA":
+                # Beta Tab - simple chat interface
+                conversation_display.render()
+
+            elif st.session_state.active_tab == "DEMO":
+                # Demo Tab
+                st.info("Demo Tab - Coming Soon")
+
+            elif st.session_state.active_tab == "TELOS":
+                # TELOS Tab - full Observatory
+                conversation_display.render()
+                st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
+                observation_deck.render()
+                st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
+                teloscope_controls.render()
 
     # FINAL CSS OVERRIDE - Inject with highest specificity at runtime
     st.html("""

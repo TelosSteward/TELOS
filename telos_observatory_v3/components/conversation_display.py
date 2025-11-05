@@ -368,7 +368,8 @@ class ConversationDisplay:
         scroll_button = ""
 
         if turn_number is not None:
-            turn_badge = f'<span style="background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%); color: #000; padding: 4px 10px; border-radius: 5px; font-size: 19px; font-weight: bold; display: inline-block; margin-top: 20px;">Turn {turn_number}</span>'
+            # Badge styling is now in CSS class below
+            turn_badge = ""
 
             # Add scroll toggle button
             scroll_label = "📜 History" if not self.state_manager.state.scrollable_history_mode else "✕ Close"
@@ -430,8 +431,30 @@ class ConversationDisplay:
             if turn_number is not None:
                 with col_turn:
                     st.markdown(f"""
+<style>
+.turn-badge {{
+    background-color: #2d2d2d;
+    color: #FFD700;
+    border: 1px solid #FFD700;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 24px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    cursor: default;
+    transition: all 0.3s ease;
+}}
+
+.turn-badge:hover {{
+    box-shadow: 0 0 6px #FFD700;
+}}
+</style>
 <div style="display: flex; align-items: flex-start; height: 100%; padding-bottom: 20px;">
-    {turn_badge}
+    <span class="turn-badge">{turn_number}</span>
 </div>
 """, unsafe_allow_html=True)
 
@@ -451,6 +474,14 @@ class ConversationDisplay:
     </div>
 </div>
 """, unsafe_allow_html=True)
+
+                # Render Steward button above scroll button
+                if turn_number is not None:
+                    with col_scroll:
+                        if st.button("🤝", key=f"steward_btn_{turn_number}", use_container_width=True, help="Ask Steward"):
+                            # Toggle steward panel
+                            st.session_state.steward_panel_open = not st.session_state.get('steward_panel_open', False)
+                            st.rerun()
 
                 # Only render scroll button if we're showing the current turn (not in history mode)
                 if turn_number is not None and not self.state_manager.state.scrollable_history_mode:
