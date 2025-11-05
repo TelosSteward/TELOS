@@ -78,9 +78,6 @@ class SidebarActions:
                 if st.button("🚪 Exit Demo Mode", use_container_width=True, key="exit_demo_sidebar"):
                     self._exit_demo_mode()
 
-            # Action Buttons
-            st.markdown("### Actions")
-
             # Save Current
             if st.button("💾 Save Current", use_container_width=True):
                 self._save_current_session()
@@ -111,33 +108,29 @@ class SidebarActions:
             if st.button("📤 Export Evidence", use_container_width=True):
                 self._export_evidence()
 
-            # Keyboard Controls - Toggle
-            # Initialize keyboard controls expanded state
-            if 'keyboard_controls_expanded' not in st.session_state:
-                st.session_state.keyboard_controls_expanded = False
+            # Documentation - Toggle
+            st.markdown("---")
+            if 'docs_expanded' not in st.session_state:
+                st.session_state.docs_expanded = False
 
-            keyboard_label = "✕ Close Keyboard Controls" if st.session_state.keyboard_controls_expanded else "⌨️ Keyboard Controls"
-            if st.button(keyboard_label, use_container_width=True, key="toggle_keyboard_controls"):
-                st.session_state.keyboard_controls_expanded = not st.session_state.keyboard_controls_expanded
+            docs_label = "✕ Close Documentation" if st.session_state.docs_expanded else "📚 Documentation"
+            if st.button(docs_label, use_container_width=True, key="toggle_docs"):
+                st.session_state.docs_expanded = not st.session_state.docs_expanded
                 st.rerun()
 
-            # Show keyboard controls if expanded
-            if st.session_state.keyboard_controls_expanded:
-                self._show_keyboard_controls()
+            # Show documentation links if expanded
+            if st.session_state.docs_expanded:
+                self._show_documentation()
 
-            # Help - Toggle
-            # Initialize help expanded state
-            if 'help_expanded' not in st.session_state:
-                st.session_state.help_expanded = False
-
-            help_label = "✕ Close Help" if st.session_state.help_expanded else "❓ Help"
-            if st.button(help_label, use_container_width=True, key="toggle_help"):
-                st.session_state.help_expanded = not st.session_state.help_expanded
-                st.rerun()
-
-            # Show help if expanded
-            if st.session_state.help_expanded:
-                self._show_help()
+            # GitHub Link
+            if st.button("🔗 GitHub Repository", use_container_width=True, key="github_link"):
+                # Open GitHub in new tab using JavaScript
+                st.markdown("""
+                <script>
+                window.open('https://github.com/telos-labs/telos-observatory', '_blank');
+                </script>
+                """, unsafe_allow_html=True)
+                st.info("Opening GitHub repository in new tab...")
 
             # Settings - Toggle
             st.markdown("---")
@@ -503,3 +496,33 @@ class SidebarActions:
                 st.info("🔀 **Parallel Mode**: Concurrent CPU (~20-30% faster)")
             else:
                 st.info("🔒 **Safe Mode**: Sequential processing (most stable)")
+
+    def _show_documentation(self):
+        """Show documentation links."""
+        from pathlib import Path
+
+        st.markdown("""<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #FFD700; border-radius: 8px; padding: 15px; margin: 10px 0;"><div style="color: #FFD700; font-size: 18px; font-weight: bold; margin-bottom: 10px;">📚 Documentation</div></div>""", unsafe_allow_html=True)
+
+        # Check if whitepaper exists
+        whitepaper_path = Path(__file__).parent.parent.parent / 'public' / 'TELOSCOPE_Prototype_Whitepaper.md'
+
+        if whitepaper_path.exists():
+            if st.button("📄 TELOSCOPE Whitepaper", use_container_width=True, key="whitepaper_link"):
+                # Read and display whitepaper
+                with open(whitepaper_path, 'r') as f:
+                    whitepaper_content = f.read()
+
+                # Store in session state to display in main area
+                st.session_state.show_whitepaper = True
+                st.session_state.whitepaper_content = whitepaper_content
+                st.rerun()
+
+        # Privacy & Data Handling
+        if st.button("🔒 Privacy & Data Handling", use_container_width=True, key="privacy_link"):
+            st.session_state.show_privacy_info = True
+            st.rerun()
+
+        # Research Overview
+        if st.button("🔬 Research Overview", use_container_width=True, key="research_link"):
+            st.session_state.show_research_info = True
+            st.rerun()

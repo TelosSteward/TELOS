@@ -20,6 +20,7 @@ from telos_observatory_v3.components.sidebar_actions import SidebarActions
 from telos_observatory_v3.components.conversation_display import ConversationDisplay
 from telos_observatory_v3.components.observation_deck import ObservationDeck
 from telos_observatory_v3.components.teloscope_controls import TELOSCOPEControls
+from telos_observatory_v3.components.beta_onboarding import BetaOnboarding
 
 
 def initialize_session():
@@ -375,43 +376,126 @@ def main():
     conversation_display = ConversationDisplay(state_manager)
     observation_deck = ObservationDeck(state_manager)
     teloscope_controls = TELOSCOPEControls(state_manager)
+    beta_onboarding = BetaOnboarding(state_manager)
 
-    # Render sidebar
-    sidebar_actions.render()
+    # Check if user has given beta consent
+    has_beta_consent = st.session_state.get('beta_consent_given', False)
 
-    # Create 3-tab structure at bottom
-    tab1, tab2, tab3 = st.tabs(["BETA", "DEMO", "TELOS"])
+    # Only render sidebar and tabs if user has consented
+    if has_beta_consent:
+        # Add slide-in animation for sidebar
+        st.markdown("""
+        <style>
+        /* Sidebar slide-in animation - smooth and elegant */
+        [data-testid="stSidebar"] {
+            animation: slideInFromLeft 1.2s ease-out;
+        }
 
-    # Get current demo mode setting
-    demo_mode = st.session_state.get('telos_demo_mode', False)
+        @keyframes slideInFromLeft {
+            0% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
 
-    with tab1:
-        # Beta Tab - just conversation display (no controls yet)
-        st.info("Beta Tab - Coming Soon")
-        st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
+        /* All buttons - quick subtle blink at the end */
+        .stButton > button {
+            animation: quickBlink 1.4s ease-in-out;
+        }
 
-    with tab2:
-        # Demo Tab - just conversation display (like demo mode)
-        st.info("Demo Tab - Coming Soon")
-        st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
+        @keyframes quickBlink {
+            0% {
+                opacity: 1;
+            }
+            85% {
+                opacity: 1;
+            }
+            90% {
+                box-shadow: 0 0 8px #FFD700;
+            }
+            95% {
+                box-shadow: none;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
-    with tab3:
-        # TELOS Tab - full Observatory (conversation + controls)
-        # Always show full controls in TELOS tab (ignore demo_mode)
-        conversation_display.render()
+        # Render sidebar
+        sidebar_actions.render()
 
-        # More spacing to push control bars down and give chat window more room
-        st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
+        # Get current demo mode setting
+        demo_mode = st.session_state.get('telos_demo_mode', False)
 
-        # Observatory controls (ALWAYS visible in TELOS tab)
-        # Observation Deck (collapsible) - Contains metrics and view options for analysis windows
-        observation_deck.render()
+        # Simple single-content approach: show content based on selected tab via radio buttons
+        st.markdown("<div style='margin: 20px 0;'></div>", unsafe_allow_html=True)
 
-        # Minimal spacing between the two bars
-        st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
+        # Tab selection using columns for custom styling
+        col_beta, col_demo, col_telos = st.columns(3)
 
-        # TELOSCOPE Controls at bottom (collapsible)
-        teloscope_controls.render()
+        with col_beta:
+            if st.button("BETA", key="tab_beta", use_container_width=True):
+                st.session_state.active_tab = "BETA"
+
+        with col_demo:
+            if st.button("DEMO", key="tab_demo", use_container_width=True):
+                st.session_state.active_tab = "DEMO"
+
+        with col_telos:
+            if st.button("TELOS", key="tab_telos", use_container_width=True):
+                st.session_state.active_tab = "TELOS"
+
+        # Initialize active tab if not set
+        if 'active_tab' not in st.session_state:
+            st.session_state.active_tab = "TELOS"
+
+        st.markdown("<hr style='border: 1px solid #FFD700; margin: 10px 0;'>", unsafe_allow_html=True)
+    else:
+        # Hide sidebar completely before consent
+        st.markdown("""
+        <style>
+        /* Hide sidebar before consent */
+        [data-testid="stSidebar"] {
+            display: none !important;
+        }
+
+        /* Make main content full width */
+        .main .block-container {
+            max-width: 100%;
+            padding-left: 5rem;
+            padding-right: 5rem;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+    # Render content based on consent status
+    if not has_beta_consent:
+        # No consent yet - show full-screen consent page
+        beta_onboarding.render()
+    else:
+        # User has consented - show normal tab interface
+        # Render content based on active tab
+        if st.session_state.active_tab == "BETA":
+            # Beta Tab - simple chat interface
+            conversation_display.render()
+
+        elif st.session_state.active_tab == "DEMO":
+            # Demo Tab
+            st.info("Demo Tab - Coming Soon")
+
+        elif st.session_state.active_tab == "TELOS":
+            # TELOS Tab - full Observatory
+            conversation_display.render()
+            st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
+            observation_deck.render()
+            st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
+            teloscope_controls.render()
 
     # FINAL CSS OVERRIDE - Inject with highest specificity at runtime
     st.html("""

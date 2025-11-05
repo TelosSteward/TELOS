@@ -227,6 +227,9 @@ sessions/
 *.db
 *.sqlite
 
+# TELOS-specific: Beta consent logs (user privacy data)
+telos_observatory_v3/beta_consents/
+
 # TELOS-specific: Runtime session files (temporary)
 .telos_session_pa.json
 .telos_session_log.json
