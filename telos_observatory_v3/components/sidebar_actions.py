@@ -31,17 +31,6 @@ class SidebarActions:
             </div>
             """, unsafe_allow_html=True)
 
-            # Session Info (compact)
-            st.markdown("### Session")
-            session_info = self.state_manager.get_session_info()
-
-            st.markdown(f"""
-            <div style="background-color: #1a1a1a; padding: 8px; border-radius: 5px; margin-bottom: 8px;">
-                <div style="color: #888; font-size: 10px;">SESSION ID</div>
-                <div style="color: #fff; font-size: 12px;">{session_info.get('session_id', 'None')}</div>
-            </div>
-            """, unsafe_allow_html=True)
-
             # Saved Sessions - Collapsible
             # Initialize saved sessions expanded state
             if 'saved_sessions_expanded' not in st.session_state:

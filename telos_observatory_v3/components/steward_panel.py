@@ -5,6 +5,8 @@ Provides a helpful AI guide accessible via handshake emoji button.
 
 import streamlit as st
 from datetime import datetime
+from telos_observatory_v3.services.steward_llm import StewardLLM
+import html
 
 
 class StewardPanel:
@@ -17,6 +19,17 @@ class StewardPanel:
             state_manager: StateManager instance for session operations
         """
         self.state_manager = state_manager
+
+        # Initialize LLM service (lazy loading)
+        if 'steward_llm' not in st.session_state:
+            try:
+                st.session_state.steward_llm = StewardLLM()
+                st.session_state.steward_llm_enabled = True
+            except ValueError as e:
+                # API key not configured
+                st.session_state.steward_llm = None
+                st.session_state.steward_llm_enabled = False
+                st.session_state.steward_error = str(e)
 
     def render_button(self):
         """Render button is now integrated in conversation_display.py - this method is deprecated."""
@@ -79,9 +92,23 @@ class StewardPanel:
                     'timestamp': datetime.now().isoformat()
                 })
 
-                # TODO: Call LLM API for Steward response
-                # For now, placeholder response
-                steward_response = f"I understand you're asking about: '{user_input}'. As Steward, I'm here to help guide you through TELOS. This is a placeholder response - the full LLM integration will provide detailed answers about TELOS concepts, Observatory features, and governance principles."
+                # Get Steward response with LLM
+                if st.session_state.steward_llm_enabled:
+                    # Gather context about current screen state
+                    context = self._gather_context()
+
+                    try:
+                        # Get response from LLM (non-streaming for now, can add streaming later)
+                        steward_response = st.session_state.steward_llm.get_response(
+                            user_message=user_input,
+                            conversation_history=st.session_state.steward_chat_history[:-1],  # Exclude the message we just added
+                            context=context
+                        )
+                    except Exception as e:
+                        steward_response = f"I apologize, but I encountered an error: {str(e)}. Please try again."
+                else:
+                    # Fallback if LLM not configured
+                    steward_response = f"I'm currently in setup mode. {st.session_state.get('steward_error', 'Please configure the ANTHROPIC_API_KEY to enable full Steward functionality.')}"
 
                 st.session_state.steward_chat_history.append({
                     'role': 'assistant',
@@ -90,6 +117,38 @@ class StewardPanel:
                 })
 
                 st.rerun()
+
+    def _gather_context(self) -> dict:
+        """Gather context about current screen state for Steward.
+
+        Returns:
+            dict: Context information including active tab, metrics, etc.
+        """
+        context = {}
+
+        # Get active tab
+        context['active_tab'] = st.session_state.get('active_tab', 'Unknown')
+
+        # Get current turn info from state manager
+        if hasattr(self.state_manager.state, 'current_turn'):
+            context['current_turn'] = self.state_manager.state.current_turn
+
+        if hasattr(self.state_manager.state, 'total_turns'):
+            context['total_turns'] = self.state_manager.state.total_turns
+
+        # Get latest metrics if available
+        if hasattr(self.state_manager.state, 'turns') and self.state_manager.state.turns:
+            latest_turn = self.state_manager.state.turns[-1]
+            if 'fidelity' in latest_turn:
+                context['fidelity'] = latest_turn['fidelity']
+
+        # Get PA status
+        if hasattr(self.state_manager.state, 'metadata'):
+            convergence_turn = self.state_manager.state.metadata.get('convergence_turn', 7)
+            current_turn = context.get('current_turn', 0)
+            context['pa_status'] = "Established" if current_turn >= convergence_turn else "Calibrating"
+
+        return context
 
     def hide_sidebar_when_open(self):
         """Apply CSS to hide sidebar when Steward panel is open."""
