@@ -161,15 +161,9 @@ class ConversationDisplay:
                 self._render_input_with_scroll_toggle()
                 return
             else:
-                # OPEN MODE: Show intro example if enabled
-                if st.session_state.show_intro and st.session_state.get('enable_intro_examples', True):
-                    self._render_intro_example()
-                    self._render_input_with_scroll_toggle()
-                    return
-                else:
-                    # Just show input area
-                    self._render_input_with_scroll_toggle()
-                    return
+                # OPEN MODE: Just show input area (intro examples disabled)
+                self._render_input_with_scroll_toggle()
+                return
 
         # Render scrollable history window if enabled (at top of screen)
         # NOT available in Demo Mode - Demo Mode is conversation-focused only
@@ -266,7 +260,7 @@ class ConversationDisplay:
                 st.markdown(f"""
 <div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 1px solid #FFD700;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
-        <strong style="color: #FFD700;">Steward</strong>
+        <strong style="color: #FFD700;">TELOS</strong>
     </div>
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {html.escape(steward_msg)}
@@ -284,6 +278,9 @@ class ConversationDisplay:
 
         turn_data = all_turns[current_turn_idx]
         turn_number = current_turn_idx + 1
+
+        # Add spacing before turn
+        st.markdown("<div style='margin-top: 30px;'></div>", unsafe_allow_html=True)
 
         # Render user message
         self._render_user_message(turn_data.get('user_input', ''), turn_number, turn_data)
@@ -371,7 +368,7 @@ class ConversationDisplay:
         scroll_button = ""
 
         if turn_number is not None:
-            turn_badge = f'<span style="background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%); color: #000; padding: 4px 10px; border-radius: 5px; font-size: 19px; font-weight: bold; display: inline-block;">Turn {turn_number}</span>'
+            turn_badge = f'<span style="background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%); color: #000; padding: 4px 10px; border-radius: 5px; font-size: 19px; font-weight: bold; display: inline-block; margin-top: 20px;">Turn {turn_number}</span>'
 
             # Add scroll toggle button
             scroll_label = "📜 History" if not self.state_manager.state.scrollable_history_mode else "✕ Close"
@@ -384,6 +381,8 @@ class ConversationDisplay:
 
             if turn_data and not demo_mode:
                 fidelity = turn_data.get('fidelity', 0.0)
+                if fidelity is None:
+                    fidelity = 0.0
                 fidelity_color = "#4CAF50" if fidelity >= 0.8 else "#FFA500" if fidelity >= 0.6 else "#FF5252"
 
                 # Determine PA status from session metadata
@@ -431,7 +430,7 @@ class ConversationDisplay:
             if turn_number is not None:
                 with col_turn:
                     st.markdown(f"""
-<div style="display: flex; align-items: flex-start; height: 100%;">
+<div style="display: flex; align-items: flex-start; height: 100%; padding-bottom: 20px;">
     {turn_badge}
 </div>
 """, unsafe_allow_html=True)
@@ -509,7 +508,7 @@ class ConversationDisplay:
 </style>
 <div class="contemplating-border" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
-        <strong style="color: #FFD700;">Steward</strong>
+        <strong style="color: #FFD700;">TELOS</strong>
     </div>
     <div class="contemplating-text" style="font-size: 19px; font-style: italic; opacity: 0.9;">
         Contemplating...
@@ -522,7 +521,7 @@ class ConversationDisplay:
                 st.markdown(f"""
 <div class="message-container" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 15px; border: 2px solid #FFD700;">
     <div style="color: #888; font-size: 19px; margin-bottom: 10px;">
-        <strong style="color: #FFD700;">Steward</strong>
+        <strong style="color: #FFD700;">TELOS</strong>
     </div>
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {html_message}
@@ -574,7 +573,7 @@ class ConversationDisplay:
 </style>
 <div class="contemplating-border" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
-        <strong style="color: #FFD700;">Steward</strong>
+        <strong style="color: #FFD700;">TELOS</strong>
     </div>
     <div class="contemplating-text" style="font-size: 19px; font-style: italic; opacity: 0.9;">
         Contemplating...
@@ -587,7 +586,7 @@ class ConversationDisplay:
                         st.markdown("""
 <div style="background-color: #1a1a1a; padding: 15px 15px 5px 15px; border-radius: 10px 10px 0 0; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700; border-bottom: none;">
     <div style="color: #888; font-size: 19px;">
-        <strong style="color: #FFD700;">Steward</strong>
+        <strong style="color: #FFD700;">TELOS</strong>
     </div>
 </div>
 """, unsafe_allow_html=True)

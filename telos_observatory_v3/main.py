@@ -25,9 +25,9 @@ from telos_observatory_v3.components.teloscope_controls import TELOSCOPEControls
 def initialize_session():
     """Initialize session state - starts fresh (no pre-loaded demo data)."""
     if 'state_manager' not in st.session_state:
-        # Set Demo Mode as DEFAULT (before anything else)
+        # Set Demo Mode OFF as DEFAULT (TELOS tab shows full controls)
         if 'telos_demo_mode' not in st.session_state:
-            st.session_state.telos_demo_mode = True
+            st.session_state.telos_demo_mode = False
 
         # Create state manager
         state_manager = StateManager()
@@ -341,6 +341,28 @@ def main():
     [data-baseweb="checkbox"][data-checked="true"] {{
         background-color: #FFD700 !important;
     }}
+
+    /* Tabs styling */
+    .stTabs [data-baseweb="tab-list"] {{
+        gap: 10px;
+        background-color: #1a1a1a;
+    }}
+
+    .stTabs [data-baseweb="tab"] {{
+        background-color: #2d2d2d;
+        border: 1px solid #FFD700;
+        border-radius: 8px 8px 0 0;
+        color: #e0e0e0;
+        font-size: 22px;
+        font-weight: bold;
+        padding: 12px 24px;
+    }}
+
+    .stTabs [aria-selected="true"] {{
+        background-color: #FFD700;
+        color: #000;
+        font-weight: bold;
+    }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -357,17 +379,31 @@ def main():
     # Render sidebar
     sidebar_actions.render()
 
-    # Main conversation display - shows main chat and analysis windows
+    # Create 3-tab structure at bottom
+    tab1, tab2, tab3 = st.tabs(["BETA", "DEMO", "TELOS"])
+
+    # Get current demo mode setting
     demo_mode = st.session_state.get('telos_demo_mode', False)
-    conversation_display.render()
 
-    # More spacing to push control bars down and give chat window more room
-    st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
+    with tab1:
+        # Beta Tab - just conversation display (no controls yet)
+        st.info("Beta Tab - Coming Soon")
+        st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
 
-    # Observatory controls (Observation Deck + TELOSCOPE) - ONLY in Open Mode
-    # Demo Mode: Pure conversation experience (no Observatory UI)
+    with tab2:
+        # Demo Tab - just conversation display (like demo mode)
+        st.info("Demo Tab - Coming Soon")
+        st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
 
-    if not demo_mode:
+    with tab3:
+        # TELOS Tab - full Observatory (conversation + controls)
+        # Always show full controls in TELOS tab (ignore demo_mode)
+        conversation_display.render()
+
+        # More spacing to push control bars down and give chat window more room
+        st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
+
+        # Observatory controls (ALWAYS visible in TELOS tab)
         # Observation Deck (collapsible) - Contains metrics and view options for analysis windows
         observation_deck.render()
 
