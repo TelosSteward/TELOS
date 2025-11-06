@@ -385,9 +385,13 @@ class StateManager:
                         self._corpus_loader = None  # No corpus in open mode
 
                     # Initialize Mistral client (Assistant Steward)
-                    # API key from environment (with fallback for beta testing)
+                    # API key from Streamlit secrets or environment
                     import os
-                    mistral_api_key = os.getenv('MISTRAL_API_KEY', "NxFBck0mkmGhM9vn0bvJzHf1scagv44f")
+                    mistral_api_key = st.secrets.get("MISTRAL_API_KEY", os.getenv("MISTRAL_API_KEY"))
+
+                    if not mistral_api_key:
+                        raise ValueError("MISTRAL_API_KEY not found in secrets or environment")
+
                     # TODO: Future PIP feature - API key will become user identity/auth
 
                     mistral_client = MistralClient(
@@ -458,11 +462,9 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             ]
 
             # Build history from existing turns (exclude loading turn)
-            print(f"[DEBUG add_user_message] Building history from {len(self.state.turns)} turns")
             for turn in self.state.turns:
                 # Skip the placeholder turn (is_loading=True, empty response)
                 if turn.get('is_loading', False):
-                    print(f"[DEBUG add_user_message] Skipping loading turn")
                     continue
 
                 conversation_history.append({
@@ -479,9 +481,6 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                 "role": "user",
                 "content": message
             })
-
-            print(f"[DEBUG add_user_message] Total messages in history: {len(conversation_history)}")
-            print(f"[DEBUG add_user_message] User message: {message}")
 
             # Determine max_tokens based on mode
             # Demo Mode: Hard limit for brevity (DEFAULT: 2 paragraphs, MAX: 3 paragraphs)
@@ -732,8 +731,15 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                     attractor = None
                     self._corpus_loader = None
 
+                # Get API key from Streamlit secrets or environment
+                import os
+                mistral_api_key = st.secrets.get("MISTRAL_API_KEY", os.getenv("MISTRAL_API_KEY"))
+
+                if not mistral_api_key:
+                    raise ValueError("MISTRAL_API_KEY not found in secrets or environment")
+
                 mistral_client = MistralClient(
-                    api_key="NxFBck0mkmGhM9vn0bvJzHf1scagv44f",
+                    api_key=mistral_api_key,
                     model="mistral-large-latest"
                 )
 

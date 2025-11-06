@@ -233,6 +233,10 @@ telos_observatory_v3/beta_consents/
 # TELOS-specific: Runtime session files (temporary)
 .telos_session_pa.json
 .telos_session_log.json
+.telos_active_session.json
+.telos_checkpoint_*.json
+.telos_export_instruction.json
+session_export_*.json
 
 # TELOS-specific: Logs
 logs/
@@ -267,6 +271,9 @@ phase2_*.log
 # Claude Code (settings only, keep commands tracked)
 .claude/settings.local.json
 .claude/skills/
+
+# MCP Configuration (contains database credentials)
+.mcp.json
 
 # macOS artifacts (directories with colons)
 *:
