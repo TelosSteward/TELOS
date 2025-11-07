@@ -123,6 +123,42 @@ def main():
         display: none !important;
     }}
 
+    /* Hide the entire top right toolbar area */
+    .stApp header {{
+        visibility: hidden !important;
+        display: none !important;
+    }}
+
+    /* Hide file change notification */
+    [data-testid="stNotification"] {{
+        display: none !important;
+    }}
+
+    /* Hide the "Source file changed" banner */
+    .stAlert {{
+        display: none !important;
+    }}
+
+    /* Hide all header buttons including rerun */
+    button[kind="headerNoPadding"] {{
+        display: none !important;
+    }}
+
+    /* Hide the manage app button */
+    [data-testid="manage-app-button"] {{
+        display: none !important;
+    }}
+
+    /* Hide the entire header toolbar */
+    .stApp > header + div {{
+        display: none !important;
+    }}
+
+    /* Hide any rerun-related elements */
+    div[data-testid*="rerun"] {{
+        display: none !important;
+    }}
+
     /* Main content: dark grey background - more aggressive selectors */
     .stApp {{
         background-color: #1a1a1a !important;
