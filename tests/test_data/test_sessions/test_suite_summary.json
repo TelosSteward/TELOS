@@ -1,0 +1,19 @@
+{
+  "generated_at": "2025-10-28T11:49:02.747296",
+  "total_sessions": 8,
+  "session_ids": [
+    "normal_session_001",
+    "high_drift_session_001",
+    "excellent_session_001",
+    "long_session_001",
+    "short_session_001",
+    "critical_drift_session_001",
+    "stable_session_001",
+    "oscillating_session_001"
+  ],
+  "statistics": {
+    "total_turns": 163,
+    "avg_fidelity": 0.787,
+    "total_interventions": 77
+  }
+}

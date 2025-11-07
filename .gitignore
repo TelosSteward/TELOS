@@ -1,0 +1,136 @@
+# TELOS Observatory (PRIVATE REPO) - .gitignore
+
+# ============================================================
+# SECRETS - NEVER COMMIT
+# ============================================================
+.env
+*.env
+.env.local
+.env.production
+*_API_KEY*
+*_api_key*
+.mistral_api_key
+.openai_api_key
+credentials.json
+secrets/
+*.pem
+*.key
+.mcp.json
+
+# ============================================================
+# USER DATA - PRIVACY COMPLIANCE
+# ============================================================
+# Beta consent forms (contain user information)
+telos_observatory_v3/beta_consents/*.json
+!telos_observatory_v3/beta_consents/.gitkeep
+
+# Session data (user conversations)
+sessions/
+saved_sessions/
+test_sessions/*.json
+
+# Runtime session files
+.telos_active_session.json
+.telos_session_pa.json
+.telos_session_log.json
+.telos_checkpoint_*.json
+.telos_current_turn.json
+.telos_export_instruction.json
+session_export_*.json
+.runtime_governance_session.json
+.runtime_governance_checkpoint_*.json
+
+# User databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs with potential PII
+logs/
+*.log
+phase2_*.log
+
+# ============================================================
+# BUILD & DEPENDENCIES
+# ============================================================
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.pixi/
+
+# ============================================================
+# IDE & OS
+# ============================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ============================================================
+# TELOS-SPECIFIC OUTPUTS
+# ============================================================
+# Phase 2 validation data
+telos_observatory/phase2_study_results/
+telos_observatory/phase2_validation_*/
+telos_observatory/phase2b_continuous_*/
+
+# Quality reports
+**/quality_analysis_report.md
+
+# Test output
+test_output/
+
+# Temporary files
+*.tmp
+temp/
+tmp/
+
+# Generated exports
+docs/sanitized_public_repo/
+
+# ============================================================
+# STREAMLIT
+# ============================================================
+.streamlit/secrets.toml
+.streamlit/config.toml
+
+# ============================================================
+# DOCUMENTATION DRAFTS (keep published docs)
+# ============================================================
+# Keep: README.md, docs/*.md (published)
+# Exclude: grant_draft_*.md, internal_notes.md
+grant_draft_*.md
+internal_notes.md
+strategy_*.md
+partnership_*.md
