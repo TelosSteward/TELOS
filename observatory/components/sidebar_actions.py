@@ -112,14 +112,13 @@ class SidebarActions:
                 self._show_documentation()
 
             # GitHub Link
-            if st.button("🔗 GitHub Repository", use_container_width=True, key="github_link"):
-                # Open GitHub in new tab using JavaScript
-                st.markdown("""
-                <script>
-                window.open('https://github.com/telos-labs/telos-observatory', '_blank');
-                </script>
-                """, unsafe_allow_html=True)
-                st.info("Opening GitHub repository in new tab...")
+            st.markdown("""
+            <a href="https://github.com/TelosSteward/TelosLabs" target="_blank" style="text-decoration: none;">
+                <div style="background-color: #2d2d2d; color: #e0e0e0; border: 1px solid #FFD700; padding: 10px; border-radius: 5px; text-align: center; cursor: pointer; transition: all 0.3s ease; margin-bottom: 10px;">
+                    🔗 GitHub Repository
+                </div>
+            </a>
+            """, unsafe_allow_html=True)
 
             # Settings - Toggle
             st.markdown("---")
