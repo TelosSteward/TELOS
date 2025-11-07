@@ -235,7 +235,6 @@ docs/sanitized_public_repo/
 # STREAMLIT
 # ============================================================
 .streamlit/secrets.toml
-.streamlit/config.toml
 
 # ============================================================
 # DOCUMENTATION DRAFTS (keep published docs)

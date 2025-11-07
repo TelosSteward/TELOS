@@ -5,7 +5,7 @@ Provides a helpful AI guide accessible via handshake emoji button.
 
 import streamlit as st
 from datetime import datetime
-from telos_observatory_v3.services.steward_llm import StewardLLM
+from observatory.services.steward_llm import StewardLLM
 import html
 
 

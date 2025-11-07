@@ -14,14 +14,14 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import streamlit as st
 
 # Import V3 components
-from telos_observatory_v3.core.state_manager import StateManager
-from telos_observatory_v3.utils.telos_demo_data import generate_telos_demo_session
-from telos_observatory_v3.components.sidebar_actions import SidebarActions
-from telos_observatory_v3.components.conversation_display import ConversationDisplay
-from telos_observatory_v3.components.observation_deck import ObservationDeck
-from telos_observatory_v3.components.teloscope_controls import TELOSCOPEControls
-from telos_observatory_v3.components.beta_onboarding import BetaOnboarding
-from telos_observatory_v3.components.steward_panel import StewardPanel
+from observatory.core.state_manager import StateManager
+from observatory.utils.telos_demo_data import generate_telos_demo_session
+from observatory.components.sidebar_actions import SidebarActions
+from observatory.components.conversation_display import ConversationDisplay
+from observatory.components.observation_deck import ObservationDeck
+from observatory.components.teloscope_controls import TELOSCOPEControls
+from observatory.components.beta_onboarding import BetaOnboarding
+from observatory.components.steward_panel import StewardPanel
 
 
 def initialize_session():
@@ -103,12 +103,32 @@ def main():
         display: none !important;
     }}
 
-    /* Main content: dark grey background */
+    /* Main content: dark grey background - more aggressive selectors */
     .stApp {{
         background-color: #1a1a1a !important;
     }}
 
     .main {{
+        background-color: #1a1a1a !important;
+    }}
+
+    /* Target the main app view container */
+    [data-testid="stAppViewContainer"] {{
+        background-color: #1a1a1a !important;
+    }}
+
+    /* Target block container */
+    .block-container {{
+        background-color: #1a1a1a !important;
+    }}
+
+    /* Force background on all main sections */
+    section.main > div {{
+        background-color: #1a1a1a !important;
+    }}
+
+    /* Root element */
+    #root {{
         background-color: #1a1a1a !important;
     }}
 

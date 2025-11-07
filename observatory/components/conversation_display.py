@@ -203,7 +203,7 @@ class ConversationDisplay:
 
     def _render_intro_example(self):
         """Render a simple intro example that dismisses when user starts typing."""
-        from telos_observatory_v3.utils.intro_messages import get_random_intro_pair
+        from observatory.utils.intro_messages import get_random_intro_pair
 
         # Get random intro pair (cached for session)
         if 'intro_pair' not in st.session_state:
