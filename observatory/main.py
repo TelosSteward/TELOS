@@ -65,7 +65,7 @@ def main():
     # Dark theme styling and hide Streamlit defaults
     st.markdown("""
     <style>
-    /* Cache buster: v2024-11-04-19:10 */
+    /* Cache buster: v2024-11-06-20:00 - Force refresh */
     /* Hide Streamlit's built-in sidebar collapse button */
     button[kind="header"] {{
         display: none !important;
@@ -156,6 +156,39 @@ def main():
 
     /* Hide any rerun-related elements */
     div[data-testid*="rerun"] {{
+        display: none !important;
+    }}
+
+    /* ULTRA AGGRESSIVE - Hide absolutely everything in header area */
+    .main > div:first-child {{
+        display: none !important;
+    }}
+
+    /* Hide the streamlit header container */
+    [data-testid="stHeader"] {{
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        overflow: hidden !important;
+    }}
+
+    /* Target the specific rerun message */
+    div:has(> div > button[data-testid*="baseButton"]) {{
+        display: none !important;
+    }}
+
+    /* Hide any element containing "Source file changed" text */
+    *:has-text("Source file changed") {{
+        display: none !important;
+    }}
+
+    /* Hide the app header completely */
+    .appview-container > section:first-child {{
+        display: none !important;
+    }}
+
+    /* Force hide all notification-like elements */
+    [role="alert"] {{
         display: none !important;
     }}
 
