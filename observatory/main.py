@@ -103,6 +103,26 @@ def main():
         display: none !important;
     }}
 
+    /* Hide Deploy button */
+    [data-testid="stDeployButton"] {{
+        display: none !important;
+    }}
+
+    /* Hide the three-dot menu (manage app) */
+    button[title="View app menu"] {{
+        display: none !important;
+    }}
+
+    /* Hide the entire toolbar container that contains Deploy and menu */
+    [data-testid="stToolbar"] {{
+        display: none !important;
+    }}
+
+    /* Additional selector for the menu button */
+    .stApp [data-testid="baseButton-headerNoPadding"] {{
+        display: none !important;
+    }}
+
     /* Main content: dark grey background - more aggressive selectors */
     .stApp {{
         background-color: #1a1a1a !important;
