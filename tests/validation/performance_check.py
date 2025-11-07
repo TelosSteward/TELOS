@@ -238,7 +238,7 @@ class PerformanceAnalyzer:
         print(f'   Total Checks: {total}')
 
         if failures == 0 and warnings == 0:
-            print('\n✨ Excellent performance! Platform is production-ready.')
+            print('\n✨ Excellent performance! All checks passed.')
             sys.exit(0)
         elif failures == 0:
             print(f'\n⚠️  Performance acceptable with {warnings} warnings.')

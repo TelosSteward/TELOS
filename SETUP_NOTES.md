@@ -3,7 +3,7 @@
 ## Current Status
 
 ✅ Repository initialized with clean, canonical structure
-✅ All post-OPUS audit files committed (2 commits)
+✅ Initial files committed
 ✅ GitHub remote added: https://github.com/TelosSteward/TELOS
 ✅ MCP configuration created (.mcp.json - gitignored)
 ⏳ **READY TO PUSH with Git MCP**
@@ -42,9 +42,8 @@ Commit 1: [TELOS-INIT] Initialize TELOS private repository with canonical struct
 ## Repository Stats
 
 - **117 files** in initial commit
-- **88 Python files** (all post-OPUS audit verified)
+- **88 Python files**
 - **Clean structure**: telos/, observatory/, dev_dashboard/, steward/, tests/, docs/
-- **All OPUS fixes verified**: Zero-vector, NaN/Inf, HKDF, async/await
 
 ## MCP Configuration Location
 

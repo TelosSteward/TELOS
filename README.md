@@ -2,7 +2,7 @@
 
 **Telically Entrained Linguistic Operational Substrate**
 
-[![Status](https://img.shields.io/badge/status-production--ready-green)]()
+[![Status](https://img.shields.io/badge/status-development-yellow)]()
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)]()
 [![License](https://img.shields.io/badge/license-proprietary-red)]()
 
@@ -20,12 +20,6 @@ TELOS is a runtime AI governance system that applies **Lean Six Sigma DMAIC** me
 - **AI PA**: AI's role constraints (derived via lock-on formula)
 - **Fidelity Measurement**: F = cos(response_embedding, PA)
 - **Proportional Intervention**: Scaled to deviation magnitude
-
-### Validated Performance
-
-- **+85.32%** improvement over baseline (60+ validation studies)
-- Real-time alignment monitoring and correction
-- Production-tested with Observatory interface
 
 ---
 
@@ -46,9 +40,8 @@ TELOS/
 │   ├── steward_pm.py        # Project manager assistant
 │   └── steward.py           # Main steward
 │
-├── tests/                    # Comprehensive test suite
+├── tests/                    # Test suite
 ├── docs/                     # Documentation
-│   └── audit/               # OPUS audit findings
 ├── scripts/                  # Utility scripts
 └── config/                   # Configuration files
 ```
@@ -125,10 +118,9 @@ cp config/governance_config.example.json config/governance_config.json
 
 ## Documentation
 
-- **[OPUS Audit Findings](docs/audit/OPUS_FINDINGS.md)** - Security & code quality audit
 - **[Architecture Overview](docs/architecture/)** - System design
 - **[API Documentation](docs/api/)** - Developer reference
-- **[Deployment Guide](docs/deployment/)** - Production setup
+- **[Deployment Guide](docs/deployment/)** - Setup guide
 
 ---
 
@@ -143,17 +135,9 @@ pytest tests/unit/
 # Integration tests
 pytest tests/integration/
 
-# Validation suite
-pytest tests/validation/
+# All tests
+pytest tests/
 ```
-
-### Code Quality
-
-Post-OPUS audit hardening includes:
-- ✅ Zero vector division handling
-- ✅ NaN/Inf validation
-- ✅ Cryptographic entropy strengthening
-- ✅ Async/await corrections
 
 ---
 
@@ -174,17 +158,6 @@ See [COPYRIGHT.md](COPYRIGHT.md) for details.
 - Website: [Coming Soon]
 
 For licensing inquiries or institutional partnerships, please contact us directly.
-
----
-
-## Institutional Partnerships
-
-TELOS is designed for deployment in research institutions and production environments. We are actively partnering with:
-- George Mason University (GMU)
-- University of Oxford
-- UC Berkeley
-
-For partnership inquiries: telos.steward@gmail.com
 
 ---
 
