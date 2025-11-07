@@ -134,3 +134,10 @@ grant_draft_*.md
 internal_notes.md
 strategy_*.md
 partnership_*.md
+
+# ============================================================
+# ARCHIVES - LOCAL ONLY (rollback safety)
+# ============================================================
+.archive/
+PRE_OPUS_AUDIT/
+pre_opus_audit_*
