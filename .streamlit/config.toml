@@ -5,3 +5,23 @@ backgroundColor = "#1a1a1a"
 secondaryBackgroundColor = "#2a2a2a"
 textColor = "#e0e0e0"
 font = "sans serif"
+
+[server]
+# Disable file watcher
+runOnSave = false
+# Disable development mode features
+developmentMode = false
+
+[browser]
+# Disable gathering usage stats
+gatherUsageStats = false
+
+[runner]
+# Disable magic commands
+magicEnabled = false
+
+[client]
+# Hide the toolbar
+toolbarMode = "minimal"
+# Disable showing errors in browser
+showErrorDetails = false
