@@ -23,6 +23,29 @@ class TELOSCOPEControls:
         if self.state_manager.state.total_turns == 0:
             return
 
+        # Check if PA is converged - TELOSCOPE unavailable until PA established
+        pa_converged = getattr(self.state_manager.state, 'pa_converged', False)
+
+        if not pa_converged:
+            # PA not established yet - show unavailable message
+            st.markdown("""
+            <div style="
+                background-color: #1a1a1a;
+                border: 2px solid #888;
+                border-radius: 10px;
+                padding: 20px;
+                text-align: center;
+                opacity: 0.5;
+                margin-top: 20px;
+            ">
+                <span style="color: #888; font-weight: bold; font-size: 16px;">🔭 TELOSCOPE Controls</span>
+                <p style="color: #888; margin-top: 10px; font-size: 14px;">
+                    Unavailable until Primacy Attractor is established.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+            return
+
         # Check if controls are expanded
         is_expanded = self.state_manager.is_teloscope_expanded()
 

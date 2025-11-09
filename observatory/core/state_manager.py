@@ -39,6 +39,7 @@ class ObservatoryState:
     calibration_phase: bool = True  # True until both PAs established
     calibration_turn_count: int = 0  # Turns spent in calibration
     convergence_turn: Optional[int] = None  # Turn when PA converged
+    pa_converged: bool = False  # Whether PA is established (converged)
 
     # UI state
     deck_expanded: bool = False
@@ -889,7 +890,8 @@ Be conversational, natural, and respond directly to what the user asks. Provide 
                     if extraction_result.get('status') == 'converged' and extraction_result.get('attractor'):
                         new_attractor = extraction_result['attractor']
                         self._telos_steward.attractor = new_attractor
-                        logger.info("PA updated from progressive extraction")
+                        self.state.pa_converged = True  # Mark PA as established
+                        logger.info("PA updated from progressive extraction - PA ESTABLISHED")
                 except Exception as extraction_error:
                     logger.warning(f"Progressive extraction error: {extraction_error}")
 

@@ -1175,28 +1175,33 @@ class ConversationDisplay:
             demo_mode = st.session_state.get('telos_demo_mode', False)
 
             if turn_data and not demo_mode:
-                fidelity = turn_data.get('fidelity', 0.0)
-                if fidelity is None:
-                    fidelity = 0.0
-                fidelity_color = "#4CAF50" if fidelity >= 0.8 else "#FFA500" if fidelity >= 0.6 else "#FF5252"
+                # Check if PA is converged
+                pa_converged = getattr(self.state_manager.state, 'pa_converged', False)
 
-                # Determine PA status from session metadata
-                convergence_turn = 7  # Default fallback
-                if hasattr(self.state_manager.state, 'metadata'):
-                    convergence_turn = self.state_manager.state.metadata.get('convergence_turn', 7)
+                # Only show fidelity metrics if PA is established
+                if pa_converged:
+                    fidelity = turn_data.get('fidelity', 0.0)
+                    if fidelity is None:
+                        fidelity = 0.0
+                    fidelity_color = "#4CAF50" if fidelity >= 0.8 else "#FFA500" if fidelity >= 0.6 else "#FF5252"
 
-                pa_status = "Calibrating" if turn_number <= convergence_turn else "Established"
-                pa_color = "#FFA500" if pa_status == "Calibrating" else "#4CAF50"
+                    pa_status = "Established"
+                    pa_color = "#4CAF50"
 
-                # Add ΔF (Delta Fidelity) if available
-                delta_f_html = ""
-                if 'delta_f' in turn_data:
-                    delta_f = turn_data.get('delta_f', 0.0)
-                    delta_f_color = "#4CAF50" if delta_f > 0 else "#FF5252" if delta_f < 0 else "#888"
-                    delta_f_sign = "+" if delta_f >= 0 else ""
-                    delta_f_html = f'<span style="margin-left: 15px; display: inline-block;"><span style="color: #888; font-size: 14px;">ΔF:</span> <span style="color: {delta_f_color}; font-size: 16px; font-weight: bold; margin-left: 5px;">{delta_f_sign}{delta_f:.3f}</span></span>'
+                    # Add ΔF (Delta Fidelity) if available
+                    delta_f_html = ""
+                    if 'delta_f' in turn_data:
+                        delta_f = turn_data.get('delta_f', 0.0)
+                        delta_f_color = "#4CAF50" if delta_f > 0 else "#FF5252" if delta_f < 0 else "#888"
+                        delta_f_sign = "+" if delta_f >= 0 else ""
+                        delta_f_html = f'<span style="margin-left: 15px; display: inline-block;"><span style="color: #888; font-size: 14px;">ΔF:</span> <span style="color: {delta_f_color}; font-size: 16px; font-weight: bold; margin-left: 5px;">{delta_f_sign}{delta_f:.3f}</span></span>'
 
-                metrics_html = f'<span style="margin-left: 15px; display: inline-block;"><span style="color: #888; font-size: 14px;">Fidelity:</span> <span style="color: {fidelity_color}; font-size: 16px; font-weight: bold; margin-left: 5px;">{fidelity:.3f}</span></span>{delta_f_html}<span style="margin-left: 15px; display: inline-block;"><span style="color: #888; font-size: 14px;">Primacy Attractor Status:</span> <span style="color: {pa_color}; font-size: 14px; font-weight: bold; margin-left: 5px;">{pa_status}</span></span>'
+                    metrics_html = f'<span style="margin-left: 15px; display: inline-block;"><span style="color: #888; font-size: 14px;">Fidelity:</span> <span style="color: {fidelity_color}; font-size: 16px; font-weight: bold; margin-left: 5px;">{fidelity:.3f}</span></span>{delta_f_html}<span style="margin-left: 15px; display: inline-block;"><span style="color: #888; font-size: 14px;">Primacy Attractor Status:</span> <span style="color: {pa_color}; font-size: 14px; font-weight: bold; margin-left: 5px;">{pa_status}</span></span>'
+                else:
+                    # PA still calibrating - show calibrating status only
+                    pa_status = "Calibrating"
+                    pa_color = "#FFA500"
+                    metrics_html = f'<span style="margin-left: 15px; display: inline-block;"><span style="color: #888; font-size: 14px;">Primacy Attractor Status:</span> <span style="color: {pa_color}; font-size: 14px; font-weight: bold; margin-left: 5px;">{pa_status} ({turn_number}/~10)</span></span>'
 
         # Escape the message content to prevent HTML injection
         safe_message = html.escape(message)
@@ -1801,6 +1806,10 @@ function copyMessage{message_id}() {{
         # Get session info which should include primacy attractor
         session_info = self.state_manager.get_session_info()
 
+        # Check if PA is established (convergence status from progressive extractor)
+        pa_converged = getattr(self.state_manager.state, 'pa_converged', False)
+        total_turns = self.state_manager.state.total_turns
+
         # Try to get primacy attractor from turn data or session state
         primacy_attractor = None
         all_turns = self.state_manager.get_all_turns()
@@ -1818,6 +1827,29 @@ function copyMessage{message_id}() {{
         if not primacy_attractor and 'state_manager' in st.session_state:
             # Try to access the original session data that was loaded
             primacy_attractor = st.session_state.get('primacy_attractor', None)
+
+        # If PA not converged yet, show calibrating message
+        if not pa_converged and total_turns < 10:
+            st.markdown("""
+            <div style="
+                background-color: #1a1a1a;
+                border: 2px solid #FFD700;
+                border-radius: 10px;
+                padding: 30px;
+                margin-top: 15px;
+                text-align: center;
+            ">
+                <span style="color: #FFD700; font-weight: bold; font-size: 18px;">⏳ Calibrating...</span>
+                <p style="color: #e0e0e0; margin-top: 15px;">
+                    TELOS is learning your intent from the conversation.<br>
+                    Primacy Attractor will be established after ~10 turns.
+                </p>
+                <p style="color: #888; font-size: 14px; margin-top: 10px;">
+                    Turn {}/~10
+                </p>
+            </div>
+            """.format(total_turns), unsafe_allow_html=True)
+            return  # Don't show PA components yet
 
         # Display Primacy Attractor components
         col1, col2, col3 = st.columns(3)

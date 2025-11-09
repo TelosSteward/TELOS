@@ -19,6 +19,29 @@ class ObservationDeck:
 
     def render(self):
         """Render the observation deck panel."""
+        # Check if PA is converged - Observation Deck unavailable until PA established
+        pa_converged = getattr(self.state_manager.state, 'pa_converged', False)
+
+        if not pa_converged:
+            # PA not established yet - show unavailable message
+            st.markdown("""
+            <div style="
+                background-color: #1a1a1a;
+                border: 2px solid #888;
+                border-radius: 10px;
+                padding: 30px;
+                text-align: center;
+                opacity: 0.5;
+            ">
+                <span style="color: #888; font-weight: bold; font-size: 18px;">🔭 Observation Deck</span>
+                <p style="color: #888; margin-top: 15px;">
+                    Unavailable until Primacy Attractor is established.<br>
+                    Continue the conversation to calibrate PA (~10 turns).
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+            return
+
         turn_data = self.state_manager.get_current_turn_data()
 
         if not turn_data:
