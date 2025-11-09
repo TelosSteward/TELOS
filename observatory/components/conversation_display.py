@@ -301,6 +301,12 @@ class ConversationDisplay:
                 is_loading=turn_data.get('is_loading', False)
             )
 
+        # Show phase transition at turn 11 (PA established → Beta testing active)
+        self._show_beta_phase_transition(turn_number)
+
+        # Show beta feedback UI for turns 11+
+        self._render_beta_feedback(turn_number)
+
     def _render_scrollable_history_window(self, current_turn_idx: int, all_turns: list):
         """Render scrollable read-only history window at top of screen."""
         # Header for the scrollable window
@@ -1429,3 +1435,99 @@ Current Turn Data:
 
             if analysis_input:
                 st.info(f"Analysis chat feature coming soon. You asked: {analysis_input}")
+
+    def _show_beta_phase_transition(self, turn_number: int):
+        """Show phase transition message when PA calibration completes at turn 11."""
+        if turn_number != 11:
+            return
+
+        if not st.session_state.get('beta_consent_given', False):
+            return
+
+        if st.session_state.get('beta_phase_transition_shown', False):
+            return
+
+        st.markdown("""
+        <div style="
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 2px solid #FFD700;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        ">
+            <div style="font-size: 48px; margin-bottom: 10px;">🎯</div>
+            <h3 style="color: #FFD700; margin: 10px 0;">PA Established!</h3>
+            <p style="color: #e0e0e0; font-size: 18px; line-height: 1.6; margin: 10px 0;">
+                Your conversation purpose is now calibrated.<br>
+                Beta preference testing is active - please rate responses below.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.session_state.beta_phase_transition_shown = True
+
+    def _render_beta_feedback(self, turn_number: int):
+        """Render simple beta feedback UI (thumbs up/down) for turns 11+."""
+        if turn_number < 11:
+            return
+
+        if not st.session_state.get('beta_consent_given', False):
+            return
+
+        feedback_key = f"beta_feedback_{turn_number}"
+        if st.session_state.get(feedback_key):
+            st.markdown("""
+            <div style="color: #4CAF50; font-size: 14px; margin: 10px 0;">
+                ✓ Thank you for your feedback!
+            </div>
+            """, unsafe_allow_html=True)
+            return
+
+        st.markdown("<div style='margin: 15px 0;'></div>", unsafe_allow_html=True)
+
+        col1, col2, col3 = st.columns([1, 1, 6])
+
+        with col1:
+            if st.button("👍", key=f"thumbs_up_{turn_number}",
+                        use_container_width=True, help="Helpful response"):
+                self._record_simple_feedback(turn_number, "thumbs_up")
+                st.session_state[feedback_key] = True
+                st.rerun()
+
+        with col2:
+            if st.button("👎", key=f"thumbs_down_{turn_number}",
+                        use_container_width=True, help="Not helpful"):
+                self._record_simple_feedback(turn_number, "thumbs_down")
+                st.session_state[feedback_key] = True
+                st.rerun()
+
+        with col3:
+            st.markdown("""
+            <div style="color: #888; font-size: 14px; padding-top: 8px;">
+                Rate this response
+            </div>
+            """, unsafe_allow_html=True)
+
+    def _record_simple_feedback(self, turn_number: int, rating: str):
+        """Record simple feedback to session state."""
+        from datetime import datetime
+
+        if 'beta_feedback' not in st.session_state:
+            st.session_state.beta_feedback = []
+
+        feedback_item = {
+            'turn': turn_number,
+            'rating': rating,
+            'timestamp': datetime.now().isoformat()
+        }
+
+        st.session_state.beta_feedback.append(feedback_item)
+
+        # Set start time on first feedback
+        if len(st.session_state.beta_feedback) == 1:
+            st.session_state.beta_start_time = datetime.now().isoformat()
+
+        import logging
+        logging.getLogger(__name__).info(f"Beta feedback: turn {turn_number} = {rating}")

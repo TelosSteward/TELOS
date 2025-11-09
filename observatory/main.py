@@ -52,6 +52,72 @@ def initialize_session():
         st.session_state.state_manager = state_manager
 
 
+def check_beta_completion():
+    """Check if beta testing is complete and unlock full access."""
+    if not st.session_state.get('beta_consent_given', False):
+        return False
+
+    if st.session_state.get('beta_completed', False):
+        return True
+
+    from datetime import datetime, timedelta
+
+    start_time_str = st.session_state.get('beta_start_time')
+    if not start_time_str:
+        return False
+
+    start_time = datetime.fromisoformat(start_time_str)
+    elapsed = datetime.now() - start_time
+    two_weeks_elapsed = elapsed >= timedelta(days=14)
+
+    feedback_items = st.session_state.get('beta_feedback', [])
+    fifty_feedbacks = len(feedback_items) >= 50
+
+    if two_weeks_elapsed or fifty_feedbacks:
+        st.session_state.beta_completed = True
+        st.balloons()
+        st.success("""
+        🎉 **Beta Testing Complete!**
+
+        Thank you for helping improve TELOS! Full Observatory features are now unlocked.
+        """)
+        return True
+
+    return False
+
+
+def show_beta_progress():
+    """Show beta progress in sidebar."""
+    if not st.session_state.get('beta_consent_given', False):
+        return
+
+    if st.session_state.get('beta_completed', False):
+        return
+
+    from datetime import datetime, timedelta
+
+    start_time_str = st.session_state.get('beta_start_time')
+    if not start_time_str:
+        return
+
+    start_time = datetime.fromisoformat(start_time_str)
+    elapsed = datetime.now() - start_time
+    days_elapsed = elapsed.days
+    days_remaining = max(0, 14 - days_elapsed)
+
+    feedback_items = st.session_state.get('beta_feedback', [])
+    feedback_count = len(feedback_items)
+    feedbacks_remaining = max(0, 50 - feedback_count)
+
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### Beta Progress")
+    st.sidebar.markdown(f"""
+    **Completion Criteria** (either one):
+    - ⏰ Days: {days_elapsed}/14 ({days_remaining} remaining)
+    - 📊 Feedback: {feedback_count}/50 ({feedbacks_remaining} remaining)
+    """)
+
+
 def main():
     """Main application entry point."""
     # Page configuration
@@ -65,7 +131,7 @@ def main():
     # Dark theme styling and hide Streamlit defaults
     st.markdown("""
     <style>
-    /* Cache buster: v2024-11-06-20:00 - Force refresh */
+    /* Cache buster: v2025-01-08-BETA - Complete rerun button removal */
     /* Hide Streamlit's built-in sidebar collapse button */
     button[kind="header"] {{
         display: none !important;
@@ -80,12 +146,31 @@ def main():
     #MainMenu {{visibility: hidden;}}
     footer {{visibility: hidden;}}
 
-    /* Hide "Rerun" and "Always rerun" buttons */
+    /* Hide "Rerun" and "Always rerun" buttons - AGGRESSIVE */
     .stApp [data-testid="stStatusWidget"] {{
         display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        height: 0 !important;
+        width: 0 !important;
     }}
 
     [data-testid="stStatusWidget"] {{
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }}
+
+    /* Hide the status widget container */
+    div[data-testid="stStatusWidget"] {{
+        display: none !important;
+    }}
+
+    /* Hide toolbar/action menu in top right */
+    section[data-testid="stToolbar"] {{
+        display: none !important;
         visibility: hidden !important;
     }}
 
@@ -95,6 +180,25 @@ def main():
 
     /* Hide app rerun related elements */
     [data-testid="stDecoration"] {{
+        display: none !important;
+    }}
+
+    /* Additional rerun button selectors */
+    button[data-testid="stAppRerun"] {{
+        display: none !important;
+    }}
+
+    button[kind="headerNoPadding"] {{
+        display: none !important;
+    }}
+
+    /* Hide any toolbar buttons */
+    [data-testid="stToolbarActions"] {{
+        display: none !important;
+    }}
+
+    /* Nuclear option - hide entire toolbar area */
+    .stMainBlockContainer + div {{
         display: none !important;
     }}
 
@@ -492,6 +596,10 @@ def main():
     # Check if user has given beta consent
     has_beta_consent = st.session_state.get('beta_consent_given', False)
 
+    # Check beta completion status (show celebration if just completed)
+    if has_beta_consent:
+        check_beta_completion()
+
     # Hide sidebar if Steward panel is open
     steward_panel.hide_sidebar_when_open()
 
@@ -548,44 +656,70 @@ def main():
         # Render sidebar
         sidebar_actions.render()
 
+        # Show beta progress in sidebar
+        show_beta_progress()
+
         # Get current demo mode setting
         demo_mode = st.session_state.get('telos_demo_mode', False)
+
+        # Check if user is in beta-only mode (not yet completed beta testing)
+        is_beta_only = not st.session_state.get('beta_completed', False)
 
         # Simple single-content approach: show content based on selected tab via radio buttons
         st.markdown("<div style='margin: 20px 0;'></div>", unsafe_allow_html=True)
 
         # Active tab styling
-        st.markdown("""
+        st.markdown(f"""
         <style>
         /* Active tab - just bright gold border, no fill */
-        button[kind="primary"] {
+        button[kind="primary"] {{
             background-color: #2d2d2d !important;
             color: #e0e0e0 !important;
             border: 2px solid #FFD700 !important;
             box-shadow: 0 0 8px rgba(255, 215, 0, 0.5) !important;
-        }
+        }}
 
         /* When hovering over active tab, dim the border */
-        button[kind="primary"]:hover {
+        button[kind="primary"]:hover {{
             background-color: #3d3d3d !important;
             color: #e0e0e0 !important;
             border: 1px solid #FFD700 !important;
             box-shadow: 0 0 6px #FFD700 !important;
-        }
+        }}
 
         /* Inactive tabs - normal thin border */
-        button[kind="secondary"] {
+        button[kind="secondary"] {{
             background-color: #2d2d2d !important;
             color: #e0e0e0 !important;
             border: 1px solid #FFD700 !important;
-        }
+        }}
 
         /* Inactive tabs get hover effect */
-        button[kind="secondary"]:hover {
+        button[kind="secondary"]:hover {{
             background-color: #3d3d3d !important;
             border: 1px solid #FFD700 !important;
             box-shadow: 0 0 6px #FFD700 !important;
-        }
+        }}
+
+        /* Disabled/grayed tabs during beta-only mode */
+        button[disabled],
+        button.beta-locked {{
+            background-color: #1a1a1a !important;
+            color: #555 !important;
+            border: 1px solid #444 !important;
+            opacity: 0.4 !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+        }}
+
+        button[disabled]:hover,
+        button.beta-locked:hover {{
+            background-color: #1a1a1a !important;
+            color: #555 !important;
+            border: 1px solid #444 !important;
+            box-shadow: none !important;
+            transform: none !important;
+        }}
         </style>
         """, unsafe_allow_html=True)
 
@@ -607,15 +741,31 @@ def main():
 
         with col_demo:
             demo_active = active_tab == "DEMO"
-            if st.button("DEMO", key="tab_demo", use_container_width=True, type="primary" if demo_active else "secondary"):
-                st.session_state.active_tab = "DEMO"
-                st.rerun()
+            # Disable DEMO tab during beta-only mode
+            if st.button("DEMO", key="tab_demo", use_container_width=True,
+                        type="primary" if demo_active else "secondary",
+                        disabled=is_beta_only):
+                if not is_beta_only:
+                    st.session_state.active_tab = "DEMO"
+                    st.rerun()
 
         with col_telos:
             telos_active = active_tab == "TELOS"
-            if st.button("TELOS", key="tab_telos", use_container_width=True, type="primary" if telos_active else "secondary"):
-                st.session_state.active_tab = "TELOS"
-                st.rerun()
+            # Disable TELOS tab during beta-only mode
+            if st.button("TELOS", key="tab_telos", use_container_width=True,
+                        type="primary" if telos_active else "secondary",
+                        disabled=is_beta_only):
+                if not is_beta_only:
+                    st.session_state.active_tab = "TELOS"
+                    st.rerun()
+
+        # Show beta progress if in beta-only mode
+        if is_beta_only:
+            st.markdown("""
+            <div style="text-align: center; color: #888; font-size: 14px; margin: 5px 0;">
+                <p style="margin: 0;">Complete beta testing to unlock DEMO and TELOS tabs</p>
+            </div>
+            """, unsafe_allow_html=True)
 
         st.markdown("<hr style='border: 1px solid #FFD700; margin: 10px 0;'>", unsafe_allow_html=True)
     else:
