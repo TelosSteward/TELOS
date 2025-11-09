@@ -351,9 +351,9 @@ class StateManager:
         # Import TELOS components here to avoid circular imports
         try:
             from observatory.utils.telos_demo_data import generate_telos_demo_session
-            from telos_purpose.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
-            from telos_purpose.core.embedding_provider import SentenceTransformerProvider
-            from telos_purpose.llm_clients.mistral_client import MistralClient
+            from telos.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
+            from telos.core.embedding_provider import SentenceTransformerProvider
+            from telos.llm.mistral_client import MistralClient
 
             # Initialize TELOS if not already done
             if not hasattr(self, '_telos_steward'):
@@ -706,9 +706,9 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
         # Initialize TELOS if not already done
         if not hasattr(self, '_telos_steward'):
             from observatory.utils.telos_demo_data import generate_telos_demo_session
-            from telos_purpose.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
-            from telos_purpose.core.embedding_provider import SentenceTransformerProvider
-            from telos_purpose.llm_clients.mistral_client import MistralClient
+            from telos.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
+            from telos.core.embedding_provider import SentenceTransformerProvider
+            from telos.llm.mistral_client import MistralClient
 
             try:
                 logger.info("Initializing TELOS engine...")

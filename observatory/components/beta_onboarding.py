@@ -45,8 +45,8 @@ class BetaOnboarding:
             consent_entry = {
                 'session_id': session_id,
                 'timestamp': datetime.now().isoformat(),
-                'consent_statement': 'I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.',
-                'version': '1.0'
+                'consent_statement': 'I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.',
+                'version': '2.0'
             }
 
             consent_log['consents'].append(consent_entry)
@@ -64,6 +64,18 @@ class BetaOnboarding:
         if st.session_state.get('beta_consent_given', False):
             return True  # User has consented, proceed to beta interface
 
+        # Inject compact container CSS
+        st.markdown("""
+        <style>
+        /* Compact centered container for beta consent */
+        .beta-compact {
+            max-width: 900px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
         # Show onboarding screen
         st.markdown("""
         <div style="text-align: center; padding: 20px 0;">
@@ -72,94 +84,114 @@ class BetaOnboarding:
         </div>
         """, unsafe_allow_html=True)
 
-        st.markdown("<div style='margin: 30px 0;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='margin: 20px 0;'></div>", unsafe_allow_html=True)
 
-        # What is Beta?
+        # Concise beta information in single box
         st.markdown("""
-        <div class="message-container" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #FFD700; border-radius: 8px; padding: 20px; margin: 20px 0;">
-            <h3 style="color: #FFD700; margin-top: 0;">What is Beta Testing?</h3>
-            <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
-                You're getting early access to TELOS Observatory features before they're publicly released.
-                Your feedback helps us refine the system and improve AI governance for everyone.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+<div class="beta-compact">
+<div class="message-container" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #FFD700; border-radius: 8px; padding: 30px; margin: 20px auto;">
+<h3 style="color: #FFD700; margin-top: 0; font-size: 24px;">Beta Testing & Data Privacy</h3>
 
-        # How We Handle Your Data
-        st.markdown("""
-        <div class="message-container" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #FFD700; border-radius: 8px; padding: 20px; margin: 20px 0;">
-            <h3 style="color: #FFD700; margin-top: 0;">How We Handle Your Data</h3>
-            <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
-                <strong style="color: #FFD700;">We only collect governance deltas — not your conversations.</strong>
-            </p>
-            <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
-                Deltas are mathematical measurements of how the AI stays aligned with its purpose:
-            </p>
-            <ul style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
-                <li><strong>Fidelity scores</strong> — how well responses match intended purpose</li>
-                <li><strong>Distance measurements</strong> — mathematical drift from target behavior</li>
-                <li><strong>Intervention patterns</strong> — when and how corrections were applied</li>
-            </ul>
-            <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
-                <strong style="color: #FFD700;">Your actual conversation content stays with you.</strong>
-                We never see what you talk about — only the governance telemetry.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+<p style="color: #e0e0e0; font-size: 18px; line-height: 1.7; margin-bottom: 20px;">
+<strong style="color: #FFD700;">During Beta:</strong> We store your full conversations to test and refine TELOS governance.
+Your data helps us validate alignment tracking, improve algorithms, and build the delta-only infrastructure.
+Sessions are anonymous—no login, tracking, or personal information required.
+</p>
 
-        # Privacy Protection
-        st.markdown("""
-        <div class="message-container" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #FFD700; border-radius: 8px; padding: 20px; margin: 20px 0;">
-            <h3 style="color: #FFD700; margin-top: 0;">Privacy Protection</h3>
-            <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
-                Your session data is protected by <strong style="color: #FFD700;">Telemetric Keys</strong> —
-                encryption that evolves with each turn of conversation.
-            </p>
-            <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
-                Key properties:
-            </p>
-            <ul style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
-                <li><strong>Session-bound:</strong> Keys exist only during your session, then disappear</li>
-                <li><strong>Non-reproducible:</strong> Cannot be recreated without exact session telemetry</li>
-                <li><strong>Mathematically secure:</strong> Based on physical randomness from your interaction patterns</li>
-            </ul>
-            <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
-                Even if someone accessed the stored deltas, they couldn't reconstruct your conversations —
-                only the mathematical governance measurements.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+<p style="color: #e0e0e0; font-size: 18px; line-height: 1.7; margin-bottom: 20px;">
+<strong style="color: #FFD700;">After Beta:</strong> All conversation data will be permanently deleted.
+Full TELOS will use delta-only storage with Telemetric Keys—storing only mathematical measurements, not conversations.
+</p>
 
-        # What We Use Deltas For
-        st.markdown("""
-        <div class="message-container" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #FFD700; border-radius: 8px; padding: 20px; margin: 20px 0;">
-            <h3 style="color: #FFD700; margin-top: 0;">What We Use Deltas For</h3>
-            <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
-                Your governance deltas help us:
-            </p>
-            <ul style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
-                <li><strong>Improve alignment quality</strong> — learn better correction patterns</li>
-                <li><strong>Refine governance standards</strong> — understand what keeps AI systems on track</li>
-                <li><strong>Advance research</strong> — contribute to safer, more controllable AI</li>
-            </ul>
-            <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
-                All deltas are anonymized and aggregated. Your individual session cannot be identified
-                or singled out from the collective dataset.
-            </p>
-        </div>
+<p style="color: #e0e0e0; font-size: 18px; line-height: 1.7; margin-bottom: 0;">
+<strong style="color: #FFD700;">Data Use:</strong> Internal development only. Never shared externally, sold, or used to train other AI models.
+</p>
+</div>
+</div>
         """, unsafe_allow_html=True)
 
         st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
 
-        # Consent checkbox
+        # Consent checkbox inside Beta Consent box with proper alignment
         st.markdown("""
-        <div class="message-container" style="background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); border: 2px solid #FFD700; border-radius: 8px; padding: 25px; margin: 20px 0;">
-            <h3 style="color: #FFD700; margin-top: 0; text-align: center;">Beta Consent</h3>
+        <div class="beta-compact">
+            <div class="message-container" style="background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); border: 2px solid #FFD700; border-radius: 8px; padding: 40px; margin: 20px auto; text-align: center;">
+                <h1 style="color: #FFD700; margin: 0; font-size: 48px;">Beta Consent</h1>
+            </div>
         </div>
         """, unsafe_allow_html=True)
 
+        # Add CSS to style the checkbox container to match Beta Consent box width exactly
+        st.markdown("""
+        <style>
+        /* Style the checkbox container to match Beta Consent box - force full width */
+        div[data-testid="stVerticalBlock"] > div:has(div[data-testid="stCheckbox"]) {
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+
+        div[data-testid="stCheckbox"] {
+            max-width: 900px !important;
+            width: 900px !important;
+            margin: 20px auto !important;
+            padding: 25px !important;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+            border: 2px solid #FFD700 !important;
+            border-radius: 8px !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Style the actual checkbox input - fill with gold when checked, no checkmark */
+        div[data-testid="stCheckbox"] input[type="checkbox"]:checked {
+            background-color: #FFD700 !important;
+            border-color: #FFD700 !important;
+            background-image: none !important;
+        }
+
+        /* Hide all pseudo-elements that might contain the checkmark */
+        div[data-testid="stCheckbox"] input[type="checkbox"]:checked::before,
+        div[data-testid="stCheckbox"] input[type="checkbox"]:checked::after {
+            content: "" !important;
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+
+        /* Override Streamlit's SVG checkmark */
+        div[data-testid="stCheckbox"] input[type="checkbox"]:checked {
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            width: 20px !important;
+            height: 20px !important;
+            background-color: #FFD700 !important;
+            border: 2px solid #FFD700 !important;
+            border-radius: 3px !important;
+        }
+
+        /* Make sure unchecked state is visible */
+        div[data-testid="stCheckbox"] input[type="checkbox"] {
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            width: 20px !important;
+            height: 20px !important;
+            background-color: transparent !important;
+            border: 2px solid #666 !important;
+            border-radius: 3px !important;
+        }
+
+        @media (max-width: 950px) {
+            div[data-testid="stCheckbox"] {
+                width: calc(100vw - 50px) !important;
+                max-width: 900px !important;
+            }
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
         consent = st.checkbox(
-            "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+            "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
             key="beta_consent_checkbox"
         )
 
@@ -173,6 +205,10 @@ class BetaOnboarding:
                     # Record consent in session state
                     st.session_state.beta_consent_given = True
                     st.session_state.beta_consent_timestamp = datetime.now().isoformat()
+
+                    # Initialize beta intro to start from slide 0
+                    st.session_state.beta_intro_slide = 0
+                    st.session_state.beta_intro_complete = False
 
                     # Get session ID from state manager
                     session_id = self.state_manager.state.session_id

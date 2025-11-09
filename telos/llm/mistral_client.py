@@ -10,7 +10,7 @@ import logging
 import time
 from typing import List, Dict, Any, Optional
 
-from telos_purpose.exceptions import (
+from telos.exceptions import (
     MissingAPIKeyError,
     APIConnectionError,
     APIResponseError,
@@ -151,7 +151,7 @@ class MistralClient:
                         time.sleep(wait_time)
                         continue
                     else:
-                        from telos_purpose.exceptions import APIRateLimitError
+                        from telos.exceptions import APIRateLimitError
                         logger.error("Rate limit exceeded after all retries")
                         return None
 
@@ -256,7 +256,7 @@ class MistralClient:
 
         except Exception as e:
             if "rate limit" in str(e).lower():
-                from telos_purpose.exceptions import APIRateLimitError
+                from telos.exceptions import APIRateLimitError
                 raise APIRateLimitError("Mistral") from e
             elif hasattr(e, 'status_code'):
                 raise APIResponseError(

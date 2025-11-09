@@ -18,7 +18,7 @@ import numpy as np
 import logging
 import asyncio
 
-from telos_purpose.core.primacy_math import PrimacyAttractorMath, MathematicalState
+from telos.core.primacy_math import PrimacyAttractorMath, MathematicalState
 
 logger = logging.getLogger(__name__)
 

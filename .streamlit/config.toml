@@ -1,27 +1,40 @@
+# Streamlit Configuration for TELOS Observatory
+# This file configures theme, server, and browser settings
+
 [theme]
-base = "dark"
-primaryColor = "#FFD700"
-backgroundColor = "#1a1a1a"
-secondaryBackgroundColor = "#2a2a2a"
-textColor = "#e0e0e0"
+primaryColor = "#FFD700"  # Gold - TELOS brand color
+backgroundColor = "#0E1117"  # Dark background
+secondaryBackgroundColor = "#1a1a1a"  # Slightly lighter dark
+textColor = "#e0e0e0"  # Light gray text
 font = "sans serif"
 
 [server]
-# Disable file watcher
-runOnSave = false
-# Disable development mode features
-developmentMode = false
+# Server settings
+port = 8501
+enableCORS = false
+enableXsrfProtection = true
+maxUploadSize = 200  # MB
+headless = true
+
+# Session settings
+enableWebsocketCompression = true
+
+# UI settings - hide Streamlit branding
+[client]
+showErrorDetails = false
+toolbarMode = "minimal"
+
+[ui]
+hideTopBar = true
+hideSidebarNav = false
 
 [browser]
-# Disable gathering usage stats
-gatherUsageStats = false
+# Browser settings
+gatherUsageStats = false  # Disable analytics for privacy
+serverAddress = "localhost"
+serverPort = 8501
 
 [runner]
-# Disable magic commands
-magicEnabled = false
-
-[client]
-# Hide the toolbar
-toolbarMode = "minimal"
-# Disable showing errors in browser
-showErrorDetails = false
+# Runner settings
+magicEnabled = true
+fastReruns = true

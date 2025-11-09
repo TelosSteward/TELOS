@@ -52,8 +52,31 @@ def initialize_session():
         st.session_state.state_manager = state_manager
 
 
+def check_demo_completion():
+    """Check if demo mode is complete (10 turns) and unlock BETA."""
+    if st.session_state.get('demo_completed', False):
+        return True
+
+    # Check if user is in demo mode and has completed 10 turns
+    demo_mode = st.session_state.get('telos_demo_mode', False)
+    if demo_mode:
+        state_manager = st.session_state.get('state_manager')
+        if state_manager and state_manager.state.total_turns >= 10:
+            st.session_state.demo_completed = True
+            st.balloons()
+            st.success("""
+            🎉 **Demo Complete!**
+
+            You've learned the basics of TELOS! The BETA tab is now unlocked.
+            Ready to help test TELOS? Switch to the BETA tab to begin.
+            """)
+            return True
+
+    return False
+
+
 def check_beta_completion():
-    """Check if beta testing is complete and unlock full access."""
+    """Check if beta testing is complete and unlock TELOS tab."""
     if not st.session_state.get('beta_consent_given', False):
         return False
 
@@ -79,7 +102,8 @@ def check_beta_completion():
         st.success("""
         🎉 **Beta Testing Complete!**
 
-        Thank you for helping improve TELOS! Full Observatory features are now unlocked.
+        Thank you for helping improve TELOS! The TELOS tab is now unlocked.
+        You can now use the full TELOS experience without restrictions.
         """)
         return True
 
@@ -581,24 +605,74 @@ def main():
     </style>
     """, unsafe_allow_html=True)
 
+    # Keyboard navigation for Demo Mode (arrow keys)
+    st.markdown("""
+    <script>
+    // Demo Mode keyboard navigation
+    document.addEventListener('keydown', function(event) {
+        // Only in demo mode
+        const isDemoMode = window.parent.document.querySelector('[data-testid="stApp"]');
+        if (!isDemoMode) return;
+
+        // Arrow key navigation
+        switch(event.key) {
+            case 'ArrowLeft':
+                // Go to previous turn in history
+                const scrollBtn = document.querySelector('[key*="scroll_toggle"]');
+                if (scrollBtn && !event.ctrlKey && !event.metaKey) {
+                    event.preventDefault();
+                    scrollBtn.click();
+                }
+                break;
+
+            case 'ArrowRight':
+                // Close history / move forward
+                const closeBtn = document.querySelector('[key*="scroll_close"]');
+                if (closeBtn && !event.ctrlKey && !event.metaKey) {
+                    event.preventDefault();
+                    closeBtn.click();
+                }
+                break;
+
+            case 'ArrowUp':
+                // Scroll up through content
+                if (!event.ctrlKey && !event.metaKey) {
+                    event.preventDefault();
+                    window.scrollBy(0, -200);
+                }
+                break;
+
+            case 'ArrowDown':
+                // Scroll down through content
+                if (!event.ctrlKey && !event.metaKey) {
+                    event.preventDefault();
+                    window.scrollBy(0, 200);
+                }
+                break;
+        }
+    });
+    </script>
+    """, unsafe_allow_html=True)
+
     # Initialize session
     initialize_session()
     state_manager = st.session_state.state_manager
 
     # Instantiate components
     sidebar_actions = SidebarActions(state_manager)
-    conversation_display = ConversationDisplay(state_manager)
+    steward_panel = StewardPanel(state_manager)
+    conversation_display = ConversationDisplay(state_manager, steward_panel)
     observation_deck = ObservationDeck(state_manager)
     teloscope_controls = TELOSCOPEControls(state_manager)
     beta_onboarding = BetaOnboarding(state_manager)
-    steward_panel = StewardPanel(state_manager)
 
     # Check if user has given beta consent
     has_beta_consent = st.session_state.get('beta_consent_given', False)
 
-    # Check beta completion status (show celebration if just completed)
+    # Check completion status (show celebrations if just completed)
+    check_demo_completion()  # Check demo completion (10 turns)
     if has_beta_consent:
-        check_beta_completion()
+        check_beta_completion()  # Check beta completion (50 feedbacks or 2 weeks)
 
     # Hide sidebar if Steward panel is open
     steward_panel.hide_sidebar_when_open()
@@ -607,7 +681,30 @@ def main():
     if has_beta_consent:
         steward_panel.render_button()
 
-    # Only render sidebar and tabs if user has consented
+    # Initialize active tab if not set - default to DEMO for new users
+    if 'active_tab' not in st.session_state:
+        st.session_state.active_tab = "DEMO"
+
+    # DEMO tab is always accessible (no consent required)
+    # BETA and TELOS tabs require consent
+    active_tab = st.session_state.active_tab
+
+    # If user is trying to access BETA or TELOS without consent, show consent screen
+    if (active_tab in ["BETA", "TELOS"]) and not has_beta_consent:
+        # Show consent screen for BETA/TELOS access
+        beta_onboarding.render()
+    else:
+        # Render tabs and content (DEMO is always accessible, BETA/TELOS require consent)
+        render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
+                                conversation_display, observation_deck,
+                                teloscope_controls, steward_panel, beta_onboarding)
+
+
+def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
+                            conversation_display, observation_deck,
+                            teloscope_controls, steward_panel, beta_onboarding):
+    """Render tabs and main content area."""
+    # Only render sidebar and tabs styling if needed
     if has_beta_consent:
         # Add slide-in animation for sidebar
         st.markdown("""
@@ -653,6 +750,27 @@ def main():
         </style>
         """, unsafe_allow_html=True)
 
+        # Check if sidebar should be enabled (only in TELOS mode)
+        sidebar_enabled = st.session_state.get('active_tab') == 'TELOS'
+
+        if not sidebar_enabled:
+            # Gray out sidebar in DEMO and BETA modes
+            st.markdown("""
+            <style>
+            /* Gray out sidebar in DEMO and BETA modes */
+            [data-testid="stSidebar"] {
+                opacity: 0.3 !important;
+                pointer-events: none !important;
+            }
+
+            /* Disable all sidebar interactions */
+            [data-testid="stSidebar"] * {
+                pointer-events: none !important;
+                cursor: not-allowed !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+
         # Render sidebar
         sidebar_actions.render()
 
@@ -662,8 +780,9 @@ def main():
         # Get current demo mode setting
         demo_mode = st.session_state.get('telos_demo_mode', False)
 
-        # Check if user is in beta-only mode (not yet completed beta testing)
-        is_beta_only = not st.session_state.get('beta_completed', False)
+        # Progressive unlock system
+        demo_complete = st.session_state.get('demo_completed', False)
+        beta_complete = st.session_state.get('beta_completed', False)
 
         # Simple single-content approach: show content based on selected tab via radio buttons
         st.markdown("<div style='margin: 20px 0;'></div>", unsafe_allow_html=True)
@@ -723,53 +842,55 @@ def main():
         </style>
         """, unsafe_allow_html=True)
 
-        # Tab selection using columns for custom styling
-        # Initialize active tab if not set - default to BETA for new users
-        if 'active_tab' not in st.session_state:
-            st.session_state.active_tab = "BETA"
+    # Tab selection using columns for custom styling
+    # Get current active tab
+    active_tab = st.session_state.active_tab
 
-        # Get current active tab
-        active_tab = st.session_state.active_tab
+    # Progressive unlock system
+    demo_complete = st.session_state.get('demo_completed', False)
+    beta_complete = st.session_state.get('beta_completed', False)
 
-        col_beta, col_demo, col_telos = st.columns(3)
+    # Simple single-content approach: show content based on selected tab via radio buttons
+    st.markdown("<div style='margin: 20px 0;'></div>", unsafe_allow_html=True)
 
-        with col_beta:
-            beta_active = active_tab == "BETA"
-            if st.button("BETA", key="tab_beta", use_container_width=True, type="primary" if beta_active else "secondary"):
+    col_demo, col_beta, col_telos = st.columns(3)
+
+    with col_demo:
+        demo_active = active_tab == "DEMO"
+        # DEMO is always available - starting point for everyone
+        if st.button("DEMO", key="tab_demo", use_container_width=True,
+                    type="primary" if demo_active else "secondary"):
+            st.session_state.active_tab = "DEMO"
+            st.rerun()
+
+    with col_beta:
+        beta_active = active_tab == "BETA"
+        # BETA unlocks after completing demo (10 turns)
+        beta_locked = not demo_complete
+        if st.button("BETA", key="tab_beta", use_container_width=True,
+                    type="primary" if beta_active else "secondary",
+                    disabled=beta_locked):
+            if not beta_locked:
                 st.session_state.active_tab = "BETA"
                 st.rerun()
 
-        with col_demo:
-            demo_active = active_tab == "DEMO"
-            # Disable DEMO tab during beta-only mode
-            if st.button("DEMO", key="tab_demo", use_container_width=True,
-                        type="primary" if demo_active else "secondary",
-                        disabled=is_beta_only):
-                if not is_beta_only:
-                    st.session_state.active_tab = "DEMO"
-                    st.rerun()
+    with col_telos:
+        telos_active = active_tab == "TELOS"
+        # TELOS unlocks after completing beta
+        telos_locked = not beta_complete
+        if st.button("TELOS", key="tab_telos", use_container_width=True,
+                    type="primary" if telos_active else "secondary",
+                    disabled=telos_locked):
+            if not telos_locked:
+                st.session_state.active_tab = "TELOS"
+                st.rerun()
 
-        with col_telos:
-            telos_active = active_tab == "TELOS"
-            # Disable TELOS tab during beta-only mode
-            if st.button("TELOS", key="tab_telos", use_container_width=True,
-                        type="primary" if telos_active else "secondary",
-                        disabled=is_beta_only):
-                if not is_beta_only:
-                    st.session_state.active_tab = "TELOS"
-                    st.rerun()
+    # Removed unlock progression message - now shown in Steward intro
 
-        # Show beta progress if in beta-only mode
-        if is_beta_only:
-            st.markdown("""
-            <div style="text-align: center; color: #888; font-size: 14px; margin: 5px 0;">
-                <p style="margin: 0;">Complete beta testing to unlock DEMO and TELOS tabs</p>
-            </div>
-            """, unsafe_allow_html=True)
+    st.markdown("<hr style='border: 1px solid #FFD700; margin: 10px 0;'>", unsafe_allow_html=True)
 
-        st.markdown("<hr style='border: 1px solid #FFD700; margin: 10px 0;'>", unsafe_allow_html=True)
-    else:
-        # Hide sidebar completely before consent
+    # Hide sidebar for DEMO mode without consent
+    if not has_beta_consent:
         st.markdown("""
         <style>
         /* Hide sidebar before consent */
@@ -786,58 +907,84 @@ def main():
         </style>
         """, unsafe_allow_html=True)
 
-    # Render content based on consent status
-    if not has_beta_consent:
-        # No consent yet - show full-screen consent page
-        beta_onboarding.render()
-    else:
-        # Check if Steward panel is open
-        steward_open = st.session_state.get('steward_panel_open', False)
+    # Check if Steward panel is open
+    steward_open = st.session_state.get('steward_panel_open', False)
 
-        if steward_open:
-            # Two-column layout: Main content (70%) | Steward chat (30%)
-            col_main, col_steward = st.columns([7, 3])
+    # Content rendering (DEMO accessible without consent, BETA/TELOS require consent)
+    if steward_open and has_beta_consent:
+        # Two-column layout: Main content (70%) | Steward chat (30%)
+        col_main, col_steward = st.columns([7, 3])
 
-            with col_main:
-                # Render content based on active tab
-                if st.session_state.active_tab == "BETA":
-                    conversation_display.render()
-                elif st.session_state.active_tab == "DEMO":
-                    st.info("Demo Tab - Coming Soon")
-                elif st.session_state.active_tab == "TELOS":
-                    conversation_display.render()
-                    st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
-                    observation_deck.render()
-                    st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
-                    teloscope_controls.render()
-
-            with col_steward:
-                # Render Steward chat panel
-                steward_panel.render_panel()
-
-        else:
-            # Normal full-width layout
+        with col_main:
             # Render content based on active tab
             if st.session_state.active_tab == "BETA":
-                # Beta Tab - simple chat interface
+                # Beta mode - disable demo mode, show Observation Deck
+                st.session_state.telos_demo_mode = False
                 conversation_display.render()
-
+                st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
+                observation_deck.render()
             elif st.session_state.active_tab == "DEMO":
-                # Demo Tab
-                st.info("Demo Tab - Coming Soon")
-
+                # Demo Mode - enable demo mode flag and render conversation
+                st.session_state.telos_demo_mode = True
+                conversation_display.render()
             elif st.session_state.active_tab == "TELOS":
-                # TELOS Tab - full Observatory
+                # TELOS mode - disable demo mode
+                st.session_state.telos_demo_mode = False
                 conversation_display.render()
                 st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
                 observation_deck.render()
                 st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
                 teloscope_controls.render()
 
+        with col_steward:
+            # Render Steward chat panel
+            steward_panel.render_panel()
+
+    else:
+        # Normal full-width layout
+        # Render content based on active tab
+        if st.session_state.active_tab == "BETA":
+            # Beta Tab - disable demo mode, show Observation Deck
+            st.session_state.telos_demo_mode = False
+            conversation_display.render()
+            st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
+            observation_deck.render()
+
+        elif st.session_state.active_tab == "DEMO":
+            # Demo Tab - enable demo mode flag and render conversation
+            st.session_state.telos_demo_mode = True
+            conversation_display.render()
+
+        elif st.session_state.active_tab == "TELOS":
+            # TELOS Tab - disable demo mode, full Observatory
+            st.session_state.telos_demo_mode = False
+            conversation_display.render()
+            st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
+            observation_deck.render()
+            st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
+            teloscope_controls.render()
+
     # FINAL CSS OVERRIDE - Inject with highest specificity at runtime
     st.html("""
     <style>
     /* Runtime CSS injection - v20:35 - Further reduced glow */
+
+    /* PRIMARY BUTTONS - Active tab styling (just border, no bright background) */
+    button[kind="primary"] {
+        background-color: #2d2d2d !important;
+        background: #2d2d2d !important;
+        color: #e0e0e0 !important;
+        border: 2px solid #FFD700 !important;
+        box-shadow: 0 0 8px rgba(255, 215, 0, 0.5) !important;
+    }
+
+    /* Override Streamlit's default primary button background */
+    .stButton > button[kind="primary"],
+    button[data-baseweb="button"][kind="primary"] {
+        background-color: #2d2d2d !important;
+        background: #2d2d2d !important;
+    }
+
     button:hover {
         border: 1px solid #FFD700 !important;
         box-shadow: 0 0 6px #FFD700 !important;

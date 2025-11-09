@@ -7,7 +7,7 @@ Per whitepaper Section 5.3, these constants define the intervention cascade
 and process control parameters for the Mitigation Bridge Layer (MBL).
 
 Usage:
-    from telos_purpose.core.constants import FIDELITY_MONITOR, DEFAULT_K_ATTRACTOR
+    from telos.core.constants import FIDELITY_MONITOR, DEFAULT_K_ATTRACTOR
 """
 
 # ============================================================================
