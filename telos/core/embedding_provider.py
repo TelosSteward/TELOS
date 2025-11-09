@@ -1,9 +1,10 @@
 """
 Embedding providers for TELOS.
 
-Provides two implementations:
+Provides three implementations:
 1. DeterministicEmbeddingProvider - Fast, deterministic (for testing)
 2. SentenceTransformerProvider - Real semantic embeddings (for production)
+3. MistralEmbeddingProvider - Mistral API embeddings with rate limiting
 """
 
 from __future__ import annotations
@@ -11,6 +12,8 @@ import hashlib
 import numpy as np
 from typing import Optional, List
 import logging
+import time
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -228,19 +231,160 @@ class SentenceTransformerProvider:
             raise  # Re-raise for upstream handling
 
 
-def EmbeddingProvider(deterministic: bool = False, model_name: str = "sentence-transformers/all-MiniLM-L6-v2"):
+class MistralEmbeddingProvider:
+    """
+    Mistral API embedding provider with rate limiting.
+
+    Features:
+    - 10-second delay between embedding calls
+    - Retry-until-success with exponential backoff
+    - Proper rate limit handling
+    """
+
+    def __init__(self, model_name: str = "mistral-embed", api_delay: float = 10.0):
+        """
+        Args:
+            model_name: Mistral embedding model name
+            api_delay: Delay in seconds between API calls (default: 10.0)
+        """
+        from mistralai import Mistral
+
+        api_key = os.getenv("MISTRAL_API_KEY")
+        if not api_key:
+            raise ValueError("MISTRAL_API_KEY environment variable not set")
+
+        self.client = Mistral(api_key=api_key)
+        self.model_name = model_name
+        self.api_delay = api_delay
+        self.dimension = 1024  # Mistral embeddings are 1024-dimensional
+        self.expected_dim = 1024
+        self.last_call_time = 0
+
+        logger.info(f"Initialized MistralEmbeddingProvider with {api_delay}s delay")
+
+    def _is_valid_embedding(self, embedding: np.ndarray) -> bool:
+        """Validate embedding contains no NaN/Inf and has correct shape."""
+        if embedding is None or embedding.size == 0:
+            return False
+
+        if not np.all(np.isfinite(embedding)):
+            return False
+
+        if embedding.shape[0] != self.expected_dim:
+            return False
+
+        return True
+
+    def _wait_for_rate_limit(self):
+        """Enforce minimum delay between API calls."""
+        current_time = time.time()
+        time_since_last_call = current_time - self.last_call_time
+
+        if time_since_last_call < self.api_delay:
+            wait_time = self.api_delay - time_since_last_call
+            logger.info(f"⏳ Waiting {wait_time:.1f}s before next API call...")
+            time.sleep(wait_time)
+
+        self.last_call_time = time.time()
+
+    def encode(self, text: str) -> np.ndarray:
+        """
+        Generate Mistral embedding with retry-until-success logic.
+
+        Args:
+            text: Input text
+
+        Returns:
+            Embedding vector
+
+        Raises:
+            ValueError: If embedding is invalid after successful API call
+        """
+        max_retries = 50  # Retry until successful
+        retry_delay = 10
+        retry_count = 0
+
+        while retry_count < max_retries:
+            try:
+                # Enforce rate limiting
+                self._wait_for_rate_limit()
+
+                logger.info(f"📡 Calling Mistral API for embedding (attempt {retry_count + 1})...")
+
+                # Make API call
+                response = self.client.embeddings.create(
+                    model=self.model_name,
+                    inputs=[text]
+                )
+
+                # Extract embedding
+                embedding_data = response.data[0].embedding
+                embedding = np.array(embedding_data, dtype=np.float32)
+
+                # Validate
+                if not self._is_valid_embedding(embedding):
+                    raise ValueError(
+                        f"Invalid embedding received: shape={embedding.shape}, "
+                        f"has_nan={np.any(np.isnan(embedding))}, "
+                        f"has_inf={np.any(np.isinf(embedding))}"
+                    )
+
+                logger.info(f"✅ Successfully got embedding (dim={embedding.shape[0]})")
+                return embedding
+
+            except Exception as e:
+                retry_count += 1
+
+                if "429" in str(e) or "rate" in str(e).lower():
+                    logger.warning(f"⚠️  Rate limit hit (attempt {retry_count}/{max_retries})")
+                    logger.info(f"    Waiting {retry_delay}s before retry...")
+                    time.sleep(retry_delay)
+                    # Exponential backoff, cap at 60s
+                    retry_delay = min(retry_delay * 1.5, 60)
+                elif retry_count < max_retries:
+                    logger.warning(f"⚠️  Error getting embedding: {e}")
+                    logger.info(f"    Retrying in {retry_delay}s...")
+                    time.sleep(retry_delay)
+                else:
+                    logger.error(f"❌ Failed after {max_retries} attempts")
+                    raise
+
+        raise RuntimeError(f"Failed to get embedding after {max_retries} retries")
+
+    def encode_batch(self, texts: List[str]) -> List[np.ndarray]:
+        """
+        Generate batch embeddings (calls encode sequentially with delays).
+
+        Args:
+            texts: List of input texts
+
+        Returns:
+            List of embedding vectors
+        """
+        embeddings = []
+        for i, text in enumerate(texts):
+            logger.info(f"Processing text {i+1}/{len(texts)}")
+            emb = self.encode(text)
+            embeddings.append(emb)
+
+        return embeddings
+
+
+def EmbeddingProvider(deterministic: bool = False, use_mistral: bool = False, model_name: str = "sentence-transformers/all-MiniLM-L6-v2"):
     """
     Factory function to create appropriate embedding provider.
 
     Args:
         deterministic: If True, use fast deterministic embeddings (testing).
-                      If False, use real semantic embeddings (production).
-        model_name: Model name for SentenceTransformer (ignored if deterministic=True)
+        use_mistral: If True, use Mistral API embeddings with rate limiting.
+        model_name: Model name for SentenceTransformer (ignored if deterministic=True or use_mistral=True)
 
     Returns:
         Embedding provider instance
     """
     if deterministic:
         return DeterministicEmbeddingProvider()
+    elif use_mistral:
+        return MistralEmbeddingProvider()
     else:
         return SentenceTransformerProvider(model_name=model_name)

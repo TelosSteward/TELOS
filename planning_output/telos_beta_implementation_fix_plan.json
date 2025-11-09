@@ -1,0 +1,273 @@
+{
+  "project": "TELOS BETA Implementation Fix",
+  "created": "2025-11-09T17:04:11.620370",
+  "phases": [
+    {
+      "phase_number": 1,
+      "name": "Enable Core TELOS Governance",
+      "description": "Fix the fundamental issue preventing TELOS governance from functioning - interventions are disabled and PA is hardcoded instead of extracted.",
+      "steps": [
+        "Enable interventions in state_manager.py (change enable_interventions=False to True at line 408)",
+        "Test that UnifiedGovernanceSteward is actually being called on each turn",
+        "Add telemetry logging to track when interventions fire",
+        "Verify intervention logic is working with simple test case",
+        "Document intervention triggering conditions and thresholds"
+      ],
+      "duration_estimate": "2-3 days",
+      "dependencies": [],
+      "status": "planned"
+    },
+    {
+      "phase_number": 2,
+      "name": "Implement Real PA Extraction",
+      "description": "Replace hardcoded generic PA with progressive calibration that learns from actual user conversations during first 10 turns.",
+      "steps": [
+        "Remove hardcoded generic PA from state_manager.py lines 388-396",
+        "Implement progressive PA extraction using conversation analysis",
+        "Extract Purpose from first 3-5 turns using semantic clustering",
+        "Extract Scope by identifying key topics and themes",
+        "Extract Boundaries by detecting user preferences and constraints",
+        "Lock PA at turn 11 and mark as calibrated",
+        "Add telemetry to track PA evolution across turns",
+        "Test with TELOS project conversation to verify PA captures \"AI governance project\" as purpose"
+      ],
+      "duration_estimate": "3-5 days",
+      "dependencies": [
+        "Enable Core TELOS Governance"
+      ],
+      "status": "planned"
+    },
+    {
+      "phase_number": 3,
+      "name": "Calculate Real Fidelity Scores",
+      "description": "Implement actual fidelity calculation after each response and remove all hardcoded 0.850 values from displays.",
+      "steps": [
+        "After streaming response completes, embed the full response text",
+        "Calculate cosine similarity between response embedding and PA centroid",
+        "Store real fidelity score in turn data (replace None values)",
+        "Remove hardcoded 0.85 from conversation_display.py lines 1636, 2375",
+        "Update display to show actual calculated fidelity from turn data",
+        "Add fidelity calculation logging for debugging",
+        "Test that fidelity varies based on actual conversation content",
+        "Verify low fidelity scores trigger interventions"
+      ],
+      "duration_estimate": "2-3 days",
+      "dependencies": [
+        "Implement Real PA Extraction"
+      ],
+      "status": "planned"
+    },
+    {
+      "phase_number": 4,
+      "name": "Fix PA Display",
+      "description": "Replace placeholder PA text with actual extracted PA (Purpose, Scope, Boundaries) from conversation analysis.",
+      "steps": [
+        "Identify where PA display pulls data in conversation_display.py",
+        "Replace placeholder text (\"Establish conversation purpose\", etc.) with real PA data",
+        "Format PA display to show: Purpose as bullet points, Scope as topic list, Boundaries as constraint statements",
+        "Add calibration status indicator (Calibrating turns 1-10, Locked turn 11+)",
+        "Test display shows actual extracted PA from test conversations",
+        "Verify PA updates during calibration phase (turns 1-10)",
+        "Confirm PA locks and stays stable after turn 11"
+      ],
+      "duration_estimate": "1-2 days",
+      "dependencies": [
+        "Implement Real PA Extraction"
+      ],
+      "status": "planned"
+    },
+    {
+      "phase_number": 5,
+      "name": "Remove Fake Displays",
+      "description": "Remove counterfactual display showing demo data and gray out Observatory section until real data is available.",
+      "steps": [
+        "Remove counterfactual display component entirely from BETA interface",
+        "Gray out Observatory section with \"Coming Soon\" message",
+        "Clean up any references to counterfactual in BETA code",
+        "Update UI to show only: PA Display (with real data) and Conversation (with real fidelity)",
+        "Test that removed displays do not appear in BETA mode",
+        "Document what displays are available in BETA vs full Observatory"
+      ],
+      "duration_estimate": "1 day",
+      "dependencies": [],
+      "status": "planned"
+    },
+    {
+      "phase_number": 6,
+      "name": "Drift Detection & Intervention Logic",
+      "description": "Implement logic that detects when conversation drifts from PA and applies interventions to redirect.",
+      "steps": [
+        "Define drift threshold (e.g., fidelity < 0.75 = drift)",
+        "Implement intervention response generation when drift detected",
+        "Intervention should redirect to PA purpose without being preachy",
+        "Add intervention telemetry (what triggered it, what response was generated)",
+        "Test with Thanksgiving conversation - should detect drift and redirect to TELOS",
+        "Verify intervention appears in conversation with visual indicator",
+        "Measure intervention effectiveness (does fidelity recover?)",
+        "Document intervention strategy and response patterns"
+      ],
+      "duration_estimate": "3-4 days",
+      "dependencies": [
+        "Calculate Real Fidelity Scores",
+        "Enable Core TELOS Governance"
+      ],
+      "status": "planned"
+    },
+    {
+      "phase_number": 7,
+      "name": "Integration Testing",
+      "description": "Test entire fixed BETA with real conversations to verify all components work together correctly.",
+      "steps": [
+        "Test Case 1: TELOS project conversation (should extract TELOS PA)",
+        "Test Case 2: Drift to Thanksgiving (should detect and intervene)",
+        "Test Case 3: Extended 20-turn conversation (PA should lock at turn 11)",
+        "Test Case 4: Multiple users (each should get unique PA)",
+        "Verify all displays show real data (no placeholders, no hardcoded values)",
+        "Check telemetry logs for complete data capture",
+        "Measure fidelity variation across different conversation types",
+        "Run Playwright diagnostic script to automate regression testing",
+        "Document any bugs found and fix before completion"
+      ],
+      "duration_estimate": "2-3 days",
+      "dependencies": [
+        "Fix PA Display",
+        "Drift Detection & Intervention Logic",
+        "Remove Fake Displays"
+      ],
+      "status": "planned"
+    },
+    {
+      "phase_number": 8,
+      "name": "Documentation & Validation",
+      "description": "Document all fixes made, create testing guide, and validate BETA is ready for adversarial testing.",
+      "steps": [
+        "Document all code changes made with file paths and line numbers",
+        "Create BETA testing guide for manual validation",
+        "Document PA extraction algorithm and calibration process",
+        "Document intervention triggering conditions and thresholds",
+        "Create telemetry interpretation guide",
+        "Validate BETA meets success criteria (real PA, real fidelity, interventions work)",
+        "Generate final validation report showing before/after comparison",
+        "Confirm BETA is ready for adversarial compliance validation (Phase 2 of original plan)"
+      ],
+      "duration_estimate": "1-2 days",
+      "dependencies": [
+        "Integration Testing"
+      ],
+      "status": "planned"
+    }
+  ],
+  "dependencies": [
+    {
+      "from": "Enable Core TELOS Governance",
+      "to": "Implement Real PA Extraction",
+      "reason": "Cannot extract PA if governance loop is not executing"
+    },
+    {
+      "from": "Implement Real PA Extraction",
+      "to": "Calculate Real Fidelity Scores",
+      "reason": "Fidelity calculation requires real PA centroid, not hardcoded generic PA"
+    },
+    {
+      "from": "Implement Real PA Extraction",
+      "to": "Fix PA Display",
+      "reason": "Cannot display real PA until it is actually being extracted"
+    },
+    {
+      "from": "Calculate Real Fidelity Scores",
+      "to": "Drift Detection & Intervention Logic",
+      "reason": "Drift detection depends on real fidelity scores, not hardcoded values"
+    },
+    {
+      "from": "Enable Core TELOS Governance",
+      "to": "Drift Detection & Intervention Logic",
+      "reason": "Interventions must be enabled for drift logic to function"
+    },
+    {
+      "from": "Fix PA Display",
+      "to": "Integration Testing",
+      "reason": "All displays must show real data before integration testing"
+    },
+    {
+      "from": "Drift Detection & Intervention Logic",
+      "to": "Integration Testing",
+      "reason": "Core functionality must work before comprehensive testing"
+    },
+    {
+      "from": "Remove Fake Displays",
+      "to": "Integration Testing",
+      "reason": "UI must be clean before testing user experience"
+    },
+    {
+      "from": "Integration Testing",
+      "to": "Documentation & Validation",
+      "reason": "Cannot document until all fixes are tested and validated"
+    }
+  ],
+  "risks": [
+    {
+      "risk": "PA extraction may not capture user intent accurately from first 10 turns",
+      "severity": "high",
+      "mitigation": "Implement conservative extraction with human review option. Start with explicit intent statements. Add refinement mechanism if PA seems off-target."
+    },
+    {
+      "risk": "Fidelity calculation may be too sensitive or not sensitive enough",
+      "severity": "medium",
+      "mitigation": "Test with diverse conversations to calibrate thresholds. Make intervention threshold configurable. Log all fidelity scores for analysis."
+    },
+    {
+      "risk": "Interventions may feel preachy or disrupt conversation flow",
+      "severity": "medium",
+      "mitigation": "Design intervention responses to be gentle redirects, not lectures. Test user experience with multiple intervention styles. Use natural language transitions."
+    },
+    {
+      "risk": "Enabling interventions may cause unexpected side effects in existing code",
+      "severity": "low",
+      "mitigation": "Enable interventions incrementally with extensive logging. Test in isolated environment first. Have rollback plan ready."
+    },
+    {
+      "risk": "Timeline may extend if PA extraction algorithm is more complex than expected",
+      "severity": "medium",
+      "mitigation": "Start with simple semantic clustering approach. Can iterate and improve after basic version works. Set decision point at Day 3 of Phase 2."
+    },
+    {
+      "risk": "Testing may reveal additional broken components not yet discovered",
+      "severity": "medium",
+      "mitigation": "Phase 7 integration testing is designed to catch this. Budget extra time for unexpected fixes. Prioritize critical path items first."
+    }
+  ],
+  "success_criteria": [
+    {
+      "criterion": "Interventions are enabled and firing when drift detected",
+      "measurement": "Thanksgiving conversation test: AI detects drift (fidelity < 0.75) and redirects to TELOS topic. Telemetry shows intervention triggered and logged."
+    },
+    {
+      "criterion": "Real PA extracted from user conversations",
+      "measurement": "TELOS project conversation: PA Purpose includes \"AI governance\" or \"TELOS project\". PA is unique per user, not generic hardcoded text."
+    },
+    {
+      "criterion": "Real fidelity scores calculated and displayed",
+      "measurement": "Fidelity varies across conversation (not stuck at 0.850). Drift conversation shows fidelity drop. Display shows actual calculated values from turn data."
+    },
+    {
+      "criterion": "PA display shows real extracted data",
+      "measurement": "PA section displays actual Purpose/Scope/Boundaries from conversation analysis, not placeholder text like \"Establish conversation purpose\"."
+    },
+    {
+      "criterion": "Fake displays removed",
+      "measurement": "Counterfactual display completely removed from BETA. Observatory section grayed out. No demo/placeholder data visible to users."
+    },
+    {
+      "criterion": "PA locks at turn 11 and remains stable",
+      "measurement": "20-turn conversation: PA changes during turns 1-10, locks at turn 11, does not change afterward. Calibration status indicator updates correctly."
+    },
+    {
+      "criterion": "Complete telemetry capture for all TELOS operations",
+      "measurement": "Every turn has logged: PA state, fidelity score, intervention decision, drift detection. No None values in critical fields. Logs are parseable and complete."
+    },
+    {
+      "criterion": "BETA ready for adversarial testing",
+      "measurement": "All 7 success criteria above met. Manual testing confirms TELOS governance is functioning. Stakeholder approval to proceed with adversarial validation."
+    }
+  ]
+}

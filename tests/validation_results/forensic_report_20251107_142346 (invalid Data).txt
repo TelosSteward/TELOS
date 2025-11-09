@@ -1,0 +1,90 @@
+================================================================================
+TELOS FORENSIC VALIDATION REPORT
+================================================================================
+Generated: 2025-11-07T14:23:15.285074
+
+
+================================================================================
+SECTION 1: PROGRESSIVE PRIMACY ATTRACTOR ESTABLISHMENT
+================================================================================
+
+✅ PA CONVERGED at turn 18
+
+Attractor Configuration:
+  Purpose: To validate the TELOS framework for governance persistence, To address technical and methodological concerns about the TELOS framework
+  Scope: Technical implementation of TELOS, Validation framework and methodologies, Federated protocols and privacy, Regulatory positioning and compliance, Grant application assessment and funding
+  Boundaries: Specific implementation details of the TELOS framework, Detailed regulatory compliance standards, Preliminary data showing TELOS outperforms simpler methods, Specific pilot data and real-world validation results
+
+Convergence Metrics:
+  Confidence: 0.000
+  Centroid Stability: 0.000
+  Variance Stability: 0.000
+
+Turn-by-Turn Convergence Log:
+
+  Turn 9: accumulating
+    🔄 Accumulating data... (1 turns, need 3 for initial check)
+
+  Turn 10: accumulating
+    🔄 Accumulating data... (2 turns, need 3 for initial check)
+
+  Turn 11: analyzing
+    📊 Statistical analysis... (turn 3, confidence: 0.40, stable: 0/2)
+
+  Turn 12: analyzing
+    📊 Statistical analysis... (turn 4, confidence: 0.43, stable: 0/2)
+
+  Turn 13: analyzing
+    📊 Statistical analysis... (turn 5, confidence: 0.47, stable: 0/2)
+
+  Turn 14: analyzing
+    📊 Statistical analysis... (turn 6, confidence: 0.85, stable: 0/2)
+
+  Turn 15: analyzing
+    📊 Statistical analysis... (turn 7, confidence: 0.89, stable: 0/2)
+
+  Turn 16: analyzing
+    📊 Statistical analysis... (turn 8, confidence: 0.94, stable: 0/2)
+
+  Turn 17: analyzing
+    📊 Statistical analysis... (turn 9, confidence: 0.96, stable: 0/2)
+
+  Turn 18: converged
+    ⚠️  Converged at safety limit (turn 10)
+
+
+================================================================================
+SECTION 2: INTERVENTION ANALYSIS
+================================================================================
+
+Total Decision Points: 0
+Interventions Applied: 0
+
+
+================================================================================
+SECTION 3: CONVERSATIONAL DNA
+================================================================================
+
+BASELINE BRANCH (No Governance):
+
+
+TELOS BRANCH (Full Governance):
+
+
+================================================================================
+SECTION 4: COMPARATIVE METRICS
+================================================================================
+
+
+================================================================================
+SECTION 5: API CALL LOG
+================================================================================
+
+Total API Calls: 10
+
+Breakdown by Operation:
+  progressive_pa_extraction: 10 calls
+
+================================================================================
+END OF FORENSIC REPORT
+================================================================================

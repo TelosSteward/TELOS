@@ -59,15 +59,15 @@ class StewardPanel:
             if message['role'] == 'assistant':
                 st.markdown(f"""
                 <div class="message-container" style="background-color: rgba(255, 215, 0, 0.1); border: 1px solid #FFD700; border-radius: 8px; padding: 12px; margin-bottom: 15px;">
-                    <strong style="color: #FFD700; font-size: 18px;">Steward:</strong><br>
-                    <span style="color: #FFD700; font-size: 16px; line-height: 1.6;">{message['content']}</span>
+                    <strong style="color: #FFD700; font-size: 19px;">Steward:</strong><br>
+                    <span style="color: #FFD700; font-size: 19px; line-height: 1.6;">{message['content']}</span>
                 </div>
                 """, unsafe_allow_html=True)
             else:
                 st.markdown(f"""
                 <div class="message-container" style="background-color: rgba(255, 255, 255, 0.05); border: 1px solid #666; border-radius: 8px; padding: 12px; margin-bottom: 15px;">
-                    <strong style="color: #e0e0e0; font-size: 18px;">You:</strong><br>
-                    <span style="color: #e0e0e0; font-size: 16px; line-height: 1.6;">{message['content']}</span>
+                    <strong style="color: #e0e0e0; font-size: 19px;">You:</strong><br>
+                    <span style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">{message['content']}</span>
                 </div>
                 """, unsafe_allow_html=True)
 

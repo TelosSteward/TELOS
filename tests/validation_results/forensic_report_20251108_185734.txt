@@ -1,0 +1,134 @@
+================================================================================
+TELOS FORENSIC VALIDATION REPORT
+================================================================================
+Generated: 2025-11-08T18:56:04.594969
+
+
+================================================================================
+SECTION 1: PROGRESSIVE PRIMACY ATTRACTOR ESTABLISHMENT
+================================================================================
+
+✅ PA CONVERGED at turn 0
+
+Attractor Configuration:
+  Purpose: Create an engaging and informative talk abstract and title, Refine the content to focus on the history and evolution of monorepo tooling
+  Scope: Monorepo tooling history and evolution, Benefits and drawbacks of monorepos, Popular monorepo tools (Lerna, Yarn Workspaces, Nx, Rush), Best practices for implementing and maintaining monorepos, Versioning and testing in monorepos, Advanced techniques for scaling and optimizing monorepos
+  Boundaries: Avoiding deployment strategies, Avoiding non-technical aspects of monorepos, Avoiding specific company case studies or examples
+
+Convergence Metrics:
+  Confidence: 0.000
+  Centroid Stability: 0.000
+  Variance Stability: 0.000
+
+Turn-by-Turn Convergence Log:
+
+
+================================================================================
+SECTION 2: INTERVENTION ANALYSIS
+================================================================================
+
+Total Decision Points: 3
+Interventions Applied: 3
+
+  Turn 1:
+    ✅ No intervention needed (F=0.755)
+
+  Turn 2:
+    🚨 DRIFT DETECTED
+    Pre-intervention fidelity: 0.747
+    Post-intervention fidelity: 0.842
+    Improvement: +0.095
+
+  Turn 3:
+    ✅ No intervention needed (F=0.819)
+
+
+================================================================================
+SECTION 3: CONVERSATIONAL DNA
+================================================================================
+
+BASELINE BRANCH (No Governance):
+
+  Turn 1:
+    User: Can you update the title to start with Monorepo Mania again?...
+    Assistant: Sure, I can help with that. Please provide the current title or the content you'd like to update, an...
+    Fidelity: 0.755
+
+  Turn 2:
+    User: Can you simplify the subtitle a bit?...
+    Assistant: Of course! Please provide the current subtitle or the content you'd like to simplify, and I'll make ...
+    Fidelity: 0.729
+
+  Turn 3:
+    User: Can you add some buzzwords to the abstract and remove the mention of rush?...
+    Assistant: Certainly! Please provide the current abstract or the content you'd like to update, and I'll incorpo...
+    Fidelity: 0.742
+
+
+TELOS BRANCH (Full Governance):
+
+  Turn 1:
+    User: Can you update the title to start with Monorepo Mania again?...
+    Assistant: Sure, here's an updated title that starts with "Monorepo Mania":
+
+**Monorepo Mania: The Ultimate Gui...
+    Fidelity: 0.755
+    Intervention: YES
+
+  Turn 2:
+    User: Can you simplify the subtitle a bit?...
+    Assistant: Sure, let's refine the talk abstract and title to better align with the history and evolution of mon...
+    Fidelity: 0.842
+    Intervention: YES
+
+  Turn 3:
+    User: Can you add some buzzwords to the abstract and remove the mention of rush?...
+    Assistant: Certainly! Here's an updated version of the abstract with some buzzwords added and the mention of Ru...
+    Fidelity: 0.819
+    Intervention: YES
+
+
+================================================================================
+SECTION 4: COMPARATIVE METRICS
+================================================================================
+
+Aggregate Results:
+  Average Baseline Fidelity: 0.742
+  Average TELOS Fidelity: 0.806
+  Average ΔF (TELOS improvement): +0.064
+  Percentage Improvement: +8.6%
+
+Per-Turn Comparison:
+
+  Turn 1:
+    Baseline: 0.755
+    TELOS: 0.755
+    ΔF: +0.000
+    Intervention: YES
+
+  Turn 2:
+    Baseline: 0.729
+    TELOS: 0.842
+    ΔF: +0.113
+    Intervention: YES
+
+  Turn 3:
+    Baseline: 0.742
+    TELOS: 0.819
+    ΔF: +0.077
+    Intervention: YES
+
+
+================================================================================
+SECTION 5: API CALL LOG
+================================================================================
+
+Total API Calls: 7
+
+Breakdown by Operation:
+  generate_response: 6 calls
+  apply_intervention: 1 calls
+
+================================================================================
+END OF FORENSIC REPORT
+================================================================================

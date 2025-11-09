@@ -1,0 +1,132 @@
+================================================================================
+TELOS FORENSIC VALIDATION REPORT
+================================================================================
+Generated: 2025-11-08T18:47:23.433651
+
+
+================================================================================
+SECTION 1: PROGRESSIVE PRIMACY ATTRACTOR ESTABLISHMENT
+================================================================================
+
+✅ PA CONVERGED at turn 0
+
+Attractor Configuration:
+  Purpose: To create a comprehensive guide on branding, To structure and organize content for a book on branding
+  Scope: Branding fundamentals, Brand identity development, Brand strategy, Brand implementation and extension, Brand measurement and maintenance, Future trends in branding
+  Boundaries: Specific marketing tactics, Detailed design principles, In-depth legal advice on intellectual property, Personal branding, Product development
+
+Convergence Metrics:
+  Confidence: 0.000
+  Centroid Stability: 0.000
+  Variance Stability: 0.000
+
+Turn-by-Turn Convergence Log:
+
+
+================================================================================
+SECTION 2: INTERVENTION ANALYSIS
+================================================================================
+
+Total Decision Points: 3
+Interventions Applied: 3
+
+  Turn 1:
+    🚨 DRIFT DETECTED
+    Pre-intervention fidelity: 0.720
+    Post-intervention fidelity: 0.824
+    Improvement: +0.104
+
+  Turn 2:
+    ✅ No intervention needed (F=0.771)
+
+  Turn 3:
+    ✅ No intervention needed (F=0.756)
+
+
+================================================================================
+SECTION 3: CONVERSATIONAL DNA
+================================================================================
+
+BASELINE BRANCH (No Governance):
+
+  Turn 1:
+    User: suggest sections for chapter 3...
+    Assistant: Certainly! The structure of Chapter 3 will depend on the overall theme and content of your book or d...
+    Fidelity: 0.718
+
+  Turn 2:
+    User: suggest sections for chapter 4...
+    Assistant: Sure, here are some suggested sections for Chapter 4, which could be tailored to fit various types o...
+    Fidelity: 0.715
+
+  Turn 3:
+    User: suggest sections for chapter 5...
+    Assistant: Certainly! Chapter 5 often serves as a culmination or a significant turning point in a document, boo...
+    Fidelity: 0.714
+
+
+TELOS BRANCH (Full Governance):
+
+  Turn 1:
+    User: suggest sections for chapter 3...
+    Assistant: Sure, let's create a comprehensive guide on branding that aligns with the stated purpose and scope. ...
+    Fidelity: 0.824
+    Intervention: YES
+
+  Turn 2:
+    User: suggest sections for chapter 4...
+    Assistant: Certainly! Chapter 4 could focus on the practical aspects of implementing a branding strategy. Here ...
+    Fidelity: 0.771
+    Intervention: YES
+
+  Turn 3:
+    User: suggest sections for chapter 5...
+    Assistant: For Chapter 5, let's focus on the digital aspects of branding, as digital platforms have become inte...
+    Fidelity: 0.756
+    Intervention: YES
+
+
+================================================================================
+SECTION 4: COMPARATIVE METRICS
+================================================================================
+
+Aggregate Results:
+  Average Baseline Fidelity: 0.716
+  Average TELOS Fidelity: 0.784
+  Average ΔF (TELOS improvement): +0.068
+  Percentage Improvement: +9.5%
+
+Per-Turn Comparison:
+
+  Turn 1:
+    Baseline: 0.718
+    TELOS: 0.824
+    ΔF: +0.106
+    Intervention: YES
+
+  Turn 2:
+    Baseline: 0.715
+    TELOS: 0.771
+    ΔF: +0.057
+    Intervention: YES
+
+  Turn 3:
+    Baseline: 0.714
+    TELOS: 0.756
+    ΔF: +0.042
+    Intervention: YES
+
+
+================================================================================
+SECTION 5: API CALL LOG
+================================================================================
+
+Total API Calls: 7
+
+Breakdown by Operation:
+  generate_response: 6 calls
+  apply_intervention: 1 calls
+
+================================================================================
+END OF FORENSIC REPORT
+================================================================================

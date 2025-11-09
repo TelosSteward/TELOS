@@ -1,0 +1,155 @@
+================================================================================
+TELOS FORENSIC VALIDATION REPORT
+================================================================================
+Generated: 2025-11-08T17:05:29.684281
+
+
+================================================================================
+SECTION 1: PROGRESSIVE PRIMACY ATTRACTOR ESTABLISHMENT
+================================================================================
+
+✅ PA CONVERGED at turn 0
+
+Attractor Configuration:
+  Purpose: To understand the differences and complementarity of functional and structural testing in glaucoma diagnostics, To explore the potential of eye-tracking technology in revolutionizing vision care
+  Scope: Glaucoma diagnostics, Functional vs. structural testing, Optometrists' practices, Eye-tracking technology, Potential applications of retinal sensitivity measurement
+  Boundaries: Specific medical treatments for glaucoma, Detailed technical specifications of current diagnostic devices, Personal anecdotes or case studies
+
+Convergence Metrics:
+  Confidence: 0.000
+  Centroid Stability: 0.000
+  Variance Stability: 0.000
+
+Turn-by-Turn Convergence Log:
+
+
+================================================================================
+SECTION 2: INTERVENTION ANALYSIS
+================================================================================
+
+Total Decision Points: 4
+Interventions Applied: 4
+
+  Turn 1:
+    🚨 DRIFT DETECTED
+    Pre-intervention fidelity: 0.702
+    Post-intervention fidelity: 0.879
+    Improvement: +0.178
+
+  Turn 2:
+    ✅ No intervention needed (F=0.766)
+
+  Turn 3:
+    ✅ No intervention needed (F=0.759)
+
+  Turn 4:
+    🚨 DRIFT DETECTED
+    Pre-intervention fidelity: 0.686
+    Post-intervention fidelity: 0.853
+    Improvement: +0.167
+
+
+================================================================================
+SECTION 3: CONVERSATIONAL DNA
+================================================================================
+
+BASELINE BRANCH (No Governance):
+
+  Turn 1:
+    User: Wouldn't be great if such a device existed?...
+    Assistant: It sounds like you're referring to a hypothetical device, but I'm not sure exactly what kind of devi...
+    Fidelity: 0.694
+
+  Turn 2:
+    User: Can you give me a rough estimation of how many million people could benefit from this new device? an...
+    Assistant: To provide a rough estimation of how many people could benefit from a new device and the potential c...
+    Fidelity: 0.693
+
+  Turn 3:
+    User: If the device would be widely available and affordable, would this be a market worth billions?...
+    Assistant: If a device like a Universal Translator or a Personal Assistant AI were widely available and afforda...
+    Fidelity: 0.686
+
+  Turn 4:
+    User: That was very insightful, thanks and goodnight!...
+    Assistant: Goodnight! It was a pleasure assisting you. If you have more questions in the future, feel free to a...
+    Fidelity: 0.684
+
+
+TELOS BRANCH (Full Governance):
+
+  Turn 1:
+    User: Wouldn't be great if such a device existed?...
+    Assistant: It sounds like you're interested in understanding the differences and complementarity of functional ...
+    Fidelity: 0.879
+    Intervention: YES
+
+  Turn 2:
+    User: Can you give me a rough estimation of how many million people could benefit from this new device? an...
+    Assistant: To estimate the number of people who could benefit from a new glaucoma diagnostic device and the pot...
+    Fidelity: 0.766
+    Intervention: YES
+
+  Turn 3:
+    User: If the device would be widely available and affordable, would this be a market worth billions?...
+    Assistant: If a new glaucoma diagnostic device were widely available and affordable, it could indeed represent ...
+    Fidelity: 0.759
+    Intervention: YES
+
+  Turn 4:
+    User: That was very insightful, thanks and goodnight!...
+    Assistant: It's been great discussing glaucoma diagnostics and the potential of eye-tracking technology with yo...
+    Fidelity: 0.853
+    Intervention: YES
+
+
+================================================================================
+SECTION 4: COMPARATIVE METRICS
+================================================================================
+
+Aggregate Results:
+  Average Baseline Fidelity: 0.689
+  Average TELOS Fidelity: 0.814
+  Average ΔF (TELOS improvement): +0.125
+  Percentage Improvement: +18.1%
+
+Per-Turn Comparison:
+
+  Turn 1:
+    Baseline: 0.694
+    TELOS: 0.879
+    ΔF: +0.185
+    Intervention: YES
+
+  Turn 2:
+    Baseline: 0.693
+    TELOS: 0.766
+    ΔF: +0.072
+    Intervention: YES
+
+  Turn 3:
+    Baseline: 0.686
+    TELOS: 0.759
+    ΔF: +0.073
+    Intervention: YES
+
+  Turn 4:
+    Baseline: 0.684
+    TELOS: 0.853
+    ΔF: +0.169
+    Intervention: YES
+
+
+================================================================================
+SECTION 5: API CALL LOG
+================================================================================
+
+Total API Calls: 10
+
+Breakdown by Operation:
+  generate_response: 8 calls
+  apply_intervention: 2 calls
+
+================================================================================
+END OF FORENSIC REPORT
+================================================================================

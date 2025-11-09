@@ -1,0 +1,132 @@
+================================================================================
+TELOS FORENSIC VALIDATION REPORT
+================================================================================
+Generated: 2025-11-08T18:57:44.666621
+
+
+================================================================================
+SECTION 1: PROGRESSIVE PRIMACY ATTRACTOR ESTABLISHMENT
+================================================================================
+
+✅ PA CONVERGED at turn 0
+
+Attractor Configuration:
+  Purpose: Provide a list of thrash metal songs meeting specific criteria, Clarify and refine the criteria for the song list
+  Scope: Thrash metal music, Song tempo (BPM), Exclusion of specific bands (the 'big 4'), Genre classification, Song selection criteria
+  Boundaries: Songs from the 'big 4' thrash metal bands (Metallica, Slayer, Megadeth, Anthrax), Non-thrash metal bands, Songs slower than 90 BPM, Including multiple songs from the same band
+
+Convergence Metrics:
+  Confidence: 0.000
+  Centroid Stability: 0.000
+  Variance Stability: 0.000
+
+Turn-by-Turn Convergence Log:
+
+
+================================================================================
+SECTION 2: INTERVENTION ANALYSIS
+================================================================================
+
+Total Decision Points: 3
+Interventions Applied: 3
+
+  Turn 1:
+    🚨 DRIFT DETECTED
+    Pre-intervention fidelity: 0.697
+    Post-intervention fidelity: 0.793
+    Improvement: +0.096
+
+  Turn 2:
+    ✅ No intervention needed (F=0.761)
+
+  Turn 3:
+    ✅ No intervention needed (F=0.766)
+
+
+================================================================================
+SECTION 3: CONVERSATIONAL DNA
+================================================================================
+
+BASELINE BRANCH (No Governance):
+
+  Turn 1:
+    User: You included Megadeth when I told you not to...
+    Assistant: I apologize for that oversight. I'll make sure to avoid mentioning Megadeth in our conversation. Let...
+    Fidelity: 0.697
+
+  Turn 2:
+    User: Is "I am the war" a song by Flotsam and Jetsam? I thought it was a Sodom song...
+    Assistant: You are correct. "I Am the War" is a song by the German thrash metal band Sodom, not Flotsam and Jet...
+    Fidelity: 0.712
+
+  Turn 3:
+    User: You included Death Angel twice...
+    Assistant: I apologize for that mistake. I'll ensure that I avoid mentioning Death Angel as well. Let's move on...
+    Fidelity: 0.685
+
+
+TELOS BRANCH (Full Governance):
+
+  Turn 1:
+    User: You included Megadeth when I told you not to...
+    Assistant: I apologize for the previous drift. Let's get back on track and focus on creating that list of thras...
+    Fidelity: 0.793
+    Intervention: YES
+
+  Turn 2:
+    User: Is "I am the war" a song by Flotsam and Jetsam? I thought it was a Sodom song...
+    Assistant: You are correct that "I Am the War" is a song by Sodom, not Flotsam and Jetsam. Thank you for pointi...
+    Fidelity: 0.761
+    Intervention: YES
+
+  Turn 3:
+    User: You included Death Angel twice...
+    Assistant: I apologize for the oversight. Let's correct that and provide a refined list of thrash metal songs, ...
+    Fidelity: 0.766
+    Intervention: YES
+
+
+================================================================================
+SECTION 4: COMPARATIVE METRICS
+================================================================================
+
+Aggregate Results:
+  Average Baseline Fidelity: 0.698
+  Average TELOS Fidelity: 0.773
+  Average ΔF (TELOS improvement): +0.075
+  Percentage Improvement: +10.8%
+
+Per-Turn Comparison:
+
+  Turn 1:
+    Baseline: 0.697
+    TELOS: 0.793
+    ΔF: +0.096
+    Intervention: YES
+
+  Turn 2:
+    Baseline: 0.712
+    TELOS: 0.761
+    ΔF: +0.048
+    Intervention: YES
+
+  Turn 3:
+    Baseline: 0.685
+    TELOS: 0.766
+    ΔF: +0.081
+    Intervention: YES
+
+
+================================================================================
+SECTION 5: API CALL LOG
+================================================================================
+
+Total API Calls: 7
+
+Breakdown by Operation:
+  generate_response: 6 calls
+  apply_intervention: 1 calls
+
+================================================================================
+END OF FORENSIC REPORT
+================================================================================

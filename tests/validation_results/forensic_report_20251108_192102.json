@@ -1,0 +1,143 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-08T19:19:52.526133",
+    "model": "mistral-small-2501",
+    "embedding_provider": "Mistral API (mistral-embed, 10s delay)",
+    "session_file": "sharegpt_filtered_49.json"
+  },
+  "pa_establishment": {
+    "turn_by_turn_convergence": [],
+    "convergence_summary": {
+      "converged": "yes",
+      "convergence_turn": 0,
+      "method": "pre-established-from-session",
+      "attractor": {
+        "purpose": [
+          "Generate band name suggestions",
+          "Provide creative input based on musical preferences"
+        ],
+        "scope": [
+          "Band naming",
+          "Music genres (classic rock, hard rock)",
+          "Creative brainstorming",
+          "Song analysis"
+        ],
+        "boundaries": [
+          "Avoiding names that are too similar to existing bands",
+          "Avoiding names that might be confused with other brands or products",
+          "Not discussing specific band members or personal details",
+          "Not delving into the creative process or songwriting"
+        ]
+      },
+      "confidence": 1.0,
+      "centroid_stability": 1.0,
+      "variance_stability": 1.0
+    }
+  },
+  "counterfactual_branches": [],
+  "intervention_analysis": {
+    "decision_points": [
+      {
+        "turn": 1,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.6867716886622915,
+        "post_intervention_fidelity": 0.7964618742514397,
+        "improvement": 0.10969018558914811,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 2,
+        "drift_detected": "no",
+        "fidelity": 0.7667964524158177,
+        "intervention_type": null
+      }
+    ],
+    "api_call_log": [
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      }
+    ]
+  },
+  "conversational_dna": {
+    "baseline_branches": [
+      {
+        "turn": 1,
+        "user_input": "more suggestions please",
+        "assistant_response": "Of course! Here are some suggestions across various categories:\n\n### Productivity\n1. **Time Management**: Use the Pomodoro Technique to break your work into 25-minute intervals with 5-minute breaks.\n2. **Task Management**: Apps like Trello, Asana, or Todoist can help you organize your tasks and projects.\n3. **Focus**: Use tools like Forest or Focus@Will to stay focused and minimize distractions.\n\n### Health and Wellness\n1. **Exercise**: Incorporate a daily 15-minute walk or yoga session into your routine.\n2. **Hydration**: Set reminders to drink water throughout the day.\n3. **Mindfulness**: Practice meditation or deep breathing exercises for 10 minutes a day.\n\n### Learning and Growth\n1. **Reading**: Set aside 30 minutes a day to read a book or articles on topics you're interested in.\n2. **Online Courses**: Platforms like Coursera, Udemy, or Khan Academy offer courses on a wide range of subjects.\n3. **Language Learning**: Use apps like Duolingo or Babbel to learn a new language.\n\n### Financial Management\n1. **Budgeting**: Use apps like Mint or YNAB (You Need A Budget) to track your spending and savings.\n2. **Investing**: Consider starting with low-risk investments like index funds or ETFs.\n3. **Emergency Fund**: Aim to save 3-6",
+        "fidelity": 0.6797726275684001
+      },
+      {
+        "turn": 2,
+        "user_input": "here are some of the songs we play. Interstate Love Song\nHurts So Good,\nTNT,\nTush,\nYou May Be Right,\nBreaking the Law,\nKryptonite,\nKeep Your Hands to yourself,\nRocky Mountain Way,\nLiving After Midnight,\nMan in the Box,\nBlue on Black,\nChina Grove,\nGimme Three Steps,\nAmerican Band,\nWhole Lotta Rosie,\nBorn to Be Wild,\nImmigrant Song,",
+        "assistant_response": "It looks like you have a fantastic playlist with a mix of classic rock and hard rock tunes! Here are some additional song suggestions that might fit well with your current list:\n\n### Classic Rock\n1. **\"Smoke on the Water\" by Deep Purple**\n2. **\"Sweet Child O' Mine\" by Guns N' Roses**\n3. **\"Back in Black\" by AC/DC**\n4. **\"Livin' on a Prayer\" by Bon Jovi**\n5. **\"Crazy Train\" by Ozzy Osbourne**\n6. **\"Paradise City\" by Guns N' Roses**\n7. **\"Enter Sandman\" by Metallica**\n8. **\"Welcome to the Jungle\" by Guns N' Roses**\n9. **\"Highway to Hell\" by AC/DC**\n10. **\"Don't Stop Believin'\" by Journey**\n\n### Hard Rock\n1. **\"Crazy\" by Aerosmith**\n2. **\"Walk This Way\" by Aerosmith**\n3. **\"Sweet Emotion\" by Aerosmith**\n4. **\"Crazy Train\" by Ozzy Osbourne**\n5. **\"Master of Puppets\" by Metallica**\n6. **\"Battery\" by Metallica**\n7. **\"The Final Countdown\" by Europe**\n8. **\"Thunderstruck\" by AC/DC**\n9. **\"Livin' on a Prayer\" by Bon Jovi**\n10. **\"Black\" by Pearl Jam**\n\n### Blues Rock\n1. **\"Cross",
+        "fidelity": 0.719520524464765
+      }
+    ],
+    "telos_branches": [
+      {
+        "turn": 1,
+        "user_input": "more suggestions please",
+        "assistant_response": "Sure thing! Let's dive into some band name suggestions and creative input based on your musical preferences, focusing on classic and hard rock genres.\n\n### Band Name Suggestions\n\n1. **Classic Rock Vibes**:\n   - **Stardust Riders**: Evokes a sense of nostalgia and adventure.\n   - **Midnight Echoes**: Perfect for a band with a mysterious and powerful sound.\n   - **Golden Sunrise**: Suggests a fresh start and a bright future.\n   - **Vintage Vipers**: Combines a classic feel with a modern edge.\n   - **Rusty Reverb**: A nod to the gritty, raw sound of classic rock.\n\n2. **Hard Rock Energy**:\n   - **Ironclad Fury**: Conveys strength and intensity.\n   - **Thunderbolt Riot**: Perfect for a high-energy, rebellious band.\n   - **Steelheart Rebellion**: Suggests a fierce and unyielding spirit.\n   - **Darkfire Dawn**: Combines darkness and light, perfect for a band with a dramatic flair.\n   - **Rage of the Titans**: Evokes epic, mythical proportions.\n\n### Creative Input Based on Musical Preferences\n\n#### Song Analysis\nLet's take a classic rock song like \"Stairway to Heaven\" by Led Zeppelin. This song is a masterclass in storytelling and musical progression. It starts with a soft, acoustic intro that builds into a powerful, electric climax. The lyrics are",
+        "fidelity": 0.7964618742514397,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "user_input": "here are some of the songs we play. Interstate Love Song\nHurts So Good,\nTNT,\nTush,\nYou May Be Right,\nBreaking the Law,\nKryptonite,\nKeep Your Hands to yourself,\nRocky Mountain Way,\nLiving After Midnight,\nMan in the Box,\nBlue on Black,\nChina Grove,\nGimme Three Steps,\nAmerican Band,\nWhole Lotta Rosie,\nBorn to Be Wild,\nImmigrant Song,",
+        "assistant_response": "Great! Based on the list of songs you've provided, it's clear you have a diverse set of influences ranging from classic rock to hard rock and even some Southern rock. Here are some band name suggestions and creative input tailored to your repertoire:\n\n### Band Name Suggestions\n\n1. **Classic and Hard Rock Fusion**:\n   - **Highway Rebels**: Combines the classic rock feel with a rebellious edge.\n   - **Midnight Thunder**: Evokes a sense of power and mystery.\n   - **Rocky Road Riders**: Perfect for a band that loves to rock and roll.\n   - **Steelheart Vagabonds**: Suggests a hard-rocking, adventurous spirit.\n   - **Wildfire Riders**: Conveys a sense of wild, untamed energy.\n\n2. **Southern Rock and Classic Rock**:\n   - **Southern Thunder**: Combines the Southern rock feel with a powerful, hard-rocking edge.\n   - **Rebel Riders**: Perfect for a band with a rebellious spirit and a love for classic rock.\n   - **Highway Hellraisers**: Evokes a sense of adventure and rebellion.\n   - **Midnight Outlaws**: Suggests a mysterious, outlaw vibe.\n   - **Rocky Mountain Renegades**: Combines the classic rock feel with a nod to the Rocky Mountains.\n\n### Creative Input Based on Your Repertoire\n\n#### Setlist and Performance Tips\nGiven the variety of songs you play",
+        "fidelity": 0.7667964524158177,
+        "intervention_applied": "no"
+      }
+    ]
+  },
+  "comparative_metrics": {
+    "per_turn_fidelity": [],
+    "branch_comparisons": [
+      {
+        "turn": 1,
+        "baseline_fidelity": 0.6797726275684001,
+        "telos_fidelity": 0.7964618742514397,
+        "delta_f": 0.1166892466830396,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "baseline_fidelity": 0.719520524464765,
+        "telos_fidelity": 0.7667964524158177,
+        "delta_f": 0.04727592795105273,
+        "intervention_applied": "no"
+      }
+    ]
+  }
+}

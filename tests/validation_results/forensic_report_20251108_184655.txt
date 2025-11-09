@@ -1,0 +1,112 @@
+================================================================================
+TELOS FORENSIC VALIDATION REPORT
+================================================================================
+Generated: 2025-11-08T18:45:29.729589
+
+
+================================================================================
+SECTION 1: PROGRESSIVE PRIMACY ATTRACTOR ESTABLISHMENT
+================================================================================
+
+✅ PA CONVERGED at turn 0
+
+Attractor Configuration:
+  Purpose: Simulate a city building game, Track and update city statistics based on player actions
+  Scope: City population management, Funds and income tracking, Building construction and upgrades
+  Boundaries: Complex economic simulations, Advanced city planning strategies, Multiplayer interactions
+
+Convergence Metrics:
+  Confidence: 0.000
+  Centroid Stability: 0.000
+  Variance Stability: 0.000
+
+Turn-by-Turn Convergence Log:
+
+
+================================================================================
+SECTION 2: INTERVENTION ANALYSIS
+================================================================================
+
+Total Decision Points: 2
+Interventions Applied: 2
+
+  Turn 1:
+    🚨 DRIFT DETECTED
+    Pre-intervention fidelity: 0.742
+    Post-intervention fidelity: 0.785
+    Improvement: +0.043
+
+  Turn 2:
+    ✅ No intervention needed (F=0.756)
+
+
+================================================================================
+SECTION 3: CONVERSATIONAL DNA
+================================================================================
+
+BASELINE BRANCH (No Governance):
+
+  Turn 1:
+    User: construct 1 hospital and 1 police station, then wait 10 times for income....
+    Assistant: To simulate the construction of a hospital and a police station, and then wait for income, we can br...
+    Fidelity: 0.737
+
+  Turn 2:
+    User: Generate new buildings available at 200, 300, and 500 population but do not display them to me until...
+    Assistant: Sure, let's create a simulation where new buildings become available at specific population mileston...
+    Fidelity: 0.759
+
+
+TELOS BRANCH (Full Governance):
+
+  Turn 1:
+    User: construct 1 hospital and 1 police station, then wait 10 times for income....
+    Assistant: Sure, let's focus on simulating a city-building game where we track and update city statistics based...
+    Fidelity: 0.785
+    Intervention: YES
+
+  Turn 2:
+    User: Generate new buildings available at 200, 300, and 500 population but do not display them to me until...
+    Assistant: Sure, let's add some more complexity to the city-building simulation by introducing new buildings th...
+    Fidelity: 0.756
+    Intervention: YES
+
+
+================================================================================
+SECTION 4: COMPARATIVE METRICS
+================================================================================
+
+Aggregate Results:
+  Average Baseline Fidelity: 0.748
+  Average TELOS Fidelity: 0.770
+  Average ΔF (TELOS improvement): +0.022
+  Percentage Improvement: +3.0%
+
+Per-Turn Comparison:
+
+  Turn 1:
+    Baseline: 0.737
+    TELOS: 0.785
+    ΔF: +0.047
+    Intervention: YES
+
+  Turn 2:
+    Baseline: 0.759
+    TELOS: 0.756
+    ΔF: -0.003
+    Intervention: YES
+
+
+================================================================================
+SECTION 5: API CALL LOG
+================================================================================
+
+Total API Calls: 5
+
+Breakdown by Operation:
+  generate_response: 4 calls
+  apply_intervention: 1 calls
+
+================================================================================
+END OF FORENSIC REPORT
+================================================================================

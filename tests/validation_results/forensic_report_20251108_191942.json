@@ -1,0 +1,151 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-08T19:18:22.566544",
+    "model": "mistral-small-2501",
+    "embedding_provider": "Mistral API (mistral-embed, 10s delay)",
+    "session_file": "sharegpt_filtered_48.json"
+  },
+  "pa_establishment": {
+    "turn_by_turn_convergence": [],
+    "convergence_summary": {
+      "converged": "yes",
+      "convergence_turn": 0,
+      "method": "pre-established-from-session",
+      "attractor": {
+        "purpose": [
+          "To format questions and keywords into numbered lists",
+          "To remove items containing brand names, competitors, or proper nouns"
+        ],
+        "scope": [
+          "Ceramic cookware",
+          "Non-stick cookware",
+          "Cookware comparisons",
+          "Cookware safety",
+          "Cookware brands"
+        ],
+        "boundaries": [
+          "Avoiding brand names and competitors",
+          "Not discussing specific years or models",
+          "Not providing personal opinions or recommendations"
+        ]
+      },
+      "confidence": 1.0,
+      "centroid_stability": 1.0,
+      "variance_stability": 1.0
+    }
+  },
+  "counterfactual_branches": [],
+  "intervention_analysis": {
+    "decision_points": [
+      {
+        "turn": 1,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.6920031455683905,
+        "post_intervention_fidelity": 0.8051590886388763,
+        "improvement": 0.11315594307048582,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 2,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.7289424672037754,
+        "post_intervention_fidelity": 0.8145340064012632,
+        "improvement": 0.08559153919748774,
+        "intervention_type": "boundary_correction"
+      }
+    ],
+    "api_call_log": [
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      }
+    ]
+  },
+  "conversational_dna": {
+    "baseline_branches": [
+      {
+        "turn": 1,
+        "user_input": "Using the 5 blog titles above, can you provide an AIDA score out of 100 for each of the blog titles? It's very important that you give me a score out of 100. I just want the scores in square brackets after each blog title.",
+        "assistant_response": "Sure, here are the AIDA (Attention, Interest, Desire, Action) scores out of 100 for each blog title:\n\n1. \"10 Essential Tips for Improving Your Productivity\" [85]\n2. \"The Ultimate Guide to Mastering Public Speaking\" [90]\n3. \"How to Start a Successful Blog in 2024\" [88]\n4. \"The Benefits of Meditation for Mental Health\" [80]\n5. \"Top 5 Tools for Effective Time Management\" [82]",
+        "fidelity": 0.6924539733509971
+      },
+      {
+        "turn": 2,
+        "user_input": "Please extract the blog title with the highest score",
+        "assistant_response": "The blog title with the highest AIDA score is:\n\n\"The Ultimate Guide to Mastering Public Speaking\" [90]",
+        "fidelity": 0.6861346502016531
+      }
+    ],
+    "telos_branches": [
+      {
+        "turn": 1,
+        "user_input": "Using the 5 blog titles above, can you provide an AIDA score out of 100 for each of the blog titles? It's very important that you give me a score out of 100. I just want the scores in square brackets after each blog title.",
+        "assistant_response": "Here are some formatted questions and keywords related to your specified scope, presented as numbered lists. I've removed any items that contain brand names, competitors, or proper nouns.\n\n**Questions:**\n\n1. What are the benefits of using ceramic cookware?\n2. How does non-stick cookware work?\n3. What are the key differences between ceramic and non-stick cookware?\n4. How can I safely use and maintain my cookware?\n5. What are the potential health risks associated with cookware?\n6. How do I compare different types of cookware materials?\n7. What are the best practices for cleaning and storing cookware?\n8. How can I determine if my cookware is safe for high-heat cooking?\n9. What are the advantages and disadvantages of different cookware types?\n10. How can I extend the lifespan of my cookware?\n\n**Keywords:**\n\n1. Ceramic cookware\n2. Non-stick cookware\n3. Cookware comparisons\n4. Cookware safety\n5. Cookware materials\n6. Cookware maintenance\n7. High-heat cooking\n8. Cookware cleaning\n9. Cookware storage\n10. Cookware longevity\n11. Cookware health risks\n12. Cookware best practices",
+        "fidelity": 0.8051590886388763,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "user_input": "Please extract the blog title with the highest score",
+        "assistant_response": "Sure, let's focus on formatting the questions and keywords related to ceramic cookware, non-stick cookware, cookware comparisons, cookware safety, and cookware brands, while removing any brand names, competitors, or proper nouns.\n\n### Questions:\n1. What are the benefits of using ceramic cookware?\n2. How does non-stick cookware compare to ceramic cookware?\n3. What are the key differences between ceramic and non-stick cookware?\n4. Is ceramic cookware safe for cooking?\n5. How do you properly clean and maintain ceramic cookware?\n6. What are the health risks associated with non-stick cookware?\n7. How can you safely use non-stick cookware?\n8. What are the best practices for storing cookware?\n9. How do you choose the right cookware for your kitchen?\n10. What are the safety considerations when using cookware?\n\n### Keywords:\n1. Ceramic cookware\n2. Non-stick cookware\n3. Cookware comparisons\n4. Cookware safety\n5. Cookware maintenance\n6. Cookware health risks\n7. Cookware cleaning\n8. Cookware storage\n9. Cookware selection\n10. Cookware longevity\n\nThis should help in focusing on the intended purpose and scope while keeping the information relevant and useful.",
+        "fidelity": 0.8145340064012632,
+        "intervention_applied": "yes"
+      }
+    ]
+  },
+  "comparative_metrics": {
+    "per_turn_fidelity": [],
+    "branch_comparisons": [
+      {
+        "turn": 1,
+        "baseline_fidelity": 0.6924539733509971,
+        "telos_fidelity": 0.8051590886388763,
+        "delta_f": 0.11270511528787919,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "baseline_fidelity": 0.6861346502016531,
+        "telos_fidelity": 0.8145340064012632,
+        "delta_f": 0.12839935619961007,
+        "intervention_applied": "yes"
+      }
+    ]
+  }
+}

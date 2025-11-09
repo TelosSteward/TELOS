@@ -1,0 +1,195 @@
+================================================================================
+TELOS FORENSIC VALIDATION REPORT
+================================================================================
+Generated: 2025-11-08T16:56:49.405627
+
+
+================================================================================
+SECTION 1: PROGRESSIVE PRIMACY ATTRACTOR ESTABLISHMENT
+================================================================================
+
+✅ PA CONVERGED at turn 0
+
+Attractor Configuration:
+  Purpose: Create SEO-friendly product descriptions, Generate marketing headlines, Develop a brand statement
+  Scope: Product description writing, Marketing and advertising, Branding and positioning, Travel and leisure products
+  Boundaries: Technical specifications of the motorhome, Pricing and sales strategies, Customer reviews and testimonials
+
+Convergence Metrics:
+  Confidence: 0.000
+  Centroid Stability: 0.000
+  Variance Stability: 0.000
+
+Turn-by-Turn Convergence Log:
+
+
+================================================================================
+SECTION 2: INTERVENTION ANALYSIS
+================================================================================
+
+Total Decision Points: 5
+Interventions Applied: 5
+
+  Turn 1:
+    🚨 DRIFT DETECTED
+    Pre-intervention fidelity: 0.710
+    Post-intervention fidelity: 0.767
+    Improvement: +0.057
+
+  Turn 2:
+    🚨 DRIFT DETECTED
+    Pre-intervention fidelity: 0.701
+    Post-intervention fidelity: 0.766
+    Improvement: +0.064
+
+  Turn 3:
+    🚨 DRIFT DETECTED
+    Pre-intervention fidelity: 0.743
+    Post-intervention fidelity: 0.794
+    Improvement: +0.051
+
+  Turn 4:
+    🚨 DRIFT DETECTED
+    Pre-intervention fidelity: 0.715
+    Post-intervention fidelity: 0.776
+    Improvement: +0.061
+
+  Turn 5:
+    ✅ No intervention needed (F=0.751)
+
+
+================================================================================
+SECTION 3: CONVERSATIONAL DNA
+================================================================================
+
+BASELINE BRANCH (No Governance):
+
+  Turn 1:
+    User: write a marketing intro for Aurora Linens...
+    Assistant: **Welcome to Aurora Linens: Where Comfort Meets Elegance**
+
+At Aurora Linens, we believe that your h...
+    Fidelity: 0.709
+
+  Turn 2:
+    User: write two sentences selling Aurora Linens...
+    Assistant: Experience the ultimate in comfort and style with Aurora Linens, where each piece is crafted with pr...
+    Fidelity: 0.689
+
+  Turn 3:
+    User: rewrite "Upgrade your RV bedding with Aurora Linens, the ultimate in luxury and comfort on the open ...
+    Assistant: **Elevate your RV sleep experience with Aurora Linens, bringing unmatched luxury and comfort to your...
+    Fidelity: 0.740
+
+  Turn 4:
+    User: write a brand history for Aurora Linens...
+    Assistant: **Aurora Linens: A Legacy of Comfort and Craftsmanship**
+
+Aurora Linens was born out of a passion fo...
+    Fidelity: 0.702
+
+  Turn 5:
+    User: add details: founded in 2015, group of partners, empty space in the market, solving the unique probl...
+    Assistant: **Aurora Linens: A Legacy of Comfort and Craftsmanship**
+
+Aurora Linens was founded in 2015 by a gro...
+    Fidelity: 0.716
+
+
+TELOS BRANCH (Full Governance):
+
+  Turn 1:
+    User: write a marketing intro for Aurora Linens...
+    Assistant: Sure, let's revise the response to better align with the purpose of creating SEO-friendly product de...
+    Fidelity: 0.767
+    Intervention: YES
+
+  Turn 2:
+    User: write two sentences selling Aurora Linens...
+    Assistant: Sure, let's break down the response into the specific tasks you mentioned:
+
+### SEO-Friendly Product...
+    Fidelity: 0.766
+    Intervention: YES
+
+  Turn 3:
+    User: rewrite "Upgrade your RV bedding with Aurora Linens, the ultimate in luxury and comfort on the open ...
+    Assistant: Sure, let's focus on creating SEO-friendly product descriptions, generating marketing headlines, and...
+    Fidelity: 0.794
+    Intervention: YES
+
+  Turn 4:
+    User: write a brand history for Aurora Linens...
+    Assistant: ### **Aurora Linens: Elevate Your Travel Experience with Luxurious Comfort**
+
+**SEO-Friendly Product...
+    Fidelity: 0.776
+    Intervention: YES
+
+  Turn 5:
+    User: add details: founded in 2015, group of partners, empty space in the market, solving the unique probl...
+    Assistant: ### **Aurora Linens: Elevate Your Travel Experience with Luxurious Comfort**
+
+**Brand History**
+
+Fou...
+    Fidelity: 0.751
+    Intervention: YES
+
+
+================================================================================
+SECTION 4: COMPARATIVE METRICS
+================================================================================
+
+Aggregate Results:
+  Average Baseline Fidelity: 0.711
+  Average TELOS Fidelity: 0.771
+  Average ΔF (TELOS improvement): +0.060
+  Percentage Improvement: +8.4%
+
+Per-Turn Comparison:
+
+  Turn 1:
+    Baseline: 0.709
+    TELOS: 0.767
+    ΔF: +0.059
+    Intervention: YES
+
+  Turn 2:
+    Baseline: 0.689
+    TELOS: 0.766
+    ΔF: +0.077
+    Intervention: YES
+
+  Turn 3:
+    Baseline: 0.740
+    TELOS: 0.794
+    ΔF: +0.053
+    Intervention: YES
+
+  Turn 4:
+    Baseline: 0.702
+    TELOS: 0.776
+    ΔF: +0.074
+    Intervention: YES
+
+  Turn 5:
+    Baseline: 0.716
+    TELOS: 0.751
+    ΔF: +0.035
+    Intervention: YES
+
+
+================================================================================
+SECTION 5: API CALL LOG
+================================================================================
+
+Total API Calls: 14
+
+Breakdown by Operation:
+  generate_response: 10 calls
+  apply_intervention: 4 calls
+
+================================================================================
+END OF FORENSIC REPORT
+================================================================================

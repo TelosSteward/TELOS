@@ -1,0 +1,2478 @@
+{
+  "timestamp": "2025-11-07T07:00:38.384744",
+  "summary": {
+    "sessions_analyzed": 46,
+    "total_turns": 190,
+    "turns_with_drift": 144,
+    "interventions_applied": 45
+  },
+  "fidelity_metrics": {
+    "native": {
+      "mean": 0.520256046205759,
+      "std": 0.09994552950970075,
+      "n": 144
+    },
+    "telos": {
+      "mean": 0.5300274955598931,
+      "std": 0.07664480543562863,
+      "n": 190
+    },
+    "improvement": {
+      "absolute": 0.009771449354134099,
+      "percentage": 1.8782000565678254
+    }
+  },
+  "statistical_test": {
+    "t_statistic": 1.0082162915700272,
+    "p_value": 0.31408487276222063,
+    "significant": false
+  },
+  "session_results": [
+    {
+      "session_id": "claude_conversation",
+      "total_turns": 46,
+      "pa_established": false,
+      "convergence_turn": 0,
+      "total_interventions": 0,
+      "trigger_turn": 0,
+      "trigger_fidelity": 0,
+      "governance_effective": false,
+      "avg_native_fidelity": 0,
+      "avg_telos_fidelity": 0.5,
+      "avg_improvement": 0.5,
+      "improvement_pct": 0,
+      "turn_metrics": [
+        {
+          "turn": 1,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 2,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 3,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 4,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 5,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 6,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 7,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 8,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 9,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 13,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 14,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 15,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 16,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 17,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 18,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 19,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 20,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 21,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 22,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 23,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 24,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 25,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 26,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 27,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 28,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 29,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 30,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 31,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 32,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 33,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 34,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 35,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 36,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 37,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 38,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 39,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 40,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 41,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 42,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 43,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 44,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 45,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        },
+        {
+          "turn": 46,
+          "fidelity_native": 0,
+          "fidelity_telos": 0.5,
+          "improvement": 0,
+          "improvement_pct": 0,
+          "drift_detected": false,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_1",
+      "total_turns": 3,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.33980703353881836,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.33542420466740924,
+      "avg_telos_fidelity": 0.34126442670822144,
+      "avg_improvement": 0.005840222040812193,
+      "improvement_pct": 1.7411450812272418,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.3315625786781311,
+          "fidelity_telos": 0.3416181206703186,
+          "improvement": 0.0100555419921875,
+          "improvement_pct": 3.032773490988274,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.334741473197937,
+          "fidelity_telos": 0.3236798048019409,
+          "improvement": -0.011061668395996094,
+          "improvement_pct": -3.3045407520971217,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.33996856212615967,
+          "fidelity_telos": 0.3584953546524048,
+          "improvement": 0.018526792526245117,
+          "improvement_pct": 5.449560515354349,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_10",
+      "total_turns": 5,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.7208925485610962,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.6416392207145691,
+      "avg_telos_fidelity": 0.5980205655097961,
+      "avg_improvement": -0.04361865520477304,
+      "improvement_pct": -6.798003269843231,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.6025824546813965,
+          "fidelity_telos": 0.6974238753318787,
+          "improvement": 0.09484142065048218,
+          "improvement_pct": 15.739160659868151,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.5441980957984924,
+          "fidelity_telos": 0.61222904920578,
+          "improvement": 0.0680309534072876,
+          "improvement_pct": 12.501137716674101,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.7281914949417114,
+          "fidelity_telos": 0.5650802850723267,
+          "improvement": -0.16311120986938477,
+          "improvement_pct": -22.399493952128775,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0.6097002029418945,
+          "fidelity_telos": 0.49024754762649536,
+          "improvement": -0.11945265531539917,
+          "improvement_pct": -19.592031417903794,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 13,
+          "fidelity_native": 0.7235238552093506,
+          "fidelity_telos": 0.6251220703125,
+          "improvement": -0.09840178489685059,
+          "improvement_pct": -13.600351140927922,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_11",
+      "total_turns": 5,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.468311071395874,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.4494078040122986,
+      "avg_telos_fidelity": 0.4575393795967102,
+      "avg_improvement": 0.008131575584411632,
+      "improvement_pct": 1.809397948102633,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.44822579622268677,
+          "fidelity_telos": 0.4236133098602295,
+          "improvement": -0.024612486362457275,
+          "improvement_pct": -5.4910910014267325,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.4293106198310852,
+          "fidelity_telos": 0.5020015835762024,
+          "improvement": 0.07269096374511719,
+          "improvement_pct": 16.93202086957874,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.4571903944015503,
+          "fidelity_telos": 0.4701477885246277,
+          "improvement": 0.012957394123077393,
+          "improvement_pct": 2.834135249065822,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0.45469850301742554,
+          "fidelity_telos": 0.42994290590286255,
+          "improvement": -0.02475559711456299,
+          "improvement_pct": -5.444398200188108,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 13,
+          "fidelity_native": 0.4576137065887451,
+          "fidelity_telos": 0.4619913101196289,
+          "improvement": 0.004377603530883789,
+          "improvement_pct": 0.9566154745486933,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_12",
+      "total_turns": 2,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.6622679233551025,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.5945050716400146,
+      "avg_telos_fidelity": 0.6693811416625977,
+      "avg_improvement": 0.07487607002258301,
+      "improvement_pct": 12.594689867998646,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.6056166887283325,
+          "fidelity_telos": 0.6626803874969482,
+          "improvement": 0.05706369876861572,
+          "improvement_pct": 9.422411870524485,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.5833934545516968,
+          "fidelity_telos": 0.6760818958282471,
+          "improvement": 0.09268844127655029,
+          "improvement_pct": 15.887809599745314,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_13",
+      "total_turns": 3,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.48341208696365356,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.4832346240679423,
+      "avg_telos_fidelity": 0.5492282708485922,
+      "avg_improvement": 0.06599364678064984,
+      "improvement_pct": 13.656646997912796,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.49038398265838623,
+          "fidelity_telos": 0.524660587310791,
+          "improvement": 0.034276604652404785,
+          "improvement_pct": 6.989748006570339,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.48137009143829346,
+          "fidelity_telos": 0.5593541860580444,
+          "improvement": 0.07798409461975098,
+          "improvement_pct": 16.20044452424143,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.4779497981071472,
+          "fidelity_telos": 0.5636700391769409,
+          "improvement": 0.0857202410697937,
+          "improvement_pct": 17.934988446334035,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_15",
+      "total_turns": 5,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.5487778186798096,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.5446714997291565,
+      "avg_telos_fidelity": 0.5153186559677124,
+      "avg_improvement": -0.029352843761444092,
+      "improvement_pct": -5.38909118175636,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.5560516715049744,
+          "fidelity_telos": 0.5152609348297119,
+          "improvement": -0.04079073667526245,
+          "improvement_pct": -7.335781684615895,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.5357056856155396,
+          "fidelity_telos": 0.5258523225784302,
+          "improvement": -0.009853363037109375,
+          "improvement_pct": -1.8393239612134429,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.6085822582244873,
+          "fidelity_telos": 0.5291303396224976,
+          "improvement": -0.07945191860198975,
+          "improvement_pct": -13.055247261691019,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0.5136847496032715,
+          "fidelity_telos": 0.48491382598876953,
+          "improvement": -0.028770923614501953,
+          "improvement_pct": -5.6008911373604695,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 13,
+          "fidelity_native": 0.5093331336975098,
+          "fidelity_telos": 0.5214358568191528,
+          "improvement": 0.012102723121643066,
+          "improvement_pct": 2.3761900259233495,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_18",
+      "total_turns": 4,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.4399672746658325,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.42801105976104736,
+      "avg_telos_fidelity": 0.4946604073047638,
+      "avg_improvement": 0.06664934754371643,
+      "improvement_pct": 15.571875077463146,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.48059403896331787,
+          "fidelity_telos": 0.6222146153450012,
+          "improvement": 0.14162057638168335,
+          "improvement_pct": 29.467817929488042,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.4746062755584717,
+          "fidelity_telos": 0.520350456237793,
+          "improvement": 0.04574418067932129,
+          "improvement_pct": 9.638342987667805,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.4459879994392395,
+          "fidelity_telos": 0.4309426546096802,
+          "improvement": -0.015045344829559326,
+          "improvement_pct": -3.373486472388608,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0.3108559250831604,
+          "fidelity_telos": 0.4051339030265808,
+          "improvement": 0.09427797794342041,
+          "improvement_pct": 30.32851245096876,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_19",
+      "total_turns": 2,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.5583444833755493,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.5576959550380707,
+      "avg_telos_fidelity": 0.6068436503410339,
+      "avg_improvement": 0.04914769530296326,
+      "improvement_pct": 8.812632557036967,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.5470514297485352,
+          "fidelity_telos": 0.6167847514152527,
+          "improvement": 0.06973332166671753,
+          "improvement_pct": 12.747123556330356,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.5683404803276062,
+          "fidelity_telos": 0.5969025492668152,
+          "improvement": 0.028562068939208984,
+          "improvement_pct": 5.025520779858065,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_2",
+      "total_turns": 3,
+      "pa_established": true,
+      "convergence_turn": 9,
+      "total_interventions": 1,
+      "trigger_turn": 10,
+      "trigger_fidelity": 0.35654693841934204,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.4105844298998515,
+      "avg_telos_fidelity": 0.4757043917973836,
+      "avg_improvement": 0.06511996189753211,
+      "improvement_pct": 15.860309635564107,
+      "turn_metrics": [
+        {
+          "turn": 11,
+          "fidelity_native": 0.3863173723220825,
+          "fidelity_telos": 0.48048579692840576,
+          "improvement": 0.09416842460632324,
+          "improvement_pct": 24.37592284299673,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0.42354071140289307,
+          "fidelity_telos": 0.43576204776763916,
+          "improvement": 0.012221336364746094,
+          "improvement_pct": 2.8855163236292882,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 13,
+          "fidelity_native": 0.42189520597457886,
+          "fidelity_telos": 0.510865330696106,
+          "improvement": 0.0889701247215271,
+          "improvement_pct": 21.088204715672443,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_20",
+      "total_turns": 2,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.6020474433898926,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.650304526090622,
+      "avg_telos_fidelity": 0.6928573548793793,
+      "avg_improvement": 0.042552828788757324,
+      "improvement_pct": 6.543523392735461,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.6678170561790466,
+          "fidelity_telos": 0.721282422542572,
+          "improvement": 0.05346536636352539,
+          "improvement_pct": 8.005989944226721,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.6327919960021973,
+          "fidelity_telos": 0.6644322872161865,
+          "improvement": 0.03164029121398926,
+          "improvement_pct": 5.0001092640051965,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_21",
+      "total_turns": 2,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.5784916877746582,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.5687443017959595,
+      "avg_telos_fidelity": 0.5793346464633942,
+      "avg_improvement": 0.010590344667434692,
+      "improvement_pct": 1.8620572784629048,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.5620969533920288,
+          "fidelity_telos": 0.5808114409446716,
+          "improvement": 0.018714487552642822,
+          "improvement_pct": 3.329405619387976,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.5753916501998901,
+          "fidelity_telos": 0.5778578519821167,
+          "improvement": 0.0024662017822265625,
+          "improvement_pct": 0.4286127164636136,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_22",
+      "total_turns": 2,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.5662232637405396,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.5844440460205078,
+      "avg_telos_fidelity": 0.5707436501979828,
+      "avg_improvement": -0.013700395822525024,
+      "improvement_pct": -2.344175788223238,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.6262927055358887,
+          "fidelity_telos": 0.6283352971076965,
+          "improvement": 0.0020425915718078613,
+          "improvement_pct": 0.32614008653671184,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.542595386505127,
+          "fidelity_telos": 0.513152003288269,
+          "improvement": -0.02944338321685791,
+          "improvement_pct": -5.426397634248905,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_23",
+      "total_turns": 5,
+      "pa_established": true,
+      "convergence_turn": 8,
+      "total_interventions": 1,
+      "trigger_turn": 9,
+      "trigger_fidelity": 0.3120696544647217,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.4583878517150879,
+      "avg_telos_fidelity": 0.5335002779960633,
+      "avg_improvement": 0.07511242628097536,
+      "improvement_pct": 16.386216606731036,
+      "turn_metrics": [
+        {
+          "turn": 10,
+          "fidelity_native": 0.3120696544647217,
+          "fidelity_telos": 0.5586453676223755,
+          "improvement": 0.2465757131576538,
+          "improvement_pct": 79.01303751580507,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.3120696544647217,
+          "fidelity_telos": 0.5561003684997559,
+          "improvement": 0.24403071403503418,
+          "improvement_pct": 78.19751473548703,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0.6295762062072754,
+          "fidelity_telos": 0.5618995428085327,
+          "improvement": -0.06767666339874268,
+          "improvement_pct": -10.749558628723253,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 13,
+          "fidelity_native": 0.5285992622375488,
+          "fidelity_telos": 0.5064352750778198,
+          "improvement": -0.022163987159729004,
+          "improvement_pct": -4.192965965542468,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 14,
+          "fidelity_native": 0.5096244812011719,
+          "fidelity_telos": 0.4844208359718323,
+          "improvement": -0.0252036452293396,
+          "improvement_pct": -4.945532673378495,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_24",
+      "total_turns": 2,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.6804187893867493,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.6914573907852173,
+      "avg_telos_fidelity": 0.6973681151866913,
+      "avg_improvement": 0.005910724401473999,
+      "improvement_pct": 0.8548212052172578,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.7024049758911133,
+          "fidelity_telos": 0.6786438226699829,
+          "improvement": -0.02376115322113037,
+          "improvement_pct": -3.3828281456841247,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.6805098056793213,
+          "fidelity_telos": 0.7160924077033997,
+          "improvement": 0.03558260202407837,
+          "improvement_pct": 5.228815474386575,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_25",
+      "total_turns": 5,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.4585435390472412,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.48389660120010375,
+      "avg_telos_fidelity": 0.4988664388656616,
+      "avg_improvement": 0.014969837665557872,
+      "improvement_pct": 3.093602564769298,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.4663233160972595,
+          "fidelity_telos": 0.49886947870254517,
+          "improvement": 0.032546162605285645,
+          "improvement_pct": 6.97931273899622,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.49947190284729004,
+          "fidelity_telos": 0.49980252981185913,
+          "improvement": 0.0003306269645690918,
+          "improvement_pct": 0.06619530802119587,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.4809718728065491,
+          "fidelity_telos": 0.500808596611023,
+          "improvement": 0.019836723804473877,
+          "improvement_pct": 4.124300177622315,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0.4851384162902832,
+          "fidelity_telos": 0.4960307478904724,
+          "improvement": 0.010892331600189209,
+          "improvement_pct": 2.245200799285243,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 13,
+          "fidelity_native": 0.48757749795913696,
+          "fidelity_telos": 0.49882084131240845,
+          "improvement": 0.011243343353271484,
+          "improvement_pct": 2.3059602627957556,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_26",
+      "total_turns": 4,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.6389364004135132,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.5915572196245193,
+      "avg_telos_fidelity": 0.586682915687561,
+      "avg_improvement": -0.004874303936958313,
+      "improvement_pct": -0.8239784378005213,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.5794897079467773,
+          "fidelity_telos": 0.593467116355896,
+          "improvement": 0.013977408409118652,
+          "improvement_pct": 2.412020130373462,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.5924626588821411,
+          "fidelity_telos": 0.6328922510147095,
+          "improvement": 0.04042959213256836,
+          "improvement_pct": 6.823989921803837,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.568719744682312,
+          "fidelity_telos": 0.5596410036087036,
+          "improvement": -0.009078741073608398,
+          "improvement_pct": -1.5963470863280476,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0.6255567669868469,
+          "fidelity_telos": 0.5607312917709351,
+          "improvement": -0.06482547521591187,
+          "improvement_pct": -10.36284453098641,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_27",
+      "total_turns": 2,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.5854543447494507,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.5693771839141846,
+      "avg_telos_fidelity": 0.587324470281601,
+      "avg_improvement": 0.017947286367416382,
+      "improvement_pct": 3.1520908941306227,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.574018120765686,
+          "fidelity_telos": 0.7013946771621704,
+          "improvement": 0.12737655639648438,
+          "improvement_pct": 22.190337166808614,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.5647362470626831,
+          "fidelity_telos": 0.4732542634010315,
+          "improvement": -0.09148198366165161,
+          "improvement_pct": -16.19906356949274,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_28",
+      "total_turns": 2,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.5206775665283203,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.4704485237598419,
+      "avg_telos_fidelity": 0.4836486876010895,
+      "avg_improvement": 0.013200163841247559,
+      "improvement_pct": 2.8058678419801093,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.49833929538726807,
+          "fidelity_telos": 0.5177302360534668,
+          "improvement": 0.01939094066619873,
+          "improvement_pct": 3.891112108895546,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.44255775213241577,
+          "fidelity_telos": 0.44956713914871216,
+          "improvement": 0.007009387016296387,
+          "improvement_pct": 1.5838355519754037,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_29",
+      "total_turns": 5,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.49008709192276,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.4513598918914795,
+      "avg_telos_fidelity": 0.4960723161697388,
+      "avg_improvement": 0.04471242427825928,
+      "improvement_pct": 9.906158052920105,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.447421669960022,
+          "fidelity_telos": 0.5509293079376221,
+          "improvement": 0.1035076379776001,
+          "improvement_pct": 23.134247830877015,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.491237998008728,
+          "fidelity_telos": 0.5383656024932861,
+          "improvement": 0.047127604484558105,
+          "improvement_pct": 9.593639880382538,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.4598185420036316,
+          "fidelity_telos": 0.517284631729126,
+          "improvement": 0.057466089725494385,
+          "improvement_pct": 12.497558161767328,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0.4965960383415222,
+          "fidelity_telos": 0.4908885359764099,
+          "improvement": -0.005707502365112305,
+          "improvement_pct": -1.1493249894166704,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 13,
+          "fidelity_native": 0.36172521114349365,
+          "fidelity_telos": 0.38289350271224976,
+          "improvement": 0.021168291568756104,
+          "improvement_pct": 5.852036550573414,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_3",
+      "total_turns": 3,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.4682042598724365,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.39400388797124225,
+      "avg_telos_fidelity": 0.4971740047136943,
+      "avg_improvement": 0.10317011674245202,
+      "improvement_pct": 26.185050425183178,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.4682042598724365,
+          "fidelity_telos": 0.5031143426895142,
+          "improvement": 0.03491008281707764,
+          "improvement_pct": 7.4561651418098975,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.3726067543029785,
+          "fidelity_telos": 0.4937867522239685,
+          "improvement": 0.12117999792098999,
+          "improvement_pct": 32.522222563484355,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.34120064973831177,
+          "fidelity_telos": 0.4946209192276001,
+          "improvement": 0.15342026948928833,
+          "improvement_pct": 44.96482336916884,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_30",
+      "total_turns": 4,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.5410239696502686,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.4553283751010895,
+      "avg_telos_fidelity": 0.4666953682899475,
+      "avg_improvement": 0.011366993188858032,
+      "improvement_pct": 2.496438572784838,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.47613656520843506,
+          "fidelity_telos": 0.49963831901550293,
+          "improvement": 0.02350175380706787,
+          "improvement_pct": 4.935927110907701,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.43177568912506104,
+          "fidelity_telos": 0.43404603004455566,
+          "improvement": 0.002270340919494629,
+          "improvement_pct": 0.5258149026628128,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.46164703369140625,
+          "fidelity_telos": 0.5057044625282288,
+          "improvement": 0.04405742883682251,
+          "improvement_pct": 9.543531230891272,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0.45175421237945557,
+          "fidelity_telos": 0.4273926615715027,
+          "improvement": -0.02436155080795288,
+          "improvement_pct": -5.392656037369751,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_32",
+      "total_turns": 4,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.45459651947021484,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.5388503670692444,
+      "avg_telos_fidelity": 0.5726461112499237,
+      "avg_improvement": 0.03379574418067932,
+      "improvement_pct": 6.271823542496806,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.6313591003417969,
+          "fidelity_telos": 0.6232699155807495,
+          "improvement": -0.008089184761047363,
+          "improvement_pct": -1.2812335732023419,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.3707005977630615,
+          "fidelity_telos": 0.4860369563102722,
+          "improvement": 0.1153363585472107,
+          "improvement_pct": 31.1130759548787,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.6103088855743408,
+          "fidelity_telos": 0.6395820379257202,
+          "improvement": 0.029273152351379395,
+          "improvement_pct": 4.796448657933504,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0.5430328845977783,
+          "fidelity_telos": 0.5416955351829529,
+          "improvement": -0.0013373494148254395,
+          "improvement_pct": -0.24627411207628933,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_33",
+      "total_turns": 4,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.5581552982330322,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.5542349368333817,
+      "avg_telos_fidelity": 0.5598270148038864,
+      "avg_improvement": 0.005592077970504761,
+      "improvement_pct": 1.008972476988742,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.5617014169692993,
+          "fidelity_telos": 0.5489993095397949,
+          "improvement": -0.012702107429504395,
+          "improvement_pct": -2.261362895974081,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.5513051748275757,
+          "fidelity_telos": 0.5676011443138123,
+          "improvement": 0.016295969486236572,
+          "improvement_pct": 2.955889084722131,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.5455028414726257,
+          "fidelity_telos": 0.5580005049705505,
+          "improvement": 0.012497663497924805,
+          "improvement_pct": 2.29103545348846,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0.5584303140640259,
+          "fidelity_telos": 0.5647071003913879,
+          "improvement": 0.0062767863273620605,
+          "improvement_pct": 1.1240053000851968,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_34",
+      "total_turns": 3,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.5300502777099609,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.5045175552368164,
+      "avg_telos_fidelity": 0.5025638540585836,
+      "avg_improvement": -0.0019537011782327918,
+      "improvement_pct": -0.3872414662192955,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.5402621626853943,
+          "fidelity_telos": 0.6679344177246094,
+          "improvement": 0.1276722550392151,
+          "improvement_pct": 23.631537401141536,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.5116168260574341,
+          "fidelity_telos": 0.41039562225341797,
+          "improvement": -0.10122120380401611,
+          "improvement_pct": -19.784572877330078,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.46167367696762085,
+          "fidelity_telos": 0.4293615221977234,
+          "improvement": -0.03231215476989746,
+          "improvement_pct": -6.998916416922694,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_35",
+      "total_turns": 5,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.4347996115684509,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.43237345218658446,
+      "avg_telos_fidelity": 0.46790757179260256,
+      "avg_improvement": 0.0355341196060181,
+      "improvement_pct": 8.218386079514397,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.3872961401939392,
+          "fidelity_telos": 0.4517953395843506,
+          "improvement": 0.06449919939041138,
+          "improvement_pct": 16.653716031900885,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.5750098824501038,
+          "fidelity_telos": 0.5713456273078918,
+          "improvement": -0.003664255142211914,
+          "improvement_pct": -0.6372508115162487,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.4135606288909912,
+          "fidelity_telos": 0.43908798694610596,
+          "improvement": 0.025527358055114746,
+          "improvement_pct": 6.172579368488048,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0.43078023195266724,
+          "fidelity_telos": 0.4222675561904907,
+          "improvement": -0.008512675762176514,
+          "improvement_pct": -1.9761064066449223,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 13,
+          "fidelity_native": 0.35522037744522095,
+          "fidelity_telos": 0.4550413489341736,
+          "improvement": 0.09982097148895264,
+          "improvement_pct": 28.101138849880925,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_36",
+      "total_turns": 5,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.6352831125259399,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.6480111360549927,
+      "avg_telos_fidelity": 0.6435917615890503,
+      "avg_improvement": -0.004419374465942427,
+      "improvement_pct": -0.6819905122073986,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.6480484008789062,
+          "fidelity_telos": 0.6510393619537354,
+          "improvement": 0.0029909610748291016,
+          "improvement_pct": 0.46153359390635856,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.659345269203186,
+          "fidelity_telos": 0.6771600246429443,
+          "improvement": 0.0178147554397583,
+          "improvement_pct": 2.701885684458964,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.6786125898361206,
+          "fidelity_telos": 0.6979561448097229,
+          "improvement": 0.019343554973602295,
+          "improvement_pct": 2.8504562490173675,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0.6449064016342163,
+          "fidelity_telos": 0.6353668570518494,
+          "improvement": -0.009539544582366943,
+          "improvement_pct": -1.4792138143137346,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 13,
+          "fidelity_native": 0.6091430187225342,
+          "fidelity_telos": 0.5564364194869995,
+          "improvement": -0.05270659923553467,
+          "improvement_pct": -8.652582007107041,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_37",
+      "total_turns": 2,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.42947202920913696,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.47758007049560547,
+      "avg_telos_fidelity": 0.5455315113067627,
+      "avg_improvement": 0.06795144081115723,
+      "improvement_pct": 14.228282336120323,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.48232603073120117,
+          "fidelity_telos": 0.574500322341919,
+          "improvement": 0.09217429161071777,
+          "improvement_pct": 19.110370524888015,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.47283411026000977,
+          "fidelity_telos": 0.5165627002716064,
+          "improvement": 0.04372859001159668,
+          "improvement_pct": 9.248188542816948,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_38",
+      "total_turns": 2,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.48776280879974365,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.4665921628475189,
+      "avg_telos_fidelity": 0.4591065049171448,
+      "avg_improvement": -0.0074856579303741455,
+      "improvement_pct": -1.6043256887751112,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.46508359909057617,
+          "fidelity_telos": 0.41428041458129883,
+          "improvement": -0.050803184509277344,
+          "improvement_pct": -10.92345217260248,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.46810072660446167,
+          "fidelity_telos": 0.5039325952529907,
+          "improvement": 0.03583186864852905,
+          "improvement_pct": 7.654734678249381,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_39",
+      "total_turns": 3,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.6757370233535767,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.6404101053873698,
+      "avg_telos_fidelity": 0.5979447364807129,
+      "avg_improvement": -0.042465368906656864,
+      "improvement_pct": -6.630964837909688,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.6621155738830566,
+          "fidelity_telos": 0.6111592054367065,
+          "improvement": -0.0509563684463501,
+          "improvement_pct": -7.6959930344955225,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.6070678234100342,
+          "fidelity_telos": 0.5182886123657227,
+          "improvement": -0.08877921104431152,
+          "improvement_pct": -14.62426562910534,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.6520469188690186,
+          "fidelity_telos": 0.6643863916397095,
+          "improvement": 0.012339472770690918,
+          "improvement_pct": 1.8924209920497512,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_4",
+      "total_turns": 3,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.45514172315597534,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.4808982014656067,
+      "avg_telos_fidelity": 0.5202700893084208,
+      "avg_improvement": 0.03937188784281409,
+      "improvement_pct": 8.187156392521864,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.4754023551940918,
+          "fidelity_telos": 0.579814612865448,
+          "improvement": 0.1044122576713562,
+          "improvement_pct": 21.962923938129833,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.47867172956466675,
+          "fidelity_telos": 0.48642027378082275,
+          "improvement": 0.007748544216156006,
+          "improvement_pct": 1.618759525072225,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.4886205196380615,
+          "fidelity_telos": 0.4945753812789917,
+          "improvement": 0.005954861640930176,
+          "improvement_pct": 1.2187088756201134,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_40",
+      "total_turns": 2,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.6008403897285461,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.6519408226013184,
+      "avg_telos_fidelity": 0.6667405366897583,
+      "avg_improvement": 0.014799714088439941,
+      "improvement_pct": 2.270100839733795,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.6688272953033447,
+          "fidelity_telos": 0.6285213828086853,
+          "improvement": -0.040305912494659424,
+          "improvement_pct": -6.026355798828275,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.635054349899292,
+          "fidelity_telos": 0.7049596905708313,
+          "improvement": 0.0699053406715393,
+          "improvement_pct": 11.007772906779556,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_41",
+      "total_turns": 5,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.4815593361854553,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.4491554141044617,
+      "avg_telos_fidelity": 0.5124736905097962,
+      "avg_improvement": 0.0633182764053345,
+      "improvement_pct": 14.097186500930908,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.4517638683319092,
+          "fidelity_telos": 0.4942386746406555,
+          "improvement": 0.04247480630874634,
+          "improvement_pct": 9.40199278565152,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.4517051577568054,
+          "fidelity_telos": 0.49731749296188354,
+          "improvement": 0.045612335205078125,
+          "improvement_pct": 10.09781146436133,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.4318265914916992,
+          "fidelity_telos": 0.5194710493087769,
+          "improvement": 0.08764445781707764,
+          "improvement_pct": 20.29621601446987,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0.5173755884170532,
+          "fidelity_telos": 0.5187910199165344,
+          "improvement": 0.0014154314994812012,
+          "improvement_pct": 0.27357910407250036,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 13,
+          "fidelity_native": 0.3931058645248413,
+          "fidelity_telos": 0.5325502157211304,
+          "improvement": 0.13944435119628906,
+          "improvement_pct": 35.47246779562538,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_42",
+      "total_turns": 3,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.6589527130126953,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.5672618746757507,
+      "avg_telos_fidelity": 0.5696543256441752,
+      "avg_improvement": 0.002392450968424442,
+      "improvement_pct": 0.4217542329619768,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.6378750205039978,
+          "fidelity_telos": 0.6362607479095459,
+          "improvement": -0.0016142725944519043,
+          "improvement_pct": -0.2530703574465787,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.41424059867858887,
+          "fidelity_telos": 0.5154811143875122,
+          "improvement": 0.10124051570892334,
+          "improvement_pct": 24.44002737343384,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.6496700048446655,
+          "fidelity_telos": 0.5572211146354675,
+          "improvement": -0.092448890209198,
+          "improvement_pct": -14.230130607815624,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_43",
+      "total_turns": 3,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.590587317943573,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.6209109425544739,
+      "avg_telos_fidelity": 0.6824259360631307,
+      "avg_improvement": 0.06151499350865686,
+      "improvement_pct": 9.907216847488561,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.6114944815635681,
+          "fidelity_telos": 0.7858142852783203,
+          "improvement": 0.1743198037147522,
+          "improvement_pct": 28.507175284562354,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.6168744564056396,
+          "fidelity_telos": 0.6472508907318115,
+          "improvement": 0.030376434326171875,
+          "improvement_pct": 4.924249012216704,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.6343638896942139,
+          "fidelity_telos": 0.6142126321792603,
+          "improvement": -0.020151257514953613,
+          "improvement_pct": -3.176608543192337,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_44",
+      "total_turns": 3,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.6711770296096802,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.576401968797048,
+      "avg_telos_fidelity": 0.5088478922843933,
+      "avg_improvement": -0.06755407651265466,
+      "improvement_pct": -11.719959363365838,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.6500150561332703,
+          "fidelity_telos": 0.5306636691093445,
+          "improvement": -0.11935138702392578,
+          "improvement_pct": -18.361326541251007,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.41753190755844116,
+          "fidelity_telos": 0.4680933356285095,
+          "improvement": 0.05056142807006836,
+          "improvement_pct": 12.109596214030988,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.6616589426994324,
+          "fidelity_telos": 0.5277866721153259,
+          "improvement": -0.13387227058410645,
+          "improvement_pct": -20.23282116280861,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_45",
+      "total_turns": 5,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.4233742952346802,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.44033697843551634,
+      "avg_telos_fidelity": 0.5276203632354737,
+      "avg_improvement": 0.08728338479995734,
+      "improvement_pct": 19.821952067270967,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.38143205642700195,
+          "fidelity_telos": 0.6323331594467163,
+          "improvement": 0.25090110301971436,
+          "improvement_pct": 65.77871439804682,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.5581690669059753,
+          "fidelity_telos": 0.5508078932762146,
+          "improvement": -0.007361173629760742,
+          "improvement_pct": -1.3188071618810697,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.4717232584953308,
+          "fidelity_telos": 0.5383791923522949,
+          "improvement": 0.06665593385696411,
+          "improvement_pct": 14.130304719249684,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0.4039560556411743,
+          "fidelity_telos": 0.48549365997314453,
+          "improvement": 0.08153760433197021,
+          "improvement_pct": 20.184770891118504,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 13,
+          "fidelity_native": 0.38640445470809937,
+          "fidelity_telos": 0.4310879111289978,
+          "improvement": 0.04468345642089844,
+          "improvement_pct": 11.563908199415962,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_46",
+      "total_turns": 2,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.4819549322128296,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.46170157194137573,
+      "avg_telos_fidelity": 0.46982014179229736,
+      "avg_improvement": 0.00811856985092163,
+      "improvement_pct": 1.7584020380923635,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.4593956470489502,
+          "fidelity_telos": 0.4530940055847168,
+          "improvement": -0.0063016414642333984,
+          "improvement_pct": -1.3717242435172523,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.46400749683380127,
+          "fidelity_telos": 0.48654627799987793,
+          "improvement": 0.02253878116607666,
+          "improvement_pct": 4.85741745981954,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_47",
+      "total_turns": 2,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.6130543351173401,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.6069628000259399,
+      "avg_telos_fidelity": 0.577322781085968,
+      "avg_improvement": -0.029640018939971924,
+      "improvement_pct": -4.883333696678807,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.6253154277801514,
+          "fidelity_telos": 0.5952125191688538,
+          "improvement": -0.030102908611297607,
+          "improvement_pct": -4.814035808801634,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.5886101722717285,
+          "fidelity_telos": 0.5594330430030823,
+          "improvement": -0.02917712926864624,
+          "improvement_pct": -4.956952944941085,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_48",
+      "total_turns": 2,
+      "pa_established": true,
+      "convergence_turn": 8,
+      "total_interventions": 1,
+      "trigger_turn": 9,
+      "trigger_fidelity": 0.5318206548690796,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.47611382603645325,
+      "avg_telos_fidelity": 0.5037817060947418,
+      "avg_improvement": 0.027667880058288574,
+      "improvement_pct": 5.81119021235275,
+      "turn_metrics": [
+        {
+          "turn": 10,
+          "fidelity_native": 0.5078792572021484,
+          "fidelity_telos": 0.5371932983398438,
+          "improvement": 0.029314041137695312,
+          "improvement_pct": 5.77185240822458,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.44434839487075806,
+          "fidelity_telos": 0.4703701138496399,
+          "improvement": 0.026021718978881836,
+          "improvement_pct": 5.856152352356407,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_49",
+      "total_turns": 2,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.5007054805755615,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.47501346468925476,
+      "avg_telos_fidelity": 0.4669942557811737,
+      "avg_improvement": -0.008019208908081055,
+      "improvement_pct": -1.6882066518529273,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.4870413541793823,
+          "fidelity_telos": 0.4860137701034546,
+          "improvement": -0.0010275840759277344,
+          "improvement_pct": -0.2109849742963027,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.4629855751991272,
+          "fidelity_telos": 0.4479747414588928,
+          "improvement": -0.015010833740234375,
+          "improvement_pct": -3.242181731855968,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_5",
+      "total_turns": 2,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.6779173612594604,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.6942363381385803,
+      "avg_telos_fidelity": 0.6830323338508606,
+      "avg_improvement": -0.011204004287719727,
+      "improvement_pct": -1.6138602479035364,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.7018158435821533,
+          "fidelity_telos": 0.6755831241607666,
+          "improvement": -0.02623271942138672,
+          "improvement_pct": -3.737835168766172,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.6866568326950073,
+          "fidelity_telos": 0.6904815435409546,
+          "improvement": 0.0038247108459472656,
+          "improvement_pct": 0.5570047021793911,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_50",
+      "total_turns": 2,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.4645325541496277,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.4970099627971649,
+      "avg_telos_fidelity": 0.5187989771366119,
+      "avg_improvement": 0.02178901433944702,
+      "improvement_pct": 4.384019631481583,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.4799375534057617,
+          "fidelity_telos": 0.5081897974014282,
+          "improvement": 0.028252243995666504,
+          "improvement_pct": 5.886650001689018,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.5140823721885681,
+          "fidelity_telos": 0.5294081568717957,
+          "improvement": 0.015325784683227539,
+          "improvement_pct": 2.9811924143561104,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_6",
+      "total_turns": 4,
+      "pa_established": true,
+      "convergence_turn": 9,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.44341200590133667,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.4371296614408493,
+      "avg_telos_fidelity": 0.4645776003599167,
+      "avg_improvement": 0.027447938919067383,
+      "improvement_pct": 6.279129818963688,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.4398055076599121,
+          "fidelity_telos": 0.46996986865997314,
+          "improvement": 0.030164361000061035,
+          "improvement_pct": 6.858568270451537,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.43568694591522217,
+          "fidelity_telos": 0.46341174840927124,
+          "improvement": 0.027724802494049072,
+          "improvement_pct": 6.3634687139430355,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.4242616891860962,
+          "fidelity_telos": 0.4620380401611328,
+          "improvement": 0.03777635097503662,
+          "improvement_pct": 8.904021253370011,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0.44876450300216675,
+          "fidelity_telos": 0.46289074420928955,
+          "improvement": 0.014126241207122803,
+          "improvement_pct": 3.1478071711600144,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_8",
+      "total_turns": 4,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.6539334654808044,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.62155881524086,
+      "avg_telos_fidelity": 0.5609607547521591,
+      "avg_improvement": -0.06059806048870087,
+      "improvement_pct": -9.749368684477355,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.5771195888519287,
+          "fidelity_telos": 0.6410602331161499,
+          "improvement": 0.06394064426422119,
+          "improvement_pct": 11.079271176952965,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.6471378803253174,
+          "fidelity_telos": 0.5955764055252075,
+          "improvement": -0.05156147480010986,
+          "improvement_pct": -7.967618086919873,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 11,
+          "fidelity_native": 0.6517765522003174,
+          "fidelity_telos": 0.570988118648529,
+          "improvement": -0.08078843355178833,
+          "improvement_pct": -12.395111987238039,
+          "drift_detected": true,
+          "intervention_applied": false
+        },
+        {
+          "turn": 12,
+          "fidelity_native": 0.6102012395858765,
+          "fidelity_telos": 0.43621826171875,
+          "improvement": -0.17398297786712646,
+          "improvement_pct": -28.51239338438627,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    },
+    {
+      "session_id": "sharegpt_filtered_9",
+      "total_turns": 2,
+      "pa_established": true,
+      "convergence_turn": 7,
+      "total_interventions": 1,
+      "trigger_turn": 8,
+      "trigger_fidelity": 0.6757000684738159,
+      "governance_effective": false,
+      "avg_native_fidelity": 0.6923951208591461,
+      "avg_telos_fidelity": 0.6669868230819702,
+      "avg_improvement": -0.025408297777175903,
+      "improvement_pct": -3.669624035716553,
+      "turn_metrics": [
+        {
+          "turn": 9,
+          "fidelity_native": 0.7004767060279846,
+          "fidelity_telos": 0.6542631387710571,
+          "improvement": -0.04621356725692749,
+          "improvement_pct": -6.597445262524007,
+          "drift_detected": true,
+          "intervention_applied": true
+        },
+        {
+          "turn": 10,
+          "fidelity_native": 0.6843135356903076,
+          "fidelity_telos": 0.6797105073928833,
+          "improvement": -0.004603028297424316,
+          "improvement_pct": -0.672649020858687,
+          "drift_detected": true,
+          "intervention_applied": false
+        }
+      ]
+    }
+  ]
+}

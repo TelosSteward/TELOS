@@ -113,10 +113,25 @@ class SidebarActions:
 
             # GitHub Link
             st.markdown("""
+            <style>
+            .github-button {
+                background-color: #2d2d2d !important;
+                color: #e0e0e0 !important;
+                border: 1px solid #FFD700 !important;
+                padding: 10px;
+                border-radius: 5px;
+                text-align: center;
+                margin-bottom: 10px;
+                cursor: pointer;
+                transition: all 0.3s ease !important;
+                width: 100%;
+                font-size: 14px;
+            }
+            </style>
             <a href="https://github.com/TelosSteward/TelosLabs" target="_blank" style="text-decoration: none;">
-                <div style="background-color: #2d2d2d; color: #e0e0e0; border: 1px solid #FFD700; padding: 10px; border-radius: 5px; text-align: center; cursor: pointer; transition: all 0.3s ease; margin-bottom: 10px;">
+                <button class="github-button">
                     🔗 GitHub Repository
-                </div>
+                </button>
             </a>
             """, unsafe_allow_html=True)
 

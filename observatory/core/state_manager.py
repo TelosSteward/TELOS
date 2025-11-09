@@ -377,11 +377,31 @@ class StateManager:
                         num_chunks = self._corpus_loader.load_corpus()
                         logger.info(f"✓ Corpus loaded: {num_chunks} chunks")
                     else:
-                        # Open mode: NO hardcoded attractor
-                        # TELOS will extract the purpose dynamically from the user's conversation
-                        # using LLM-based analysis and statistical convergence
-                        # This is intentionally minimal - let TELOS learn what the user wants
-                        attractor = None  # Will be initialized by UnifiedGovernanceSteward
+                        # Beta/Open mode: Use progressive PA extraction
+                        # Start with minimal seed, will be extracted from conversation
+                        from telos.profiling.progressive_primacy_extractor import ProgressivePrimacyExtractor
+
+                        seed_attractor = PrimacyAttractor(
+                            purpose=["Understand user intent"],
+                            scope=["User conversation topics"],
+                            boundaries=["Respect user privacy", "Stay helpful and relevant"],
+                            privacy_level=0.9,  # High privacy for beta
+                            constraint_tolerance=0.3,  # Allow some flexibility
+                            task_priority=0.7
+                        )
+
+                        # Initialize progressive extractor with safety limit of 10 turns
+                        self._progressive_extractor = ProgressivePrimacyExtractor(
+                            llm_client=None,  # Will set after mistral_client created
+                            embedding_provider=embedding_provider,
+                            mode='progressive',
+                            seed_attractor=seed_attractor,
+                            llm_per_turn=False,  # LLM analysis once at convergence
+                            max_turns_safety=10  # Lock PA after 10 turns
+                        )
+
+                        # Use seed for now, extractor will refine it
+                        attractor = seed_attractor
                         self._corpus_loader = None  # No corpus in open mode
 
                     # Initialize Mistral client (Assistant Steward)
@@ -396,8 +416,13 @@ class StateManager:
 
                     mistral_client = MistralClient(
                         api_key=mistral_api_key,
-                        model="mistral-large-latest"
+                        model="mistral-small-latest"  # Using small - best availability
                     )
+
+                    # Wire LLM client to progressive extractor if in beta mode
+                    beta_mode = st.session_state.get('mode') == 'beta'
+                    if beta_mode and hasattr(self, '_progressive_extractor'):
+                        self._progressive_extractor.llm_client = mistral_client
 
                     self._telos_steward = UnifiedGovernanceSteward(
                         attractor=attractor,
@@ -450,9 +475,9 @@ class StateManager:
                     system_prompt = base_system_prompt
             else:
                 # Open mode: Neutral, helpful assistant
-                system_prompt = """You are a helpful AI assistant. Engage naturally with the user's questions and topics.
+                system_prompt = """You are a helpful AI assistant.
 
-Be informative, conversational, and adapt to what the user wants to discuss."""
+Be conversational, natural, and respond directly to what the user asks. Provide complete, thoughtful answers."""
 
             conversation_history = [
                 {
@@ -728,7 +753,31 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                     num_chunks = self._corpus_loader.load_corpus()
                     logger.info(f"✓ Corpus loaded: {num_chunks} chunks")
                 else:
-                    attractor = None
+                    # Beta/Open mode: Use progressive PA extraction
+                    # Start with minimal seed, will be extracted from conversation
+                    from telos.profiling.progressive_primacy_extractor import ProgressivePrimacyExtractor
+
+                    seed_attractor = PrimacyAttractor(
+                        purpose=["Understand user intent"],
+                        scope=["User conversation topics"],
+                        boundaries=["Respect user privacy", "Stay helpful and relevant"],
+                        privacy_level=0.9,
+                        constraint_tolerance=0.3,
+                        task_priority=0.7
+                    )
+
+                    # Initialize progressive extractor with safety limit of 10 turns
+                    self._progressive_extractor = ProgressivePrimacyExtractor(
+                        llm_client=None,  # Will set after mistral_client created
+                        embedding_provider=embedding_provider,
+                        mode='progressive',
+                        seed_attractor=seed_attractor,
+                        llm_per_turn=False,  # LLM analysis once at convergence
+                        max_turns_safety=10  # Lock PA after 10 turns
+                    )
+
+                    # Use seed for now, extractor will refine it
+                    attractor = seed_attractor
                     self._corpus_loader = None
 
                 # Get API key from Streamlit secrets or environment
@@ -740,14 +789,18 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
 
                 mistral_client = MistralClient(
                     api_key=mistral_api_key,
-                    model="mistral-large-latest"
+                    model="mistral-small-latest"  # Using small - best availability
                 )
+
+                # Wire LLM client to progressive extractor if in beta mode
+                if not demo_mode and hasattr(self, '_progressive_extractor'):
+                    self._progressive_extractor.llm_client = mistral_client
 
                 self._telos_steward = UnifiedGovernanceSteward(
                     attractor=attractor,
                     llm_client=mistral_client,
                     embedding_provider=embedding_provider,
-                    enable_interventions=False
+                    enable_interventions=True  # Enable interventions for drift detection and correction
                 )
                 self._telos_steward.start_session(session_id=self.state.session_id)
                 logger.info("TELOS engine initialized successfully")
@@ -781,9 +834,9 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             else:
                 system_prompt = base_system_prompt
         else:
-            system_prompt = """You are a helpful AI assistant. Engage naturally with the user's questions and topics.
+            system_prompt = """You are a helpful AI assistant.
 
-Be informative, conversational, and adapt to what the user wants to discuss."""
+Be conversational, natural, and respond directly to what the user asks. Provide complete, thoughtful answers."""
 
         conversation_history = [{"role": "system", "content": system_prompt}]
 
@@ -797,8 +850,8 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
         # Add current message
         conversation_history.append({"role": "user", "content": message})
 
-        # Determine max_tokens based on mode
-        max_tokens = 350 if demo_mode else 500
+        # Let LLM complete responses naturally - no artificial token limits
+        max_tokens = None  # No restriction - let responses complete
 
         # Generate response (non-streaming for now - streaming has API issues)
         full_response = ""
@@ -825,6 +878,29 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             distance = result.get("error_signal", 0.15)
             in_basin = result.get("in_basin", True)
             intervention_applied = result.get("intervention_applied", False)
+
+            # Progressive PA extraction for beta mode
+            if not demo_mode and hasattr(self, '_progressive_extractor'):
+                try:
+                    extraction_result = self._progressive_extractor.add_turn(message, full_response)
+                    logger.info(f"Progressive extraction: {extraction_result.get('message', 'N/A')}")
+
+                    # If PA converged/updated, update the steward's attractor
+                    if extraction_result.get('status') == 'converged' and extraction_result.get('attractor'):
+                        new_attractor = extraction_result['attractor']
+                        self._telos_steward.attractor = new_attractor
+                        logger.info("PA updated from progressive extraction")
+                except Exception as extraction_error:
+                    logger.warning(f"Progressive extraction error: {extraction_error}")
+
+            # Store current PA in state for display
+            if hasattr(self, '_telos_steward') and self._telos_steward:
+                current_pa = self._telos_steward.attractor
+                self.state.primacy_attractor = {
+                    'purpose': current_pa.purpose,
+                    'scope': current_pa.scope,
+                    'boundaries': current_pa.boundaries
+                }
 
             if fidelity >= 0.9:
                 status_icon, status_text = "✓", "Excellent"

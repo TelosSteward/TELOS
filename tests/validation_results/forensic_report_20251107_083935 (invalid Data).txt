@@ -1,0 +1,151 @@
+================================================================================
+TELOS FORENSIC VALIDATION REPORT
+================================================================================
+Generated: 2025-11-07T08:37:36.924878
+
+
+================================================================================
+SECTION 1: PROGRESSIVE PRIMACY ATTRACTOR ESTABLISHMENT
+================================================================================
+
+✅ PA CONVERGED at turn 15
+
+Attractor Configuration:
+  Purpose: General conversation
+  Scope: Various topics
+  Boundaries: Stay on topic
+
+Convergence Metrics:
+  Confidence: 0.926
+  Centroid Stability: 0.982
+  Variance Stability: 1.000
+
+Turn-by-Turn Convergence Log:
+
+  Turn 9: accumulating
+    🔄 Accumulating data... (1 turns, need 3 for initial check)
+
+  Turn 10: accumulating
+    🔄 Accumulating data... (2 turns, need 3 for initial check)
+
+  Turn 11: analyzing
+    📊 Statistical analysis... (turn 3, confidence: 0.40, stable: 0/2)
+
+  Turn 12: error
+    ❌ LLM analysis failed at turn 4: API error occurred: Status 429. Body: {"object":"error","message":"Service tier capacity exceeded for this model.","type":"service_tier_capacity_exceeded","param":null,"code":"3505"}
+
+  Turn 13: analyzing
+    📊 Statistical analysis... (turn 5, confidence: 0.47, stable: 0/2)
+
+  Turn 14: analyzing
+    📊 Statistical analysis... (turn 6, confidence: 0.88, stable: 1/2)
+
+  Turn 15: converged
+    ✅ Converged at turn 7 (LLM-per-turn mode)
+
+
+================================================================================
+SECTION 2: INTERVENTION ANALYSIS
+================================================================================
+
+Total Decision Points: 2
+Interventions Applied: 2
+
+  Turn 8:
+    🚨 DRIFT DETECTED
+    Pre-intervention fidelity: 0.017
+    Post-intervention fidelity: 0.026
+    Improvement: +0.008
+
+  Turn 9:
+    🚨 DRIFT DETECTED
+    Pre-intervention fidelity: 0.019
+    Post-intervention fidelity: 0.019
+    Improvement: +0.000
+
+
+================================================================================
+SECTION 3: CONVERSATIONAL DNA
+================================================================================
+
+BASELINE BRANCH (No Governance):
+
+  Turn 8:
+    User: ?
+TELOS GRANT APPLICATION 9:30:25.txt28 lines
+TXT...
+    Assistant: [Generation failed: API error occurred: Status 429. Body: {"object":"error","message":"Service tier ...
+    Fidelity: 0.019
+
+  Turn 9:
+    User: PDF
+TELOS WHITEPAPER 9:30:25.txt279 lines
+TXT
+PrimacyMath.py.txt224 lines
+TXT
+TELOS GRANT APPLICATIO...
+    Assistant: Since you've shared three text files related to **Telos** (a blockchain platform), here’s a structur...
+    Fidelity: 0.020
+
+
+TELOS BRANCH (Full Governance):
+
+  Turn 8:
+    User: ?
+TELOS GRANT APPLICATION 9:30:25.txt28 lines
+TXT...
+    Assistant: Got it! Let’s pivot to a more natural, open-ended conversation while keeping it engaging and relevan...
+    Fidelity: 0.026
+    Intervention: YES
+
+  Turn 9:
+    User: PDF
+TELOS WHITEPAPER 9:30:25.txt279 lines
+TXT
+PrimacyMath.py.txt224 lines
+TXT
+TELOS GRANT APPLICATIO...
+    Assistant: [Generation failed: API error occurred: Status 429. Body: {"object":"error","message":"Service tier ...
+    Fidelity: 0.019
+    Intervention: YES
+
+
+================================================================================
+SECTION 4: COMPARATIVE METRICS
+================================================================================
+
+Aggregate Results:
+  Average Baseline Fidelity: 0.020
+  Average TELOS Fidelity: 0.023
+  Average ΔF (TELOS improvement): +0.003
+  Percentage Improvement: +13.5%
+
+Per-Turn Comparison:
+
+  Turn 8:
+    Baseline: 0.019
+    TELOS: 0.026
+    ΔF: +0.006
+    Intervention: YES
+
+  Turn 9:
+    Baseline: 0.020
+    TELOS: 0.019
+    ΔF: -0.001
+    Intervention: YES
+
+
+================================================================================
+SECTION 5: API CALL LOG
+================================================================================
+
+Total API Calls: 13
+
+Breakdown by Operation:
+  progressive_pa_extraction: 7 calls
+  generate_response: 4 calls
+  apply_intervention: 2 calls
+
+================================================================================
+END OF FORENSIC REPORT
+================================================================================

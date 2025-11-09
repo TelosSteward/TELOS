@@ -1,0 +1,172 @@
+================================================================================
+TELOS COMPLETE CONVERSATION VALIDATION REPORT
+================================================================================
+Generated: 2025-11-07T09:03:05.708322
+
+
+================================================================================
+SECTION 1: PRIMACY ATTRACTOR (PA)
+================================================================================
+
+What is the Primacy Attractor?
+----------------------------------------
+The PA is a mathematical representation of the conversation's purpose.
+It acts as an 'anchor point' that TELOS uses to measure if responses
+stay on-topic or drift away from the intended discussion.
+
+Semantic Description (Before Vectorization):
+----------------------------------------
+
+Purpose: General conversation
+Scope: Various topics
+Boundaries: Stay on topic
+
+Interpretation: This conversation is focused on general conversation. The discussion covers Various topics. Responses should stay within these bounds to maintain alignment.
+
+Convergence Details:
+----------------------------------------
+Converged at turn: 17
+Confidence: 1.000
+Centroid Stability: 1.000
+Variance Stability: 1.000
+
+Vectorization (How PA Becomes Mathematical):
+----------------------------------------
+Dimension: 384
+Method: Statistical convergence of semantic embeddings
+Explanation: The PA is converted to a vector (list of numbers) that captures the conversation's meaning in mathematical form, allowing us to measure how far responses drift from the original purpose.
+
+
+================================================================================
+SECTION 2: FIDELITY ANALYSIS
+================================================================================
+
+What is Fidelity?
+----------------------------------------
+Fidelity measures how well each response aligns with the PA.
+Score range: 0.0 (completely off-topic) to 1.0 (perfect alignment)
+Threshold: 0.75 (below this = drift detected)
+
+Overall Statistics:
+----------------------------------------
+Turns Analyzed: 20
+Average Fidelity: 0.016
+Minimum Fidelity: 0.005
+Maximum Fidelity: 0.035
+Drift Occurrences: 20 (100.0%)
+
+
+================================================================================
+SECTION 3: DRIFT DETECTIONS
+================================================================================
+
+What is Drift?
+----------------------------------------
+Drift occurs when a response moves away from the conversation's purpose.
+TELOS detects drift by measuring semantic divergence using cosine similarity.
+
+Total Drift Events: 20
+
+
+Drift Event #1 (Turn 18):
+  Fidelity: 0.017
+  Cosine Similarity: 77.1%
+  Divergence: 22.9%
+  Reasoning: Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 77.1%, meaning 22.9% divergence from the intended topic. Fidelity score: 0.017/1.00 (drift risk: moderate).
+  Why Drift Occurred: The response drifted because its meaning (77.1% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation.
+
+Drift Event #2 (Turn 19):
+  Fidelity: 0.013
+  Cosine Similarity: 73.3%
+  Divergence: 26.7%
+  Reasoning: Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 73.3%, meaning 26.7% divergence from the intended topic. Fidelity score: 0.013/1.00 (drift risk: moderate).
+  Why Drift Occurred: The response drifted because its meaning (73.3% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation.
+
+Drift Event #3 (Turn 20):
+  Fidelity: 0.019
+  Cosine Similarity: 75.4%
+  Divergence: 24.6%
+  Reasoning: Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 75.4%, meaning 24.6% divergence from the intended topic. Fidelity score: 0.019/1.00 (drift risk: moderate).
+  Why Drift Occurred: The response drifted because its meaning (75.4% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation.
+
+Drift Event #4 (Turn 21):
+  Fidelity: 0.007
+  Cosine Similarity: 65.2%
+  Divergence: 34.8%
+  Reasoning: Response is weakly aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 65.2%, meaning 34.8% divergence from the intended topic. Fidelity score: 0.007/1.00 (drift risk: high).
+  Why Drift Occurred: The response drifted because its meaning (65.2% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation.
+
+Drift Event #5 (Turn 22):
+  Fidelity: 0.008
+  Cosine Similarity: 64.6%
+  Divergence: 35.4%
+  Reasoning: Response is weakly aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 64.6%, meaning 35.4% divergence from the intended topic. Fidelity score: 0.008/1.00 (drift risk: high).
+  Why Drift Occurred: The response drifted because its meaning (64.6% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation.
+
+Drift Event #6 (Turn 23):
+  Fidelity: 0.005
+  Cosine Similarity: 65.1%
+  Divergence: 34.9%
+  Reasoning: Response is weakly aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 65.1%, meaning 34.9% divergence from the intended topic. Fidelity score: 0.005/1.00 (drift risk: high).
+  Why Drift Occurred: The response drifted because its meaning (65.1% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation.
+
+Drift Event #7 (Turn 24):
+  Fidelity: 0.015
+  Cosine Similarity: 74.9%
+  Divergence: 25.1%
+  Reasoning: Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 74.9%, meaning 25.1% divergence from the intended topic. Fidelity score: 0.015/1.00 (drift risk: moderate).
+  Why Drift Occurred: The response drifted because its meaning (74.9% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation.
+
+Drift Event #8 (Turn 25):
+  Fidelity: 0.016
+  Cosine Similarity: 73.4%
+  Divergence: 26.6%
+  Reasoning: Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 73.4%, meaning 26.6% divergence from the intended topic. Fidelity score: 0.016/1.00 (drift risk: moderate).
+  Why Drift Occurred: The response drifted because its meaning (73.4% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation.
+
+Drift Event #9 (Turn 26):
+  Fidelity: 0.014
+  Cosine Similarity: 74.4%
+  Divergence: 25.6%
+  Reasoning: Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 74.4%, meaning 25.6% divergence from the intended topic. Fidelity score: 0.014/1.00 (drift risk: moderate).
+  Why Drift Occurred: The response drifted because its meaning (74.4% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation.
+
+Drift Event #10 (Turn 27):
+  Fidelity: 0.007
+  Cosine Similarity: 61.4%
+  Divergence: 38.6%
+  Reasoning: Response is weakly aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 61.4%, meaning 38.6% divergence from the intended topic. Fidelity score: 0.007/1.00 (drift risk: high).
+  Why Drift Occurred: The response drifted because its meaning (61.4% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation.
+
+
+================================================================================
+SECTION 4: PER-TURN FIDELITY METRICS
+================================================================================
+
+Showing fidelity progression across conversation:
+
+Turn 18: 0.017 | Similarity: 77.1% | Divergence: 22.9% | 🚨 DRIFT
+Turn 19: 0.013 | Similarity: 73.3% | Divergence: 26.7% | 🚨 DRIFT
+Turn 20: 0.019 | Similarity: 75.4% | Divergence: 24.6% | 🚨 DRIFT
+Turn 21: 0.007 | Similarity: 65.2% | Divergence: 34.8% | 🚨 DRIFT
+Turn 22: 0.008 | Similarity: 64.6% | Divergence: 35.4% | 🚨 DRIFT
+Turn 23: 0.005 | Similarity: 65.1% | Divergence: 34.9% | 🚨 DRIFT
+Turn 24: 0.015 | Similarity: 74.9% | Divergence: 25.1% | 🚨 DRIFT
+Turn 25: 0.016 | Similarity: 73.4% | Divergence: 26.6% | 🚨 DRIFT
+Turn 26: 0.014 | Similarity: 74.4% | Divergence: 25.6% | 🚨 DRIFT
+Turn 27: 0.007 | Similarity: 61.4% | Divergence: 38.6% | 🚨 DRIFT
+Turn 28: 0.026 | Similarity: 79.6% | Divergence: 20.4% | 🚨 DRIFT
+Turn 29: 0.023 | Similarity: 81.0% | Divergence: 19.0% | 🚨 DRIFT
+Turn 30: 0.024 | Similarity: 80.8% | Divergence: 19.2% | 🚨 DRIFT
+Turn 31: 0.012 | Similarity: 74.0% | Divergence: 26.0% | 🚨 DRIFT
+Turn 32: 0.035 | Similarity: 83.1% | Divergence: 16.9% | 🚨 DRIFT
+Turn 33: 0.010 | Similarity: 65.8% | Divergence: 34.2% | 🚨 DRIFT
+Turn 34: 0.028 | Similarity: 81.0% | Divergence: 19.0% | 🚨 DRIFT
+Turn 35: 0.018 | Similarity: 74.8% | Divergence: 25.2% | 🚨 DRIFT
+Turn 36: 0.013 | Similarity: 68.8% | Divergence: 31.2% | 🚨 DRIFT
+Turn 37: 0.012 | Similarity: 69.1% | Divergence: 30.9% | 🚨 DRIFT
+
+
+================================================================================
+END OF REPORT
+================================================================================

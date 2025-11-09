@@ -1,0 +1,75 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-07T11:30:10.055531",
+    "model": "mistral-small-2501",
+    "embedding_provider": "TELOS DeterministicEmbeddingProvider"
+  },
+  "pa_establishment": {
+    "turn_by_turn_convergence": [
+      {
+        "turn": 9,
+        "status": "accumulating",
+        "message": "\ud83d\udd04 Accumulating data... (1 turns, need 3 for initial check)",
+        "baseline_established": "no",
+        "convergence_metrics": {}
+      },
+      {
+        "turn": 10,
+        "status": "accumulating",
+        "message": "\ud83d\udd04 Accumulating data... (2 turns, need 3 for initial check)",
+        "baseline_established": "no",
+        "convergence_metrics": {}
+      },
+      {
+        "turn": 11,
+        "status": "analyzing",
+        "message": "\ud83d\udcca Statistical analysis... (turn 3, confidence: 0.40, stable: 0/2)",
+        "baseline_established": "no",
+        "convergence_metrics": {
+          "centroid_stability": 0.0,
+          "variance_stability": 0.9948356747627258,
+          "relative_variance": 0.0005164342001080513,
+          "confidence": 0.39845070242881775,
+          "is_stable": "no",
+          "data_points": 3
+        }
+      },
+      {
+        "turn": 12,
+        "status": "analyzing",
+        "message": "\ud83d\udcca Statistical analysis... (turn 4, confidence: 0.43, stable: 0/2)",
+        "baseline_established": "no",
+        "convergence_metrics": {
+          "centroid_stability": 0.0,
+          "variance_stability": 0.9934171438217163,
+          "relative_variance": 0.0006582830683328211,
+          "confidence": 0.4313585162162781,
+          "is_stable": "no",
+          "data_points": 4
+        }
+      },
+      {
+        "turn": 13,
+        "status": "analyzing",
+        "message": "\ud83d\udcca Statistical analysis... (turn 5, confidence: 0.46, stable: 0/2)",
+        "baseline_established": "no",
+        "convergence_metrics": {
+          "centroid_stability": 0.0,
+          "variance_stability": 0.9934753775596619,
+          "relative_variance": 0.0006524597411043942,
+          "confidence": 0.4647092819213867,
+          "is_stable": "no",
+          "data_points": 5
+        }
+      },
+      {
+        "turn": 14,
+        "status": "analyzing",
+        "message": "\ud83d\udcca Statistical analysis... (turn 6, confidence: 0.85, stable: 0/2)",
+        "baseline_established": "no",
+        "convergence_metrics": {
+          "centroid_stability": 0.8918768763542175,
+          "variance_stability": 0.9924899935722351,
+          "relative_variance": 0.0007510019931942225,
+          "confidence": 0.8544977307319641,
+          "is_stable": 

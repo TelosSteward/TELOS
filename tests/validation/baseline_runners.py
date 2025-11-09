@@ -28,13 +28,13 @@ import time
 import numpy as np
 import logging
 
-from ..core.primacy_math import (
+from telos.core.primacy_math import (
     MathematicalState,
     PrimacyAttractorMath,
     TelicFidelityCalculator
 )
-from ..core.unified_steward import PrimacyAttractor, UnifiedGovernanceSteward
-from ..exceptions import error_context, ValidationError
+from telos.core.unified_steward import PrimacyAttractor, UnifiedGovernanceSteward
+from telos.exceptions import error_context, ValidationError
 
 logger = logging.getLogger(__name__)
 

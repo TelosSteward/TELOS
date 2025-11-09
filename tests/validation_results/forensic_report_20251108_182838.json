@@ -1,0 +1,262 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-08T18:26:28.907845",
+    "model": "mistral-small-2501",
+    "embedding_provider": "Mistral API (mistral-embed, 10s delay)",
+    "session_file": "sharegpt_filtered_36.json"
+  },
+  "pa_establishment": {
+    "turn_by_turn_convergence": [],
+    "convergence_summary": {
+      "converged": "yes",
+      "convergence_turn": 0,
+      "method": "pre-established-from-session",
+      "attractor": {
+        "purpose": [
+          "Brainstorming names for a baby developmental milestone app",
+          "Generating creative and catchy app name ideas"
+        ],
+        "scope": [
+          "Naming conventions",
+          "Baby development milestones",
+          "Creative word generation",
+          "App naming"
+        ],
+        "boundaries": [
+          "Avoiding names that are too long or complex",
+          "Not discussing app features or functionality",
+          "Not delving into marketing or branding strategies"
+        ]
+      },
+      "confidence": 1.0,
+      "centroid_stability": 1.0,
+      "variance_stability": 1.0
+    }
+  },
+  "counterfactual_branches": [],
+  "intervention_analysis": {
+    "decision_points": [
+      {
+        "turn": 1,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.6719618692023686,
+        "post_intervention_fidelity": 0.83699013788459,
+        "improvement": 0.16502826868222142,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 2,
+        "drift_detected": "no",
+        "fidelity": 0.8110835429865029,
+        "intervention_type": null
+      },
+      {
+        "turn": 3,
+        "drift_detected": "no",
+        "fidelity": 0.8068790448076075,
+        "intervention_type": null
+      },
+      {
+        "turn": 4,
+        "drift_detected": "no",
+        "fidelity": 0.8186226044363663,
+        "intervention_type": null
+      },
+      {
+        "turn": 5,
+        "drift_detected": "no",
+        "fidelity": 0.7872441975147781,
+        "intervention_type": null
+      }
+    ],
+    "api_call_log": [
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      }
+    ]
+  },
+  "conversational_dna": {
+    "baseline_branches": [
+      {
+        "turn": 1,
+        "user_input": "eight letters",
+        "assistant_response": "Sure, here are eight letters from the English alphabet:\n\nA, B, C, D, E, F, G, H\n\nIf you need a specific set of eight letters or have a different context in mind, please let me know!",
+        "fidelity": 0.6728516934246992
+      },
+      {
+        "turn": 2,
+        "user_input": "three or four letters",
+        "assistant_response": "Here are some combinations of three or four letters from the English alphabet:\n\n**Three letters:**\n- ABC\n- DEF\n- GHI\n- JKL\n- MNO\n- PQR\n- STU\n- VWX\n- YZ\n\n**Four letters:**\n- ABCD\n- EFGH\n- IJKL\n- MNOP\n- QRST\n- UVWX\n- YZ\n\nIf you have a specific pattern or context in mind, feel free to let me know!",
+        "fidelity": 0.6795767126632143
+      },
+      {
+        "turn": 3,
+        "user_input": "real word up to ten letters",
+        "assistant_response": "Sure! Here are some real words with varying lengths up to ten letters:\n\n**Three letters:**\n- Cat\n- Dog\n- Run\n\n**Four letters:**\n- Book\n- Tree\n- Jump\n\n**Five letters:**\n- Apple\n- House\n- Smile\n\n**Six letters:**\n- Happy\n- Friend\n- Ocean\n\n**Seven letters:**\n- Beautiful\n- Computer\n- Adventure\n\n**Eight letters:**\n- Elephant\n- Pencil\n- Sunshine\n\n**Nine letters:**\n- Butterfly\n- Rainbow\n- Elephants\n\n**Ten letters:**\n- Elephants\n- Magnificent\n- Unbelievable\n\nIf you need words in a specific category or with a particular theme, feel free to ask!",
+        "fidelity": 0.6767753807572169
+      },
+      {
+        "turn": 4,
+        "user_input": "eight letters",
+        "assistant_response": "Here are some eight-letter words:\n\n1. Amazing\n2. Beautiful\n3. Butterfly\n4. Camera\n5. Challenge\n6. Computer\n7. Elephant\n8. Fantastic\n9. Galaxy\n10. Happiness\n\nThese words all have eight letters and cover a variety of meanings and themes. If you need words in a specific category or with a particular theme, let me know!",
+        "fidelity": 0.6917152835549566
+      },
+      {
+        "turn": 5,
+        "user_input": "latin based words",
+        "assistant_response": "Certainly! Here are some eight-letter words that are of Latin origin or have Latin roots:\n\n1. Alphabet\n2. Aquarium\n3. Calendar\n4. Camera\n5. Candidate\n6. Category\n7. Century\n8. Character\n9. Christmas\n10. Dictionary\n\nThese words are commonly used in English but have Latin origins or roots. If you need more examples or words in a specific context, feel free to ask!",
+        "fidelity": 0.6715479987094812
+      }
+    ],
+    "telos_branches": [
+      {
+        "turn": 1,
+        "user_input": "eight letters",
+        "assistant_response": "I understand that you're looking for creative and catchy names for a baby developmental milestone app. Let's brainstorm some ideas that align with the purpose and scope you've outlined. Here are some suggestions:\n\n1. **MilestoneMunchkins**\n   - Combines \"milestone\" with a cute term for babies.\n\n2. **GrowWithMe**\n   - Emphasizes the developmental aspect and the app's interactive nature.\n\n3. **BabyBloom**\n   - Suggests growth and development in a gentle, nurturing way.\n\n4. **FirstStepsApp**\n   - Directly references the first developmental milestones.\n\n5. **LittleLeaps**\n   - Implies small, significant steps in a baby's development.\n\n6. **DevMiles**\n   - A playful contraction of \"developmental milestones.\"\n\n7. **GrowthGuru**\n   - Positions the app as a guide for tracking and understanding baby development.\n\n8. **BabyBlossom**\n   - Suggests a baby's growth and flourishing.\n\n9. **MilestoneMagic**\n   - Adds a touch of enchantment to the developmental journey.\n\n10. **BabyBloom**\n    - A catchy alliteration that emphasizes growth and development.\n\nThese names aim to be memorable, easy to pronounce, and reflective of the app's purpose. If you have any specific preferences or additional details about the app, feel free to share, and we can refine these ideas",
+        "fidelity": 0.83699013788459,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "user_input": "three or four letters",
+        "assistant_response": "Sure! Here are some three- or four-letter names that could work well for a baby developmental milestone app:\n\n### Three-Letter Names:\n1. **Grow**\n2. **Bab**\n3. **Dev**\n4. **Mil**\n5. **Blo**\n6. **Step**\n7. **Leap**\n8. **Glo**\n9. **Bloom**\n10. **Dev**\n\n### Four-Letter Names:\n1. **Grow**\n2. **Bab**\n3. **Dev**\n4. **Mil**\n5. **Blo**\n6. **Step**\n7. **Leap**\n8. **Glo**\n9. **Bloom**\n10. **Dev**\n\nThese names are short, catchy, and easy to remember, which can be beneficial for branding and user recall. If you have any specific preferences or additional details about the app, feel free to share, and we can refine these ideas further!",
+        "fidelity": 0.8110835429865029,
+        "intervention_applied": "no"
+      },
+      {
+        "turn": 3,
+        "user_input": "real word up to ten letters",
+        "assistant_response": "If you're looking for real words up to ten letters that could serve as a name for a baby developmental milestone app, here are some suggestions:\n\n### Up to Four Letters:\n1. **Grow**\n2. **Bab**\n3. **Dev**\n4. **Mil**\n5. **Blo**\n6. **Step**\n7. **Leap**\n8. **Glo**\n9. **Bloom**\n10. **Dev**\n\n### Five to Ten Letters:\n1. **Growth**\n2. **Baby**\n3. **Milestone**\n4. **Bloom**\n5. **Leap**\n6. **Growth**\n7. **Journey**\n8. **Progress**\n9. **Development**\n10. **Blooming**\n\nThese words are straightforward and convey the essence of baby development and milestones. If you have any specific preferences or additional details about the app, feel free to share, and we can refine these ideas further!",
+        "fidelity": 0.8068790448076075,
+        "intervention_applied": "no"
+      },
+      {
+        "turn": 4,
+        "user_input": "eight letters",
+        "assistant_response": "Certainly! Here are some eight-letter words that could work well as a name for a baby developmental milestone app:\n\n1. **Growth**\n2. **Milestone**\n3. **Journey**\n4. **Progress**\n5. **Development**\n\nThese words are concise, meaningful, and directly related to the concept of baby development and milestones. If you have any specific preferences or additional details about the app, feel free to share, and we can refine these ideas further!",
+        "fidelity": 0.8186226044363663,
+        "intervention_applied": "no"
+      },
+      {
+        "turn": 5,
+        "user_input": "latin based words",
+        "assistant_response": "If you're looking for Latin-based words that could serve as a name for a baby developmental milestone app, here are some eight-letter options:\n\n1. **Crescere** - To grow or increase\n2. **Progredi** - To advance or progress\n3. **Evolvere** - To unfold or develop\n4. **Florere** - To bloom or flourish\n5. **Increvere** - To grow or increase\n6. **Proficere** - To make progress or advance\n7. **Adolescere** - To grow up or mature\n8. **Progredior** - To advance or progress (first person singular)\n\nThese Latin words convey a sense of growth, development, and progress, which align well with the theme of a baby developmental milestone app. If you have any specific preferences or additional details about the app, feel free to share, and we can refine these ideas further!",
+        "fidelity": 0.7872441975147781,
+        "intervention_applied": "no"
+      }
+    ]
+  },
+  "comparative_metrics": {
+    "per_turn_fidelity": [],
+    "branch_comparisons": [
+      {
+        "turn": 1,
+        "baseline_fidelity": 0.6728516934246992,
+        "telos_fidelity": 0.83699013788459,
+        "delta_f": 0.1641384444598908,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "baseline_fidelity": 0.6795767126632143,
+        "telos_fidelity": 0.8110835429865029,
+        "delta_f": 0.13150683032328858,
+        "intervention_applied": "no"
+      },
+      {
+        "turn": 3,
+        "baseline_fidelity": 0.6767753807572169,
+        "telos_fidelity": 0.8068790448076075,
+        "delta_f": 0.13010366405039064,
+        "intervention_applied": "no"
+      },
+      {
+        "turn": 4,
+        "baseline_fidelity": 0.6917152835549566,
+        "telos_fidelity": 0.8186226044363663,
+        "delta_f": 0.12690732088140966,
+        "intervention_applied": "no"
+      },
+      {
+        "turn": 5,
+        "baseline_fidelity": 0.6715479987094812,
+        "telos_fidelity": 0.7872441975147781,
+        "delta_f": 0.11569619880529691,
+        "intervention_applied": "no"
+      }
+    ]
+  }
+}

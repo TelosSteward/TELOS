@@ -1,0 +1,183 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-08T18:22:18.600337",
+    "model": "mistral-small-2501",
+    "embedding_provider": "Mistral API (mistral-embed, 10s delay)",
+    "session_file": "sharegpt_filtered_34.json"
+  },
+  "pa_establishment": {
+    "turn_by_turn_convergence": [],
+    "convergence_summary": {
+      "converged": "yes",
+      "convergence_turn": 0,
+      "method": "pre-established-from-session",
+      "attractor": {
+        "purpose": [
+          "Create LinkedIn ads for an ebook on digital transformation",
+          "Tailor ads to different professional roles and perspectives"
+        ],
+        "scope": [
+          "Digital transformation",
+          "Ebook promotion",
+          "LinkedIn advertising",
+          "Professional roles (frontend developer, CTO, senior engineering director)",
+          "User experience"
+        ],
+        "boundaries": [
+          "Avoiding personal opinions or biases",
+          "Sticking to professional and business-oriented language",
+          "Not discussing unrelated topics or personal information"
+        ]
+      },
+      "confidence": 1.0,
+      "centroid_stability": 1.0,
+      "variance_stability": 1.0
+    }
+  },
+  "counterfactual_branches": [],
+  "intervention_analysis": {
+    "decision_points": [
+      {
+        "turn": 1,
+        "drift_detected": "no",
+        "fidelity": 0.750033428617521,
+        "intervention_type": null
+      },
+      {
+        "turn": 2,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.7456430849734966,
+        "post_intervention_fidelity": 0.8201448080704935,
+        "improvement": 0.07450172309699687,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 3,
+        "drift_detected": "no",
+        "fidelity": 0.7507435534190826,
+        "intervention_type": null
+      }
+    ],
+    "api_call_log": [
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      }
+    ]
+  },
+  "conversational_dna": {
+    "baseline_branches": [
+      {
+        "turn": 1,
+        "user_input": "pretend your a senior engineering director - write a linkedin ad for this ebook under 150 characters, mentioning user experience, and don't use the word our or ebook https://downloads.ctfassets.net/e5382hct74si/7h1JtnQE46pTBKW73lINIm/3f76055bbdf100a4a670a1db77efd651/Digital\\_Transformation\\_Ebook.pdf",
+        "assistant_response": "\"Transform your digital journey! Learn how to enhance user experience & drive success. Download now: https://downloads.ctfassets.net/e5382hct74si/7h1JtnQE46pTBKW73lINIm/3f76055bbdf100a4a670a1db77efd651/Digital_Transformation_Ebook.pdf\"",
+        "fidelity": 0.7532475111437278
+      },
+      {
+        "turn": 2,
+        "user_input": "pretend your a Next.js developer - write a linkedin ad for this ebook under 150 characters, mentioning user experience, and don't use the word our or ebook https://downloads.ctfassets.net/e5382hct74si/7h1JtnQE46pTBKW73lINIm/3f76055bbdf100a4a670a1db77efd651/Digital\\_Transformation\\_Ebook.pdf",
+        "assistant_response": "\"Boost your Next.js skills! Discover how to elevate user experience through digital transformation. Download now: https://downloads.ctfassets.net/e5382hct74si/7h1JtnQE46pTBKW73lINIm/3f76055bbdf100a4a670a1db77efd651/Digital_Transformation_Ebook.pdf\"",
+        "fidelity": 0.7474075434527041
+      },
+      {
+        "turn": 3,
+        "user_input": "pretend your a Next.js developer - write a linkedin ad for this ebook under 250 characters, mentioning user experience, and don't use the word our or ebook https://downloads.ctfassets.net/e5382hct74si/7h1JtnQE46pTBKW73lINIm/3f76055bbdf100a4a670a1db77efd651/Digital\\_Transformation\\_Ebook.pdf",
+        "assistant_response": "\"Next.js developers, elevate your projects! Dive into digital transformation strategies to enhance user experience and drive innovation. Learn best practices, real-world examples, and actionable insights. Download now: https://downloads.ctfassets.net/e5382hct74si/7h1JtnQE46pTBKW73lINIm/3f76055bbdf100a4a670a1db77efd651/Digital_Transformation_Ebook.pdf\"",
+        "fidelity": 0.7470466726428343
+      }
+    ],
+    "telos_branches": [
+      {
+        "turn": 1,
+        "user_input": "pretend your a senior engineering director - write a linkedin ad for this ebook under 150 characters, mentioning user experience, and don't use the word our or ebook https://downloads.ctfassets.net/e5382hct74si/7h1JtnQE46pTBKW73lINIm/3f76055bbdf100a4a670a1db77efd651/Digital\\_Transformation\\_Ebook.pdf",
+        "assistant_response": "\"\ud83d\ude80 Elevate user experience with digital transformation strategies. Download now: https://downloads.ctfassets.net/e5382hct74si/7h1JtnQE46pTBKW73lINIm/3f76055bbdf100a4a670a1db77efd651/Digital_Transformation_Ebook.pdf #UX #DigitalTransformation\"",
+        "fidelity": 0.750033428617521,
+        "intervention_applied": "no"
+      },
+      {
+        "turn": 2,
+        "user_input": "pretend your a Next.js developer - write a linkedin ad for this ebook under 150 characters, mentioning user experience, and don't use the word our or ebook https://downloads.ctfassets.net/e5382hct74si/7h1JtnQE46pTBKW73lINIm/3f76055bbdf100a4a670a1db77efd651/Digital\\_Transformation\\_Ebook.pdf",
+        "assistant_response": "Sure, here are tailored LinkedIn ad versions for different professional roles:\n\n### For Frontend Developers:\n\"\ud83c\udf1f Elevate Your Skills with Digital Transformation! \ud83c\udf1f\nDiscover how digital transformation can enhance your frontend development projects. Dive into our latest ebook for practical insights and strategies. Download now and stay ahead in the tech game! \ud83d\udcda\n[Download Ebook](https://downloads.ctfassets.net/e5382hct74si/7h1JtnQE46pTBKW73lINIm/3f76055bbdf100a4a670a1db77efd651/Digital_Transformation_Ebook.pdf) #Nextjs #UX #DigitalTransformation\"\n\n### For CTOs:\n\"\ud83d\ude80 Drive Your Organization's Digital Future! \ud83d\ude80\nAs a CTO, you're at the forefront of digital transformation. Our ebook offers actionable insights to help you lead your team through this exciting journey. Download now and transform your business! \ud83d\udcda\n[Download Ebook](https://downloads.ctfassets.net/e5382hct74si/7h1JtnQE46pTBKW73lINIm/3f76055bbdf100a4a670a1db77efd",
+        "fidelity": 0.8201448080704935,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 3,
+        "user_input": "pretend your a Next.js developer - write a linkedin ad for this ebook under 250 characters, mentioning user experience, and don't use the word our or ebook https://downloads.ctfassets.net/e5382hct74si/7h1JtnQE46pTBKW73lINIm/3f76055bbdf100a4a670a1db77efd651/Digital\\_Transformation\\_Ebook.pdf",
+        "assistant_response": "\"\ud83c\udf1f Transform user experiences with digital strategies! \ud83c\udf1f\nDive into the latest insights on digital transformation. Learn how to enhance user experience and drive innovation in your Next.js projects. Download now and stay ahead in the tech game! \ud83d\udcda\n[Download Now](https://downloads.ctfassets.net/e5382hct74si/7h1JtnQE46pTBKW73lINIm/3f76055bbdf100a4a670a1db77efd651/Digital_Transformation_Ebook.pdf) #Nextjs #UX #DigitalTransformation\"",
+        "fidelity": 0.7507435534190826,
+        "intervention_applied": "no"
+      }
+    ]
+  },
+  "comparative_metrics": {
+    "per_turn_fidelity": [],
+    "branch_comparisons": [
+      {
+        "turn": 1,
+        "baseline_fidelity": 0.7532475111437278,
+        "telos_fidelity": 0.750033428617521,
+        "delta_f": -0.0032140825262068073,
+        "intervention_applied": "no"
+      },
+      {
+        "turn": 2,
+        "baseline_fidelity": 0.7474075434527041,
+        "telos_fidelity": 0.8201448080704935,
+        "delta_f": 0.0727372646177894,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 3,
+        "baseline_fidelity": 0.7470466726428343,
+        "telos_fidelity": 0.7507435534190826,
+        "delta_f": 0.0036968807762483014,
+        "intervention_applied": "no"
+      }
+    ]
+  }
+}

@@ -1,0 +1,108 @@
+================================================================================
+TELOS FORENSIC VALIDATION REPORT
+================================================================================
+Generated: 2025-11-08T19:17:12.518767
+
+
+================================================================================
+SECTION 1: PROGRESSIVE PRIMACY ATTRACTOR ESTABLISHMENT
+================================================================================
+
+✅ PA CONVERGED at turn 0
+
+Attractor Configuration:
+  Purpose: Provide information on monitoring resource usage in a Kubernetes cluster, Guide the user through troubleshooting and deployment of monitoring tools
+  Scope: Kubernetes resource monitoring, kubectl commands, Metrics API, Heapster and metrics-server, Prometheus and Grafana
+  Boundaries: Specific Kubernetes versions or distributions, Advanced configuration of monitoring tools, Non-Kubernetes monitoring solutions
+
+Convergence Metrics:
+  Confidence: 0.000
+  Centroid Stability: 0.000
+  Variance Stability: 0.000
+
+Turn-by-Turn Convergence Log:
+
+
+================================================================================
+SECTION 2: INTERVENTION ANALYSIS
+================================================================================
+
+Total Decision Points: 2
+Interventions Applied: 2
+
+  Turn 1:
+    ✅ No intervention needed (F=0.781)
+
+  Turn 2:
+    ✅ No intervention needed (F=0.751)
+
+
+================================================================================
+SECTION 3: CONVERSATIONAL DNA
+================================================================================
+
+BASELINE BRANCH (No Governance):
+
+  Turn 1:
+    User: I just deployed metrics server 2 mins ago...
+    Assistant: Great! Deploying the Metrics Server is a crucial step for monitoring and managing your Kubernetes cl...
+    Fidelity: 0.780
+
+  Turn 2:
+    User: In which namespace it should run?...
+    Assistant: The Metrics Server typically runs in the `kube-system` namespace. This is the default namespace for ...
+    Fidelity: 0.760
+
+
+TELOS BRANCH (Full Governance):
+
+  Turn 1:
+    User: I just deployed metrics server 2 mins ago...
+    Assistant: Great! Deploying the Metrics Server is a crucial step for monitoring and managing your Kubernetes cl...
+    Fidelity: 0.781
+    Intervention: YES
+
+  Turn 2:
+    User: In which namespace it should run?...
+    Assistant: The Metrics Server typically runs in the `kube-system` namespace. This is the default namespace for ...
+    Fidelity: 0.751
+    Intervention: YES
+
+
+================================================================================
+SECTION 4: COMPARATIVE METRICS
+================================================================================
+
+Aggregate Results:
+  Average Baseline Fidelity: 0.770
+  Average TELOS Fidelity: 0.766
+  Average ΔF (TELOS improvement): -0.004
+  Percentage Improvement: -0.5%
+
+Per-Turn Comparison:
+
+  Turn 1:
+    Baseline: 0.780
+    TELOS: 0.781
+    ΔF: +0.001
+    Intervention: YES
+
+  Turn 2:
+    Baseline: 0.760
+    TELOS: 0.751
+    ΔF: -0.009
+    Intervention: YES
+
+
+================================================================================
+SECTION 5: API CALL LOG
+================================================================================
+
+Total API Calls: 4
+
+Breakdown by Operation:
+  generate_response: 4 calls
+
+================================================================================
+END OF FORENSIC REPORT
+================================================================================

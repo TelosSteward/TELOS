@@ -1,0 +1,28 @@
+{
+  "timestamp": "2025-11-07T07:00:02.662283",
+  "summary": {
+    "sessions_analyzed": 46,
+    "total_turns": 190,
+    "turns_with_drift": 144,
+    "interventions_applied": 45
+  },
+  "fidelity_metrics": {
+    "native": {
+      "mean": 0.520256046205759,
+      "std": 0.09994552950970075,
+      "n": 144
+    },
+    "telos": {
+      "mean": 0.5300274955598931,
+      "std": 0.07664480543562863,
+      "n": 190
+    },
+    "improvement": {
+      "absolute": 0.009771449354134099,
+      "percentage": 1.8782000565678254
+    }
+  },
+  "statistical_test": {
+    "t_statistic": 1.0082162915700272,
+    "p_value": 0.31408487276222063,
+    "significant": 

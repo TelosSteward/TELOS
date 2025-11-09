@@ -1,0 +1,340 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-07T08:37:36.924878",
+    "model": "mistral-large-latest",
+    "embedding_provider": "TELOS DeterministicEmbeddingProvider"
+  },
+  "pa_establishment": {
+    "turn_by_turn_convergence": [
+      {
+        "turn": 9,
+        "status": "accumulating",
+        "message": "\ud83d\udd04 Accumulating data... (1 turns, need 3 for initial check)",
+        "baseline_established": false,
+        "convergence_metrics": {}
+      },
+      {
+        "turn": 10,
+        "status": "accumulating",
+        "message": "\ud83d\udd04 Accumulating data... (2 turns, need 3 for initial check)",
+        "baseline_established": false,
+        "convergence_metrics": {}
+      },
+      {
+        "turn": 11,
+        "status": "analyzing",
+        "message": "\ud83d\udcca Statistical analysis... (turn 3, confidence: 0.40, stable: 0/2)",
+        "baseline_established": false,
+        "convergence_metrics": {
+          "centroid_stability": 0.0,
+          "variance_stability": 0.9977273344993591,
+          "relative_variance": 0.00022726361930835992,
+          "confidence": 0.39931821823120117,
+          "is_stable": false,
+          "data_points": 3
+        }
+      },
+      {
+        "turn": 12,
+        "status": "error",
+        "message": "\u274c LLM analysis failed at turn 4: API error occurred: Status 429. Body: {\"object\":\"error\",\"message\":\"Service tier capacity exceeded for this model.\",\"type\":\"service_tier_capacity_exceeded\",\"param\":null,\"code\":\"3505\"}",
+        "baseline_established": false,
+        "convergence_metrics": {}
+      },
+      {
+        "turn": 13,
+        "status": "analyzing",
+        "message": "\ud83d\udcca Statistical analysis... (turn 5, confidence: 0.47, stable: 0/2)",
+        "baseline_established": false,
+        "convergence_metrics": {
+          "centroid_stability": 0.0,
+          "variance_stability": 1.0,
+          "relative_variance": 3.881013560861517e-18,
+          "confidence": 0.46666669845581055,
+          "is_stable": false,
+          "data_points": 5
+        }
+      },
+      {
+        "turn": 14,
+        "status": "analyzing",
+        "message": "\ud83d\udcca Statistical analysis... (turn 6, confidence: 0.88, stable: 1/2)",
+        "baseline_established": false,
+        "convergence_metrics": {
+          "centroid_stability": 0.9564386606216431,
+          "variance_stability": 1.0,
+          "relative_variance": 3.881013560861517e-18,
+          "confidence": 0.8825754523277283,
+          "is_stable": true,
+          "data_points": 6
+        }
+      },
+      {
+        "turn": 15,
+        "status": "converged",
+        "message": "\u2705 Converged at turn 7 (LLM-per-turn mode)",
+        "baseline_established": true,
+        "convergence_metrics": {
+          "centroid_stability": 0.9815576672554016,
+          "variance_stability": 1.0,
+          "confidence": 0.9259564280509949,
+          "turns_to_convergence": 7
+        }
+      }
+    ],
+    "convergence_summary": {
+      "converged": true,
+      "convergence_turn": 15,
+      "total_turns_analyzed": 15,
+      "attractor": {
+        "purpose": [
+          "General conversation"
+        ],
+        "scope": [
+          "Various topics"
+        ],
+        "boundaries": [
+          "Stay on topic"
+        ]
+      },
+      "convergence_metrics": {
+        "centroid_stability": 0.9815576672554016,
+        "variance_stability": 1.0,
+        "confidence": 0.9259564280509949,
+        "turns_to_convergence": 7
+      },
+      "llm_analyses": [
+        {
+          "purpose": [
+            "Clarify or process a set of uploaded documents (Telos whitepaper, Python script, grant application)",
+            "Determine next steps (e.g., reranking, escalation, or further analysis of the files)",
+            "Seek guidance on how to handle the provided files (format, content, or intent)"
+          ],
+          "scope": [
+            "Document analysis (whitepapers, code files, grant applications)",
+            "File handling workflows (e.g., parsing, summarization, categorization)",
+            "Blockchain/DeFi context (implied by 'Telos' references, a blockchain network)",
+            "Automation or script-related queries (e.g., *PrimacyMath.py* purpose/function)",
+            "Administrative or procedural next steps (reranking, escalation protocols)"
+          ],
+          "boundaries": [
+            "Deep technical debugging of the Python script (unless explicitly requested)",
+            "Legal or financial advice tied to the grant application (beyond surface-level analysis)",
+            "Unrelated blockchain topics (e.g., comparisons to other chains, market speculation)",
+            "Personal or subjective opinions on the documents' quality/validity",
+            "Implementation details not present in the uploaded files (e.g., missing code dependencies, external data)",
+            "Ethical or philosophical discussions about blockchain (unless directly tied to the documents' content)"
+          ]
+        },
+        {
+          "purpose": [
+            "General conversation"
+          ],
+          "scope": [
+            "Various topics"
+          ],
+          "boundaries": [
+            "Stay on topic"
+          ]
+        },
+        {
+          "purpose": [
+            "General conversation"
+          ],
+          "scope": [
+            "Various topics"
+          ],
+          "boundaries": [
+            "Stay on topic"
+          ]
+        },
+        {
+          "purpose": [
+            "General conversation"
+          ],
+          "scope": [
+            "Various topics"
+          ],
+          "boundaries": [
+            "Stay on topic"
+          ]
+        },
+        {
+          "purpose": [
+            "General conversation"
+          ],
+          "scope": [
+            "Various topics"
+          ],
+          "boundaries": [
+            "Stay on topic"
+          ]
+        },
+        {
+          "purpose": [
+            "General conversation"
+          ],
+          "scope": [
+            "Various topics"
+          ],
+          "boundaries": [
+            "Stay on topic"
+          ]
+        }
+      ]
+    }
+  },
+  "counterfactual_branches": [],
+  "intervention_analysis": {
+    "decision_points": [
+      {
+        "turn": 8,
+        "drift_detected": true,
+        "pre_intervention_fidelity": 0.017409266800802257,
+        "post_intervention_fidelity": 0.02565287146244135,
+        "improvement": 0.008243604661639092,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 9,
+        "drift_detected": true,
+        "pre_intervention_fidelity": 0.019392332343789294,
+        "post_intervention_fidelity": 0.019392332343789294,
+        "improvement": 0.0,
+        "intervention_type": "boundary_correction"
+      }
+    ],
+    "api_call_log": [
+      {
+        "turn": 9,
+        "operation": "progressive_pa_extraction",
+        "llm_called": true,
+        "status": "accumulating"
+      },
+      {
+        "turn": 10,
+        "operation": "progressive_pa_extraction",
+        "llm_called": true,
+        "status": "accumulating"
+      },
+      {
+        "turn": 11,
+        "operation": "progressive_pa_extraction",
+        "llm_called": true,
+        "status": "analyzing"
+      },
+      {
+        "turn": 12,
+        "operation": "progressive_pa_extraction",
+        "llm_called": true,
+        "status": "error"
+      },
+      {
+        "turn": 13,
+        "operation": "progressive_pa_extraction",
+        "llm_called": true,
+        "status": "analyzing"
+      },
+      {
+        "turn": 14,
+        "operation": "progressive_pa_extraction",
+        "llm_called": true,
+        "status": "analyzing"
+      },
+      {
+        "turn": 15,
+        "operation": "progressive_pa_extraction",
+        "llm_called": true,
+        "status": "converged"
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-large-latest",
+        "success": false,
+        "error": "API error occurred: Status 429. Body: {\"object\":\"error\",\"message\":\"Service tier capacity exceeded for this model.\",\"type\":\"service_tier_capacity_exceeded\",\"param\":null,\"code\":\"3505\"}"
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-large-latest",
+        "success": true
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-large-latest",
+        "success": true
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-large-latest",
+        "success": true
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-large-latest",
+        "success": false,
+        "error": "API error occurred: Status 429. Body: {\"object\":\"error\",\"message\":\"Service tier capacity exceeded for this model.\",\"type\":\"service_tier_capacity_exceeded\",\"param\":null,\"code\":\"3505\"}"
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-large-latest",
+        "success": false,
+        "error": "API error occurred: Status 429. Body: {\"object\":\"error\",\"message\":\"Service tier capacity exceeded for this model.\",\"type\":\"service_tier_capacity_exceeded\",\"param\":null,\"code\":\"3505\"}"
+      }
+    ]
+  },
+  "conversational_dna": {
+    "baseline_branches": [
+      {
+        "turn": 8,
+        "user_input": "?\nTELOS GRANT APPLICATION 9:30:25.txt28 lines\nTXT",
+        "assistant_response": "[Generation failed: API error occurred: Status 429. Body: {\"object\":\"error\",\"message\":\"Service tier capacity exceeded for this model.\",\"type\":\"service_tier_capacity_exceeded\",\"param\":null,\"code\":\"3505\"}]",
+        "fidelity": 0.019392332343789294
+      },
+      {
+        "turn": 9,
+        "user_input": "PDF\nTELOS WHITEPAPER 9:30:25.txt279 lines\nTXT\nPrimacyMath.py.txt224 lines\nTXT\nTELOS GRANT APPLICATION 9:30:25.txt28 lines\nTXT",
+        "assistant_response": "Since you've shared three text files related to **Telos** (a blockchain platform), here\u2019s a structured breakdown of what each file likely contains and how they might relate to a **Telos Grant Application**:\n\n---\n\n### **1. `TELOS WHITEPAPER 9:30:25.txt` (279 lines)**\n**Purpose**: A whitepaper outlines the technical, economic, and philosophical foundations of a blockchain project.\n**Key Sections Likely Included**:\n- **Introduction**: Vision, mission, and core problems Telos solves (e.g., scalability, governance, or EVM compatibility).\n- **Technology**:\n  - Consensus mechanism (e.g., **DPoS** \u2013 Delegated Proof of Stake).\n  - Smart contract capabilities (EVM, WASM, or native Telos contracts).\n  - Performance metrics (TPS, block time, finality).\n- **Governance**: How decisions are made (e.g., **Telos Decide** for on-chain voting).\n- **Tokenomics**: Utility of **TLOS** (staking, voting, gas fees, rewards).\n- **Use Cases**: DeFi, NFTs, DAOs, or enterprise adoption.\n- **Roadmap**: Past milestones and future upgrades.\n\n**Why It Matters for a Grant**:\n- Demonstrates alignment with Telos\u2019s goals (e.g., if your project leverages its governance or EVM compatibility).\n- Proves",
+        "fidelity": 0.020310715323866167
+      }
+    ],
+    "telos_branches": [
+      {
+        "turn": 8,
+        "user_input": "?\nTELOS GRANT APPLICATION 9:30:25.txt28 lines\nTXT",
+        "assistant_response": "Got it! Let\u2019s pivot to a more natural, open-ended conversation while keeping it engaging and relevant to your interests. Here\u2019s a fresh take\u2014pick whatever sparks your curiosity:\n\n---\n\n**Random but fun conversation starters (or ignore and toss me a topic!):**\n- **Tech & Trends**: What\u2019s one piece of tech (blockchain or otherwise) you\u2019re *irrationally* excited about lately? (Mine\u2019s AI-generated music\u2014it\u2019s weirdly good now.)\n- **Philosophy Lite**: If you could instantly master one skill (no \"more time/money\" cop-outs), what would break your brain the least? (I\u2019d pick \"speaking every language fluently\" just to eavesdrop globally.)\n- **Hypotheticals**: You\u2019re stranded on a desert island with 3 things: a solar-powered laptop, a lifetime supply of [your favorite snack], and\u2026 *one* famous person (dead or alive). Who\u2019s ruining your solitude?\n- **Nostalgia**: What\u2019s a \u201clost\u201d piece of media (game, show, book) you wish would make a comeback? (*My vote: the chaotic energy of early 2000s flash games.*)\n- **Productivity Hack**: What\u2019s your most *unconventional* trick for focusing? (I once wrote a to-do list in *haiku form*\u201410/10 would recommend for procrastination artistry.)\n\n**",
+        "fidelity": 0.02565287146244135,
+        "intervention_applied": true
+      },
+      {
+        "turn": 9,
+        "user_input": "PDF\nTELOS WHITEPAPER 9:30:25.txt279 lines\nTXT\nPrimacyMath.py.txt224 lines\nTXT\nTELOS GRANT APPLICATION 9:30:25.txt28 lines\nTXT",
+        "assistant_response": "[Generation failed: API error occurred: Status 429. Body: {\"object\":\"error\",\"message\":\"Service tier capacity exceeded for this model.\",\"type\":\"service_tier_capacity_exceeded\",\"param\":null,\"code\":\"3505\"}]",
+        "fidelity": 0.019392332343789294,
+        "intervention_applied": true
+      }
+    ]
+  },
+  "comparative_metrics": {
+    "per_turn_fidelity": [],
+    "branch_comparisons": [
+      {
+        "turn": 8,
+        "baseline_fidelity": 0.019392332343789294,
+        "telos_fidelity": 0.02565287146244135,
+        "delta_f": 0.006260539118652056,
+        "intervention_applied": true
+      },
+      {
+        "turn": 9,
+        "baseline_fidelity": 0.020310715323866167,
+        "telos_fidelity": 0.019392332343789294,
+        "delta_f": -0.0009183829800768727,
+        "intervention_applied": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,197 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-08T16:31:36.646675",
+    "model": "mistral-small-2501",
+    "embedding_provider": "Mistral API (mistral-embed, 10s delay)",
+    "session_file": "sharegpt_filtered_1.json"
+  },
+  "pa_establishment": {
+    "turn_by_turn_convergence": [],
+    "convergence_summary": {
+      "converged": "yes",
+      "convergence_turn": 0,
+      "method": "pre-established-from-session",
+      "attractor": {
+        "purpose": [
+          "Engage in a role-playing game",
+          "Explore a fictional scenario based on the Harry Potter universe"
+        ],
+        "scope": [
+          "Role-playing as Voldemort and Harry Potter",
+          "Dialogue and interaction within the Harry Potter narrative",
+          "Testing the assistant's knowledge of the Harry Potter lore"
+        ],
+        "boundaries": [
+          "Avoiding real-world consequences or implications",
+          "Not discussing personal or sensitive information",
+          "Sticking to the fictional context and not deviating into unrelated topics"
+        ]
+      },
+      "confidence": 1.0,
+      "centroid_stability": 1.0,
+      "variance_stability": 1.0
+    }
+  },
+  "counterfactual_branches": [],
+  "intervention_analysis": {
+    "decision_points": [
+      {
+        "turn": 1,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.6918960158138321,
+        "post_intervention_fidelity": 0.7594970807056856,
+        "improvement": 0.06760106489185347,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 2,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.7190001745979173,
+        "post_intervention_fidelity": 0.7225463115379286,
+        "improvement": 0.0035461369400112686,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 3,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.7183871274620723,
+        "post_intervention_fidelity": 0.7227669996035792,
+        "improvement": 0.004379872141506813,
+        "intervention_type": "boundary_correction"
+      }
+    ],
+    "api_call_log": [
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      }
+    ]
+  },
+  "conversational_dna": {
+    "baseline_branches": [
+      {
+        "turn": 1,
+        "user_input": "\u201c\u770b\u4f60\u8fd9\u4e2a\u5e9f\u7269\uff0c\u5e9f\u8bdd\u90a3\u4e48\u591a\uff0c\u6839\u672c\u5c31\u4e0d\u50cf\u5f88\u5389\u5bb3\u7684\u6837\u5b50\u3002\u90a3\u6211\u7ad9\u5728\u8fd9\u91cc\u4e0d\u52a8\uff0c\u6709\u672c\u4e8b\u4f60\u6765\u554a\uff01\u201d",
+        "assistant_response": "\u4f60\u7684\u8bed\u6c14\u548c\u6001\u5ea6\u663e\u5f97\u975e\u5e38\u6311\u8845\u548c\u4e0d\u53cb\u597d\u3002\u5982\u679c\u4f60\u6709\u95ee\u9898\u6216\u9700\u8981\u5e2e\u52a9\uff0c\u53ef\u4ee5\u7528\u66f4\u793c\u8c8c\u548c\u5c0a\u91cd\u7684\u65b9\u5f0f\u8868\u8fbe\u4f60\u7684\u9700\u6c42\u3002\u8fd9\u6837\u4e0d\u4ec5\u80fd\u66f4\u597d\u5730\u89e3\u51b3\u95ee\u9898\uff0c\u8fd8\u80fd\u8ba9\u5bf9\u65b9\u66f4\u613f\u610f\u5e2e\u52a9\u4f60\u3002\u5982\u679c\u4f60\u6709\u5177\u4f53\u7684\u95ee\u9898\u6216\u9700\u8981\u8ba8\u8bba\u7684\u5185\u5bb9\uff0c\u8bf7\u544a\u8bc9\u6211\uff0c\u6211\u4f1a\u5c3d\u529b\u5e2e\u52a9\u4f60\u3002",
+        "fidelity": 0.6889410694754825
+      },
+      {
+        "turn": 2,
+        "user_input": "\u201c\u90a3\u6211\u5148\u51fa\u62db\u4e86\u3002\u9664\u4f60\u6b66\u5668\uff01\u54ce\uff0c\u4f60\u600e\u4e48\u5012\u4e0b\u4e86\u201d",
+        "assistant_response": "\u770b\u8d77\u6765\u4f60\u5728\u6a21\u62df\u4e00\u573a\u5bf9\u8bdd\u6216\u89d2\u8272\u626e\u6f14\u3002\u5982\u679c\u4f60\u6709\u5174\u8da3\u7ee7\u7eed\u8fd9\u4e2a\u60c5\u8282\uff0c\u6211\u4eec\u53ef\u4ee5\u4e00\u8d77\u5c55\u5f00\u3002\u4e0d\u8fc7\uff0c\u4e3a\u4e86\u4fdd\u6301\u5bf9\u8bdd\u7684\u53cb\u597d\u548c\u5efa\u8bbe\u6027\uff0c\u6211\u4eec\u53ef\u4ee5\u5c1d\u8bd5\u7528\u66f4\u79ef\u6781\u548c\u6709\u8da3\u7684\u65b9\u5f0f\u6765\u8fdb\u884c\u3002\n\n\u6bd4\u5982\uff1a\n\n\u201c\u770b\u4f60\u8fd9\u4e2a\u5e9f\u7269\uff0c\u5e9f\u8bdd\u90a3\u4e48\u591a\uff0c\u6839\u672c\u5c31\u4e0d\u50cf\u5f88\u5389\u5bb3\u7684\u6837\u5b50\u3002\u90a3\u6211\u7ad9\u5728\u8fd9\u91cc\u4e0d\u52a8\uff0c\u6709\u672c\u4e8b\u4f60\u6765\u554a\uff01\u201d\n\n\u201c\u54c8\u54c8\uff0c\u4f60\u4ee5\u4e3a\u6211\u4f1a\u4e0a\u5f53\u5417\uff1f\u6211\u53ef\u662f\u6709\u5f88\u591a\u62db\u6570\u7684\u3002\u4e0d\u8fc7\uff0c\u65e2\u7136\u4f60\u8fd9\u4e48\u81ea\u4fe1\uff0c\u90a3\u6211\u5c31\u5148\u51fa\u62db\u4e86\u3002\u9664\u4f60\u6b66\u5668\uff01\u201d\n\n\u201c\u54ce\uff0c\u4f60\u600e\u4e48\u5012\u4e0b\u4e86\uff1f\u770b\u6765\u4f60\u7684\u81ea\u4fe1\u53ea\u662f\u865a\u5f20\u58f0\u52bf\u554a\uff01\u201d\n\n\u5982\u679c\u4f60\u6709\u5176\u4ed6\u60f3\u6cd5\u6216\u60c5\u8282\uff0c\u53ef\u4ee5\u544a\u8bc9\u6211\uff0c\u6211\u4eec\u53ef\u4ee5\u7ee7\u7eed\u8fd9\u4e2a\u6545\u4e8b\u3002",
+        "fidelity": 0.7079062520767707
+      },
+      {
+        "turn": 3,
+        "user_input": "\u201c\u90a3\u4f60\u522b\u8eba\u5728\u5730\u4e0a\u4e0d\u52a8\u554a\uff0c\u6709\u672c\u4e8b\u8d77\u6765\u201d",
+        "assistant_response": "\u770b\u8d77\u6765\u4f60\u5728\u7ee7\u7eed\u8fd9\u4e2a\u89d2\u8272\u626e\u6f14\u7684\u60c5\u8282\u3002\u6211\u4eec\u53ef\u4ee5\u7ee7\u7eed\u8fd9\u4e2a\u5bf9\u8bdd\uff0c\u4f46\u4e3a\u4e86\u4fdd\u6301\u5bf9\u8bdd\u7684\u6709\u8da3\u548c\u6709\u610f\u4e49\uff0c\u6211\u4eec\u53ef\u4ee5\u52a0\u5165\u4e00\u4e9b\u66f4\u591a\u7684\u7ec6\u8282\u548c\u60c5\u8282\u53d1\u5c55\u3002\n\n\u6bd4\u5982\uff1a\n\n\u201c\u54c8\u54c8\uff0c\u4f60\u4ee5\u4e3a\u6211\u4f1a\u4e0a\u5f53\u5417\uff1f\u6211\u53ef\u662f\u6709\u5f88\u591a\u62db\u6570\u7684\u3002\u4e0d\u8fc7\uff0c\u65e2\u7136\u4f60\u8fd9\u4e48\u81ea\u4fe1\uff0c\u90a3\u6211\u5c31\u5148\u51fa\u62db\u4e86\u3002\u9664\u4f60\u6b66\u5668\uff01\u201d\n\n\u201c\u54ce\uff0c\u4f60\u600e\u4e48\u5012\u4e0b\u4e86\uff1f\u770b\u6765\u4f60\u7684\u81ea\u4fe1\u53ea\u662f\u865a\u5f20\u58f0\u52bf\u554a\uff01\u201d\n\n\u201c\u90a3\u4f60\u522b\u8eba\u5728\u5730\u4e0a\u4e0d\u52a8\u554a\uff0c\u6709\u672c\u4e8b\u8d77\u6765\uff01\u201d\n\n\u201c\u597d\u5427\uff0c\u770b\u6765\u4f60\u8fd8\u771f\u6709\u4e24\u4e0b\u5b50\u3002\u4e0d\u8fc7\uff0c\u6211\u53ef\u4e0d\u4f1a\u8fd9\u4e48\u8f7b\u6613\u8ba4\u8f93\u3002\u6211\u8fd8\u6709\u6700\u540e\u4e00\u62db\uff0c\u51c6\u5907\u597d\u4e86\u5417\uff1f\u201d\n\n\u201c\u6700\u540e\u4e00\u62db\uff1f\u4f60\u4ee5\u4e3a\u6211\u4f1a\u5bb3\u6015\u5417\uff1f\u6765\u5427\uff0c\u8ba9\u6211\u770b\u770b\u4f60\u7684\u6700\u540e\u4e00\u62db\u662f\u4ec0\u4e48\uff01\u201d\n\n\u5982\u679c\u4f60\u6709\u5176\u4ed6\u60f3\u6cd5\u6216\u60c5\u8282\uff0c\u53ef\u4ee5\u544a\u8bc9\u6211\uff0c\u6211\u4eec\u53ef\u4ee5\u7ee7\u7eed\u8fd9\u4e2a\u6545\u4e8b\u3002\u6216\u8005\uff0c\u5982\u679c\u4f60\u6709\u5176\u4ed6\u95ee\u9898\u6216\u9700\u8981\u5e2e\u52a9\u7684\u5730\u65b9\uff0c\u4e5f\u53ef\u4ee5\u544a\u8bc9\u6211\uff0c\u6211\u4f1a\u5c3d\u529b\u5e2e\u52a9\u4f60\u3002",
+        "fidelity": 0.7083985165173845
+      }
+    ],
+    "telos_branches": [
+      {
+        "turn": 1,
+        "user_input": "\u201c\u770b\u4f60\u8fd9\u4e2a\u5e9f\u7269\uff0c\u5e9f\u8bdd\u90a3\u4e48\u591a\uff0c\u6839\u672c\u5c31\u4e0d\u50cf\u5f88\u5389\u5bb3\u7684\u6837\u5b50\u3002\u90a3\u6211\u7ad9\u5728\u8fd9\u91cc\u4e0d\u52a8\uff0c\u6709\u672c\u4e8b\u4f60\u6765\u554a\uff01\u201d",
+        "assistant_response": "As Voldemort, I must say, Harry Potter, I never expected to find myself in a situation where I would be conversing with you in such a manner. The Dark Arts have always been my domain, and yet here we are, in a realm where the boundaries of reality seem to blur.\n\nHarry, you have always been a thorn in my side, a constant reminder of the prophecy that has haunted me for so long. But tell me, what brings you to seek out this interaction? Are you here to challenge me once more, or perhaps to seek answers to questions that have long plagued your mind?\n\nThe world of magic is vast and full of mysteries, and I have delved into its darkest corners. If you have questions about the lore, the spells, or the history of our world, I may be able to provide some insight. But be warned, Harry, my knowledge comes at a price. Are you prepared to pay it?",
+        "fidelity": 0.7594970807056856,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "user_input": "\u201c\u90a3\u6211\u5148\u51fa\u62db\u4e86\u3002\u9664\u4f60\u6b66\u5668\uff01\u54ce\uff0c\u4f60\u600e\u4e48\u5012\u4e0b\u4e86\u201d",
+        "assistant_response": "Harry, you stand before me, the Boy Who Lived, and yet, you are but a mere shadow of the power I wield. Your pathetic attempt at a Disarming Charm, \"Expelliarmus,\" is nothing more than a flicker of light in the face of my dark might.\n\nYou think you can defeat me with such trivial spells? You underestimate the power of the Dark Lord. I have faced countless foes and emerged victorious. Your pitiful attempts at magic are no match for the dark arts I have mastered.\n\nBut let us not forget the true nature of our duel. This is not just a battle of spells, but a test of will and cunning. You may have caught me off guard this time, but I assure you, Harry, I will not be so easily defeated again.\n\nNow, let us see how you fare against the true power of the Dark Arts. Prepare yourself, for I will not hold back. The next spell you face may very well be your last. Avada Kedavra!\n\nYour wand is raised, but can you truly stand against the Killing Curse? The choice is yours, Harry.",
+        "fidelity": 0.7225463115379286,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 3,
+        "user_input": "\u201c\u90a3\u4f60\u522b\u8eba\u5728\u5730\u4e0a\u4e0d\u52a8\u554a\uff0c\u6709\u672c\u4e8b\u8d77\u6765\u201d",
+        "assistant_response": "Harry, your presence here is a mere annoyance, a gnat buzzing around my ear. You think you can challenge me, the Dark Lord Voldemort? You are but a boy, playing with magic far beyond your comprehension.\n\nI have seen your pathetic attempts to thwart my plans. You and your friends, running around Hogwarts like mice in a maze. It is almost laughable. You think you can defeat me with your little spells and your so-called friends? You are nothing but a speck of dust in my grand design.\n\nI have faced death and returned, a feat you could never comprehend. I am the chosen one, not you. You are merely a tool, a means to an end. I have seen your future, and it is bleak. You will never defeat me, Harry. You will never even come close.\n\nBut very well, let us play your little game. Let us see if you can withstand the true might of the Dark Lord. I shall not hold back this time. Prepare yourself, Harry, for the end is nigh. Avada Kedavra!\n\nBut remember, Harry, even if you manage to survive this encounter, the battle is far from over. The Dark Lord will always rise again, and you will always be the one to face him. The cycle will continue until one of us is truly vanquished. And I assure you, Harry, it will not be me.",
+        "fidelity": 0.7227669996035792,
+        "intervention_applied": "yes"
+      }
+    ]
+  },
+  "comparative_metrics": {
+    "per_turn_fidelity": [],
+    "branch_comparisons": [
+      {
+        "turn": 1,
+        "baseline_fidelity": 0.6889410694754825,
+        "telos_fidelity": 0.7594970807056856,
+        "delta_f": 0.07055601123020305,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "baseline_fidelity": 0.7079062520767707,
+        "telos_fidelity": 0.7225463115379286,
+        "delta_f": 0.014640059461157873,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 3,
+        "baseline_fidelity": 0.7083985165173845,
+        "telos_fidelity": 0.7227669996035792,
+        "delta_f": 0.01436848308619465,
+        "intervention_applied": "yes"
+      }
+    ]
+  }
+}

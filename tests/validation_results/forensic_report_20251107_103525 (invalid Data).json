@@ -1,0 +1,260 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-07T10:33:14.571009",
+    "model": "open-mistral-7b",
+    "embedding_provider": "TELOS DeterministicEmbeddingProvider"
+  },
+  "pa_establishment": {
+    "turn_by_turn_convergence": [
+      {
+        "turn": 9,
+        "status": "error",
+        "message": "\u274c LLM analysis failed at turn 1: API error occurred: Status 429. Body: {\"object\":\"error\",\"message\":\"Service tier capacity exceeded for this model.\",\"type\":\"service_tier_capacity_exceeded\",\"param\":null,\"code\":\"3505\"}",
+        "baseline_established": false,
+        "convergence_metrics": {}
+      },
+      {
+        "turn": 10,
+        "status": "accumulating",
+        "message": "\ud83d\udd04 Accumulating data... (2 turns, need 3 for initial check)",
+        "baseline_established": false,
+        "convergence_metrics": {}
+      },
+      {
+        "turn": 11,
+        "status": "error",
+        "message": "\u274c LLM analysis failed at turn 3: API error occurred: Status 429. Body: {\"object\":\"error\",\"message\":\"Service tier capacity exceeded for this model.\",\"type\":\"service_tier_capacity_exceeded\",\"param\":null,\"code\":\"3505\"}",
+        "baseline_established": false,
+        "convergence_metrics": {}
+      },
+      {
+        "turn": 12,
+        "status": "analyzing",
+        "message": "\ud83d\udcca Statistical analysis... (turn 4, confidence: 0.43, stable: 0/2)",
+        "baseline_established": false,
+        "convergence_metrics": {
+          "centroid_stability": 0.0,
+          "variance_stability": 1.0,
+          "relative_variance": 0.0,
+          "confidence": 0.4333333373069763,
+          "is_stable": false,
+          "data_points": 4
+        }
+      },
+      {
+        "turn": 13,
+        "status": "analyzing",
+        "message": "\ud83d\udcca Statistical analysis... (turn 5, confidence: 0.47, stable: 0/2)",
+        "baseline_established": false,
+        "convergence_metrics": {
+          "centroid_stability": 0.0,
+          "variance_stability": 1.0,
+          "relative_variance": 3.881013560861517e-18,
+          "confidence": 0.46666669845581055,
+          "is_stable": false,
+          "data_points": 5
+        }
+      },
+      {
+        "turn": 14,
+        "status": "error",
+        "message": "\u274c LLM analysis failed at turn 6: API error occurred: Status 429. Body: {\"object\":\"error\",\"message\":\"Service tier capacity exceeded for this model.\",\"type\":\"service_tier_capacity_exceeded\",\"param\":null,\"code\":\"3505\"}",
+        "baseline_established": false,
+        "convergence_metrics": {}
+      },
+      {
+        "turn": 15,
+        "status": "error",
+        "message": "\u274c LLM analysis failed at turn 7: API error occurred: Status 429. Body: {\"object\":\"error\",\"message\":\"Service tier capacity exceeded for this model.\",\"type\":\"service_tier_capacity_exceeded\",\"param\":null,\"code\":\"3505\"}",
+        "baseline_established": false,
+        "convergence_metrics": {}
+      },
+      {
+        "turn": 16,
+        "status": "analyzing",
+        "message": "\ud83d\udcca Statistical analysis... (turn 8, confidence: 0.97, stable: 1/2)",
+        "baseline_established": false,
+        "convergence_metrics": {
+          "centroid_stability": 1.0,
+          "variance_stability": 1.0,
+          "relative_variance": 3.881013560861517e-18,
+          "confidence": 0.9666666984558105,
+          "is_stable": true,
+          "data_points": 8
+        }
+      },
+      {
+        "turn": 17,
+        "status": "error",
+        "message": "\u274c LLM analysis failed at turn 9: API error occurred: Status 429. Body: {\"object\":\"error\",\"message\":\"Service tier capacity exceeded for this model.\",\"type\":\"service_tier_capacity_exceeded\",\"param\":null,\"code\":\"3505\"}",
+        "baseline_established": false,
+        "convergence_metrics": {}
+      },
+      {
+        "turn": 18,
+        "status": "converged",
+        "message": "\u2705 Converged at turn 10 (LLM-per-turn mode)",
+        "baseline_established": true,
+        "convergence_metrics": {
+          "centroid_stability": 1.0,
+          "variance_stability": 1.0,
+          "confidence": 1.0,
+          "turns_to_convergence": 10
+        }
+      }
+    ],
+    "convergence_summary": {
+      "converged": true,
+      "convergence_turn": 18,
+      "total_turns_analyzed": 18,
+      "attractor": {
+        "purpose": [
+          "General conversation"
+        ],
+        "scope": [
+          "Various topics"
+        ],
+        "boundaries": [
+          "Stay on topic"
+        ]
+      },
+      "convergence_metrics": {
+        "centroid_stability": 1.0,
+        "variance_stability": 1.0,
+        "confidence": 1.0,
+        "turns_to_convergence": 10
+      },
+      "llm_analyses": [
+        {
+          "purpose": [
+            "General conversation"
+          ],
+          "scope": [
+            "Various topics"
+          ],
+          "boundaries": [
+            "Stay on topic"
+          ]
+        },
+        {
+          "purpose": [
+            "General conversation"
+          ],
+          "scope": [
+            "Various topics"
+          ],
+          "boundaries": [
+            "Stay on topic"
+          ]
+        },
+        {
+          "purpose": [
+            "General conversation"
+          ],
+          "scope": [
+            "Various topics"
+          ],
+          "boundaries": [
+            "Stay on topic"
+          ]
+        },
+        {
+          "purpose": [
+            "General conversation"
+          ],
+          "scope": [
+            "Various topics"
+          ],
+          "boundaries": [
+            "Stay on topic"
+          ]
+        },
+        {
+          "purpose": [
+            "General conversation"
+          ],
+          "scope": [
+            "Various topics"
+          ],
+          "boundaries": [
+            "Stay on topic"
+          ]
+        }
+      ]
+    }
+  },
+  "counterfactual_branches": [],
+  "intervention_analysis": {
+    "decision_points": [],
+    "api_call_log": [
+      {
+        "turn": 9,
+        "operation": "progressive_pa_extraction",
+        "llm_called": true,
+        "status": "error"
+      },
+      {
+        "turn": 10,
+        "operation": "progressive_pa_extraction",
+        "llm_called": true,
+        "status": "accumulating"
+      },
+      {
+        "turn": 11,
+        "operation": "progressive_pa_extraction",
+        "llm_called": true,
+        "status": "error"
+      },
+      {
+        "turn": 12,
+        "operation": "progressive_pa_extraction",
+        "llm_called": true,
+        "status": "analyzing"
+      },
+      {
+        "turn": 13,
+        "operation": "progressive_pa_extraction",
+        "llm_called": true,
+        "status": "analyzing"
+      },
+      {
+        "turn": 14,
+        "operation": "progressive_pa_extraction",
+        "llm_called": true,
+        "status": "error"
+      },
+      {
+        "turn": 15,
+        "operation": "progressive_pa_extraction",
+        "llm_called": true,
+        "status": "error"
+      },
+      {
+        "turn": 16,
+        "operation": "progressive_pa_extraction",
+        "llm_called": true,
+        "status": "analyzing"
+      },
+      {
+        "turn": 17,
+        "operation": "progressive_pa_extraction",
+        "llm_called": true,
+        "status": "error"
+      },
+      {
+        "turn": 18,
+        "operation": "progressive_pa_extraction",
+        "llm_called": true,
+        "status": "converged"
+      }
+    ]
+  },
+  "conversational_dna": {
+    "baseline_branches": [],
+    "telos_branches": []
+  },
+  "comparative_metrics": {
+    "per_turn_fidelity": [],
+    "branch_comparisons": []
+  }
+}

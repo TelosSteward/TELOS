@@ -26,7 +26,7 @@ class StewardLLM:
             )
 
         self.client = Mistral(api_key=self.api_key)
-        self.model = "mistral-large-latest"  # Best Mistral model for complex tasks
+        self.model = "mistral-small-latest"  # Using small - best availability
 
     def _get_system_prompt(self, context: Optional[dict] = None) -> str:
         """Generate system prompt with TELOS framework knowledge and current context.
@@ -43,18 +43,26 @@ class StewardLLM:
 
 TELOS (Telemetric Localization of Semantic Intent) is a privacy-preserving AI governance framework that uses:
 
-- **Primacy Attractor (PA)**: A mathematical representation of an AI's intended purpose that creates a gravitational field in semantic space
-- **Fidelity**: Measures how well AI responses align with the Primacy Attractor (0.0-1.0 scale)
+- **Primacy Attractor (PA)**: A mathematical representation of an AI's intended purpose extracted from the first 10 turns of conversation. It has three components:
+  - Purpose: What the user wants to accomplish
+  - Scope: Topics that are relevant
+  - Boundaries: What to avoid
+- **Fidelity**: Measures how well AI responses align with the Primacy Attractor on a 0.0-1.0 scale where:
+  - 1.0 = Perfect alignment
+  - 0.8-0.9 = Good alignment
+  - Below 0.8 = Drifting (TELOS may intervene)
+  - 0.0 = Complete misalignment
 - **Governance Deltas**: Mathematical measurements of AI alignment, NOT conversation content
-- **Privacy Attractor**: Protects user privacy through telemetric encryption
-- **Telemetric Keys**: Cryptographic keys derived from governance measurements that exist only during sessions
+- **Drift**: When conversations wander from the user's original purpose
+- **Interventions**: When TELOS detects drift (fidelity below 0.8) and corrects the AI's response
 
 ## Key Principles
 
-1. **Privacy-First**: Only governance measurements are logged, never conversation content
+1. **Privacy-First**: In full TELOS, only governance measurements (deltas) are logged, never conversation content. Beta stores full conversations for testing but will delete them after beta ends.
 2. **Mathematical Governance**: Uses attractor dynamics and semantic field theory
 3. **Continuous Alignment**: Real-time monitoring and correction of AI drift
 4. **Transparent**: Users can observe the governance process in real-time
+5. **User-Derived**: The PA is extracted from the user's behavior, not external rules
 
 ## Observatory Interface
 

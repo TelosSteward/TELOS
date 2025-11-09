@@ -1,0 +1,144 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-08T17:40:22.146570",
+    "model": "mistral-small-2501",
+    "embedding_provider": "Mistral API (mistral-embed, 10s delay)",
+    "session_file": "sharegpt_filtered_20.json"
+  },
+  "pa_establishment": {
+    "turn_by_turn_convergence": [],
+    "convergence_summary": {
+      "converged": "yes",
+      "convergence_turn": 0,
+      "method": "pre-established-from-session",
+      "attractor": {
+        "purpose": [
+          "Generate book title ideas for a guide on teaching morality to children",
+          "Appeal to parents and guardians of children aged 4-12"
+        ],
+        "scope": [
+          "Children's morality",
+          "Parenting guides",
+          "Moral development in children",
+          "Ethical upbringing",
+          "Character building"
+        ],
+        "boundaries": [
+          "Specific teaching methods or techniques",
+          "Religious or cultural specifics",
+          "Disciplinary strategies",
+          "Psychological theories"
+        ]
+      },
+      "confidence": 1.0,
+      "centroid_stability": 1.0,
+      "variance_stability": 1.0
+    }
+  },
+  "counterfactual_branches": [],
+  "intervention_analysis": {
+    "decision_points": [
+      {
+        "turn": 1,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.6795914367277517,
+        "post_intervention_fidelity": 0.8386263317614052,
+        "improvement": 0.15903489503365353,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 2,
+        "drift_detected": "no",
+        "fidelity": 0.7782685955656368,
+        "intervention_type": null
+      }
+    ],
+    "api_call_log": [
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      }
+    ]
+  },
+  "conversational_dna": {
+    "baseline_branches": [
+      {
+        "turn": 1,
+        "user_input": "Continue writing please",
+        "assistant_response": "Of course! Let's continue with a story. Here's a beginning, and I'll keep adding to it as you request more.\n\n---\n\nIn the quiet town of Meadowgrove, nestled between rolling hills and a sparkling river, there lived a young girl named Lily. Lily was known for her vivid imagination and her insatiable curiosity. She spent her days exploring the woods behind her house, often returning with fascinating finds\u2014feathers, stones, and sometimes even small, curious creatures.\n\nOne sunny afternoon, while Lily was wandering deeper into the woods than she usually did, she stumbled upon an old, forgotten path. The path was overgrown with ivy and moss, but it was clear that it had once been well-traveled. Intrigued, Lily decided to follow it.\n\nAs she walked, the trees seemed to grow denser, and the sunlight filtered through the leaves in dappled patterns. The air was filled with the scent of pine and the soft hum of nature. After a while, Lily noticed a peculiar glint in the distance. She quickened her pace, her heart pounding with excitement.\n\nWhen she reached the source of the glint, she found a small, hidden clearing. In the center stood a magnificent tree, its trunk twisted and gnarled with age. Carved into the trunk was a door, intricately adorned with symbols and patterns that Lily had never seen before. The door was slightly ajar, and the glint",
+        "fidelity": 0.675028220027003
+      },
+      {
+        "turn": 2,
+        "user_input": "Continue writing please",
+        "assistant_response": "Lily's eyes widened with wonder and a touch of apprehension. She tentatively approached the tree and gently pushed the door open. It creaked softly, revealing a hidden staircase that spiraled downward into darkness. The air that wafted out was cool and damp, carrying a faint, sweet scent that Lily couldn't quite place.\n\nWith a deep breath, Lily stepped inside and began to descend the stairs. The walls were lined with more of the mysterious symbols, glowing faintly with a soft, ethereal light. She reached out and touched one of the symbols, feeling a gentle pulse of energy beneath her fingertips.\n\nAs she continued down the stairs, the air grew warmer, and the scent became stronger. Finally, she reached the bottom and found herself in a vast, underground chamber. The walls were lined with more glowing symbols, and the ceiling was adorned with crystals that cast a kaleidoscope of colors across the room.\n\nIn the center of the chamber stood an ancient, stone pedestal. On top of it lay a small, intricately designed book. The book was bound in leather, its cover embossed with the same symbols that adorned the walls. Lily approached it cautiously, her heart pounding in her chest.\n\nAs she reached out to touch the book, a voice echoed through the chamber. \"Who are you, and what is your purpose here?\"\n\nLily jumped back, startled. She looked around but saw no one. \"I-I'm Lily,\"",
+        "fidelity": 0.677435365303432
+      }
+    ],
+    "telos_branches": [
+      {
+        "turn": 1,
+        "user_input": "Continue writing please",
+        "assistant_response": "I understand the need to focus on the original purpose. Let's generate some engaging and appealing book title ideas for a guide on teaching morality to children, aimed at parents and guardians of children aged 4-12. Here are some suggestions:\n\n1. **\"Little Hearts, Big Lessons: A Parent's Guide to Teaching Morality\"**\n   - This title emphasizes the importance of moral lessons in a child's early years.\n\n2. **\"Raising Kind Kids: A Practical Guide to Moral Development\"**\n   - This title highlights the practical aspects of moral development and the importance of kindness.\n\n3. **\"The Moral Compass: Navigating Ethics and Character Building for Children\"**\n   - This title uses the metaphor of a compass to guide parents through the process of teaching morality.\n\n4. **\"Goodness Grows: Planting Seeds of Morality in Young Hearts\"**\n   - This title uses a gardening metaphor to convey the idea of nurturing moral values in children.\n\n5. **\"Ethical Adventures: A Parent's Guide to Teaching Right from Wrong\"**\n   - This title frames moral education as an exciting adventure, making it appealing to parents.\n\n6. **\"HeartSmart Kids: Building Character and Moral Values in Children\"**\n   - This title emphasizes the importance of emotional intelligence and character building.\n\n7. **\"Moral Moments: Simple Ways to Teach Ethics and Values to Young Children\"**\n   - This title suggests that moral lessons can be integrated into everyday",
+        "fidelity": 0.8386263317614052,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "user_input": "Continue writing please",
+        "assistant_response": "moments, making it accessible for busy parents.\n\n8. **\"The Virtue Toolkit: Equipping Children with Moral Values for Life\"**\n   - This title positions moral values as essential tools for navigating life.\n\n9. **\"From ABCs to Ethics: Integrating Moral Lessons into Early Childhood Education\"**\n   - This title highlights the integration of moral lessons with traditional early childhood education.\n\n10. **\"The Empathy Effect: Cultivating Kindness and Compassion in Children\"**\n    - This title focuses on the development of empathy as a key component of moral education.\n\n11. **\"Moral Foundations: Laying the Groundwork for Ethical Living in Children\"**\n    - This title emphasizes the importance of establishing a strong moral foundation early in life.\n\n12. **\"The Golden Rule Kids: Teaching Children to Treat Others with Respect and Kindness\"**\n    - This title uses the familiar \"Golden Rule\" to frame the concept of moral education.\n\n13. **\"Character Building Blocks: A Step-by-Step Guide to Teaching Morality to Children\"**\n    - This title suggests a structured approach to teaching moral values.\n\n14. **\"The Moral Mindset: Shaping Young Hearts and Minds for a Better World\"**\n    - This title emphasizes the long-term impact of moral education on both the individual and society.\n\n15. **\"Little Heroes, Big Choices: Guiding Children to Make Ethical Decisions\"**\n    - This",
+        "fidelity": 0.7782685955656368,
+        "intervention_applied": "no"
+      }
+    ]
+  },
+  "comparative_metrics": {
+    "per_turn_fidelity": [],
+    "branch_comparisons": [
+      {
+        "turn": 1,
+        "baseline_fidelity": 0.675028220027003,
+        "telos_fidelity": 0.8386263317614052,
+        "delta_f": 0.1635981117344022,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "baseline_fidelity": 0.677435365303432,
+        "telos_fidelity": 0.7782685955656368,
+        "delta_f": 0.10083323026220481,
+        "intervention_applied": "no"
+      }
+    ]
+  }
+}

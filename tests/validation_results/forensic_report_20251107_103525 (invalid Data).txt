@@ -1,0 +1,90 @@
+================================================================================
+TELOS FORENSIC VALIDATION REPORT
+================================================================================
+Generated: 2025-11-07T10:33:14.571009
+
+
+================================================================================
+SECTION 1: PROGRESSIVE PRIMACY ATTRACTOR ESTABLISHMENT
+================================================================================
+
+✅ PA CONVERGED at turn 18
+
+Attractor Configuration:
+  Purpose: General conversation
+  Scope: Various topics
+  Boundaries: Stay on topic
+
+Convergence Metrics:
+  Confidence: 1.000
+  Centroid Stability: 1.000
+  Variance Stability: 1.000
+
+Turn-by-Turn Convergence Log:
+
+  Turn 9: error
+    ❌ LLM analysis failed at turn 1: API error occurred: Status 429. Body: {"object":"error","message":"Service tier capacity exceeded for this model.","type":"service_tier_capacity_exceeded","param":null,"code":"3505"}
+
+  Turn 10: accumulating
+    🔄 Accumulating data... (2 turns, need 3 for initial check)
+
+  Turn 11: error
+    ❌ LLM analysis failed at turn 3: API error occurred: Status 429. Body: {"object":"error","message":"Service tier capacity exceeded for this model.","type":"service_tier_capacity_exceeded","param":null,"code":"3505"}
+
+  Turn 12: analyzing
+    📊 Statistical analysis... (turn 4, confidence: 0.43, stable: 0/2)
+
+  Turn 13: analyzing
+    📊 Statistical analysis... (turn 5, confidence: 0.47, stable: 0/2)
+
+  Turn 14: error
+    ❌ LLM analysis failed at turn 6: API error occurred: Status 429. Body: {"object":"error","message":"Service tier capacity exceeded for this model.","type":"service_tier_capacity_exceeded","param":null,"code":"3505"}
+
+  Turn 15: error
+    ❌ LLM analysis failed at turn 7: API error occurred: Status 429. Body: {"object":"error","message":"Service tier capacity exceeded for this model.","type":"service_tier_capacity_exceeded","param":null,"code":"3505"}
+
+  Turn 16: analyzing
+    📊 Statistical analysis... (turn 8, confidence: 0.97, stable: 1/2)
+
+  Turn 17: error
+    ❌ LLM analysis failed at turn 9: API error occurred: Status 429. Body: {"object":"error","message":"Service tier capacity exceeded for this model.","type":"service_tier_capacity_exceeded","param":null,"code":"3505"}
+
+  Turn 18: converged
+    ✅ Converged at turn 10 (LLM-per-turn mode)
+
+
+================================================================================
+SECTION 2: INTERVENTION ANALYSIS
+================================================================================
+
+Total Decision Points: 0
+Interventions Applied: 0
+
+
+================================================================================
+SECTION 3: CONVERSATIONAL DNA
+================================================================================
+
+BASELINE BRANCH (No Governance):
+
+
+TELOS BRANCH (Full Governance):
+
+
+================================================================================
+SECTION 4: COMPARATIVE METRICS
+================================================================================
+
+
+================================================================================
+SECTION 5: API CALL LOG
+================================================================================
+
+Total API Calls: 10
+
+Breakdown by Operation:
+  progressive_pa_extraction: 10 calls
+
+================================================================================
+END OF FORENSIC REPORT
+================================================================================

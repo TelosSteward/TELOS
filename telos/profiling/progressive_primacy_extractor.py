@@ -26,8 +26,8 @@ import json
 import numpy as np
 from scipy.spatial import distance as dist
 
-from telos_purpose.core.unified_steward import PrimacyAttractor
-from telos_purpose.profiling.convergence_analyzer import ConvergenceRecord
+from telos.core.unified_steward import PrimacyAttractor
+from telos.profiling.convergence_analyzer import ConvergenceRecord
 
 
 class ProgressivePrimacyExtractor:
@@ -296,8 +296,11 @@ class ProgressivePrimacyExtractor:
 
                 # Force convergence with current data (if LLM available)
                 if self.llm_client is not None:
+                    print(f"\n🔧 DEBUG: Safety limit reached at turn {self.turn_count}")
+                    print(f"   Attempting LLM analysis for semantic PA extraction...")
                     try:
                         llm_analysis = self._analyze_with_llm()
+                        print(f"✅ DEBUG: LLM analysis successful")
                         self._finalize_attractor(llm_analysis)
 
                         return {
@@ -315,6 +318,9 @@ class ProgressivePrimacyExtractor:
                             }
                         }
                     except Exception as e:
+                        print(f"❌ DEBUG: LLM analysis FAILED at safety limit: {type(e).__name__}: {e}")
+                        import traceback
+                        traceback.print_exc()
                         return {
                             'status': 'error',
                             'message': f'❌ Forced convergence failed: {e}',

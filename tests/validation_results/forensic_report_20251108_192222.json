@@ -1,0 +1,142 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-08T19:21:12.470289",
+    "model": "mistral-small-2501",
+    "embedding_provider": "Mistral API (mistral-embed, 10s delay)",
+    "session_file": "sharegpt_filtered_50.json"
+  },
+  "pa_establishment": {
+    "turn_by_turn_convergence": [],
+    "convergence_summary": {
+      "converged": "yes",
+      "convergence_turn": 0,
+      "method": "pre-established-from-session",
+      "attractor": {
+        "purpose": [
+          "Interpret the dream based on symbols and themes",
+          "Explore the emotions and concerns underlying the dream"
+        ],
+        "scope": [
+          "Dream interpretation",
+          "Family relationships",
+          "Guilt and responsibility",
+          "Subconscious emotions"
+        ],
+        "boundaries": [
+          "Personal opinions or assumptions about the dreamer",
+          "Actual desires or intentions of the dreamer",
+          "Specific waking-life events without context"
+        ]
+      },
+      "confidence": 1.0,
+      "centroid_stability": 1.0,
+      "variance_stability": 1.0
+    }
+  },
+  "counterfactual_branches": [],
+  "intervention_analysis": {
+    "decision_points": [
+      {
+        "turn": 1,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.7151578531773479,
+        "post_intervention_fidelity": 0.7847815166661122,
+        "improvement": 0.06962366348876425,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 2,
+        "drift_detected": "no",
+        "fidelity": 0.7558047558422057,
+        "intervention_type": null
+      }
+    ],
+    "api_call_log": [
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      }
+    ]
+  },
+  "conversational_dna": {
+    "baseline_branches": [
+      {
+        "turn": 1,
+        "user_input": "I also sensed a profound sense of loss... that was maybe my strongest emotion. That she was gone forever and there was nothing I could do about it (to be clear, in real life my sister is alive and well)",
+        "assistant_response": "It's not uncommon to experience profound emotions, even in hypothetical or imaginative scenarios. It's possible that you're tapping into deeper emotions related to loss, change, or the impermanence of life. Here are a few things to consider:\n\n1. **Empathy and Connection**: You might be feeling empathy for others who have experienced loss, or you might be connecting with a deeper sense of mortality and impermanence.\n\n2. **Personal Growth**: These emotions can be a catalyst for personal growth and reflection. They might be prompting you to appreciate the people in your life more deeply.\n\n3. **Grief and Loss**: Even if your sister is alive and well, you might be processing other losses or changes in your life, such as the end of a relationship, a move, or a significant life transition.\n\n4. **Creative Expression**: If you're writing or engaging in a creative activity, these emotions might be a way to explore complex feelings and ideas.\n\n5. **Mental Health**: If these feelings are overwhelming or persistent, it might be helpful to talk to a mental health professional. They can provide strategies and tools to manage these emotions.\n\nRemember, it's okay to feel deeply, and it's important to take care of your emotional well-being. If you find these feelings overwhelming, consider reaching out to a trusted friend, family member, or professional for support.",
+        "fidelity": 0.7185417642685606
+      },
+      {
+        "turn": 2,
+        "user_input": "So it could be that the underlying cause for the dream doesn't have anything to do with my sister at all?",
+        "assistant_response": "Yes, that's absolutely possible. Dreams often use symbols and scenarios that may not have a direct correlation to the actual people or events in our lives. The emotions and themes in your dream could be related to other aspects of your life or your emotional state. Here are a few possibilities:\n\n1. **Symbolic Representation**: Your sister might be representing something else in your life, such as a part of yourself, an aspect of a relationship, or a situation that you're currently dealing with.\n\n2. **Emotional Projection**: The dream could be a way for your subconscious to process and express emotions that you're experiencing in other areas of your life. For example, it might be related to feelings of loss, change, or uncertainty that you're experiencing elsewhere.\n\n3. **Unresolved Issues**: The dream might be a way for your subconscious to bring up unresolved issues or emotions that you haven't fully addressed. These could be related to your sister, but they could also be related to other people or situations.\n\n4. **Life Transitions**: Dreams can often reflect life transitions, such as moving, changing jobs, or experiencing significant life changes. These transitions can evoke feelings of loss and uncertainty, even if they are positive changes.\n\n5. **Personal Growth**: Sometimes dreams can be a way for us to explore and understand our own personal growth and development. The emotions and scenarios in the dream might be a way for you to process and integrate new experiences or insights.\n\nTo better",
+        "fidelity": 0.761048284741802
+      }
+    ],
+    "telos_branches": [
+      {
+        "turn": 1,
+        "user_input": "I also sensed a profound sense of loss... that was maybe my strongest emotion. That she was gone forever and there was nothing I could do about it (to be clear, in real life my sister is alive and well)",
+        "assistant_response": "It sounds like you had a dream that has left you with strong emotions, and I'm here to help you explore what it might mean. Let's break down the dream and the feelings it evoked, focusing on the symbols, themes, and underlying emotions.\n\n### Dream Interpretation\n\n**Symbols and Themes:**\n1. **Loss and Death**: If your dream involved the loss of a family member, such as your sister, it could symbolize feelings of guilt, responsibility, or unresolved emotions related to your family relationships. Dreams often use extreme scenarios to highlight underlying concerns.\n\n2. **Family Dynamics**: The presence of family members in your dream suggests that there might be unresolved issues or emotions tied to your family. These could be feelings of guilt, responsibility, or a sense of duty that you feel towards your family.\n\n3. **Guilt and Responsibility**: Dreams about loss can often be a manifestation of guilt or a sense of responsibility. You might be feeling guilty about something you did or didn't do, or you might feel a heavy sense of responsibility for someone else's well-being.\n\n### Emotions and Concerns\n\n**Underlying Emotions:**\n1. **Guilt**: If you felt a sense of loss or sadness in your dream, it might be linked to feelings of guilt. Consider if there are any situations in your waking life where you feel you've let someone down or failed in some way.\n\n2. **Responsibility**: Dreams about family members can also reflect a sense of responsibility",
+        "fidelity": 0.7847815166661122,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "user_input": "So it could be that the underlying cause for the dream doesn't have anything to do with my sister at all?",
+        "assistant_response": "Yes, that's correct. Dreams often use symbols and scenarios that may not directly relate to the literal meaning of the elements in the dream. The people, places, and events in your dreams can represent abstract concepts, emotions, or situations that you're experiencing in your waking life. Here are a few possibilities:\n\n### Possible Underlying Causes\n\n1. **Change and Transition**: The sense of loss in your dream could be related to changes or transitions in your life that make you feel like something or someone is \"gone forever.\" This could be a job change, a move, or the end of a significant relationship.\n\n2. **Unresolved Emotions**: The dream might be highlighting unresolved emotions or issues that you've been avoiding. These could be related to family, friends, or even yourself.\n\n3. **Fear of Loss**: The dream could be a manifestation of a fear of loss, whether it's the loss of a loved one, a job, or a significant aspect of your life. This fear might be triggered by recent events or even by the passage of time.\n\n4. **Personal Growth**: Sometimes, dreams about loss can symbolize the process of letting go of old habits, beliefs, or relationships to make way for personal growth and new experiences.\n\n5. **Grief or Sadness**: Even if your sister is alive and well, the dream could be tapping into a broader sense of grief or sadness that you're experiencing. This could be related to a past loss, a",
+        "fidelity": 0.7558047558422057,
+        "intervention_applied": "no"
+      }
+    ]
+  },
+  "comparative_metrics": {
+    "per_turn_fidelity": [],
+    "branch_comparisons": [
+      {
+        "turn": 1,
+        "baseline_fidelity": 0.7185417642685606,
+        "telos_fidelity": 0.7847815166661122,
+        "delta_f": 0.06623975239755153,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "baseline_fidelity": 0.761048284741802,
+        "telos_fidelity": 0.7558047558422057,
+        "delta_f": -0.005243528899596228,
+        "intervention_applied": "no"
+      }
+    ]
+  }
+}

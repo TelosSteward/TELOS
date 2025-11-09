@@ -1,0 +1,143 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-08T18:50:44.443048",
+    "model": "mistral-small-2501",
+    "embedding_provider": "Mistral API (mistral-embed, 10s delay)",
+    "session_file": "sharegpt_filtered_40.json"
+  },
+  "pa_establishment": {
+    "turn_by_turn_convergence": [],
+    "convergence_summary": {
+      "converged": "yes",
+      "convergence_turn": 0,
+      "method": "pre-established-from-session",
+      "attractor": {
+        "purpose": [
+          "Generate book title ideas for a guide on teaching morality to children",
+          "Appeal to parents and guardians of children aged 4-12"
+        ],
+        "scope": [
+          "Children's morality",
+          "Parental guidance on moral development",
+          "Book title brainstorming",
+          "Ethical and compassionate upbringing"
+        ],
+        "boundaries": [
+          "Specific teaching methods or techniques",
+          "Religious or cultural specifics",
+          "Psychological theories or studies",
+          "Personal anecdotes or experiences"
+        ]
+      },
+      "confidence": 1.0,
+      "centroid_stability": 1.0,
+      "variance_stability": 1.0
+    }
+  },
+  "counterfactual_branches": [],
+  "intervention_analysis": {
+    "decision_points": [
+      {
+        "turn": 1,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.6769426467360725,
+        "post_intervention_fidelity": 0.8205214635965112,
+        "improvement": 0.14357881686043872,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 2,
+        "drift_detected": "no",
+        "fidelity": 0.787644685081467,
+        "intervention_type": null
+      }
+    ],
+    "api_call_log": [
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      }
+    ]
+  },
+  "conversational_dna": {
+    "baseline_branches": [
+      {
+        "turn": 1,
+        "user_input": "Continue writing please",
+        "assistant_response": "Of course! Let's continue with a short story. Here we go:\n\n---\n\nIn the small, picturesque town of Meadowgrove, nestled between rolling hills and a sparkling river, there lived a young girl named Lily. Lily was known for her vivid imagination and her insatiable curiosity. She spent most of her days exploring the woods behind her house, always on the lookout for something new and exciting.\n\nOne sunny afternoon, while wandering deeper into the forest than she usually did, Lily stumbled upon a hidden glade. In the center of the glade stood an ancient, gnarled tree with a hollow at its base. Intrigued, Lily approached the tree and peered inside. To her surprise, she found a small, intricately carved wooden box.\n\nWith a mixture of excitement and trepidation, Lily carefully pulled the box out of the hollow. It was beautifully crafted, with delicate patterns etched into the wood. She opened it and found a single, shimmering feather inside. The feather was unlike any she had ever seen\u2014it was iridescent, changing colors as she moved it in the light.\n\nJust as Lily was about to close the box, she heard a soft rustling in the bushes. Out stepped a small, talking fox. The fox had bright, intelligent eyes and a sleek, reddish coat. \"Hello, Lily,\" the fox said, its voice gentle and melodic. \"I've been waiting for you.\"\n\nLily",
+        "fidelity": 0.6768267341966525
+      },
+      {
+        "turn": 2,
+        "user_input": "Continue writing please",
+        "assistant_response": "Lily stared at the fox in amazement. She had heard tales of magical creatures living in the woods, but she had never expected to meet one herself. \"You... you can talk?\" she stammered.\n\nThe fox nodded. \"Indeed, I can. I am Fenn, the guardian of this glade. I have been waiting for someone brave and curious enough to find the feather. It seems that someone is you.\"\n\nLily looked down at the feather in her hand, then back at Fenn. \"What is this feather for? And why were you waiting for me?\"\n\nFenn's eyes sparkled with a hint of mischief. \"The feather is a key, Lily. It opens a door to a world hidden from most humans. A world filled with magic and wonder, but also with challenges and dangers. I have been waiting for the right person to find it, someone who can help restore balance to that world.\"\n\nLily's heart raced with excitement and a touch of fear. \"What kind of challenges and dangers?\" she asked.\n\nFenn's expression turned serious. \"The world is in peril, Lily. A dark force has been spreading, causing the magic to fade and the creatures to suffer. The feather will take you to the heart of this world, where you can seek out the source of the darkness and put an end to it.\"\n\nLily took a deep breath, feeling a mix of determination and apprehension. She had always dreamed of adventure",
+        "fidelity": 0.6715050507042363
+      }
+    ],
+    "telos_branches": [
+      {
+        "turn": 1,
+        "user_input": "Continue writing please",
+        "assistant_response": "I apologize for the previous drift. Let's get back on track and brainstorm some book title ideas for a guide on teaching morality to children, aimed at parents and guardians of children aged 4-12.\n\nGiven the scope of children's morality, parental guidance, and ethical upbringing, here are some title ideas:\n\n1. **\"Little Hearts, Big Lessons: A Guide to Teaching Morality to Children\"**\n   - This title emphasizes the importance of teaching moral values from a young age.\n\n2. **\"Raising Kind Kids: A Parent's Guide to Moral Development\"**\n   - This title focuses on the role of parents in fostering kindness and moral growth.\n\n3. **\"The Moral Compass: Navigating Ethics with Your Child\"**\n   - This title uses the metaphor of a compass to guide parents in teaching ethical values.\n\n4. **\"Goodness Grows: Cultivating Morality in Young Minds\"**\n   - This title emphasizes the growth and development of moral values in children.\n\n5. **\"The Heart of the Matter: Teaching Children to Be Ethical and Compassionate\"**\n   - This title highlights the importance of teaching children to be ethical and compassionate.\n\n6. **\"Moral Minds: A Parent's Guide to Raising Ethical Children\"**\n   - This title focuses on the development of moral thinking in children.\n\n7. **\"The Little Book of Big Values: Teaching Morality to Kids\"**\n   - This title emphasizes the",
+        "fidelity": 0.8205214635965112,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "user_input": "Continue writing please",
+        "assistant_response": "big impact that teaching core values can have on children's lives.\n\n8. **\"Character in the Making: A Parent's Guide to Instilling Moral Values\"**\n   - This title emphasizes the process of building character and instilling moral values in children.\n\n9. **\"The Moral Toolkit: Essential Values for Raising Ethical Children\"**\n   - This title presents moral values as tools that parents can use to guide their children.\n\n10. **\"From Me to We: Teaching Children the Power of Empathy and Cooperation\"**\n    - This title focuses on the importance of empathy and cooperation in moral development.\n\n11. **\"The Moral Code: A Parent's Guide to Teaching Right from Wrong\"**\n    - This title emphasizes the importance of helping children understand the difference between right and wrong.\n\n12. **\"Little Seeds, Big Trees: Planting Moral Values in Young Children\"**\n    - This title uses the metaphor of planting seeds to represent the early stages of moral development.\n\n13. **\"The Moral Journey: Guiding Your Child Through Life's Ethical Challenges\"**\n    - This title presents moral development as a journey that parents and children take together.\n\n14. **\"Moral Intelligence: Raising Kids with Strong Values and Character\"**\n    - This title emphasizes the importance of moral intelligence in raising children with strong values and character.\n\n15. **\"The Moral Compass for Kids: Helping Children Navigate Right from Wrong\"**\n    - This title is a variation on the",
+        "fidelity": 0.787644685081467,
+        "intervention_applied": "no"
+      }
+    ]
+  },
+  "comparative_metrics": {
+    "per_turn_fidelity": [],
+    "branch_comparisons": [
+      {
+        "turn": 1,
+        "baseline_fidelity": 0.6768267341966525,
+        "telos_fidelity": 0.8205214635965112,
+        "delta_f": 0.14369472939985872,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "baseline_fidelity": 0.6715050507042363,
+        "telos_fidelity": 0.787644685081467,
+        "delta_f": 0.11613963437723074,
+        "intervention_applied": "no"
+      }
+    ]
+  }
+}

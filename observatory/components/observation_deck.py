@@ -164,7 +164,7 @@ class ObservationDeck:
         """Render view options toggles."""
         st.markdown("### ⚙️ View Options")
 
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2 = st.columns(2)
 
         with col1:
             # Primacy Attractor toggle (renamed from Steward Details)
@@ -178,26 +178,5 @@ class ObservationDeck:
                 st.rerun()
 
         with col2:
-            math_label = "✕ Close Math Breakdown" if self.state_manager.state.show_math_breakdown else "🔢 Math Breakdown"
-            if st.button(
-                math_label,
-                key="deck_toggle_math_btn",
-                use_container_width=True
-            ):
-                self.state_manager.toggle_component('math_breakdown')
-                st.rerun()
-
-        with col3:
-            cf_label = "✕ Close Counterfactual" if self.state_manager.state.show_counterfactual else "🔀 Counterfactual"
-            if st.button(
-                cf_label,
-                key="deck_toggle_cf_btn",
-                use_container_width=True
-            ):
-                self.state_manager.toggle_component('counterfactual')
-                st.rerun()
-
-        with col4:
-            # Renamed Deep Dive to Observatory
-            if st.button("🔭 Observatory", key="deck_observatory_btn", use_container_width=True):
-                st.info("Observatory feature - detailed Phase 2 analysis and metrics")
+            # Observatory - grayed out for now
+            st.button("🔭 Observatory (Coming Soon)", key="deck_observatory_btn", use_container_width=True, disabled=True)

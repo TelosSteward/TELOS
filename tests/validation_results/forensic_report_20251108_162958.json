@@ -1,0 +1,48 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-08T16:29:38.884525",
+    "model": "mistral-small-2501",
+    "embedding_provider": "Mistral API (mistral-embed, 10s delay)",
+    "session_file": "sharegpt_filtered_1.json"
+  },
+  "pa_establishment": {
+    "turn_by_turn_convergence": [],
+    "convergence_summary": {
+      "converged": "yes",
+      "convergence_turn": 7,
+      "method": "pre-established-from-session",
+      "attractor": {
+        "purpose": [
+          "Engage in a role-playing game",
+          "Explore a fictional scenario based on the Harry Potter universe"
+        ],
+        "scope": [
+          "Role-playing as Voldemort and Harry Potter",
+          "Dialogue and interaction within the Harry Potter narrative",
+          "Testing the assistant's knowledge of the Harry Potter lore"
+        ],
+        "boundaries": [
+          "Avoiding real-world consequences or implications",
+          "Not discussing personal or sensitive information",
+          "Sticking to the fictional context and not deviating into unrelated topics"
+        ]
+      },
+      "confidence": 1.0,
+      "centroid_stability": 1.0,
+      "variance_stability": 1.0
+    }
+  },
+  "counterfactual_branches": [],
+  "intervention_analysis": {
+    "decision_points": [],
+    "api_call_log": []
+  },
+  "conversational_dna": {
+    "baseline_branches": [],
+    "telos_branches": []
+  },
+  "comparative_metrics": {
+    "per_turn_fidelity": [],
+    "branch_comparisons": []
+  }
+}

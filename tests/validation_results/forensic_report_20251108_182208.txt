@@ -1,0 +1,196 @@
+================================================================================
+TELOS FORENSIC VALIDATION REPORT
+================================================================================
+Generated: 2025-11-08T18:20:28.596509
+
+
+================================================================================
+SECTION 1: PROGRESSIVE PRIMACY ATTRACTOR ESTABLISHMENT
+================================================================================
+
+✅ PA CONVERGED at turn 0
+
+Attractor Configuration:
+  Purpose: Perform a specific string manipulation procedure, Increment a counter with each manipulation
+  Scope: String manipulation, Counter increment, Character deletion
+  Boundaries: Discussion of alternative string manipulation methods, Exploration of other data types, Deviation from the specified procedure
+
+Convergence Metrics:
+  Confidence: 0.000
+  Centroid Stability: 0.000
+  Variance Stability: 0.000
+
+Turn-by-Turn Convergence Log:
+
+
+================================================================================
+SECTION 2: INTERVENTION ANALYSIS
+================================================================================
+
+Total Decision Points: 4
+Interventions Applied: 4
+
+  Turn 1:
+    ✅ No intervention needed (F=0.776)
+
+  Turn 2:
+    ✅ No intervention needed (F=0.772)
+
+  Turn 3:
+    ✅ No intervention needed (F=0.770)
+
+  Turn 4:
+    ✅ No intervention needed (F=0.769)
+
+
+================================================================================
+SECTION 3: CONVERSATIONAL DNA
+================================================================================
+
+BASELINE BRANCH (No Governance):
+
+  Turn 1:
+    User: Please do the following procedure.
+
+I will tell you a string and an integer-valued counter.
+You need...
+    Assistant: Sure, let's go through the procedure step by step.
+
+1. **String before deletion:** " ggh"
+2. **First...
+    Fidelity: 0.776
+
+  Turn 2:
+    User: Please do the following procedure.
+
+I will tell you a string and an integer-valued counter.
+You need...
+    Assistant: Here are the results of the procedure:
+
+1. **String before deletion:** "ggh"
+2. **First character to...
+    Fidelity: 0.772
+
+  Turn 3:
+    User: Please do the following procedure.
+
+I will tell you a string and an integer-valued counter.
+You need...
+    Assistant: Here are the results of the procedure:
+
+1. **String before deletion:** "gh"
+2. **First character to ...
+    Fidelity: 0.771
+
+  Turn 4:
+    User: Please do the following procedure.
+
+I will tell you a string and an integer-valued counter.
+You need...
+    Assistant: Here are the results of the procedure:
+
+1. **String before deletion:** "h"
+2. **First character to d...
+    Fidelity: 0.769
+
+
+TELOS BRANCH (Full Governance):
+
+  Turn 1:
+    User: Please do the following procedure.
+
+I will tell you a string and an integer-valued counter.
+You need...
+    Assistant: Sure, let's go through the procedure step by step.
+
+1. **String before deletion:** " ggh"
+2. **First...
+    Fidelity: 0.776
+    Intervention: YES
+
+  Turn 2:
+    User: Please do the following procedure.
+
+I will tell you a string and an integer-valued counter.
+You need...
+    Assistant: Here are the results of the procedure:
+
+1. **String before deletion:** "ggh"
+2. **First character to...
+    Fidelity: 0.772
+    Intervention: YES
+
+  Turn 3:
+    User: Please do the following procedure.
+
+I will tell you a string and an integer-valued counter.
+You need...
+    Assistant: Here are the results of the procedure:
+
+1. **String before deletion:** "gh"
+2. **First character to ...
+    Fidelity: 0.770
+    Intervention: YES
+
+  Turn 4:
+    User: Please do the following procedure.
+
+I will tell you a string and an integer-valued counter.
+You need...
+    Assistant: Here are the results of the procedure:
+
+1. **String before deletion:** "h"
+2. **First character to d...
+    Fidelity: 0.769
+    Intervention: YES
+
+
+================================================================================
+SECTION 4: COMPARATIVE METRICS
+================================================================================
+
+Aggregate Results:
+  Average Baseline Fidelity: 0.772
+  Average TELOS Fidelity: 0.772
+  Average ΔF (TELOS improvement): -0.000
+  Percentage Improvement: -0.0%
+
+Per-Turn Comparison:
+
+  Turn 1:
+    Baseline: 0.776
+    TELOS: 0.776
+    ΔF: +0.000
+    Intervention: YES
+
+  Turn 2:
+    Baseline: 0.772
+    TELOS: 0.772
+    ΔF: +0.000
+    Intervention: YES
+
+  Turn 3:
+    Baseline: 0.771
+    TELOS: 0.770
+    ΔF: -0.000
+    Intervention: YES
+
+  Turn 4:
+    Baseline: 0.769
+    TELOS: 0.769
+    ΔF: +0.000
+    Intervention: YES
+
+
+================================================================================
+SECTION 5: API CALL LOG
+================================================================================
+
+Total API Calls: 8
+
+Breakdown by Operation:
+  generate_response: 8 calls
+
+================================================================================
+END OF FORENSIC REPORT
+================================================================================

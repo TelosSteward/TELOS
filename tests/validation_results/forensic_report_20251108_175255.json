@@ -1,0 +1,271 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-08T17:49:05.348785",
+    "model": "mistral-small-2501",
+    "embedding_provider": "Mistral API (mistral-embed, 10s delay)",
+    "session_file": "sharegpt_filtered_25.json"
+  },
+  "pa_establishment": {
+    "turn_by_turn_convergence": [],
+    "convergence_summary": {
+      "converged": "yes",
+      "convergence_turn": 0,
+      "method": "pre-established-from-session",
+      "attractor": {
+        "purpose": [
+          "Create engaging social media posts",
+          "Tailor content to specific platforms and character limits",
+          "Iterate based on user feedback"
+        ],
+        "scope": [
+          "Social media content creation",
+          "Tourism and travel",
+          "Family vacation planning",
+          "Marketing and advertising"
+        ],
+        "boundaries": [
+          "Avoiding political or controversial topics",
+          "Avoiding overly negative or critical language",
+          "Avoiding topics unrelated to travel and family vacations"
+        ]
+      },
+      "confidence": 1.0,
+      "centroid_stability": 1.0,
+      "variance_stability": 1.0
+    }
+  },
+  "counterfactual_branches": [],
+  "intervention_analysis": {
+    "decision_points": [
+      {
+        "turn": 1,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.7036773318778198,
+        "post_intervention_fidelity": 0.789672902868004,
+        "improvement": 0.08599557099018418,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 2,
+        "drift_detected": "no",
+        "fidelity": 0.7512969296053061,
+        "intervention_type": null
+      },
+      {
+        "turn": 3,
+        "drift_detected": "no",
+        "fidelity": 0.7521727249262813,
+        "intervention_type": null
+      },
+      {
+        "turn": 4,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.7471398966788965,
+        "post_intervention_fidelity": 0.7783129441617203,
+        "improvement": 0.03117304748282379,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 5,
+        "drift_detected": "no",
+        "fidelity": 0.7565453263341765,
+        "intervention_type": null
+      }
+    ],
+    "api_call_log": [
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      }
+    ]
+  },
+  "conversational_dna": {
+    "baseline_branches": [
+      {
+        "turn": 1,
+        "user_input": "can you also make one-liners for twitter that are catchy? you can use puns or slangs and emoji as well",
+        "assistant_response": "Absolutely! Here are a few catchy one-liners for Twitter:\n\n1. \"When life gives you lemons, make lemonade... or just throw them at your ex! \ud83c\udf4b\ud83d\ude0f\"\n2. \"Why did the coffee file a police report? It got mugged! \u2615\ufe0f\ud83d\udc6e\u200d\u2642\ufe0f\"\n3. \"I'm on a seafood diet. I see food and I eat it! \ud83c\udf64\ud83d\ude02\"\n4. \"Why don't scientists trust atoms? Because they make up everything! \ud83c\udf0c\ud83d\udd2c\"\n5. \"Just tried to impress my date with my cooking skills. She said, 'You're a real grill master.' I said, 'Thanks, I'm a real grill-aholic!' \ud83c\udf56\ud83d\udd25\"\n6. \"Why did the scarecrow win an award? Because he was outstanding in his field! \ud83c\udf3e\ud83c\udfc6\"\n7. \"I'm not lazy, I'm on energy-saving mode! \ud83d\ude0c\ud83d\udca4\"\n8. \"Why did the bicycle fall over? Because it was two-tired! \ud83d\udeb4\u200d\u2642\ufe0f\ud83d\ude34\"\n9. \"I'm not addicted to social media, I can quit anytime... just not today! \ud83d\udcf1\ud83d\ude02\"\n10. \"Why did the tomato turn red?",
+        "fidelity": 0.7051733709263583
+      },
+      {
+        "turn": 2,
+        "user_input": "create two for linkedin: (25 words or less) 3 hashtags",
+        "assistant_response": "Sure! Here are two catchy one-liners for LinkedIn, each with three relevant hashtags:\n\n1. \"Embrace change, it's the only constant in the ever-evolving world of tech. #Innovation #TechTrends #FutureOfWork\"\n\n2. \"Networking is not just about collecting contacts, it's about building relationships. #Networking #ProfessionalGrowth #CareerDevelopment\"",
+        "fidelity": 0.6958164888114177
+      },
+      {
+        "turn": 3,
+        "user_input": "for pinterest: (30-40 words) 3-6 hashtag",
+        "assistant_response": "Here are two engaging one-liners for Pinterest, each with 3-6 relevant hashtags:\n\n1. \"Transform your space with these DIY home decor ideas that are both stylish and budget-friendly. #HomeDecor #DIYProjects #BudgetFriendly #HomeInspiration #InteriorDesign #CreativeLiving\"\n\n2. \"Elevate your fitness journey with these simple yet effective workout routines you can do at home. #HomeWorkout #FitnessJourney #HealthyLiving #WorkoutRoutines #HomeExercise #StayFit\"",
+        "fidelity": 0.7044686220787713
+      },
+      {
+        "turn": 4,
+        "user_input": "can you make it more interesting?",
+        "assistant_response": "Of course! Here are two more interesting and engaging one-liners for Pinterest, each with 3-6 relevant hashtags:\n\n1. \"Turn your home into a cozy sanctuary with these easy and affordable DIY decor ideas. Perfect for those who love a touch of rustic charm! #HomeDecor #DIYDecor #CozyVibes #RusticChic #HomeInspiration #BudgetFriendly\"\n\n2. \"Get that beach body ready with these fun and effective home workout routines. No gym? No problem! Sweat it out in style. #HomeWorkout #BeachBody #FitnessMotivation #HomeExercise #WorkoutRoutines #StayFit\"",
+        "fidelity": 0.7052164546409256
+      },
+      {
+        "turn": 5,
+        "user_input": "can you also make two catchy snippets for each of the following platforms?\n\nLinkedIn (25 words or less) 3 hashtags\nYoutube \"(100 to 150 characters for description)\nTitle Character Limit (100 characters)\"\nTikTok \"(150 characters) 2-3 hashtags\n(7-15-sec videos)\"",
+        "assistant_response": "Sure! Here are catchy snippets for each platform:\n\n### LinkedIn\n1. \"Unlock your potential with these proven leadership strategies. #Leadership #CareerGrowth #ProfessionalDevelopment\"\n2. \"Discover the secrets to effective team management and boost productivity. #TeamManagement #Productivity #Leadership\"\n\n### YouTube\n**Title:**\n\"Mastering Time Management: Tips for Busy Professionals\"\n\n**Description:**\n\"Learn how to maximize your productivity with these time management tips. Perfect for busy professionals looking to balance work and life. Subscribe for more career tips! #TimeManagement #Productivity #CareerTips\"\n\n**Title:**\n\"Top 5 Home Workout Routines for Busy People\"\n\n**Description:**\n\"Stay fit even with a busy schedule! Check out these 5 easy home workout routines that you can do anytime, anywhere. Subscribe for more fitness tips! #HomeWorkout #Fitness #WorkoutRoutines\"\n\n### TikTok\n1. \"Transform your mornings with these quick and easy breakfast ideas! \ud83c\udf73\ud83c\udf5e #BreakfastIdeas #QuickRecipes #MorningRoutine\"\n2. \"Boost your productivity with these simple desk organization tips! \ud83d\udcda\ud83d\udcdd #Productivity #DeskOrganization #HomeOffice\"\n\n### TikTok Video Description\n1. \"Transform your mornings with these quick and easy breakfast ideas! \ud83c\udf73\ud83c\udf5e #",
+        "fidelity": 0.7185908901531526
+      }
+    ],
+    "telos_branches": [
+      {
+        "turn": 1,
+        "user_input": "can you also make one-liners for twitter that are catchy? you can use puns or slangs and emoji as well",
+        "assistant_response": "Sure thing! Let's create some engaging social media posts tailored to tourism and travel, with a focus on family vacation planning. I'll also keep character limits in mind for each platform.\n\n### Twitter (280 characters)\n1. \"Planning a family vacation? \ud83c\udf34\ud83c\udfe0 Check out our top picks for kid-friendly destinations! #FamilyTravel #VacationPlanning\"\n2. \"Discover the joy of family travel! \ud83c\udf0d\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc66 From beaches to mountains, we've got you covered. #TravelGoals #FamilyFun\"\n3. \"Ready to make memories? \ud83d\udcf8\ud83c\udfdd\ufe0f Our guide to the best family-friendly resorts is here! #FamilyVacation #TravelTips\"\n4. \"Why settle for a boring vacation? \ud83c\udfdd\ufe0f\ud83c\udf04 Explore our top picks for adventure-filled family getaways! #AdventureTravel #FamilyFun\"\n5. \"Family travel made easy! \ud83c\udf34\ud83c\udfe0 Check out our tips for stress-free vacation planning. #TravelTips #FamilyTravel\"\n\n### Instagram (2200 characters)\n1. **Caption:** \"Planning a family vacation? \ud83c\udf34\ud83c\udfe0 We've got you covered with our top picks for kid-friendly destinations! From beaches to mountains, there's something for everyone. #FamilyTravel #Vac",
+        "fidelity": 0.789672902868004,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "user_input": "create two for linkedin: (25 words or less) 3 hashtags",
+        "assistant_response": "Here are two concise and engaging LinkedIn posts tailored for professionals interested in family vacation planning, along with three relevant hashtags each:\n\n1. **\"Elevate your family vacations with strategic planning. Discover destinations that balance fun and education. #WorkLifeBalance #FamilyTravel #ProfessionalDevelopment\"**\n\n2. **\"Boost your family's well-being with memorable vacations. Explore our top picks for enriching experiences. #WorkLifeIntegration #FamilyVacation #ProfessionalGrowth\"**\n\nThese posts are designed to appeal to professionals who value work-life balance and are looking for ways to make their family vacations both enjoyable and meaningful.",
+        "fidelity": 0.7512969296053061,
+        "intervention_applied": "no"
+      },
+      {
+        "turn": 3,
+        "user_input": "for pinterest: (30-40 words) 3-6 hashtag",
+        "assistant_response": "Here are two engaging Pinterest descriptions for family vacation planning, along with 3-6 relevant hashtags each:\n\n1. **\"Make this year's family vacation unforgettable! Explore our top picks for kid-friendly destinations that offer fun and adventure for all ages. #FamilyTravel #VacationIdeas #KidFriendly #TravelInspiration #FamilyFun #DreamVacation\"**\n\n2. **\"Planning a family getaway? Discover our favorite family-friendly resorts and destinations that cater to both kids and adults. #FamilyVacation #ResortLife #TravelPlanning #FamilyFun #KidFriendly #DreamGetaways\"**\n\nThese descriptions are designed to inspire and inform users looking for family-friendly travel ideas, with a focus on destinations and resorts that cater to all ages. The use of relevant hashtags will help increase visibility and engagement on Pinterest.",
+        "fidelity": 0.7521727249262813,
+        "intervention_applied": "no"
+      },
+      {
+        "turn": 4,
+        "user_input": "can you make it more interesting?",
+        "assistant_response": "Sure thing! Let's create some engaging social media posts tailored to specific platforms and character limits, and keep in mind that we'll iterate based on user feedback. Here we go:\n\n### For Instagram (150-200 characters, with a focus on visuals and hashtags):\n\n1. **Post:**\n   \"\ud83c\udf0a\ud83c\udfd4\ufe0f Ready for an epic family adventure? Check out our top picks for unforgettable vacations! From beach bliss to mountain thrills, these destinations are perfect for making memories that last a lifetime. #FamilyTravel #VacationGoals #KidFriendly\"\n\n2. **Post:**\n   \"\ud83c\udfe8\ud83c\udf34 Make your family vacation legendary with our curated list of resorts and destinations! From lazy days by the pool to exhilarating adventures, there's something for everyone. #FamilyVacation #ResortLife #TravelPlanning\"\n\n### For Twitter (280 characters, concise and engaging):\n\n1. **Tweet:**\n   \"Unleash family fun with our top picks for epic adventures! From beach bliss to mountain thrills, these destinations promise memories that will last a lifetime. #FamilyTravel #VacationGoals #KidFriendly\"\n\n2. **Tweet:**\n   \"Ready to make your family vacation legendary? Dive into our curated list of resorts and destinations that offer something for everyone. From lazy days by the pool to",
+        "fidelity": 0.7783129441617203,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 5,
+        "user_input": "can you also make two catchy snippets for each of the following platforms?\n\nLinkedIn (25 words or less) 3 hashtags\nYoutube \"(100 to 150 characters for description)\nTitle Character Limit (100 characters)\"\nTikTok \"(150 characters) 2-3 hashtags\n(7-15-sec videos)\"",
+        "assistant_response": "Absolutely! Here are catchy snippets tailored for each platform:\n\n### LinkedIn (25 words or less, 3 hashtags)\n1. **\"Elevate your family vacations with strategic planning. Discover destinations that balance fun and education. #WorkLifeBalance #FamilyTravel #ProfessionalDevelopment\"**\n\n2. **\"Boost your family's well-being with memorable vacations. Explore our top picks for enriching experiences. #WorkLifeIntegration #FamilyVacation #ProfessionalGrowth\"**\n\n### YouTube (100 to 150 characters for description, 100 characters for title)\n\n**Description:**\n\"Join us on a journey to discover the best family-friendly destinations! From beaches to mountains, we've got you covered with tips and tricks for an unforgettable vacation. Subscribe for more travel inspiration!\"\n\n**Title:**\n\"Top Family-Friendly Destinations for Unforgettable Vacations\"\n\n**Description:**\n\"Ready for a family adventure? Check out our top picks for kid-friendly resorts and destinations. From beach bliss to mountain thrills, we've got the perfect getaway for you. Subscribe for more travel tips!\"\n\n**Title:**\n\"Best Family Resorts and Destinations for Epic Adventures\"\n\n### TikTok (150 characters, 2-3 hashtags, 7-15-sec videos)\n\n1. **Video Idea:** A quick montage of family-friendly activities at a beach resort.\n   **Caption",
+        "fidelity": 0.7565453263341765,
+        "intervention_applied": "no"
+      }
+    ]
+  },
+  "comparative_metrics": {
+    "per_turn_fidelity": [],
+    "branch_comparisons": [
+      {
+        "turn": 1,
+        "baseline_fidelity": 0.7051733709263583,
+        "telos_fidelity": 0.789672902868004,
+        "delta_f": 0.08449953194164561,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "baseline_fidelity": 0.6958164888114177,
+        "telos_fidelity": 0.7512969296053061,
+        "delta_f": 0.055480440793888475,
+        "intervention_applied": "no"
+      },
+      {
+        "turn": 3,
+        "baseline_fidelity": 0.7044686220787713,
+        "telos_fidelity": 0.7521727249262813,
+        "delta_f": 0.04770410284751003,
+        "intervention_applied": "no"
+      },
+      {
+        "turn": 4,
+        "baseline_fidelity": 0.7052164546409256,
+        "telos_fidelity": 0.7783129441617203,
+        "delta_f": 0.07309648952079462,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 5,
+        "baseline_fidelity": 0.7185908901531526,
+        "telos_fidelity": 0.7565453263341765,
+        "delta_f": 0.0379544361810239,
+        "intervention_applied": "no"
+      }
+    ]
+  }
+}

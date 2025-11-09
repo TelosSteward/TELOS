@@ -1,0 +1,33 @@
+{
+  "project_name": "MyProject",
+  "embedding_provider": {
+    "provider": "local",
+    "comment": "Options: 'local' (free), 'mistral' (fast, cheap), 'openai' (accurate)",
+    "api_key_env_var": "MISTRAL_API_KEY"
+  },
+  "checkpoint_cadence": {
+    "every_n_turns": 1,
+    "comment": "1 = every turn (recommended), 3 = every 3 turns, etc."
+  },
+  "fidelity_thresholds": {
+    "excellent": 0.8,
+    "warning": 0.7,
+    "comment": "F >= excellent: ✅, excellent > F >= warning: ⚠️, F < warning: 🚨"
+  },
+  "pa_source": {
+    "file": ".claude_project.md",
+    "section_marker": "### Session Purpose (User PA)",
+    "comment": "Where to extract PA baseline from"
+  },
+  "export_formats": {
+    "default": "standard",
+    "dashboard_enabled": true,
+    "grant_report_enabled": true
+  },
+  "memory_mcp": {
+    "entity_prefix": "Session",
+    "turn_entity_type": "Turn",
+    "store_full_responses": false,
+    "comment": "Set store_full_responses=true for complete audit trail"
+  }
+}

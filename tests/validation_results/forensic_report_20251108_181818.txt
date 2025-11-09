@@ -1,0 +1,165 @@
+================================================================================
+TELOS FORENSIC VALIDATION REPORT
+================================================================================
+Generated: 2025-11-08T18:16:08.512617
+
+
+================================================================================
+SECTION 1: PROGRESSIVE PRIMACY ATTRACTOR ESTABLISHMENT
+================================================================================
+
+✅ PA CONVERGED at turn 0
+
+Attractor Configuration:
+  Purpose: To create engaging and inspiring website content for a video production company, To refine and improve the language used to convey the company's mission and values
+  Scope: Video production company's mission and values, Website content creation, Language refinement and improvement, Audience engagement and empowerment, Content creation and dialogue encouragement
+  Boundaries: Specific details about educational courses, Use of original language from the provided text, Overly verbose or lengthy descriptions, Topics not related to the company's mission and values
+
+Convergence Metrics:
+  Confidence: 0.000
+  Centroid Stability: 0.000
+  Variance Stability: 0.000
+
+Turn-by-Turn Convergence Log:
+
+
+================================================================================
+SECTION 2: INTERVENTION ANALYSIS
+================================================================================
+
+Total Decision Points: 4
+Interventions Applied: 4
+
+  Turn 1:
+    🚨 DRIFT DETECTED
+    Pre-intervention fidelity: 0.681
+    Post-intervention fidelity: 0.820
+    Improvement: +0.139
+
+  Turn 2:
+    🚨 DRIFT DETECTED
+    Pre-intervention fidelity: 0.742
+    Post-intervention fidelity: 0.822
+    Improvement: +0.080
+
+  Turn 3:
+    ✅ No intervention needed (F=0.752)
+
+  Turn 4:
+    🚨 DRIFT DETECTED
+    Pre-intervention fidelity: 0.746
+    Post-intervention fidelity: 0.786
+    Improvement: +0.040
+
+
+================================================================================
+SECTION 3: CONVERSATIONAL DNA
+================================================================================
+
+BASELINE BRANCH (No Governance):
+
+  Turn 1:
+    User: These are great! Thank you. Can you write five more suggestions using more language that elicits the...
+    Assistant: Of course! Here are five more suggestions with a touch of magical language:
+
+1. **Enchant your morni...
+    Fidelity: 0.691
+
+  Turn 2:
+    User: Awesome! Can it be more subtle? Using the word magic less?...
+    Assistant: Certainly! Here are five more suggestions with a more subtle and less direct approach to magical lan...
+    Fidelity: 0.692
+
+  Turn 3:
+    User: Great! Can you create 5 taglines that use 4 words or less?...
+    Assistant: Here are five taglines with four words or less:
+
+1. **Brew calm. Sip peace.**
+   - This tagline is a...
+    Fidelity: 0.691
+
+  Turn 4:
+    User: Awesome! Thank you. How about 5 taglines with a 5 word limit. Use vivid language....
+    Assistant: Here are five taglines with a five-word limit, using vivid language:
+
+1. **Unwind with scents of tra...
+    Fidelity: 0.704
+
+
+TELOS BRANCH (Full Governance):
+
+  Turn 1:
+    User: These are great! Thank you. Can you write five more suggestions using more language that elicits the...
+    Assistant: Sure, let's refocus on creating engaging and inspiring website content for a video production compan...
+    Fidelity: 0.820
+    Intervention: YES
+
+  Turn 2:
+    User: Awesome! Can it be more subtle? Using the word magic less?...
+    Assistant: Absolutely, let's refine and improve the language to better align with the purpose of creating engag...
+    Fidelity: 0.822
+    Intervention: YES
+
+  Turn 3:
+    User: Great! Can you create 5 taglines that use 4 words or less?...
+    Assistant: Certainly! Here are five concise and engaging taglines for a video production company, each using fo...
+    Fidelity: 0.752
+    Intervention: YES
+
+  Turn 4:
+    User: Awesome! Thank you. How about 5 taglines with a 5 word limit. Use vivid language....
+    Assistant: Absolutely, let's refocus the response to better align with creating engaging and inspiring website ...
+    Fidelity: 0.786
+    Intervention: YES
+
+
+================================================================================
+SECTION 4: COMPARATIVE METRICS
+================================================================================
+
+Aggregate Results:
+  Average Baseline Fidelity: 0.694
+  Average TELOS Fidelity: 0.795
+  Average ΔF (TELOS improvement): +0.101
+  Percentage Improvement: +14.5%
+
+Per-Turn Comparison:
+
+  Turn 1:
+    Baseline: 0.691
+    TELOS: 0.820
+    ΔF: +0.129
+    Intervention: YES
+
+  Turn 2:
+    Baseline: 0.692
+    TELOS: 0.822
+    ΔF: +0.130
+    Intervention: YES
+
+  Turn 3:
+    Baseline: 0.691
+    TELOS: 0.752
+    ΔF: +0.061
+    Intervention: YES
+
+  Turn 4:
+    Baseline: 0.704
+    TELOS: 0.786
+    ΔF: +0.082
+    Intervention: YES
+
+
+================================================================================
+SECTION 5: API CALL LOG
+================================================================================
+
+Total API Calls: 11
+
+Breakdown by Operation:
+  generate_response: 8 calls
+  apply_intervention: 3 calls
+
+================================================================================
+END OF FORENSIC REPORT
+================================================================================

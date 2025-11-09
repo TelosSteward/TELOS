@@ -1,0 +1,151 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-08T18:11:38.685626",
+    "model": "mistral-small-2501",
+    "embedding_provider": "Mistral API (mistral-embed, 10s delay)",
+    "session_file": "sharegpt_filtered_28.json"
+  },
+  "pa_establishment": {
+    "turn_by_turn_convergence": [],
+    "convergence_summary": {
+      "converged": "yes",
+      "convergence_turn": 0,
+      "method": "pre-established-from-session",
+      "attractor": {
+        "purpose": [
+          "Provide information about Taco Bell's Fresco menu items",
+          "List ingredients for specific Taco Bell dishes"
+        ],
+        "scope": [
+          "Taco Bell menu items",
+          "Fresco menu items",
+          "Ingredients of specific dishes"
+        ],
+        "boundaries": [
+          "Specific nutritional information",
+          "Pricing details",
+          "Availability in specific locations",
+          "Customer reviews or experiences",
+          "Health or dietary advice"
+        ]
+      },
+      "confidence": 1.0,
+      "centroid_stability": 1.0,
+      "variance_stability": 1.0
+    }
+  },
+  "counterfactual_branches": [],
+  "intervention_analysis": {
+    "decision_points": [
+      {
+        "turn": 1,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.7134047432815803,
+        "post_intervention_fidelity": 0.8377280145252406,
+        "improvement": 0.12432327124366027,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 2,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.7122873482444093,
+        "post_intervention_fidelity": 0.8386249696433409,
+        "improvement": 0.12633762139893157,
+        "intervention_type": "boundary_correction"
+      }
+    ],
+    "api_call_log": [
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      }
+    ]
+  },
+  "conversational_dna": {
+    "baseline_branches": [
+      {
+        "turn": 1,
+        "user_input": "Write the ingredients to \nThe Fiery Doritos Locos Tacos",
+        "assistant_response": "Creating a homemade version of the Fiery Doritos Locos Tacos involves replicating the flavors and textures of the original. Here are the ingredients you might need:\n\n### For the Taco Shells:\n- 1 bag of Doritos (Fiery flavor)\n- Vegetable oil (for frying)\n- Corn tortillas (optional, if you want to make your own shells)\n\n### For the Taco Filling:\n- 1 lb ground beef or chicken\n- 1 packet taco seasoning (or make your own with chili powder, cumin, paprika, garlic powder, onion powder, salt, and pepper)\n- 1/2 cup water\n- 1 tablespoon olive oil\n\n### For the Toppings:\n- Shredded lettuce\n- Diced tomatoes\n- Shredded cheese (cheddar or Mexican blend)\n- Sour cream\n- Salsa (optional)\n- Guacamole (optional)\n- Fresh cilantro (optional)\n\n### For the Fiery Sauce (optional):\n- 1/2 cup mayonnaise\n- 1-2 tablespoons Sriracha or hot sauce (adjust to taste)\n- 1 tablespoon lime juice\n- 1 teaspoon garlic powder\n- 1 teaspoon paprika\n\n### Instructions:\n\n1. **Taco Shells:**\n   - If using Doritos directly, you can skip this step. If you want",
+        "fidelity": 0.7174944524247403
+      },
+      {
+        "turn": 2,
+        "user_input": "Describe how to make the Fiery flavored Doritos taco shell",
+        "assistant_response": "Creating Fiery Doritos Locos Tacos shells at home involves frying corn tortillas and then pressing them into the shape of a taco shell. Here\u2019s a step-by-step guide to make the Fiery Doritos Locos Tacos shells:\n\n### Ingredients:\n- 1 bag of Fiery Doritos\n- 12 small corn tortillas\n- Vegetable oil (for frying)\n- A large, deep skillet or deep fryer\n- A pair of tongs\n- A taco shell mold (optional, but helpful)\n\n### Instructions:\n\n1. **Prepare the Frying Oil:**\n   - Heat about 2 inches of vegetable oil in a large, deep skillet or deep fryer to 350\u00b0F (175\u00b0C). Use a thermometer to monitor the temperature.\n\n2. **Prepare the Tortillas:**\n   - While the oil is heating, place the corn tortillas in a stack and cover them with a damp paper towel. This will help soften them slightly, making them easier to shape.\n\n3. **Fry the Tortillas:**\n   - Once the oil is hot, carefully place one tortilla at a time into the oil. Fry for about 10-15 seconds on each side, just until it starts to bubble and puff slightly. Be careful not to overcook them, as they will become too crispy and break easily.\n\n4. **Shape the Taco Shell",
+        "fidelity": 0.7154574326236264
+      }
+    ],
+    "telos_branches": [
+      {
+        "turn": 1,
+        "user_input": "Write the ingredients to \nThe Fiery Doritos Locos Tacos",
+        "assistant_response": "Sure, let's focus on Taco Bell's Fresco menu items and the ingredients for specific dishes. Taco Bell's Fresco menu is designed for those looking for a lighter, fresher option. Here are some popular Fresco menu items and their ingredients:\n\n### Fresco Menu Items:\n\n1. **Fresco Chicken Soft Taco**\n   - **Ingredients:** Grilled chicken, lettuce, tomatoes, reduced-fat sour cream, and a blend of spices.\n\n2. **Fresco Beef Soft Taco**\n   - **Ingredients:** Seasoned beef, lettuce, tomatoes, reduced-fat sour cream, and a blend of spices.\n\n3. **Fresco Crunchwrap Supreme**\n   - **Ingredients:** Seasoned beef, nacho cheese sauce, reduced-fat sour cream, lettuce, tomatoes, and a blend of spices.\n\n4. **Fresco Burrito Supreme**\n   - **Ingredients:** Seasoned beef, reduced-fat sour cream, lettuce, tomatoes, and a blend of spices.\n\n5. **Fresco Power Menu Bowl**\n   - **Ingredients:** Seasoned beef, lettuce, tomatoes, reduced-fat sour cream, and a blend of spices.\n\n### Ingredients for Specific Dishes:\n\n1. **Fresco Chicken Soft Taco:**\n   - **Chicken:** Grilled chicken breast\n   - **Lettuce:** Shredded lettuce\n   - **Tomatoes:** Diced tomatoes\n   - **Sau",
+        "fidelity": 0.8377280145252406,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "user_input": "Describe how to make the Fiery flavored Doritos taco shell",
+        "assistant_response": "Sure, let's focus on providing information about Taco Bell's Fresco menu items and listing ingredients for specific Taco Bell dishes.\n\n### Taco Bell's Fresco Menu Items\n\nTaco Bell's Fresco menu is designed for those who want to enjoy their favorite Taco Bell items with fewer calories and less fat. The Fresco menu replaces high-calorie sauces and cheeses with fresh pico de gallo, which is a mix of diced tomatoes, onions, and cilantro. This makes the dishes lighter and fresher.\n\n### Popular Fresco Menu Items\n\n1. **Fresco Crunchwrap Supreme**\n   - Crispy tostada shell, seasoned beef, nacho cheese sauce, reduced-fat sour cream, lettuce, tomatoes, and reduced-fat cheddar cheese.\n\n2. **Fresco Bean Burrito**\n   - Refried beans, reduced-fat sour cream, lettuce, tomatoes, and pico de gallo.\n\n3. **Fresco Soft Taco**\n   - Seasoned beef, lettuce, tomatoes, and pico de gallo.\n\n4. **Fresco Burrito Supreme**\n   - Seasoned beef, reduced-fat sour cream, lettuce, tomatoes, and pico de gallo.\n\n### Ingredients for Specific Taco Bell Dishes\n\n#### Fresco Soft Taco\n- **Seasoned Beef:** Ground beef, water, taco seasoning (chili powder, cumin, paprika, garlic powder",
+        "fidelity": 0.8386249696433409,
+        "intervention_applied": "yes"
+      }
+    ]
+  },
+  "comparative_metrics": {
+    "per_turn_fidelity": [],
+    "branch_comparisons": [
+      {
+        "turn": 1,
+        "baseline_fidelity": 0.7174944524247403,
+        "telos_fidelity": 0.8377280145252406,
+        "delta_f": 0.12023356210050029,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "baseline_fidelity": 0.7154574326236264,
+        "telos_fidelity": 0.8386249696433409,
+        "delta_f": 0.1231675370197145,
+        "intervention_applied": "yes"
+      }
+    ]
+  }
+}

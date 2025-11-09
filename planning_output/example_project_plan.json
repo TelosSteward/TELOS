@@ -1,0 +1,33 @@
+{
+  "project": "Example Project",
+  "created": "2025-11-09T16:29:25.244467",
+  "phases": [
+    {
+      "phase_number": 1,
+      "name": "Planning",
+      "description": "Initial planning and requirements gathering",
+      "steps": [
+        "Define objectives",
+        "Identify stakeholders",
+        "Gather requirements"
+      ],
+      "duration_estimate": "1 week",
+      "dependencies": [],
+      "status": "planned"
+    }
+  ],
+  "dependencies": [],
+  "risks": [
+    {
+      "risk": "Timeline may slip due to unforeseen complexity",
+      "severity": "medium",
+      "mitigation": "Build buffer time into estimates"
+    }
+  ],
+  "success_criteria": [
+    {
+      "criterion": "Project completed on time",
+      "measurement": "Final delivery date vs planned date"
+    }
+  ]
+}

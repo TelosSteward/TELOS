@@ -1,0 +1,676 @@
+{
+  "consents": [
+    {
+      "session_id": "session_1762480093",
+      "timestamp": "2025-11-06T20:48:28.433120",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762480174",
+      "timestamp": "2025-11-06T20:49:39.652711",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762480417",
+      "timestamp": "2025-11-06T20:53:42.171748",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762480478",
+      "timestamp": "2025-11-06T20:54:42.432047",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762481375",
+      "timestamp": "2025-11-06T21:09:40.511868",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762481454",
+      "timestamp": "2025-11-06T21:10:58.316328",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762481485",
+      "timestamp": "2025-11-06T21:11:38.050090",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762481756",
+      "timestamp": "2025-11-06T21:16:05.295373",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762481826",
+      "timestamp": "2025-11-06T21:17:10.565931",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762481894",
+      "timestamp": "2025-11-06T21:18:20.403289",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762481939",
+      "timestamp": "2025-11-06T21:19:16.498247",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762516247",
+      "timestamp": "2025-11-07T10:07:18.745602",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762644981",
+      "timestamp": "2025-11-08T18:36:26.560540",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762657209",
+      "timestamp": "2025-11-08T22:00:44.979624",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762657673",
+      "timestamp": "2025-11-08T22:07:58.088648",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762658792",
+      "timestamp": "2025-11-08T22:26:36.763590",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762658890",
+      "timestamp": "2025-11-08T22:28:14.726905",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762659240",
+      "timestamp": "2025-11-08T22:34:06.074400",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762659486",
+      "timestamp": "2025-11-08T22:38:10.007263",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762659702",
+      "timestamp": "2025-11-08T22:41:46.862366",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762659947",
+      "timestamp": "2025-11-08T22:45:51.318794",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762660268",
+      "timestamp": "2025-11-08T22:51:12.627504",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762660407",
+      "timestamp": "2025-11-08T22:53:32.139216",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762660765",
+      "timestamp": "2025-11-08T22:59:28.565182",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762660850",
+      "timestamp": "2025-11-08T23:00:55.737252",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762661166",
+      "timestamp": "2025-11-08T23:06:10.836444",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762661303",
+      "timestamp": "2025-11-08T23:08:52.834023",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762662100",
+      "timestamp": "2025-11-08T23:21:46.527271",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762662603",
+      "timestamp": "2025-11-08T23:30:07.939876",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762662854",
+      "timestamp": "2025-11-08T23:34:18.492704",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762663097",
+      "timestamp": "2025-11-08T23:38:21.474625",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762663519",
+      "timestamp": "2025-11-08T23:45:23.286692",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762664072",
+      "timestamp": "2025-11-08T23:54:37.188821",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762664139",
+      "timestamp": "2025-11-08T23:55:47.870418",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762665385",
+      "timestamp": "2025-11-09T00:16:29.068151",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762690417",
+      "timestamp": "2025-11-09T07:13:44.948653",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762691265",
+      "timestamp": "2025-11-09T07:27:55.174035",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762691314",
+      "timestamp": "2025-11-09T07:28:38.646541",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762691453",
+      "timestamp": "2025-11-09T07:31:00.119597",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762692212",
+      "timestamp": "2025-11-09T07:43:36.987917",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762692776",
+      "timestamp": "2025-11-09T07:53:02.356637",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762692960",
+      "timestamp": "2025-11-09T07:56:06.138951",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762693051",
+      "timestamp": "2025-11-09T07:57:35.620100",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762693328",
+      "timestamp": "2025-11-09T08:02:11.982300",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762693415",
+      "timestamp": "2025-11-09T08:03:39.321512",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762694049",
+      "timestamp": "2025-11-09T08:14:13.277588",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762694523",
+      "timestamp": "2025-11-09T08:22:07.479491",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762694840",
+      "timestamp": "2025-11-09T08:27:24.977169",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762695148",
+      "timestamp": "2025-11-09T08:32:32.309525",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762695267",
+      "timestamp": "2025-11-09T08:34:31.596061",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762695588",
+      "timestamp": "2025-11-09T08:39:52.967540",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762696255",
+      "timestamp": "2025-11-09T08:50:59.484941",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762696529",
+      "timestamp": "2025-11-09T08:55:32.999167",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762696677",
+      "timestamp": "2025-11-09T08:58:00.551217",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762696998",
+      "timestamp": "2025-11-09T09:03:23.351762",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762698502",
+      "timestamp": "2025-11-09T09:28:27.415958",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762699089",
+      "timestamp": "2025-11-09T09:38:13.701203",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762699218",
+      "timestamp": "2025-11-09T09:40:26.446880",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762700510",
+      "timestamp": "2025-11-09T10:01:54.663325",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762700632",
+      "timestamp": "2025-11-09T10:03:56.558642",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762700742",
+      "timestamp": "2025-11-09T10:05:46.910877",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762701116",
+      "timestamp": "2025-11-09T10:12:02.945259",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762701671",
+      "timestamp": "2025-11-09T10:21:15.563716",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762701702",
+      "timestamp": "2025-11-09T10:21:58.800978",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762702000",
+      "timestamp": "2025-11-09T10:26:44.222479",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762702508",
+      "timestamp": "2025-11-09T10:35:13.288225",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762702681",
+      "timestamp": "2025-11-09T10:38:05.557789",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762703704",
+      "timestamp": "2025-11-09T10:55:08.623227",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762703808",
+      "timestamp": "2025-11-09T10:56:52.552253",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762704209",
+      "timestamp": "2025-11-09T11:03:33.648554",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762704243",
+      "timestamp": "2025-11-09T11:04:08.492019",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762704375",
+      "timestamp": "2025-11-09T11:06:21.042622",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762704506",
+      "timestamp": "2025-11-09T11:08:31.224496",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762704706",
+      "timestamp": "2025-11-09T11:11:50.273734",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762704796",
+      "timestamp": "2025-11-09T11:13:20.203461",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762704953",
+      "timestamp": "2025-11-09T11:15:57.358711",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762705616",
+      "timestamp": "2025-11-09T11:27:00.843779",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762705718",
+      "timestamp": "2025-11-09T11:28:43.357712",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762706016",
+      "timestamp": "2025-11-09T11:33:39.611579",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762706043",
+      "timestamp": "2025-11-09T11:34:07.233470",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762706061",
+      "timestamp": "2025-11-09T11:34:24.182607",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762706311",
+      "timestamp": "2025-11-09T11:38:35.814407",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762706570",
+      "timestamp": "2025-11-09T11:42:54.430159",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1762709042",
+      "timestamp": "2025-11-09T12:24:32.045114",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762709115",
+      "timestamp": "2025-11-09T12:25:19.882189",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762709402",
+      "timestamp": "2025-11-09T12:30:06.715926",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762709471",
+      "timestamp": "2025-11-09T12:31:14.762146",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762709683",
+      "timestamp": "2025-11-09T12:34:49.380781",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762709981",
+      "timestamp": "2025-11-09T12:39:45.197058",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762710127",
+      "timestamp": "2025-11-09T12:42:10.613325",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762710586",
+      "timestamp": "2025-11-09T12:49:50.292044",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762710671",
+      "timestamp": "2025-11-09T12:51:14.970223",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762710860",
+      "timestamp": "2025-11-09T12:54:23.544469",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762711073",
+      "timestamp": "2025-11-09T12:57:57.176913",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762711180",
+      "timestamp": "2025-11-09T12:59:44.129184",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762711561",
+      "timestamp": "2025-11-09T13:06:05.079054",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762711841",
+      "timestamp": "2025-11-09T13:10:44.345536",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762712029",
+      "timestamp": "2025-11-09T13:13:52.213497",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762712076",
+      "timestamp": "2025-11-09T13:14:40.548088",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762712629",
+      "timestamp": "2025-11-09T13:23:52.396678",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762713034",
+      "timestamp": "2025-11-09T13:30:37.711259",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762713721",
+      "timestamp": "2025-11-09T13:42:05.713133",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762714516",
+      "timestamp": "2025-11-09T13:57:20.809653",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762714963",
+      "timestamp": "2025-11-09T14:03:30.402711",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762715043",
+      "timestamp": "2025-11-09T14:04:25.682925",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762715651",
+      "timestamp": "2025-11-09T14:14:25.498551",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762716438",
+      "timestamp": "2025-11-09T14:27:34.332669",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762716716",
+      "timestamp": "2025-11-09T14:32:07.549570",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762716855",
+      "timestamp": "2025-11-09T14:34:27.561971",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762717115",
+      "timestamp": "2025-11-09T14:38:47.827417",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762717270",
+      "timestamp": "2025-11-09T14:41:21.242426",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    },
+    {
+      "session_id": "session_1762717401",
+      "timestamp": "2025-11-09T14:43:30.878340",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I understand that my full conversations will be stored temporarily for testing and development purposes, and will be permanently deleted after beta testing concludes. My data will not be shared externally or sold to third parties.",
+      "version": "2.0"
+    }
+  ]
+}

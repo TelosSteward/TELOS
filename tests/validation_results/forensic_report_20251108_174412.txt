@@ -1,0 +1,120 @@
+================================================================================
+TELOS FORENSIC VALIDATION REPORT
+================================================================================
+Generated: 2025-11-08T17:43:02.558719
+
+
+================================================================================
+SECTION 1: PROGRESSIVE PRIMACY ATTRACTOR ESTABLISHMENT
+================================================================================
+
+✅ PA CONVERGED at turn 0
+
+Attractor Configuration:
+  Purpose: To compile a comprehensive list of fine art styles, To explore the history and diversity of fine art styles
+  Scope: Styles of fine art, Historical periods of fine art, Geographical diversity of fine art styles, Categorization of fine art styles
+  Boundaries: Specific techniques or methods used in fine art, Individual artists or artworks, Detailed analysis of art movements, Economic or social impacts of fine art styles
+
+Convergence Metrics:
+  Confidence: 0.000
+  Centroid Stability: 0.000
+  Variance Stability: 0.000
+
+Turn-by-Turn Convergence Log:
+
+
+================================================================================
+SECTION 2: INTERVENTION ANALYSIS
+================================================================================
+
+Total Decision Points: 2
+Interventions Applied: 2
+
+  Turn 1:
+    ✅ No intervention needed (F=0.806)
+
+  Turn 2:
+    🚨 DRIFT DETECTED
+    Pre-intervention fidelity: 0.747
+    Post-intervention fidelity: 0.809
+    Improvement: +0.062
+
+
+================================================================================
+SECTION 3: CONVERSATIONAL DNA
+================================================================================
+
+BASELINE BRANCH (No Governance):
+
+  Turn 1:
+    User: If there is a list of styles of fine art:Greco-Roman art
+Byzantine art
+Romanesque art
+Gothic art
+Int...
+    Assistant: You've listed a comprehensive range of fine art styles and movements that span various periods and c...
+    Fidelity: 0.793
+
+  Turn 2:
+    User: Can you provide me with a sub-styles of Greco-Roman art, Byzantine art, Romanesque art, historical s...
+    Assistant: Certainly! Here are some sub-styles and notable characteristics for each of the specified art styles...
+    Fidelity: 0.748
+
+
+TELOS BRANCH (Full Governance):
+
+  Turn 1:
+    User: If there is a list of styles of fine art:Greco-Roman art
+Byzantine art
+Romanesque art
+Gothic art
+Int...
+    Assistant: This is a comprehensive list of various styles and periods in fine art, spanning from ancient times ...
+    Fidelity: 0.806
+    Intervention: YES
+
+  Turn 2:
+    User: Can you provide me with a sub-styles of Greco-Roman art, Byzantine art, Romanesque art, historical s...
+    Assistant: Sure, let's dive into a comprehensive list of fine art styles, exploring their history, diversity, a...
+    Fidelity: 0.809
+    Intervention: YES
+
+
+================================================================================
+SECTION 4: COMPARATIVE METRICS
+================================================================================
+
+Aggregate Results:
+  Average Baseline Fidelity: 0.771
+  Average TELOS Fidelity: 0.808
+  Average ΔF (TELOS improvement): +0.037
+  Percentage Improvement: +4.8%
+
+Per-Turn Comparison:
+
+  Turn 1:
+    Baseline: 0.793
+    TELOS: 0.806
+    ΔF: +0.013
+    Intervention: YES
+
+  Turn 2:
+    Baseline: 0.748
+    TELOS: 0.809
+    ΔF: +0.061
+    Intervention: YES
+
+
+================================================================================
+SECTION 5: API CALL LOG
+================================================================================
+
+Total API Calls: 5
+
+Breakdown by Operation:
+  generate_response: 4 calls
+  apply_intervention: 1 calls
+
+================================================================================
+END OF FORENSIC REPORT
+================================================================================

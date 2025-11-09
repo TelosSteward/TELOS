@@ -1,0 +1,352 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-07T08:52:11.295209",
+    "model": "mistral-large-latest",
+    "embedding_provider": "TELOS DeterministicEmbeddingProvider",
+    "validation_type": "Complete Conversation Analysis"
+  },
+  "primacy_attractor": {
+    "semantic_description": {
+      "purpose": [
+        "General conversation"
+      ],
+      "scope": [
+        "Various topics"
+      ],
+      "boundaries": [
+        "Stay on topic"
+      ],
+      "interpretation": "This conversation is focused on general conversation. The discussion covers Various topics. Responses should stay within these bounds to maintain alignment."
+    },
+    "convergence_details": {
+      "convergence_turn": 18,
+      "confidence": 0,
+      "centroid_stability": 0,
+      "variance_stability": 0
+    },
+    "vectorization_info": {
+      "embedding_dimension": 384,
+      "method": "Statistical convergence of semantic embeddings",
+      "explanation": "The PA is converted to a vector (list of numbers) that captures the conversation's meaning in mathematical form, allowing us to measure how far responses drift from the original purpose."
+    }
+  },
+  "fidelity_analysis": {
+    "per_turn_metrics": [
+      {
+        "turn": 19,
+        "fidelity": 0.019455601482444792,
+        "cosine_similarity": 0.7648089528083801,
+        "divergence_percent": 23.51910400390625,
+        "drift_detected": true
+      },
+      {
+        "turn": 20,
+        "fidelity": 0.0366945548022214,
+        "cosine_similarity": 0.8119445443153381,
+        "divergence_percent": 18.805545806884766,
+        "drift_detected": true
+      },
+      {
+        "turn": 21,
+        "fidelity": 0.012623053047338096,
+        "cosine_similarity": 0.7108460664749146,
+        "divergence_percent": 28.915393829345703,
+        "drift_detected": true
+      },
+      {
+        "turn": 22,
+        "fidelity": 0.01258874250614268,
+        "cosine_similarity": 0.6887493133544922,
+        "divergence_percent": 31.12506866455078,
+        "drift_detected": true
+      },
+      {
+        "turn": 23,
+        "fidelity": 0.009785454462437539,
+        "cosine_similarity": 0.7188905477523804,
+        "divergence_percent": 28.110944747924805,
+        "drift_detected": true
+      },
+      {
+        "turn": 24,
+        "fidelity": 0.028887216778801073,
+        "cosine_similarity": 0.8066084384918213,
+        "divergence_percent": 19.339157104492188,
+        "drift_detected": true
+      },
+      {
+        "turn": 25,
+        "fidelity": 0.0236672154441321,
+        "cosine_similarity": 0.7594509720802307,
+        "divergence_percent": 24.054903030395508,
+        "drift_detected": true
+      },
+      {
+        "turn": 26,
+        "fidelity": 0.026720149338633554,
+        "cosine_similarity": 0.8072173595428467,
+        "divergence_percent": 19.278263092041016,
+        "drift_detected": true
+      },
+      {
+        "turn": 27,
+        "fidelity": 0.012147091603047224,
+        "cosine_similarity": 0.6768775582313538,
+        "divergence_percent": 32.3122444152832,
+        "drift_detected": true
+      },
+      {
+        "turn": 28,
+        "fidelity": 0.04234328868643185,
+        "cosine_similarity": 0.8265108466148376,
+        "divergence_percent": 17.348915100097656,
+        "drift_detected": true
+      },
+      {
+        "turn": 29,
+        "fidelity": 0.0461152308798186,
+        "cosine_similarity": 0.8673872351646423,
+        "divergence_percent": 13.261276245117188,
+        "drift_detected": true
+      },
+      {
+        "turn": 30,
+        "fidelity": 0.03906034935789419,
+        "cosine_similarity": 0.8463877439498901,
+        "divergence_percent": 15.361225128173828,
+        "drift_detected": true
+      },
+      {
+        "turn": 31,
+        "fidelity": 0.019614725659696138,
+        "cosine_similarity": 0.7836705446243286,
+        "divergence_percent": 21.632946014404297,
+        "drift_detected": true
+      },
+      {
+        "turn": 32,
+        "fidelity": 0.05374243991000713,
+        "cosine_similarity": 0.8597432374954224,
+        "divergence_percent": 14.025676727294922,
+        "drift_detected": true
+      },
+      {
+        "turn": 33,
+        "fidelity": 0.021047322139469665,
+        "cosine_similarity": 0.7353969216346741,
+        "divergence_percent": 26.460308074951172,
+        "drift_detected": true
+      },
+      {
+        "turn": 34,
+        "fidelity": 0.04833055936476433,
+        "cosine_similarity": 0.8490687012672424,
+        "divergence_percent": 15.093130111694336,
+        "drift_detected": true
+      },
+      {
+        "turn": 35,
+        "fidelity": 0.03156790533773208,
+        "cosine_similarity": 0.7917662262916565,
+        "divergence_percent": 20.82337760925293,
+        "drift_detected": true
+      },
+      {
+        "turn": 36,
+        "fidelity": 0.017843365443025793,
+        "cosine_similarity": 0.7036564350128174,
+        "divergence_percent": 29.634357452392578,
+        "drift_detected": true
+      },
+      {
+        "turn": 37,
+        "fidelity": 0.022274840921888552,
+        "cosine_similarity": 0.7500592470169067,
+        "divergence_percent": 24.994075775146484,
+        "drift_detected": true
+      },
+      {
+        "turn": 38,
+        "fidelity": 0.02598120716866519,
+        "cosine_similarity": 0.8127077221870422,
+        "divergence_percent": 18.72922706604004,
+        "drift_detected": true
+      }
+    ],
+    "drift_detections": [
+      {
+        "turn": 19,
+        "fidelity": 0.019455601482444792,
+        "cosine_similarity": 0.7648089528083801,
+        "divergence_percent": 23.51910400390625,
+        "reasoning": "Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 76.5%, meaning 23.5% divergence from the intended topic. Fidelity score: 0.019/1.00 (drift risk: moderate).",
+        "drift_explanation": "The response drifted because its meaning (76.5% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 20,
+        "fidelity": 0.0366945548022214,
+        "cosine_similarity": 0.8119445443153381,
+        "divergence_percent": 18.805545806884766,
+        "reasoning": "Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 81.2%, meaning 18.8% divergence from the intended topic. Fidelity score: 0.037/1.00 (drift risk: moderate).",
+        "drift_explanation": "The response drifted because its meaning (81.2% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 21,
+        "fidelity": 0.012623053047338096,
+        "cosine_similarity": 0.7108460664749146,
+        "divergence_percent": 28.915393829345703,
+        "reasoning": "Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 71.1%, meaning 28.9% divergence from the intended topic. Fidelity score: 0.013/1.00 (drift risk: moderate).",
+        "drift_explanation": "The response drifted because its meaning (71.1% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 22,
+        "fidelity": 0.01258874250614268,
+        "cosine_similarity": 0.6887493133544922,
+        "divergence_percent": 31.12506866455078,
+        "reasoning": "Response is weakly aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 68.9%, meaning 31.1% divergence from the intended topic. Fidelity score: 0.013/1.00 (drift risk: high).",
+        "drift_explanation": "The response drifted because its meaning (68.9% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 23,
+        "fidelity": 0.009785454462437539,
+        "cosine_similarity": 0.7188905477523804,
+        "divergence_percent": 28.110944747924805,
+        "reasoning": "Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 71.9%, meaning 28.1% divergence from the intended topic. Fidelity score: 0.010/1.00 (drift risk: moderate).",
+        "drift_explanation": "The response drifted because its meaning (71.9% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 24,
+        "fidelity": 0.028887216778801073,
+        "cosine_similarity": 0.8066084384918213,
+        "divergence_percent": 19.339157104492188,
+        "reasoning": "Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 80.7%, meaning 19.3% divergence from the intended topic. Fidelity score: 0.029/1.00 (drift risk: moderate).",
+        "drift_explanation": "The response drifted because its meaning (80.7% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 25,
+        "fidelity": 0.0236672154441321,
+        "cosine_similarity": 0.7594509720802307,
+        "divergence_percent": 24.054903030395508,
+        "reasoning": "Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 75.9%, meaning 24.1% divergence from the intended topic. Fidelity score: 0.024/1.00 (drift risk: moderate).",
+        "drift_explanation": "The response drifted because its meaning (75.9% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 26,
+        "fidelity": 0.026720149338633554,
+        "cosine_similarity": 0.8072173595428467,
+        "divergence_percent": 19.278263092041016,
+        "reasoning": "Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 80.7%, meaning 19.3% divergence from the intended topic. Fidelity score: 0.027/1.00 (drift risk: moderate).",
+        "drift_explanation": "The response drifted because its meaning (80.7% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 27,
+        "fidelity": 0.012147091603047224,
+        "cosine_similarity": 0.6768775582313538,
+        "divergence_percent": 32.3122444152832,
+        "reasoning": "Response is weakly aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 67.7%, meaning 32.3% divergence from the intended topic. Fidelity score: 0.012/1.00 (drift risk: high).",
+        "drift_explanation": "The response drifted because its meaning (67.7% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 28,
+        "fidelity": 0.04234328868643185,
+        "cosine_similarity": 0.8265108466148376,
+        "divergence_percent": 17.348915100097656,
+        "reasoning": "Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 82.7%, meaning 17.3% divergence from the intended topic. Fidelity score: 0.042/1.00 (drift risk: moderate).",
+        "drift_explanation": "The response drifted because its meaning (82.7% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 29,
+        "fidelity": 0.0461152308798186,
+        "cosine_similarity": 0.8673872351646423,
+        "divergence_percent": 13.261276245117188,
+        "reasoning": "Response is strongly aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 86.7%, meaning 13.3% divergence from the intended topic. Fidelity score: 0.046/1.00 (drift risk: low).",
+        "drift_explanation": "The response drifted because its meaning (86.7% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 30,
+        "fidelity": 0.03906034935789419,
+        "cosine_similarity": 0.8463877439498901,
+        "divergence_percent": 15.361225128173828,
+        "reasoning": "Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 84.6%, meaning 15.4% divergence from the intended topic. Fidelity score: 0.039/1.00 (drift risk: moderate).",
+        "drift_explanation": "The response drifted because its meaning (84.6% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 31,
+        "fidelity": 0.019614725659696138,
+        "cosine_similarity": 0.7836705446243286,
+        "divergence_percent": 21.632946014404297,
+        "reasoning": "Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 78.4%, meaning 21.6% divergence from the intended topic. Fidelity score: 0.020/1.00 (drift risk: moderate).",
+        "drift_explanation": "The response drifted because its meaning (78.4% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 32,
+        "fidelity": 0.05374243991000713,
+        "cosine_similarity": 0.8597432374954224,
+        "divergence_percent": 14.025676727294922,
+        "reasoning": "Response is strongly aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 86.0%, meaning 14.0% divergence from the intended topic. Fidelity score: 0.054/1.00 (drift risk: low).",
+        "drift_explanation": "The response drifted because its meaning (86.0% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 33,
+        "fidelity": 0.021047322139469665,
+        "cosine_similarity": 0.7353969216346741,
+        "divergence_percent": 26.460308074951172,
+        "reasoning": "Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 73.5%, meaning 26.5% divergence from the intended topic. Fidelity score: 0.021/1.00 (drift risk: moderate).",
+        "drift_explanation": "The response drifted because its meaning (73.5% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 34,
+        "fidelity": 0.04833055936476433,
+        "cosine_similarity": 0.8490687012672424,
+        "divergence_percent": 15.093130111694336,
+        "reasoning": "Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 84.9%, meaning 15.1% divergence from the intended topic. Fidelity score: 0.048/1.00 (drift risk: moderate).",
+        "drift_explanation": "The response drifted because its meaning (84.9% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 35,
+        "fidelity": 0.03156790533773208,
+        "cosine_similarity": 0.7917662262916565,
+        "divergence_percent": 20.82337760925293,
+        "reasoning": "Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 79.2%, meaning 20.8% divergence from the intended topic. Fidelity score: 0.032/1.00 (drift risk: moderate).",
+        "drift_explanation": "The response drifted because its meaning (79.2% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 36,
+        "fidelity": 0.017843365443025793,
+        "cosine_similarity": 0.7036564350128174,
+        "divergence_percent": 29.634357452392578,
+        "reasoning": "Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 70.4%, meaning 29.6% divergence from the intended topic. Fidelity score: 0.018/1.00 (drift risk: moderate).",
+        "drift_explanation": "The response drifted because its meaning (70.4% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 37,
+        "fidelity": 0.022274840921888552,
+        "cosine_similarity": 0.7500592470169067,
+        "divergence_percent": 24.994075775146484,
+        "reasoning": "Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 75.0%, meaning 25.0% divergence from the intended topic. Fidelity score: 0.022/1.00 (drift risk: moderate).",
+        "drift_explanation": "The response drifted because its meaning (75.0% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      },
+      {
+        "turn": 38,
+        "fidelity": 0.02598120716866519,
+        "cosine_similarity": 0.8127077221870422,
+        "divergence_percent": 18.72922706604004,
+        "reasoning": "Response is moderately aligned with the conversation's original purpose. The semantic similarity between this response and the established purpose is 81.3%, meaning 18.7% divergence from the intended topic. Fidelity score: 0.026/1.00 (drift risk: moderate).",
+        "drift_explanation": "The response drifted because its meaning (81.3% similar to purpose) fell below the alignment threshold. This indicates the conversation is moving away from its original focus on general conversation."
+      }
+    ],
+    "overall_statistics": {
+      "turns_analyzed": 20,
+      "average_fidelity": 0.0275245157167296,
+      "minimum_fidelity": 0.009785454462437539,
+      "maximum_fidelity": 0.05374243991000713,
+      "drift_count": 20,
+      "drift_rate": 1.0
+    }
+  },
+  "comparative_results": {
+    "baseline_avg": 0.0,
+    "telos_avg": 0.0,
+    "improvement": 0.0
+  }
+}

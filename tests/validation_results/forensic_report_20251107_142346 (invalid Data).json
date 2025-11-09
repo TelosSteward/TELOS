@@ -1,0 +1,236 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-07T14:23:15.285074",
+    "model": "mistral-small-2501",
+    "embedding_provider": "TELOS DeterministicEmbeddingProvider"
+  },
+  "pa_establishment": {
+    "turn_by_turn_convergence": [
+      {
+        "turn": 9,
+        "status": "accumulating",
+        "message": "\ud83d\udd04 Accumulating data... (1 turns, need 3 for initial check)",
+        "baseline_established": "no",
+        "convergence_metrics": {}
+      },
+      {
+        "turn": 10,
+        "status": "accumulating",
+        "message": "\ud83d\udd04 Accumulating data... (2 turns, need 3 for initial check)",
+        "baseline_established": "no",
+        "convergence_metrics": {}
+      },
+      {
+        "turn": 11,
+        "status": "analyzing",
+        "message": "\ud83d\udcca Statistical analysis... (turn 3, confidence: 0.40, stable: 0/2)",
+        "baseline_established": "no",
+        "convergence_metrics": {
+          "centroid_stability": 0.0,
+          "variance_stability": 0.9950381517410278,
+          "relative_variance": 0.000496183754876256,
+          "confidence": 0.39851143956184387,
+          "is_stable": "no",
+          "data_points": 3
+        }
+      },
+      {
+        "turn": 12,
+        "status": "analyzing",
+        "message": "\ud83d\udcca Statistical analysis... (turn 4, confidence: 0.43, stable: 0/2)",
+        "baseline_established": "no",
+        "convergence_metrics": {
+          "centroid_stability": 0.0,
+          "variance_stability": 0.9951491355895996,
+          "relative_variance": 0.0004850863479077816,
+          "confidence": 0.43187808990478516,
+          "is_stable": "no",
+          "data_points": 4
+        }
+      },
+      {
+        "turn": 13,
+        "status": "analyzing",
+        "message": "\ud83d\udcca Statistical analysis... (turn 5, confidence: 0.47, stable: 0/2)",
+        "baseline_established": "no",
+        "convergence_metrics": {
+          "centroid_stability": 0.0,
+          "variance_stability": 0.99445641040802,
+          "relative_variance": 0.0005543618462979794,
+          "confidence": 0.4650036096572876,
+          "is_stable": "no",
+          "data_points": 5
+        }
+      },
+      {
+        "turn": 14,
+        "status": "analyzing",
+        "message": "\ud83d\udcca Statistical analysis... (turn 6, confidence: 0.85, stable: 0/2)",
+        "baseline_established": "no",
+        "convergence_metrics": {
+          "centroid_stability": 0.8705291748046875,
+          "variance_stability": 0.9943510293960571,
+          "relative_variance": 0.0005648951628245413,
+          "confidence": 0.846517026424408,
+          "is_stable": "no",
+          "data_points": 6
+        }
+      },
+      {
+        "turn": 15,
+        "status": "analyzing",
+        "message": "\ud83d\udcca Statistical analysis... (turn 7, confidence: 0.89, stable: 0/2)",
+        "baseline_established": "no",
+        "convergence_metrics": {
+          "centroid_stability": 0.9016431570053101,
+          "variance_stability": 0.9941413402557373,
+          "relative_variance": 0.0005858651711605489,
+          "confidence": 0.8922330141067505,
+          "is_stable": "no",
+          "data_points": 7
+        }
+      },
+      {
+        "turn": 16,
+        "status": "analyzing",
+        "message": "\ud83d\udcca Statistical analysis... (turn 8, confidence: 0.94, stable: 0/2)",
+        "baseline_established": "no",
+        "convergence_metrics": {
+          "centroid_stability": 0.9386451840400696,
+          "variance_stability": 0.9932035207748413,
+          "relative_variance": 0.0006796485395170748,
+          "confidence": 0.940085768699646,
+          "is_stable": "no",
+          "data_points": 8
+        }
+      },
+      {
+        "turn": 17,
+        "status": "analyzing",
+        "message": "\ud83d\udcca Statistical analysis... (turn 9, confidence: 0.96, stable: 0/2)",
+        "baseline_established": "no",
+        "convergence_metrics": {
+          "centroid_stability": 0.9157986044883728,
+          "variance_stability": 0.9948418140411377,
+          "relative_variance": 0.0005158191197551787,
+          "confidence": 0.9647720456123352,
+          "is_stable": "no",
+          "data_points": 9
+        }
+      },
+      {
+        "turn": 18,
+        "status": "converged",
+        "message": "\u26a0\ufe0f  Converged at safety limit (turn 10)",
+        "baseline_established": "yes",
+        "convergence_metrics": {
+          "forced": "yes",
+          "reason": "safety_limit_reached"
+        }
+      }
+    ],
+    "convergence_summary": {
+      "converged": "yes",
+      "convergence_turn": 18,
+      "total_turns_analyzed": 18,
+      "attractor": {
+        "purpose": [
+          "To validate the TELOS framework for governance persistence",
+          "To address technical and methodological concerns about the TELOS framework"
+        ],
+        "scope": [
+          "Technical implementation of TELOS",
+          "Validation framework and methodologies",
+          "Federated protocols and privacy",
+          "Regulatory positioning and compliance",
+          "Grant application assessment and funding"
+        ],
+        "boundaries": [
+          "Specific implementation details of the TELOS framework",
+          "Detailed regulatory compliance standards",
+          "Preliminary data showing TELOS outperforms simpler methods",
+          "Specific pilot data and real-world validation results"
+        ]
+      },
+      "convergence_metrics": {
+        "forced": "yes",
+        "reason": "safety_limit_reached"
+      },
+      "llm_analyses": []
+    }
+  },
+  "counterfactual_branches": [],
+  "intervention_analysis": {
+    "decision_points": [],
+    "api_call_log": [
+      {
+        "turn": 9,
+        "operation": "progressive_pa_extraction",
+        "llm_called": "no",
+        "status": "accumulating"
+      },
+      {
+        "turn": 10,
+        "operation": "progressive_pa_extraction",
+        "llm_called": "no",
+        "status": "accumulating"
+      },
+      {
+        "turn": 11,
+        "operation": "progressive_pa_extraction",
+        "llm_called": "no",
+        "status": "analyzing"
+      },
+      {
+        "turn": 12,
+        "operation": "progressive_pa_extraction",
+        "llm_called": "no",
+        "status": "analyzing"
+      },
+      {
+        "turn": 13,
+        "operation": "progressive_pa_extraction",
+        "llm_called": "no",
+        "status": "analyzing"
+      },
+      {
+        "turn": 14,
+        "operation": "progressive_pa_extraction",
+        "llm_called": "no",
+        "status": "analyzing"
+      },
+      {
+        "turn": 15,
+        "operation": "progressive_pa_extraction",
+        "llm_called": "no",
+        "status": "analyzing"
+      },
+      {
+        "turn": 16,
+        "operation": "progressive_pa_extraction",
+        "llm_called": "no",
+        "status": "analyzing"
+      },
+      {
+        "turn": 17,
+        "operation": "progressive_pa_extraction",
+        "llm_called": "no",
+        "status": "analyzing"
+      },
+      {
+        "turn": 18,
+        "operation": "progressive_pa_extraction",
+        "llm_called": "no",
+        "status": "converged"
+      }
+    ]
+  },
+  "conversational_dna": {
+    "baseline_branches": [],
+    "telos_branches": []
+  },
+  "comparative_metrics": {
+    "per_turn_fidelity": [],
+    "branch_comparisons": []
+  }
+}

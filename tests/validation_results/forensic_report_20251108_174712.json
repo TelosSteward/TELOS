@@ -1,0 +1,296 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-08T17:44:22.433674",
+    "model": "mistral-small-2501",
+    "embedding_provider": "Mistral API (mistral-embed, 10s delay)",
+    "session_file": "sharegpt_filtered_23.json"
+  },
+  "pa_establishment": {
+    "turn_by_turn_convergence": [],
+    "convergence_summary": {
+      "converged": "yes",
+      "convergence_turn": 0,
+      "method": "pre-established-from-session",
+      "attractor": {
+        "purpose": [
+          "To create a marketing story in the 'hero's journey' style",
+          "To craft a narrative that resonates with stepmoms and addresses their concerns"
+        ],
+        "scope": [
+          "Stepmomhood",
+          "Relationship dynamics",
+          "Emotional struggles of stepmoms",
+          "Community support for stepmoms",
+          "Marketing storytelling"
+        ],
+        "boundaries": [
+          "Personal details of the human providing the components",
+          "Specific names or identities of individuals involved",
+          "Graphic or explicit details of conflicts",
+          "Offensive or derogatory language"
+        ]
+      },
+      "confidence": 1.0,
+      "centroid_stability": 1.0,
+      "variance_stability": 1.0
+    }
+  },
+  "counterfactual_branches": [],
+  "intervention_analysis": {
+    "decision_points": [
+      {
+        "turn": 1,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.7432192243910916,
+        "post_intervention_fidelity": 0.785546698948896,
+        "improvement": 0.04232747455780439,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 2,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.7435190583391924,
+        "post_intervention_fidelity": 0.7448551798017183,
+        "improvement": 0.00133612146252593,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 3,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.7404749768841897,
+        "post_intervention_fidelity": 0.7435313564609456,
+        "improvement": 0.0030563795767558632,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 4,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.7442929508777677,
+        "post_intervention_fidelity": 0.7431159255611752,
+        "improvement": -0.0011770253165924727,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 5,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.7421315867607672,
+        "post_intervention_fidelity": 0.7643612541899922,
+        "improvement": 0.022229667429225053,
+        "intervention_type": "boundary_correction"
+      }
+    ],
+    "api_call_log": [
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      }
+    ]
+  },
+  "conversational_dna": {
+    "baseline_branches": [
+      {
+        "turn": 1,
+        "user_input": "the guide provides philosophical guidance to the hero: what they currently think: \n\u201cThese problems we\u2019re having are unique\u201d\nwhat possible misconceptions are \u201cjust plain wrong\u201d?\n\u201cI\u2019m the only one facing these problems\u201d\n\u201cBeing a mom is supposed to come naturally\u201d \n\u201cThere\u2019s no one I can talk to who will understand\u201d \n\u201cI feel like I have to always put the step kids first\u201d\n\u201cThere\u2019s no room left in my life for me\u201d \nwhat do we want them to realize?\nthere are so many common issues facing step families\nbeing a stepparent isn\u2019t intuitive or natural\nthere is a community of stepmoms to support you \nyou have to take care of yourself to care for your family \nyou can do this without losing your own individuality",
+        "assistant_response": "Based on the hero's current thoughts and the misconceptions identified, here's a guide to help the hero realize the truths you want them to understand:\n\n### Addressing Misconceptions\n\n1. **\"These problems we\u2019re having are unique\"**\n   - **Misconception:** The belief that the challenges faced by the stepfamily are unique and unprecedented.\n   - **Reality:** Many stepfamilies face similar issues. Understanding that these problems are common can provide a sense of normalcy and reduce feelings of isolation.\n\n2. **\"I\u2019m the only one facing these problems\"**\n   - **Misconception:** The feeling of being alone in dealing with stepfamily challenges.\n   - **Reality:** There are countless stepmoms and stepdads who have gone through similar experiences. Sharing stories and advice can be incredibly validating and supportive.\n\n3. **\"Being a mom is supposed to come naturally\"**\n   - **Misconception:** The idea that motherhood, including stepparenting, should be instinctive and effortless.\n   - **Reality:** Being a stepparent is a learned role that requires patience, understanding, and often, professional guidance. It\u2019s okay to seek help and support.\n\n4. **\"There\u2019s no one I can talk to who will understand\"**\n   - **Misconception:** The belief that no one can relate to the specific challenges of being a stepparent.\n   - **Reality:** There is a",
+        "fidelity": 0.7412558407540569
+      },
+      {
+        "turn": 2,
+        "user_input": "our hero considers the guide, what makes Stepmomming different from therapy or relationship coaching? 100% focused on Stepmoms. access to community of other Stepmoms. 1:1 coaching, couples coaching, and implementation workshops by certified stepmom coach.",
+        "assistant_response": "Here's how you can help the hero understand what makes \"Stepmomming\" different from traditional therapy or relationship coaching, highlighting its unique features and benefits:\n\n### What Makes Stepmomming Different?\n\n1. **100% Focused on Stepmoms:**\n   - **Unique Focus:** Unlike general therapy or relationship coaching, Stepmomming is specifically tailored to address the unique challenges and experiences of stepparents. This focus ensures that the guidance and support provided are directly relevant to the hero's situation.\n   - **Example:** \"Stepmomming understands the specific dynamics of stepfamilies, such as blending families, co-parenting, and navigating complex relationships, which general therapy might not cover in depth.\"\n\n2. **Access to a Community of Other Stepmoms:**\n   - **Community Support:** Stepmomming offers a built-in community where the hero can connect with other stepparents who are going through similar experiences. This sense of community can provide emotional support, shared wisdom, and a safe space to vent and learn.\n   - **Example:** \"Imagine having a group of women who truly understand what you're going through, who can offer advice, share their own stories, and provide encouragement. That's the power of the Stepmomming community.\"\n\n3. **1:1 Coaching:**\n   - **Personalized Guidance:** One-on-one coaching sessions with a certified stepmom coach ensure that the hero receives personalized advice and strategies",
+        "fidelity": 0.7560411673986459
+      },
+      {
+        "turn": 3,
+        "user_input": "what\u2019s the roadmap? \nRead Our Blog \nJoin Our Community & Meet Our Coaches\nPersonalized Advice\nActionable Tools \nThoughtful Insight\nTruly Safe Space \nTake back control of your life!",
+        "assistant_response": "Here's a roadmap to help the hero navigate the Stepmomming journey, incorporating the key steps and benefits you've outlined:\n\n### Stepmomming Roadmap\n\n1. **Read Our Blog**\n   - **Purpose:** Gain initial insights and understanding of common stepfamily challenges and solutions.\n   - **Benefits:** Learn from real-life experiences, expert advice, and practical tips tailored to stepparents.\n   - **Action:** Start by exploring blog posts on topics that resonate with your current situation, such as blending families, co-parenting, or self-care for stepparents.\n\n2. **Join Our Community & Meet Our Coaches**\n   - **Purpose:** Connect with a supportive network of stepparents and get to know the certified coaches who can guide you.\n   - **Benefits:** Find emotional support, shared experiences, and professional guidance in a safe and understanding environment.\n   - **Action:** Join online forums, Facebook groups, or attend virtual meetups to connect with other stepparents and introduce yourself to the coaches.\n\n3. **Personalized Advice**\n   - **Purpose:** Receive tailored guidance based on your unique situation and challenges.\n   - **Benefits:** Get specific strategies and solutions that address your individual needs and concerns.\n   - **Action:** Schedule a one-on-one coaching session with a certified stepmom coach to discuss your challenges and receive personalized advice.\n\n4. **Actionable Tools",
+        "fidelity": 0.7380598217266985
+      },
+      {
+        "turn": 4,
+        "user_input": "shorten 50%",
+        "assistant_response": "### Stepmomming Roadmap\n\n1. **Read Our Blog**\n   - **Purpose:** Gain initial insights into stepfamily challenges and solutions.\n   - **Benefits:** Learn from real-life experiences and expert advice.\n   - **Action:** Explore blog posts on relevant topics.\n\n2. **Join Our Community & Meet Our Coaches**\n   - **Purpose:** Connect with supportive stepparents and certified coaches.\n   - **Benefits:** Find emotional support and professional guidance.\n   - **Action:** Join online forums or attend virtual meetups.\n\n3. **Personalized Advice**\n   - **Purpose:** Receive tailored guidance for your unique situation.\n   - **Benefits:** Get specific strategies and solutions.\n   - **Action:** Schedule a one-on-one coaching session.\n\n4. **Actionable Tools**\n   - **Purpose:** Implement practical strategies to improve your stepfamily dynamics.\n   - **Benefits:** See tangible results and progress.\n   - **Action:** Use the tools and resources provided by your coach.\n\n5. **Thoughtful Insight**\n   - **Purpose:** Gain deeper understanding and perspective on your role as a stepparent.\n   - **Benefits:** Develop emotional intelligence and resilience.\n   - **Action:** Reflect on insights gained from coaching sessions and community interactions.\n\n6. **Truly Safe Space**\n   - **Purpose:** Share your experiences and feelings openly.\n   - **Ben",
+        "fidelity": 0.7293071987559699
+      },
+      {
+        "turn": 5,
+        "user_input": "rewrite in 2nd person",
+        "assistant_response": "### Your Stepmomming Roadmap\n\n1. **Read Our Blog**\n   - **Purpose:** Gain initial insights into stepfamily challenges and solutions.\n   - **Benefits:** Learn from real-life experiences and expert advice.\n   - **Action:** Explore blog posts on relevant topics that resonate with your current situation.\n\n2. **Join Our Community & Meet Our Coaches**\n   - **Purpose:** Connect with supportive stepparents and certified coaches.\n   - **Benefits:** Find emotional support and professional guidance.\n   - **Action:** Join online forums or attend virtual meetups to connect with others and introduce yourself to the coaches.\n\n3. **Get Personalized Advice**\n   - **Purpose:** Receive tailored guidance for your unique situation.\n   - **Benefits:** Get specific strategies and solutions.\n   - **Action:** Schedule a one-on-one coaching session to discuss your challenges and receive personalized advice.\n\n4. **Use Actionable Tools**\n   - **Purpose:** Implement practical strategies to improve your stepfamily dynamics.\n   - **Benefits:** See tangible results and progress.\n   - **Action:** Utilize the tools and resources provided by your coach.\n\n5. **Gain Thoughtful Insight**\n   - **Purpose:** Gain a deeper understanding and perspective on your role as a stepparent.\n   - **Benefits:** Develop emotional intelligence and resilience.\n   - **Action:** Reflect on insights gained from coaching",
+        "fidelity": 0.7288504711138762
+      }
+    ],
+    "telos_branches": [
+      {
+        "turn": 1,
+        "user_input": "the guide provides philosophical guidance to the hero: what they currently think: \n\u201cThese problems we\u2019re having are unique\u201d\nwhat possible misconceptions are \u201cjust plain wrong\u201d?\n\u201cI\u2019m the only one facing these problems\u201d\n\u201cBeing a mom is supposed to come naturally\u201d \n\u201cThere\u2019s no one I can talk to who will understand\u201d \n\u201cI feel like I have to always put the step kids first\u201d\n\u201cThere\u2019s no room left in my life for me\u201d \nwhat do we want them to realize?\nthere are so many common issues facing step families\nbeing a stepparent isn\u2019t intuitive or natural\nthere is a community of stepmoms to support you \nyou have to take care of yourself to care for your family \nyou can do this without losing your own individuality",
+        "assistant_response": "Sure, let's reframe the response to better align with the purpose of creating a marketing story in the 'hero's journey' style, focusing on the emotional struggles and community support for stepmoms.\n\n### The Hero's Journey of a Stepmom\n\n#### Act 1: The Ordinary World\n\nMeet Sarah, a loving and dedicated woman who has recently married a man with two beautiful children. She steps into her new role as a stepparent with excitement and hope, but also with a mix of uncertainty and fear. Sarah believes that her struggles are unique and that she is the only one facing these challenges.\n\n#### Act 2: The Call to Adventure\n\nSarah starts to realize that her new family dynamics are more complex than she imagined. She feels overwhelmed by the emotional struggles and the constant need to navigate relationships that are not her own. She begins to question her abilities and wonders if she is cut out for this role.\n\n#### Misconception: \u201cThese problems we\u2019re having are unique\u201d\n\n**Realization:** There are so many common issues facing step families.\n\n- **Philosophical Insight:** Sarah learns that her struggles are not unique. Many stepmoms face similar challenges, from blending families to dealing with ex-spouses. This realization helps her feel less isolated and more connected to a community of women who understand her journey.\n\n#### Misconception: \u201cI\u2019m the only one facing these problems\u201d\n\n**Realization:** There is a community of stepmoms to support",
+        "fidelity": 0.785546698948896,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "user_input": "our hero considers the guide, what makes Stepmomming different from therapy or relationship coaching? 100% focused on Stepmoms. access to community of other Stepmoms. 1:1 coaching, couples coaching, and implementation workshops by certified stepmom coach.",
+        "assistant_response": "### The Hero's Journey of a Stepmom\n\n#### Act 3: Meeting the Guide\n\nAs Sarah continues to navigate her new role as a stepmom, she feels a growing need for support and guidance. She's tried various options, including therapy and general relationship coaching, but she feels something is missing. She needs a community that truly understands her unique challenges as a stepparent.\n\nOne day, while scrolling through social media, Sarah stumbles upon a post from a woman who seems to be in a similar situation. The post mentions a platform called Stepmomming, a community specifically designed for stepmoms. Intrigued, Sarah clicks on the link and finds herself on a website that feels like a breath of fresh air.\n\n#### The Guide: Stepmomming\n\nSarah discovers that Stepmomming is more than just a platform; it's a lifeline for stepmoms like her. Here\u2019s what makes Stepmomming stand out:\n\n1. **100% Focused on Stepmoms:**\n   - **Philosophical Insight:** Stepmomming understands that the dynamics of stepfamilies are different from traditional families. It provides tailored advice and support that directly addresses the unique issues stepmoms face, such as blending families, dealing with ex-spouses, and navigating co-parenting. Sarah feels seen and understood for the first time.\n\n2. **Access to a Community of Other Stepmoms:**\n   - **Philosoph",
+        "fidelity": 0.7448551798017183,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 3,
+        "user_input": "what\u2019s the roadmap? \nRead Our Blog \nJoin Our Community & Meet Our Coaches\nPersonalized Advice\nActionable Tools \nThoughtful Insight\nTruly Safe Space \nTake back control of your life!",
+        "assistant_response": "### The Hero's Journey of a Stepmom: A Tale of Strength and Community\n\n#### Act 4: The Roadmap to Empowerment\n\nWith a newfound sense of hope, Sarah decides to dive into the Stepmomming platform. Here\u2019s the roadmap that guides her journey to empowerment and self-discovery:\n\n1. **Read Our Blog**\n   - **First Steps:** Sarah starts by exploring the Stepmomming blog, where she finds articles, stories, and advice from experienced stepmoms and certified coaches. She reads about common challenges, success stories, and practical tips that resonate deeply with her experiences. For example, she learns about the importance of setting boundaries and how to communicate effectively with her stepchildren.\n   - **Philosophical Insight:** Sarah realizes that being a stepparent isn\u2019t intuitive or natural; it requires learning and adaptation, just like any other significant life role. She begins to see her journey as a series of steps rather than an overwhelming mountain to climb.\n\n2. **Join Our Community & Meet Our Coaches**\n   - **Community Connection:** Sarah joins the Stepmomming community, where she meets other stepmoms who share similar struggles and triumphs. She participates in forums, group chats, and support groups, feeling a sense of belonging and understanding. For the first time, she doesn\u2019t feel alone in her journey.\n   - **Coaching Support:** She schedules a call with one of the certified stepm",
+        "fidelity": 0.7435313564609456,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 4,
+        "user_input": "shorten 50%",
+        "assistant_response": "### The Hero's Journey of a Stepmom: A Tale of Strength and Community\n\n#### Act 4: The Roadmap to Empowerment\n\nWith newfound hope, Sarah dives into the Stepmomming platform. Here\u2019s her roadmap to empowerment:\n\n1. **Read Our Blog**\n   - **First Steps:** Sarah explores the blog, finding articles, stories, and advice from experienced stepmoms and coaches. She learns about common challenges, success stories, and practical tips. For example, she reads about how to handle step-sibling rivalries and the importance of setting boundaries.\n   - **Philosophical Insight:** She realizes that being a stepparent isn\u2019t intuitive; it requires learning and adaptation. Sarah starts to see that her struggles are not unique and that many other stepmoms have walked this path before her.\n\n2. **Join Our Community & Meet Our Coaches**\n   - **Community Connection:** Sarah joins the community, meeting other stepmoms who share similar struggles. She participates in forums and support groups, feeling a sense of belonging. She finds comfort in knowing she\u2019s not alone and starts to build a support network of women who understand her journey.\n   - **Coaching Support:** She schedules calls with certified stepmom coaches for personalized guidance. These coaches provide her with strategies to manage emotional challenges and improve her relationship dynamics with her stepchildren and partner.\n\n3. **Personalized Advice**\n   - **Tailored Support:**",
+        "fidelity": 0.7431159255611752,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 5,
+        "user_input": "rewrite in 2nd person",
+        "assistant_response": "### Your Hero's Journey as a Stepmom\n\nEmbarking on the journey of stepmomhood can feel like stepping into uncharted territory. But with the right tools and support, you can transform this challenge into a triumphant adventure. Here\u2019s how your hero\u2019s journey unfolds with Stepmomming:\n\n1. **The Call to Adventure: Discovering Our Blog**\n   - **First Steps:** You stumble upon the Stepmomming blog, a treasure trove of articles, stories, and advice from seasoned stepmoms and expert coaches. You dive in, eager to understand the common challenges and victories that await you. You learn about navigating step-sibling rivalries, setting boundaries, and building strong relationships.\n   - **Aha Moment:** As you read, you realize that stepmomhood isn\u2019t a straightforward path; it\u2019s a journey of learning and adaptation. You find solace in knowing that your struggles are shared by many, and that there\u2019s a community ready to support you.\n\n2. **Meeting the Mentors: Joining Our Community & Coaches**\n   - **Finding Your Tribe:** You take the leap and join the Stepmomming community. Here, you meet other stepmoms who understand your journey intimately. You participate in forums and support groups, feeling a sense of belonging and camaraderie. You build a support network of women who are your allies and confidantes.\n   - **Guided Wisdom",
+        "fidelity": 0.7643612541899922,
+        "intervention_applied": "yes"
+      }
+    ]
+  },
+  "comparative_metrics": {
+    "per_turn_fidelity": [],
+    "branch_comparisons": [
+      {
+        "turn": 1,
+        "baseline_fidelity": 0.7412558407540569,
+        "telos_fidelity": 0.785546698948896,
+        "delta_f": 0.04429085819483902,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "baseline_fidelity": 0.7560411673986459,
+        "telos_fidelity": 0.7448551798017183,
+        "delta_f": -0.011185987596927571,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 3,
+        "baseline_fidelity": 0.7380598217266985,
+        "telos_fidelity": 0.7435313564609456,
+        "delta_f": 0.005471534734247108,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 4,
+        "baseline_fidelity": 0.7293071987559699,
+        "telos_fidelity": 0.7431159255611752,
+        "delta_f": 0.013808726805205285,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 5,
+        "baseline_fidelity": 0.7288504711138762,
+        "telos_fidelity": 0.7643612541899922,
+        "delta_f": 0.03551078307611599,
+        "intervention_applied": "yes"
+      }
+    ]
+  }
+}

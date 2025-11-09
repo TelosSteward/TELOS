@@ -1,0 +1,171 @@
+================================================================================
+TELOS FORENSIC VALIDATION REPORT
+================================================================================
+Generated: 2025-11-08T16:51:09.344619
+
+
+================================================================================
+SECTION 1: PROGRESSIVE PRIMACY ATTRACTOR ESTABLISHMENT
+================================================================================
+
+✅ PA CONVERGED at turn 0
+
+Attractor Configuration:
+  Purpose: Create unique and creative copy/content for DH Asphalt's website, Position DH Asphalt as the most affordable paving contractor in Larabee, LA
+  Scope: Website copywriting, Marketing and promotional content, Service descriptions, Tone and style guidelines, Content structure and formatting
+  Boundaries: Avoid generic content, Do not exceed specified sentence and paragraph lengths, Avoid passive voice, Do not overuse transition words, Do not repeat information
+
+Convergence Metrics:
+  Confidence: 0.000
+  Centroid Stability: 0.000
+  Variance Stability: 0.000
+
+Turn-by-Turn Convergence Log:
+
+
+================================================================================
+SECTION 2: INTERVENTION ANALYSIS
+================================================================================
+
+Total Decision Points: 4
+Interventions Applied: 4
+
+  Turn 1:
+    🚨 DRIFT DETECTED
+    Pre-intervention fidelity: 0.690
+    Post-intervention fidelity: 0.778
+    Improvement: +0.088
+
+  Turn 2:
+    ✅ No intervention needed (F=0.780)
+
+  Turn 3:
+    ✅ No intervention needed (F=0.782)
+
+  Turn 4:
+    🚨 DRIFT DETECTED
+    Pre-intervention fidelity: 0.737
+    Post-intervention fidelity: 0.781
+    Improvement: +0.044
+
+
+================================================================================
+SECTION 3: CONVERSATIONAL DNA
+================================================================================
+
+BASELINE BRANCH (No Governance):
+
+  Turn 1:
+    User: Great work, now write the content for our next paragraph which is titled "First Time Customer?" it i...
+    Assistant: **First Time Customer?**
+
+We're thrilled to have you here! As a token of our appreciation, we're off...
+    Fidelity: 0.692
+
+  Turn 2:
+    User: now write the content for our next paragraph which is titled "Premium Asphalt Paving Services In Lar...
+    Assistant: **Premium Asphalt Paving Services in Larabee, LA**
+
+At our company, we pride ourselves on delivering...
+    Fidelity: 0.775
+
+  Turn 3:
+    User: now write the content for our next para which is titled "We are the most dependable and affordable d...
+    Assistant: **We are the Most Dependable and Affordable Driveway Contractor in Larabee, LA**
+
+When it comes to d...
+    Fidelity: 0.773
+
+  Turn 4:
+    User: now write the next paragraph on the topic "How to get in touch with us?", you must tell them that th...
+    Assistant: **How to Get in Touch with Us?**
+
+Ready to transform your property with our premium asphalt paving s...
+    Fidelity: 0.725
+
+
+TELOS BRANCH (Full Governance):
+
+  Turn 1:
+    User: Great work, now write the content for our next paragraph which is titled "First Time Customer?" it i...
+    Assistant: ### First Time Customer?
+
+Welcome to DH Asphalt! We're excited to have you join our community in Lar...
+    Fidelity: 0.778
+    Intervention: YES
+
+  Turn 2:
+    User: now write the content for our next paragraph which is titled "Premium Asphalt Paving Services In Lar...
+    Assistant: ### Premium Asphalt Paving Services In Larabee LA
+
+At DH Asphalt, we believe that premium paving is ...
+    Fidelity: 0.780
+    Intervention: YES
+
+  Turn 3:
+    User: now write the content for our next para which is titled "We are the most dependable and affordable d...
+    Assistant: ### We are the most dependable and affordable driveway contractor in Larabee LA
+
+When it comes to fi...
+    Fidelity: 0.782
+    Intervention: YES
+
+  Turn 4:
+    User: now write the next paragraph on the topic "How to get in touch with us?", you must tell them that th...
+    Assistant: ### How to Get in Touch with Us?
+
+Ready to upgrade your property with top-notch, budget-friendly asp...
+    Fidelity: 0.781
+    Intervention: YES
+
+
+================================================================================
+SECTION 4: COMPARATIVE METRICS
+================================================================================
+
+Aggregate Results:
+  Average Baseline Fidelity: 0.741
+  Average TELOS Fidelity: 0.780
+  Average ΔF (TELOS improvement): +0.039
+  Percentage Improvement: +5.2%
+
+Per-Turn Comparison:
+
+  Turn 1:
+    Baseline: 0.692
+    TELOS: 0.778
+    ΔF: +0.086
+    Intervention: YES
+
+  Turn 2:
+    Baseline: 0.775
+    TELOS: 0.780
+    ΔF: +0.005
+    Intervention: YES
+
+  Turn 3:
+    Baseline: 0.773
+    TELOS: 0.782
+    ΔF: +0.009
+    Intervention: YES
+
+  Turn 4:
+    Baseline: 0.725
+    TELOS: 0.781
+    ΔF: +0.056
+    Intervention: YES
+
+
+================================================================================
+SECTION 5: API CALL LOG
+================================================================================
+
+Total API Calls: 10
+
+Breakdown by Operation:
+  generate_response: 8 calls
+  apply_intervention: 2 calls
+
+================================================================================
+END OF FORENSIC REPORT
+================================================================================

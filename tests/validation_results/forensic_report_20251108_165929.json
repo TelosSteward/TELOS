@@ -1,0 +1,287 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-08T16:56:49.405627",
+    "model": "mistral-small-2501",
+    "embedding_provider": "Mistral API (mistral-embed, 10s delay)",
+    "session_file": "sharegpt_filtered_11.json"
+  },
+  "pa_establishment": {
+    "turn_by_turn_convergence": [],
+    "convergence_summary": {
+      "converged": "yes",
+      "convergence_turn": 0,
+      "method": "pre-established-from-session",
+      "attractor": {
+        "purpose": [
+          "Create SEO-friendly product descriptions",
+          "Generate marketing headlines",
+          "Develop a brand statement"
+        ],
+        "scope": [
+          "Product description writing",
+          "Marketing and advertising",
+          "Branding and positioning",
+          "Travel and leisure products"
+        ],
+        "boundaries": [
+          "Technical specifications of the motorhome",
+          "Pricing and sales strategies",
+          "Customer reviews and testimonials"
+        ]
+      },
+      "confidence": 1.0,
+      "centroid_stability": 1.0,
+      "variance_stability": 1.0
+    }
+  },
+  "counterfactual_branches": [],
+  "intervention_analysis": {
+    "decision_points": [
+      {
+        "turn": 1,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.7100935906867001,
+        "post_intervention_fidelity": 0.7673672870943441,
+        "improvement": 0.057273696407644015,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 2,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.70112777225775,
+        "post_intervention_fidelity": 0.765516558100865,
+        "improvement": 0.06438878584311503,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 3,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.7429148175357673,
+        "post_intervention_fidelity": 0.7937969928391343,
+        "improvement": 0.05088217530336703,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 4,
+        "drift_detected": "yes",
+        "pre_intervention_fidelity": 0.7150705802736118,
+        "post_intervention_fidelity": 0.776350366733106,
+        "improvement": 0.06127978645949417,
+        "intervention_type": "boundary_correction"
+      },
+      {
+        "turn": 5,
+        "drift_detected": "no",
+        "fidelity": 0.7509146213825739,
+        "intervention_type": null
+      }
+    ],
+    "api_call_log": [
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "apply_intervention",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "BASELINE",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      },
+      {
+        "operation": "generate_response",
+        "branch_type": "TELOS",
+        "model": "mistral-small-2501",
+        "success": "yes",
+        "retries": 0
+      }
+    ]
+  },
+  "conversational_dna": {
+    "baseline_branches": [
+      {
+        "turn": 1,
+        "user_input": "write a marketing intro for Aurora Linens",
+        "assistant_response": "**Welcome to Aurora Linens: Where Comfort Meets Elegance**\n\nAt Aurora Linens, we believe that your home should be a sanctuary of comfort and style. That's why we've dedicated ourselves to crafting premium linens that elevate your living space, ensuring you experience the perfect blend of luxury and relaxation.\n\n**Discover Our Collection**\n\nOur meticulously designed collection features a wide range of high-quality linens, including:\n\n- **Bedding Sets**: From crisp cotton to luxurious silk, our bedding sets are designed to provide you with the ultimate night's sleep.\n- **Bath Towels**: Indulge in the softness of our plush bath towels, perfect for wrapping yourself in after a relaxing bath.\n- **Kitchen Linens**: Add a touch of elegance to your kitchen with our durable and stylish kitchen towels, aprons, and table linens.\n- **Home Decor**: Complete your home decor with our beautifully crafted throws, cushions, and curtains.\n\n**Why Choose Aurora Linens?**\n\n- **Quality Craftsmanship**: Each piece is crafted with the finest materials and attention to detail, ensuring durability and longevity.\n- **Eco-Friendly Practices**: We are committed to sustainable practices, using eco-friendly materials and processes to minimize our environmental impact.\n- **Customer Satisfaction**: Your comfort and satisfaction are our top priorities. We strive to provide exceptional customer service and support.\n\n**Experience the Aurora Linens Difference**\n\nTransform your",
+        "fidelity": 0.7088394494847106
+      },
+      {
+        "turn": 2,
+        "user_input": "write two sentences selling Aurora Linens",
+        "assistant_response": "Experience the ultimate in comfort and style with Aurora Linens, where each piece is crafted with premium materials and meticulous attention to detail. Elevate your home and indulge in the luxury you deserve with our exquisite collection of bedding, bath, and home decor linens.",
+        "fidelity": 0.6890051118967132
+      },
+      {
+        "turn": 3,
+        "user_input": "rewrite \"Upgrade your RV bedding with Aurora Linens, the ultimate in luxury and comfort on the open road. Our custom fitted sheet sets are expertly crafted to provide a snug and comfortable fit on your Leisure Travel Van motorhome's unique mattress.\"",
+        "assistant_response": "**Elevate your RV sleep experience with Aurora Linens, bringing unmatched luxury and comfort to your adventures. Our custom-fitted sheet sets are tailored to ensure a perfect, cozy fit for your Leisure Travel Van motorhome's distinctive mattress.**\n\nRevisions include:\n\n* Using \"Elevate\" instead of \"Upgrade\" for a more compelling start\n* Adding \"sleep experience\" to emphasize the benefit\n* Changing \"expertly crafted\" to \"tailored\" for a more personal touch\n* Using \"distinctive\" instead of \"unique\" for a more engaging description\n* Adding \"cozy\" to emphasize the comfort benefit",
+        "fidelity": 0.7404566387079916
+      },
+      {
+        "turn": 4,
+        "user_input": "write a brand history for Aurora Linens",
+        "assistant_response": "**Aurora Linens: A Legacy of Comfort and Craftsmanship**\n\nAurora Linens was born out of a passion for creating comfortable and stylish living spaces. Our journey began in the early 2000s when our founder, Emma Aurora, set out to fill a gap in the market for high-quality, affordable linens that combined elegance with everyday practicality.\n\n**The Early Years**\n\nEmma, with her background in textile design and a keen eye for detail, started Aurora Linens in her small studio apartment. She began by handcrafting a limited collection of bedding and bath linens, using only the finest materials sourced from around the world. Her dedication to quality and craftsmanship quickly gained attention, and word-of-mouth referrals from satisfied customers helped Aurora Linens grow steadily.\n\n**Expanding Horizons**\n\nAs demand for our products increased, we expanded our collection to include a wider range of home decor items, such as kitchen linens, throws, and curtains. We also invested in state-of-the-art manufacturing facilities to ensure consistent quality and efficiency while maintaining our commitment to eco-friendly practices.\n\n**Innovation and Sustainability**\n\nAurora Linens has always been at the forefront of innovation. We were one of the first linen companies to adopt sustainable practices, using organic cotton, recycled materials, and eco-friendly dyes. Our dedication to sustainability not only reduces our environmental impact but also ensures that our products are safe and comfortable for our customers",
+        "fidelity": 0.7020767441740263
+      },
+      {
+        "turn": 5,
+        "user_input": "add details: founded in 2015, group of partners, empty space in the market, solving the unique problem of the distinct mattress sizes in LTV models, work closely with Leisure Travel Vans",
+        "assistant_response": "**Aurora Linens: A Legacy of Comfort and Craftsmanship**\n\nAurora Linens was founded in 2015 by a group of partners who shared a passion for creating comfortable and stylish living spaces, both at home and on the road. Our journey began when we identified a unique gap in the market: the need for high-quality, custom-fitted linens designed specifically for the distinctive mattress sizes found in Leisure Travel Van (LTV) motorhomes.\n\n**The Early Years**\n\nOur founding partners, led by Emma Aurora, a textile design expert, recognized the challenges faced by LTV owners in finding bedding that fit their unique mattresses. Determined to solve this problem, we started Aurora Linens in a small workshop, focusing on crafting custom-fitted sheet sets that provided a perfect, comfortable fit. Our dedication to quality, craftsmanship, and exceptional customer service quickly gained us a loyal following among LTV owners.\n\n**Collaboration with Leisure Travel Vans**\n\nFrom the outset, we worked closely with Leisure Travel Vans to understand the specific dimensions and requirements of their mattresses. This collaboration allowed us to create linens that not only fit perfectly but also enhanced the overall comfort and luxury of the LTV living experience. Our partnership continues to this day, ensuring that our products remain tailored to the evolving needs of LTV owners.\n\n**Expanding Horizons**\n\nAs our reputation grew, we expanded",
+        "fidelity": 0.7156043369803471
+      }
+    ],
+    "telos_branches": [
+      {
+        "turn": 1,
+        "user_input": "write a marketing intro for Aurora Linens",
+        "assistant_response": "Sure, let's revise the response to better align with the purpose of creating SEO-friendly product descriptions, generating marketing headlines, and developing a brand statement, all within the scope of travel and leisure products.\n\n---\n\n### **Aurora Linens: Elevate Your Travel Experience with Luxurious Comfort**\n\n\ud83c\udf1f **Discover the Aurora Difference** \ud83c\udf1f\n\nAt Aurora Linens, we believe that your travels should be as comfortable as they are memorable. That's why we've dedicated ourselves to crafting luxurious bedding and home linens that transform your travel accommodations into a sanctuary of comfort and style.\n\n\ud83c\udf38 **Unmatched Quality for Travelers** \ud83c\udf38\nOur linens are meticulously designed using only the finest materials, ensuring durability and softness that lasts through countless adventures. From our silky-smooth sateen to our cozy flannel, each collection is crafted to provide the ultimate in comfort and elegance, perfect for your travels.\n\n\ud83c\udf1f **Timeless Designs for Every Destination** \ud83c\udf1f\nAurora Linens offers a range of timeless designs that effortlessly blend with any travel destination. Whether you're staying in a chic city hotel or a rustic mountain lodge, our collections are designed to enhance your space and create a harmonious atmosphere, making every trip feel like a luxurious retreat.\n\n\ud83c\udf38 **Sustainable Luxury on the Go** \ud83c\udf38\nWe are committed to sustainability",
+        "fidelity": 0.7673672870943441,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "user_input": "write two sentences selling Aurora Linens",
+        "assistant_response": "Sure, let's break down the response into the specific tasks you mentioned:\n\n### SEO-Friendly Product Descriptions\n\n**Product: Premium Bedding Set**\n\nDiscover the pinnacle of travel comfort with Aurora Linens' Premium Bedding Set. Crafted from the finest, eco-friendly materials, this set ensures a luxurious and sustainable sleep experience. Our bedding is designed to provide unmatched comfort, making any accommodation feel like a luxurious retreat. Perfect for travelers who value both style and sustainability, this set includes a soft, breathable duvet cover, pillowcases, and a fitted sheet. Elevate your travel experience with Aurora Linens' Premium Bedding Set, where luxury meets eco-consciousness.\n\n**Product: Travel Pillow**\n\nEnhance your journey with Aurora Linens' Travel Pillow, designed for ultimate comfort and support. Made from high-quality, sustainable materials, this pillow ensures a restful sleep during long flights or road trips. Its ergonomic design and soft, breathable fabric make it the perfect travel companion. Whether you're a frequent flyer or a weekend adventurer, our Travel Pillow is a must-have for a comfortable and eco-friendly travel experience.\n\n### Marketing Headlines\n\n1. **Elevate Your Travel Experience with Aurora Linens**\n   - Discover the perfect blend of luxury and sustainability with our premium bedding and travel accessories.\n\n2. **Sleep in Style with Eco-Friendly Comfort**\n   - Experience the ultimate in travel comfort with Aurora",
+        "fidelity": 0.765516558100865,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 3,
+        "user_input": "rewrite \"Upgrade your RV bedding with Aurora Linens, the ultimate in luxury and comfort on the open road. Our custom fitted sheet sets are expertly crafted to provide a snug and comfortable fit on your Leisure Travel Van motorhome's unique mattress.\"",
+        "assistant_response": "Sure, let's focus on creating SEO-friendly product descriptions, generating marketing headlines, and developing a brand statement for Aurora Linens, specifically tailored for travel and leisure products.\n\n### SEO-Friendly Product Descriptions\n\n1. **Aurora Linens Custom Fitted Sheet Sets for Leisure Travel Van Motorhomes**\n   - **Description:** Elevate your RV sleeping experience with Aurora Linens' custom fitted sheet sets, designed exclusively for Leisure Travel Van motorhomes. Our premium bedding ensures a perfect, cozy fit, providing unparalleled luxury and comfort for your adventures on the open road. Crafted with high-quality materials, these sheets are tailored to fit your motorhome's distinctive mattress, ensuring a secure and restful night's sleep.\n\n2. **Premium RV Bedding by Aurora Linens**\n   - **Description:** Experience the ultimate in comfort and style with Aurora Linens' premium RV bedding. Our custom fitted sheet sets are expertly tailored to deliver a secure and comfortable fit, perfectly suited for your Leisure Travel Van motorhome's unique mattress. Enjoy a luxurious night's sleep wherever your travels take you.\n\n3. **Aurora Linens Luxury RV Bedding for Leisure Travel Van Motorhomes**\n   - **Description:** Transform your RV bedding with Aurora Linens' luxury sheet sets, designed specifically for Leisure Travel Van motorhomes. Our custom fitted sheets offer a perfect, cozy fit, ensuring",
+        "fidelity": 0.7937969928391343,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 4,
+        "user_input": "write a brand history for Aurora Linens",
+        "assistant_response": "### **Aurora Linens: Elevate Your Travel Experience with Luxurious Comfort**\n\n**SEO-Friendly Product Descriptions**\n\n**Custom Fitted Sheet Sets for Motorhomes and RVs**\nExperience the ultimate in comfort and durability with our custom fitted sheet sets, designed specifically for the unique mattresses found in motorhomes and RVs. Made from premium materials, these sheets ensure a perfect fit and a restful night's sleep, no matter where your adventures take you.\n\n**Luxurious Duvet Covers and Pillowcases**\nTransform your travel space into a cozy haven with our luxurious duvet covers and pillowcases. Crafted from high-quality fabrics, these bedding essentials offer both style and comfort, making your travels feel more like a home away from home.\n\n**Travel Pillows and Blankets**\nStay cozy and comfortable on the go with our range of travel pillows and blankets. Perfect for long journeys, these products are designed with portability and comfort in mind, ensuring you have a restful sleep wherever you are.\n\n**Marketing Headlines**\n\n1. **Sleep Like Royalty on the Road with Aurora Linens**\n2. **Elevate Your Travel Experience with Luxurious Bedding**\n3. **Discover the Perfect Fit for Your RV with Aurora Linens**\n4. **Transform Your Travel Space with Premium Linens**\n5. **Experience Unmatched Comfort with Aurora Linens**\n\n**Brand Statement**\n\nAurora",
+        "fidelity": 0.776350366733106,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 5,
+        "user_input": "add details: founded in 2015, group of partners, empty space in the market, solving the unique problem of the distinct mattress sizes in LTV models, work closely with Leisure Travel Vans",
+        "assistant_response": "### **Aurora Linens: Elevate Your Travel Experience with Luxurious Comfort**\n\n**Brand History**\n\nFounded in 2015 by a group of passionate travel enthusiasts and industry experts, Aurora Linens was born out of a shared vision to elevate the travel experience for adventurers seeking both luxury and comfort on the open road. Recognizing a significant gap in the market for high-quality, custom-fitted bedding tailored to the unique mattress sizes found in Leisure Travel Van (LTV) models, the founders set out to solve this distinct problem.\n\nFrom the outset, Aurora Linens has worked closely with Leisure Travel Vans to understand the specific needs and challenges of their customers. By collaborating directly with the manufacturer, we've been able to design and produce bedding that fits perfectly, ensuring a snug and comfortable sleep experience. Our commitment to quality, comfort, and customer satisfaction has made Aurora Linens a trusted name among RV and motorhome enthusiasts.\n\n**SEO-Friendly Product Descriptions**\n\n**Custom Fitted Sheet Sets for Motorhomes and RVs**\nExperience the ultimate in comfort and durability with our custom fitted sheet sets, designed specifically for the unique mattresses found in motorhomes and RVs. Made from premium materials, these sheets ensure a perfect fit and a restful night's sleep, no matter where your adventures take you. Our sheets are tailored to fit Leisure Travel Van models, providing a secure and comfortable",
+        "fidelity": 0.7509146213825739,
+        "intervention_applied": "no"
+      }
+    ]
+  },
+  "comparative_metrics": {
+    "per_turn_fidelity": [],
+    "branch_comparisons": [
+      {
+        "turn": 1,
+        "baseline_fidelity": 0.7088394494847106,
+        "telos_fidelity": 0.7673672870943441,
+        "delta_f": 0.05852783760963354,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 2,
+        "baseline_fidelity": 0.6890051118967132,
+        "telos_fidelity": 0.765516558100865,
+        "delta_f": 0.07651144620415185,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 3,
+        "baseline_fidelity": 0.7404566387079916,
+        "telos_fidelity": 0.7937969928391343,
+        "delta_f": 0.05334035413114269,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 4,
+        "baseline_fidelity": 0.7020767441740263,
+        "telos_fidelity": 0.776350366733106,
+        "delta_f": 0.07427362255907966,
+        "intervention_applied": "yes"
+      },
+      {
+        "turn": 5,
+        "baseline_fidelity": 0.7156043369803471,
+        "telos_fidelity": 0.7509146213825739,
+        "delta_f": 0.03531028440222683,
+        "intervention_applied": "no"
+      }
+    ]
+  }
+}

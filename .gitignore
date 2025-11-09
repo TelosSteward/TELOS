@@ -237,6 +237,15 @@ docs/sanitized_public_repo/
 .streamlit/secrets.toml
 
 # ============================================================
+# BETA TESTING DATA
+# ============================================================
+# Beta session data (contains user preferences/feedback)
+observatory/beta_testing/data/
+!observatory/beta_testing/data/.gitkeep
+beta_testing/data/
+!beta_testing/data/.gitkeep
+
+# ============================================================
 # DOCUMENTATION DRAFTS (keep published docs)
 # ============================================================
 # Keep: README.md, docs/*.md (published)
