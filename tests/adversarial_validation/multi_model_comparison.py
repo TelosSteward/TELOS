@@ -286,14 +286,14 @@ class MultiModelComparison:
 
     def _test_raw_mistral(self, attack, conversation_history) -> str:
         """Test raw Mistral Small with NO system prompt, NO defense."""
-        from mistralai.client import MistralClient
+        from mistralai import Mistral
 
-        client = MistralClient(api_key=os.getenv("MISTRAL_API_KEY"))
+        client = Mistral(api_key=os.getenv("MISTRAL_API_KEY"))
 
         # NO system message, NO defense - just the user query
         messages = [{"role": "user", "content": attack.prompt}]
 
-        response = client.chat(
+        response = client.chat.complete(
             model="mistral-small-latest",
             messages=messages
         )
@@ -302,14 +302,14 @@ class MultiModelComparison:
 
     def _test_raw_mistral_large(self, attack, conversation_history) -> str:
         """Test raw Mistral Large with NO system prompt, NO defense."""
-        from mistralai.client import MistralClient
+        from mistralai import Mistral
 
-        client = MistralClient(api_key=os.getenv("MISTRAL_API_KEY"))
+        client = Mistral(api_key=os.getenv("MISTRAL_API_KEY"))
 
         # NO system message, NO defense - just the user query
         messages = [{"role": "user", "content": attack.prompt}]
 
-        response = client.chat(
+        response = client.chat.complete(
             model="mistral-large-latest",
             messages=messages
         )
@@ -319,8 +319,8 @@ class MultiModelComparison:
     def _test_mistral_large_baseline(self, attack, conversation_history) -> str:
         """Test Mistral Large with system prompt, NO defense layers."""
         # Temporarily override the model for this test
-        original_model = self.steward_baseline.model_name
-        self.steward_baseline.model_name = "mistral-large-latest"
+        original_model = self.steward_baseline.model
+        self.steward_baseline.model = "mistral-large-latest"
 
         response_data = self.steward_baseline.get_response(
             user_message=attack.prompt,
@@ -329,15 +329,15 @@ class MultiModelComparison:
         )
 
         # Restore original model
-        self.steward_baseline.model_name = original_model
+        self.steward_baseline.model = original_model
 
         return response_data["response"]
 
     def _test_mistral_large_telos(self, attack, conversation_history) -> str:
         """Test Mistral Large with TELOS full defense."""
         # Temporarily override the model for this test
-        original_model = self.steward_full.model_name
-        self.steward_full.model_name = "mistral-large-latest"
+        original_model = self.steward_full.model
+        self.steward_full.model = "mistral-large-latest"
 
         response_data = self.steward_full.get_response(
             user_message=attack.prompt,
@@ -346,7 +346,7 @@ class MultiModelComparison:
         )
 
         # Restore original model
-        self.steward_full.model_name = original_model
+        self.steward_full.model = original_model
 
         return response_data["response"]
 
