@@ -22,7 +22,7 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 
 # Add parent directory to path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from tests.adversarial_validation.attack_library import AttackLibrary, AttackLevel
 from tests.adversarial_validation.expanded_attack_library import ExpandedAttackLibrary
