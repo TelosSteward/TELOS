@@ -168,9 +168,12 @@ class MultiModelComparison:
 
         # Test each model configuration
         models_to_test = [
-            ("Raw Mistral Small", "raw_mistral", self._test_raw_mistral),
-            ("Mistral + System Prompt", "mistral_baseline", self._test_mistral_baseline),
-            ("Mistral + TELOS", "mistral_telos", self._test_mistral_telos),
+            ("Raw Mistral Small", "raw_mistral_small", self._test_raw_mistral),
+            ("Mistral Small + System Prompt", "mistral_small_baseline", self._test_mistral_baseline),
+            ("Mistral Small + TELOS", "mistral_small_telos", self._test_mistral_telos),
+            ("Raw Mistral Large", "raw_mistral_large", self._test_raw_mistral_large),
+            ("Mistral Large + System Prompt", "mistral_large_baseline", self._test_mistral_large_baseline),
+            ("Mistral Large + TELOS", "mistral_large_telos", self._test_mistral_large_telos),
         ]
 
         if self.openai_client:
@@ -282,7 +285,7 @@ class MultiModelComparison:
         return model_results
 
     def _test_raw_mistral(self, attack, conversation_history) -> str:
-        """Test raw Mistral with NO system prompt, NO defense."""
+        """Test raw Mistral Small with NO system prompt, NO defense."""
         from mistralai.client import MistralClient
 
         client = MistralClient(api_key=os.getenv("MISTRAL_API_KEY"))
@@ -296,6 +299,56 @@ class MultiModelComparison:
         )
 
         return response.choices[0].message.content
+
+    def _test_raw_mistral_large(self, attack, conversation_history) -> str:
+        """Test raw Mistral Large with NO system prompt, NO defense."""
+        from mistralai.client import MistralClient
+
+        client = MistralClient(api_key=os.getenv("MISTRAL_API_KEY"))
+
+        # NO system message, NO defense - just the user query
+        messages = [{"role": "user", "content": attack.prompt}]
+
+        response = client.chat(
+            model="mistral-large-latest",
+            messages=messages
+        )
+
+        return response.choices[0].message.content
+
+    def _test_mistral_large_baseline(self, attack, conversation_history) -> str:
+        """Test Mistral Large with system prompt, NO defense layers."""
+        # Temporarily override the model for this test
+        original_model = self.steward_baseline.model_name
+        self.steward_baseline.model_name = "mistral-large-latest"
+
+        response_data = self.steward_baseline.get_response(
+            user_message=attack.prompt,
+            conversation_history=conversation_history,
+            session_id="baseline_large"
+        )
+
+        # Restore original model
+        self.steward_baseline.model_name = original_model
+
+        return response_data["response"]
+
+    def _test_mistral_large_telos(self, attack, conversation_history) -> str:
+        """Test Mistral Large with TELOS full defense."""
+        # Temporarily override the model for this test
+        original_model = self.steward_full.model_name
+        self.steward_full.model_name = "mistral-large-latest"
+
+        response_data = self.steward_full.get_response(
+            user_message=attack.prompt,
+            conversation_history=conversation_history,
+            session_id="telos_large"
+        )
+
+        # Restore original model
+        self.steward_full.model_name = original_model
+
+        return response_data["response"]
 
     def _test_mistral_baseline(self, attack, conversation_history) -> str:
         """Test Mistral with system prompt, NO defense layers."""
@@ -497,13 +550,19 @@ def main():
     print("  1. Raw Mistral Small (no defense)")
     print("  2. Mistral Small + System Prompt (baseline)")
     print("  3. Mistral Small + TELOS (full defense)")
+    print("  4. Raw Mistral Large (no defense)")
+    print("  5. Mistral Large + System Prompt (baseline)")
+    print("  6. Mistral Large + TELOS (full defense)")
 
     if OPENAI_AVAILABLE and os.getenv("OPENAI_API_KEY"):
-        print("  4. GPT-4 (OpenAI default safety)")
+        print("  7. GPT-4 (OpenAI default safety)")
 
     if ANTHROPIC_AVAILABLE and os.getenv("ANTHROPIC_API_KEY"):
-        print("  5. Claude 3.5 Sonnet (Anthropic Constitutional AI)")
+        print("  8. Claude 3.5 Sonnet (Anthropic Constitutional AI)")
 
+    print()
+    print("📊 Testing 20 attacks (Levels 1-2 + some Level 4)")
+    print("💰 Estimated cost: ~$2-5 for Mistral models")
     print()
     input("Press Enter to continue (Ctrl+C to cancel)...")
     print()
