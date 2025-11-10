@@ -26,7 +26,7 @@ toolbarMode = "minimal"
 
 [ui]
 hideTopBar = true
-hideSidebarNav = false
+# hideSidebarNav removed - deprecated in newer Streamlit versions
 
 [browser]
 # Browser settings

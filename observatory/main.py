@@ -706,8 +706,12 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
                             conversation_display, observation_deck,
                             teloscope_controls, steward_panel, beta_onboarding):
     """Render tabs and main content area."""
-    # Only render sidebar and tabs styling if needed
-    if has_beta_consent:
+    # Check if we're in TELOS or DEVOPS mode (which have sidebar access)
+    active_tab = st.session_state.get('active_tab', 'DEMO')
+    sidebar_accessible = active_tab in ['TELOS', 'DEVOPS']
+
+    # Only render sidebar and tabs styling if beta consent given OR in DEVOPS mode
+    if has_beta_consent or sidebar_accessible:
         # Add slide-in animation for sidebar
         st.markdown("""
         <style>
@@ -899,11 +903,12 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
 
     st.markdown("<hr style='border: 1px solid #FFD700; margin: 10px 0;'>", unsafe_allow_html=True)
 
-    # Hide sidebar for DEMO mode without consent
-    if not has_beta_consent:
+    # Hide sidebar for DEMO and BETA modes - only show in TELOS and DEVOPS
+    active_tab = st.session_state.get('active_tab', 'DEMO')
+    if active_tab not in ['TELOS', 'DEVOPS']:
         st.markdown("""
         <style>
-        /* Hide sidebar before consent */
+        /* Hide sidebar before TELOS/DEVOPS modes */
         [data-testid="stSidebar"] {
             display: none !important;
         }
@@ -917,6 +922,39 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
         </style>
         """, unsafe_allow_html=True)
 
+    # Unified rendering function - single master build with mode-based feature flags
+    def render_mode_content(mode: str):
+        """Unified content rendering for all modes with feature flags.
+
+        Args:
+            mode: One of DEMO, BETA, TELOS, DEVOPS
+        """
+        # Set demo mode flag based on current mode
+        st.session_state.telos_demo_mode = (mode == "DEMO")
+
+        # Mode-specific features
+        show_devops_header = (mode == "DEVOPS")
+        show_observation_deck = (mode in ["BETA", "TELOS", "DEVOPS"])
+        show_teloscope = (mode in ["TELOS", "DEVOPS"])
+
+        # DEVOPS header
+        if show_devops_header:
+            st.markdown("### 🔧 DEVOPS Mode - Full System Access")
+            st.markdown("**All restrictions removed. Beta mode with full PA extraction and interventions enabled.**")
+
+        # Main conversation display (all modes)
+        conversation_display.render()
+
+        # Observation Deck (BETA, TELOS, DEVOPS)
+        if show_observation_deck:
+            st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
+            observation_deck.render()
+
+        # TELOSCOPE Controls (TELOS, DEVOPS)
+        if show_teloscope:
+            st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
+            teloscope_controls.render()
+
     # Check if Steward panel is open
     steward_open = st.session_state.get('steward_panel_open', False)
 
@@ -926,35 +964,7 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
         col_main, col_steward = st.columns([7, 3])
 
         with col_main:
-            # Render content based on active tab
-            if st.session_state.active_tab == "BETA":
-                # Beta mode - disable demo mode, show Observation Deck
-                st.session_state.telos_demo_mode = False
-                conversation_display.render()
-                st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
-                observation_deck.render()
-            elif st.session_state.active_tab == "DEMO":
-                # Demo Mode - enable demo mode flag and render conversation
-                st.session_state.telos_demo_mode = True
-                conversation_display.render()
-            elif st.session_state.active_tab == "TELOS":
-                # TELOS mode - disable demo mode
-                st.session_state.telos_demo_mode = False
-                conversation_display.render()
-                st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
-                observation_deck.render()
-                st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
-                teloscope_controls.render()
-            elif st.session_state.active_tab == "DEVOPS":
-                # DEVOPS mode - full unrestricted access for testing
-                st.session_state.telos_demo_mode = False
-                st.markdown("### 🔧 DEVOPS Mode - Full System Access")
-                st.markdown("**All restrictions removed. Beta mode with full PA extraction and interventions enabled.**")
-                conversation_display.render()
-                st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
-                observation_deck.render()
-                st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
-                teloscope_controls.render()
+            render_mode_content(st.session_state.active_tab)
 
         with col_steward:
             # Render Steward chat panel
@@ -962,38 +972,7 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
 
     else:
         # Normal full-width layout
-        # Render content based on active tab
-        if st.session_state.active_tab == "BETA":
-            # Beta Tab - disable demo mode, show Observation Deck
-            st.session_state.telos_demo_mode = False
-            conversation_display.render()
-            st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
-            observation_deck.render()
-
-        elif st.session_state.active_tab == "DEMO":
-            # Demo Tab - enable demo mode flag and render conversation
-            st.session_state.telos_demo_mode = True
-            conversation_display.render()
-
-        elif st.session_state.active_tab == "TELOS":
-            # TELOS Tab - disable demo mode, full Observatory
-            st.session_state.telos_demo_mode = False
-            conversation_display.render()
-            st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
-            observation_deck.render()
-            st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
-            teloscope_controls.render()
-
-        elif st.session_state.active_tab == "DEVOPS":
-            # DEVOPS mode - full unrestricted access for testing
-            st.session_state.telos_demo_mode = False
-            st.markdown("### 🔧 DEVOPS Mode - Full System Access")
-            st.markdown("**All restrictions removed. Beta mode with full PA extraction and interventions enabled.**")
-            conversation_display.render()
-            st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
-            observation_deck.render()
-            st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
-            teloscope_controls.render()
+        render_mode_content(st.session_state.active_tab)
 
     # FINAL CSS OVERRIDE - Inject with highest specificity at runtime
     st.html("""

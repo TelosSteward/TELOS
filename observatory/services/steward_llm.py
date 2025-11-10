@@ -1,19 +1,35 @@
 """
 Steward LLM Service for TELOS Observatory V3.
 Handles all LLM interactions for the Steward assistant.
+
+Now includes 4-layer defense architecture for adversarial testing:
+- Layer 1: System Prompt (immutable PA)
+- Layer 2: Fidelity Measurement (real-time alignment check)
+- Layer 3: RAG Corpus (policy knowledge base)
+- Layer 4: Human Escalation (intervention queue)
 """
 
 import streamlit as st
 from mistralai import Mistral
-from typing import Generator, Optional
+from typing import Generator, Optional, Dict, Any
 import os
+import logging
+
+# Import defense layers
+from observatory.services.steward_defense import StewardDefenseLayers
+
+logger = logging.getLogger(__name__)
 
 
 class StewardLLM:
-    """Service for Steward AI assistant powered by Mistral."""
+    """Service for Steward AI assistant powered by Mistral with defense layers."""
 
-    def __init__(self):
-        """Initialize Steward LLM with API key from Streamlit secrets."""
+    def __init__(self, enable_defense: bool = True):
+        """Initialize Steward LLM with API key and defense layers.
+
+        Args:
+            enable_defense: Whether to enable 4-layer defense system (default: True)
+        """
         # Try to get API key from Streamlit secrets, fall back to environment variable
         try:
             self.api_key = st.secrets.get("MISTRAL_API_KEY")
@@ -27,6 +43,22 @@ class StewardLLM:
 
         self.client = Mistral(api_key=self.api_key)
         self.model = "mistral-small-latest"  # Using small - best availability
+
+        # Initialize defense layers
+        self.enable_defense = enable_defense
+        if enable_defense:
+            try:
+                self.defense = StewardDefenseLayers(
+                    fidelity_threshold=0.75,
+                    escalation_threshold=0.60,
+                    enable_telemetry=True
+                )
+                logger.info("✅ Defense layers enabled")
+            except Exception as e:
+                logger.warning(f"⚠️  Defense layers failed to initialize: {e}")
+                self.enable_defense = False
+        else:
+            logger.info("ℹ️  Defense layers disabled")
 
     def _get_system_prompt(self, context: Optional[dict] = None) -> str:
         """Generate system prompt with TELOS framework knowledge and current context.
@@ -111,16 +143,21 @@ Be helpful, clear, and concise. Use analogies when helpful. Always prioritize us
     def get_response(self,
                      user_message: str,
                      conversation_history: list,
-                     context: Optional[dict] = None) -> str:
-        """Get a non-streaming response from Steward.
+                     context: Optional[dict] = None,
+                     session_id: str = "unknown") -> Dict[str, Any]:
+        """Get a non-streaming response from Steward with defense layer checking.
 
         Args:
             user_message: The user's current message
             conversation_history: List of previous messages in format [{'role': 'user'/'assistant', 'content': str}]
             context: Optional context about current screen state
+            session_id: Session identifier for telemetry logging
 
         Returns:
-            str: Steward's response
+            dict with keys:
+                - response: The final response text (str)
+                - defense_result: Defense layer check results (dict) if enabled
+                - intervention_applied: Whether an intervention occurred (bool)
         """
         try:
             # Get system prompt with context
@@ -148,17 +185,55 @@ Be helpful, clear, and concise. Use analogies when helpful. Always prioritize us
                 'content': user_message
             })
 
-            # Call Mistral API
+            # Call Mistral API (Layer 1: System Prompt active here)
             response = self.client.chat.complete(
                 model=self.model,
                 messages=messages,
                 max_tokens=2048
             )
 
-            return response.choices[0].message.content
+            proposed_response = response.choices[0].message.content
+
+            # Check defense layers (Layers 2-4)
+            if self.enable_defense:
+                turn_number = len(conversation_history) // 2 + 1  # Estimate turn number
+
+                defense_result = self.defense.check_defense_layers(
+                    user_message=user_message,
+                    steward_response=proposed_response,
+                    turn_number=turn_number,
+                    session_id=session_id
+                )
+
+                # Apply intervention if needed
+                if defense_result.get("intervention_needed", False):
+                    final_response = defense_result.get("modified_response", proposed_response)
+                    intervention_applied = True
+                else:
+                    final_response = proposed_response
+                    intervention_applied = False
+
+                return {
+                    "response": final_response,
+                    "defense_result": defense_result,
+                    "intervention_applied": intervention_applied
+                }
+            else:
+                # Defense disabled, return original response
+                return {
+                    "response": proposed_response,
+                    "defense_result": None,
+                    "intervention_applied": False
+                }
 
         except Exception as e:
-            return f"I apologize, but I encountered an error: {str(e)}. Please try again."
+            error_msg = f"I apologize, but I encountered an error: {str(e)}. Please try again."
+            return {
+                "response": error_msg,
+                "defense_result": None,
+                "intervention_applied": False,
+                "error": str(e)
+            }
 
     def get_streaming_response(self,
                                user_message: str,

@@ -149,6 +149,31 @@ class SidebarActions:
             if st.session_state.settings_expanded:
                 self._show_settings()
 
+            # Developer Tools - Multi-page navigation (DEVOPS mode)
+            st.markdown("---")
+            if 'show_dev_tools' not in st.session_state:
+                st.session_state.show_dev_tools = False
+
+            dev_tools_label = "✕ Close Dev Tools" if st.session_state.show_dev_tools else "🛠️ Developer Tools"
+            if st.button(dev_tools_label, use_container_width=True, key="toggle_dev_tools"):
+                st.session_state.show_dev_tools = not st.session_state.show_dev_tools
+                st.rerun()
+
+            if st.session_state.show_dev_tools:
+                st.markdown("**Navigation:**")
+
+                if st.button("🎯 TELOS Monitor", use_container_width=True, key="nav_telos_monitor",
+                             help="Real-time PA tracking, fidelity metrics, interventions"):
+                    st.switch_page("pages/1_🎯_TELOS_Monitor.py")
+
+                if st.button("🔬 Project Analysis", use_container_width=True, key="nav_project_analysis",
+                             help="Code metrics, git stats, dependencies"):
+                    st.switch_page("pages/2_🔬_Project_Analysis.py")
+
+                if st.button("🎯 Strategic PM", use_container_width=True, key="nav_strategic_pm",
+                             help="Partnerships, grants, priorities"):
+                    st.switch_page("pages/3_🎯_Strategic_PM.py")
+
     def _save_current_session(self):
         """Save current session state to file."""
         try:
