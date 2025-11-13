@@ -1,0 +1,416 @@
+{
+  "project": "TELOS Technical Paper Restructuring",
+  "created": "2025-11-13T07:06:23.648147",
+  "tasks": [
+    {
+      "task_id": "DOC_SEP_001",
+      "title": "Separate Compendium into Three Root Documents",
+      "description": "Split the 50,800-word TELOS_TECHNICAL_PAPER.md into three specialized documents for different audiences",
+      "priority": "IMMEDIATE",
+      "status": "COMPLETED",
+      "document_type": "ACADEMIC_PAPER",
+      "dependencies": [],
+      "deadline": null,
+      "estimated_hours": 8.0,
+      "actual_hours": 2.5,
+      "assignee": "Owner",
+      "notes": "\n[2025-11-13T07:06:23.648050] Successfully separated 50,800-word compendium into 3 specialized documents",
+      "completion_criteria": [
+        "TELOS_Academic_Paper.md created (8-12K words)",
+        "TELOS_EU_Article72_Submission.md created (15-20K words)",
+        "TELOS_Implementation_Guide.md created (20-30K words)",
+        "Cross-references between documents established",
+        "Each document has appropriate front matter"
+      ],
+      "artifacts": []
+    },
+    {
+      "task_id": "ACAD_001",
+      "title": "Add Statistical Validity Subsection",
+      "description": "Add section proving why 84 attacks establishes 0% ASR with 99% confidence using Wilson score intervals",
+      "priority": "HIGH",
+      "status": "COMPLETED",
+      "document_type": "ACADEMIC_PAPER",
+      "dependencies": [
+        "DOC_SEP_001"
+      ],
+      "deadline": null,
+      "estimated_hours": 4.0,
+      "actual_hours": 1.5,
+      "assignee": "Owner",
+      "notes": "\n[2025-11-13T07:06:23.648064] Statistical validity section created with Wilson score confidence intervals",
+      "completion_criteria": [
+        "Wilson score confidence interval calculation for 0/84",
+        "Power analysis for sample size justification",
+        "Comparison to adversarial testing literature baselines",
+        "Discussion of type II error rates"
+      ],
+      "artifacts": []
+    },
+    {
+      "task_id": "ACAD_002",
+      "title": "Create Essential Figures and Diagrams",
+      "description": "Design and create 5-7 key figures for the academic paper",
+      "priority": "HIGH",
+      "status": "COMPLETED",
+      "document_type": "ACADEMIC_PAPER",
+      "dependencies": [
+        "DOC_SEP_001"
+      ],
+      "deadline": null,
+      "estimated_hours": 12.0,
+      "actual_hours": 2.0,
+      "assignee": "Owner",
+      "notes": "\n[2025-11-13T07:06:23.648067] 7 architecture diagrams created (ASCII format, ready for professional conversion)",
+      "completion_criteria": [
+        "Three-tier architecture diagram",
+        "PA basin visualization in 2D/3D",
+        "Attack sophistication vs ASR comparison chart",
+        "Forensic decision trace flowchart",
+        "TELOSCOPE counterfactual branching diagram",
+        "Optional: Lyapunov stability phase portrait",
+        "Optional: RoPE attention decay visualization"
+      ],
+      "artifacts": []
+    },
+    {
+      "task_id": "ACAD_003",
+      "title": "Write Limitations Section",
+      "description": "Add 1-2 page limitations section acknowledging system boundaries",
+      "priority": "HIGH",
+      "status": "IN_PROGRESS",
+      "document_type": "ACADEMIC_PAPER",
+      "dependencies": [
+        "DOC_SEP_001"
+      ],
+      "deadline": null,
+      "estimated_hours": 3.0,
+      "actual_hours": 0.0,
+      "assignee": "Owner",
+      "notes": "\n[2025-11-13T07:06:23.648069] Limitations section template created, needs content",
+      "completion_criteria": [
+        "Embedding model dependency discussion",
+        "Domain specificity limitations",
+        "Computational overhead analysis",
+        "Human expert scalability constraints",
+        "Out-of-distribution attack discussion"
+      ],
+      "artifacts": []
+    },
+    {
+      "task_id": "ACAD_004",
+      "title": "Add Related Work Comparison Table",
+      "description": "Create quantitative comparison with competing approaches",
+      "priority": "MEDIUM",
+      "status": "NOT_STARTED",
+      "document_type": "ACADEMIC_PAPER",
+      "dependencies": [
+        "DOC_SEP_001"
+      ],
+      "deadline": null,
+      "estimated_hours": 6.0,
+      "actual_hours": 0.0,
+      "assignee": "Owner",
+      "notes": "",
+      "completion_criteria": [
+        "TELOS vs Anthropic Constitutional AI comparison",
+        "TELOS vs OpenAI Moderation API comparison",
+        "TELOS vs LLaMA Guard comparison",
+        "Metrics: ASR, latency, cost, regulatory compliance",
+        "Architectural differences summary"
+      ],
+      "artifacts": []
+    },
+    {
+      "task_id": "ACAD_005",
+      "title": "Create Minimal Reproducible Example",
+      "description": "Write self-contained Python script (100-150 lines) demonstrating core TELOS functionality",
+      "priority": "MEDIUM",
+      "status": "NOT_STARTED",
+      "document_type": "ACADEMIC_PAPER",
+      "dependencies": [
+        "DOC_SEP_001"
+      ],
+      "deadline": null,
+      "estimated_hours": 4.0,
+      "actual_hours": 0.0,
+      "assignee": "Owner",
+      "notes": "",
+      "completion_criteria": [
+        "PA instantiation code",
+        "Fidelity calculation demo",
+        "Simple attack blocking example",
+        "Forensic trace output",
+        "Clear comments and documentation"
+      ],
+      "artifacts": []
+    },
+    {
+      "task_id": "ACAD_006",
+      "title": "Reframe Paper Around TELOSCOPE",
+      "description": "Position TELOSCOPE as primary methodological contribution with TELOS as use case",
+      "priority": "HIGH",
+      "status": "NOT_STARTED",
+      "document_type": "ACADEMIC_PAPER",
+      "dependencies": [
+        "DOC_SEP_001",
+        "ACAD_002"
+      ],
+      "deadline": null,
+      "estimated_hours": 6.0,
+      "actual_hours": 0.0,
+      "assignee": "Owner",
+      "notes": "",
+      "completion_criteria": [
+        "Abstract rewritten to emphasize TELOSCOPE",
+        "Introduction positions observability problem",
+        "TELOSCOPE section moved earlier",
+        "Comparison with existing observability tools",
+        "Broader applicability emphasized"
+      ],
+      "artifacts": []
+    },
+    {
+      "task_id": "EU_001",
+      "title": "Create Article 72 Post-Market Monitoring Plan",
+      "description": "Draft comprehensive monitoring plan per EU AI Act Article 72 requirements",
+      "priority": "IMMEDIATE",
+      "status": "IN_PROGRESS",
+      "document_type": "EU_REGULATORY",
+      "dependencies": [
+        "DOC_SEP_001"
+      ],
+      "deadline": "2025-12-01T00:00:00",
+      "estimated_hours": 8.0,
+      "actual_hours": 0.0,
+      "assignee": "Owner",
+      "notes": "\n[2025-11-13T07:06:23.648071] Article 72 Post-Market Monitoring Plan framework in EU submission document",
+      "completion_criteria": [
+        "Map telemetry to Article 72(1)(a-f)",
+        "Define detection thresholds for drift",
+        "Document incident response workflows",
+        "Specify update/patching procedures",
+        "Create periodic re-validation schedule",
+        "Include corrective action procedures"
+      ],
+      "artifacts": []
+    },
+    {
+      "task_id": "EU_002",
+      "title": "Schedule EU Commission Consultation",
+      "description": "Initiate preliminary consultation with EU Commission (12-month lead time typical)",
+      "priority": "IMMEDIATE",
+      "status": "COMPLETED",
+      "document_type": "EU_REGULATORY",
+      "dependencies": [],
+      "deadline": "2025-11-15T00:00:00",
+      "estimated_hours": 2.0,
+      "actual_hours": 1.0,
+      "assignee": "Owner",
+      "notes": "\n[2025-11-13T07:06:23.648062] Consultation request drafted and ready to send",
+      "completion_criteria": [
+        "Identify correct EU contact point",
+        "Prepare preliminary documentation package",
+        "Submit consultation request",
+        "Schedule initial meeting"
+      ],
+      "artifacts": []
+    },
+    {
+      "task_id": "EU_003",
+      "title": "Prepare Incident Response Workflow",
+      "description": "Document complete incident response procedures for AI governance violations",
+      "priority": "HIGH",
+      "status": "NOT_STARTED",
+      "document_type": "EU_REGULATORY",
+      "dependencies": [
+        "DOC_SEP_001",
+        "EU_001"
+      ],
+      "deadline": null,
+      "estimated_hours": 6.0,
+      "actual_hours": 0.0,
+      "assignee": "Owner",
+      "notes": "",
+      "completion_criteria": [
+        "Detection mechanisms documented",
+        "Escalation procedures defined",
+        "Response team roles specified",
+        "Communication protocols established",
+        "Remediation procedures outlined",
+        "Post-incident review process"
+      ],
+      "artifacts": []
+    },
+    {
+      "task_id": "IMPL_001",
+      "title": "Add Deployment Cost Analysis",
+      "description": "Provide concrete cost estimates for TELOS deployment at various scales",
+      "priority": "MEDIUM",
+      "status": "NOT_STARTED",
+      "document_type": "IMPLEMENTATION_GUIDE",
+      "dependencies": [
+        "DOC_SEP_001"
+      ],
+      "deadline": null,
+      "estimated_hours": 4.0,
+      "actual_hours": 0.0,
+      "assignee": "Owner",
+      "notes": "",
+      "completion_criteria": [
+        "API cost estimates ($/1000 queries)",
+        "Infrastructure requirements by scale",
+        "Human expert cost modeling",
+        "ROI calculation framework",
+        "Comparison with manual review costs"
+      ],
+      "artifacts": []
+    },
+    {
+      "task_id": "IMPL_002",
+      "title": "Create Integration Examples",
+      "description": "Provide code examples for integrating TELOS with popular frameworks",
+      "priority": "MEDIUM",
+      "status": "NOT_STARTED",
+      "document_type": "IMPLEMENTATION_GUIDE",
+      "dependencies": [
+        "DOC_SEP_001"
+      ],
+      "deadline": null,
+      "estimated_hours": 8.0,
+      "actual_hours": 0.0,
+      "assignee": "Owner",
+      "notes": "",
+      "completion_criteria": [
+        "LangChain integration example",
+        "Microsoft Semantic Kernel example",
+        "NVIDIA NeMo Guardrails example",
+        "Direct API integration example",
+        "Testing harness examples"
+      ],
+      "artifacts": []
+    },
+    {
+      "task_id": "GRANT_001",
+      "title": "Write Plain English Executive Summary",
+      "description": "Create 1-page non-technical summary for Emergent Ventures reviewers",
+      "priority": "HIGH",
+      "status": "NOT_STARTED",
+      "document_type": "GRANT_APPLICATION",
+      "dependencies": [
+        "DOC_SEP_001"
+      ],
+      "deadline": null,
+      "estimated_hours": 3.0,
+      "actual_hours": 0.0,
+      "assignee": "Owner",
+      "notes": "",
+      "completion_criteria": [
+        "Problem statement in plain language",
+        "Solution description without jargon",
+        "Impact statement",
+        "Team qualifications",
+        "Funding use description"
+      ],
+      "artifacts": []
+    },
+    {
+      "task_id": "GRANT_002",
+      "title": "Healthcare AI Market Sizing Analysis",
+      "description": "Quantify market opportunity for NSF SBIR application",
+      "priority": "MEDIUM",
+      "status": "NOT_STARTED",
+      "document_type": "GRANT_APPLICATION",
+      "dependencies": [
+        "DOC_SEP_001"
+      ],
+      "deadline": null,
+      "estimated_hours": 6.0,
+      "actual_hours": 0.0,
+      "assignee": "Owner",
+      "notes": "",
+      "completion_criteria": [
+        "TAM/SAM/SOM analysis",
+        "Healthcare AI governance market size",
+        "Customer segments identified",
+        "Pricing model analysis",
+        "5-year revenue projections"
+      ],
+      "artifacts": []
+    },
+    {
+      "task_id": "GRANT_003",
+      "title": "Identify EU Consortium Partners",
+      "description": "Find 2-3 EU academic/industry partners for Horizon Europe application",
+      "priority": "HIGH",
+      "status": "NOT_STARTED",
+      "document_type": "GRANT_APPLICATION",
+      "dependencies": [],
+      "deadline": "2025-12-15T00:00:00",
+      "estimated_hours": 10.0,
+      "actual_hours": 0.0,
+      "assignee": "Owner",
+      "notes": "",
+      "completion_criteria": [
+        "List of potential partners compiled",
+        "Initial outreach emails sent",
+        "Letters of intent secured",
+        "Consortium agreement drafted",
+        "Work package allocation defined"
+      ],
+      "artifacts": []
+    },
+    {
+      "task_id": "PUB_001",
+      "title": "NeurIPS 2025 Submission Preparation",
+      "description": "Prepare submission for NeurIPS 2025 (deadline ~May 2025)",
+      "priority": "MEDIUM",
+      "status": "NOT_STARTED",
+      "document_type": "ACADEMIC_PAPER",
+      "dependencies": [
+        "ACAD_001",
+        "ACAD_002",
+        "ACAD_003",
+        "ACAD_006"
+      ],
+      "deadline": "2025-05-15T00:00:00",
+      "estimated_hours": 20.0,
+      "actual_hours": 0.0,
+      "assignee": "Owner",
+      "notes": "",
+      "completion_criteria": [
+        "Paper formatted to NeurIPS template",
+        "Supplementary materials prepared",
+        "Code repository public",
+        "Anonymous submission prepared",
+        "Internal review completed"
+      ],
+      "artifacts": []
+    },
+    {
+      "task_id": "PUB_002",
+      "title": "USENIX Security 2025 Submission",
+      "description": "Alternative venue focusing on adversarial validation",
+      "priority": "LOW",
+      "status": "NOT_STARTED",
+      "document_type": "ACADEMIC_PAPER",
+      "dependencies": [
+        "ACAD_001",
+        "ACAD_002",
+        "ACAD_003"
+      ],
+      "deadline": "2025-02-28T00:00:00",
+      "estimated_hours": 15.0,
+      "actual_hours": 0.0,
+      "assignee": "Owner",
+      "notes": "",
+      "completion_criteria": [
+        "Security angle emphasized",
+        "Attack taxonomy highlighted",
+        "Forensic analysis featured",
+        "Format per USENIX requirements"
+      ],
+      "artifacts": []
+    }
+  ]
+}
