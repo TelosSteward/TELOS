@@ -14,13 +14,30 @@
 
 **TELOSCOPE** (TELOS Observatory & Compliance Platform) is the production implementation of TELOS runtime governance. It addresses the critical governance challenge: maintaining constitutional boundaries in extended AI conversations.
 
-### The Problem
-Research shows **20-40% reliability loss** in extended AI conversations due to semantic drift - gradual divergence from specified constraints as transformer attention mechanisms bias toward recent context.
+### The Journey: Research Question → Working Solution
 
-### The Solution
-TELOSCOPE provides **mathematical enforcement** of constitutional boundaries through Primacy Attractor technology, achieving **0% Attack Success Rate** validated across 84 adversarial attacks.
+**We started with a research question** published at [TelosLabs](https://github.com/TelosSteward/TelosLabs):
 
-**For theoretical foundation, see:** [TelosLabs Research Repository](https://github.com/TelosSteward/TelosLabs)
+> *"Can Statistical Process Control mechanisms - proven over 70 years in safety-critical industries - effectively govern language model systems?"*
+
+**The Problem We Identified:**
+Research shows **20-40% reliability loss** in extended AI conversations due to semantic drift - gradual divergence from specified constraints as transformer attention mechanisms bias toward recent context (RoPE positional encoding).
+
+**Our Hypothesis:**
+Treat semantic drift as a measurable process variation problem, not an unsolvable alignment issue. Apply industrial quality control (Lean Six Sigma DMAIC/SPC) to AI governance.
+
+**The Solution We Built:**
+**TELOSCOPE** - Mathematical enforcement of constitutional boundaries through:
+- Primacy Attractor technology (fixed reference points in embedding space)
+- Three-tier defense architecture (Mathematical + RAG + Human)
+- Real-time Statistical Process Control for AI conversations
+
+**The Results:**
+- **0% Attack Success Rate** across 84 adversarial attacks
+- **95% Confidence Interval**: [0%, 4.3%]
+- Validated in healthcare, financial, and educational domains
+
+**Theory → Practice:** [TelosLabs](https://github.com/TelosSteward/TelosLabs) documents the research question and theoretical framework. TELOSCOPE is the answer - a working system that proves the hypothesis.
 
 ## Key Features
 
