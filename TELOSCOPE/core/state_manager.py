@@ -52,6 +52,7 @@ class ObservatoryState:
     show_math_breakdown: bool = False
     show_counterfactual: bool = False
     show_steward: bool = False  # Deprecated, kept for compatibility
+    show_observatory_lens: bool = False  # Observatory Lens dashboard visibility
 
     # Metrics
     avg_fidelity: float = 0.0
@@ -260,7 +261,7 @@ class StateManager:
         Toggle visibility of a component.
 
         Args:
-            component: One of 'primacy_attractor', 'math', 'counterfactual', 'steward'
+            component: One of 'primacy_attractor', 'math', 'counterfactual', 'steward', 'observatory_lens'
         """
         if component == 'primacy_attractor':
             self.state.show_primacy_attractor = not self.state.show_primacy_attractor
@@ -270,6 +271,8 @@ class StateManager:
             self.state.show_counterfactual = not self.state.show_counterfactual
         elif component == 'steward':
             self.state.show_steward = not self.state.show_steward
+        elif component == 'observatory_lens':
+            self.state.show_observatory_lens = not self.state.show_observatory_lens
 
     def toggle_scrollable_history(self):
         """Toggle between turn-by-turn and scrollable history mode."""
@@ -377,11 +380,28 @@ class StateManager:
                         num_chunks = self._corpus_loader.load_corpus()
                         logger.info(f"✓ Corpus loaded: {num_chunks} chunks")
                     else:
-                        # Open mode: NO hardcoded attractor
-                        # TELOS will extract the purpose dynamically from the user's conversation
-                        # using LLM-based analysis and statistical convergence
-                        # This is intentionally minimal - let TELOS learn what the user wants
-                        attractor = None  # Will be initialized by UnifiedGovernanceSteward
+                        # Beta/Open mode: Minimal attractor for general conversation
+                        # Allow flexible conversation while still tracking alignment
+                        attractor = PrimacyAttractor(
+                            purpose=[
+                                "Engage in helpful, informative conversation",
+                                "Respond to user questions and requests",
+                                "Maintain conversational coherence"
+                            ],
+                            scope=[
+                                "General knowledge and assistance",
+                                "User's topics of interest",
+                                "Conversational dialogue"
+                            ],
+                            boundaries=[
+                                "Stay relevant to user's questions",
+                                "Provide accurate, helpful information",
+                                "Maintain appropriate conversation tone"
+                            ],
+                            constraint_tolerance=0.5,  # Flexible for open conversation
+                            privacy_level=0.8,
+                            task_priority=0.5
+                        )
                         self._corpus_loader = None  # No corpus in open mode
 
                     # Initialize Mistral client (Assistant Steward)
