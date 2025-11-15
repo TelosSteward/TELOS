@@ -12,6 +12,14 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
+# Import beta feedback component
+try:
+    from components.beta_feedback import render_feedback_ui
+    BETA_FEEDBACK_AVAILABLE = True
+except ImportError:
+    logger.info("Beta feedback component not available")
+    BETA_FEEDBACK_AVAILABLE = False
+
 
 class ConversationDisplay:
     """ChatGPT-style conversation display using native Streamlit."""
@@ -1086,6 +1094,14 @@ class ConversationDisplay:
                 is_loading=turn_data.get('is_loading', False)
             )
 
+            # Render feedback UI in BETA mode
+            if BETA_FEEDBACK_AVAILABLE and st.session_state.get('beta_mode', False):
+                if turn_data.get('response') and not turn_data.get('is_loading', False):
+                    # Check if this is the last turn and feedback is pending
+                    if current_turn_idx == len(self.state_manager.get_all_turns()) - 1:
+                        if self.state_manager.state.beta_feedback_pending:
+                            self._render_beta_feedback(turn_data, turn_number)
+
         # Show phase transition at turn 11 (PA established → Beta testing active)
         self._show_beta_phase_transition(turn_number)
 
@@ -1361,6 +1377,60 @@ function copyUserMessage{user_msg_id}() {{
                         if st.button(scroll_label, key=f"{key_prefix}scroll_close_{turn_number}", use_container_width=True, help="Close scrollable history"):
                             self.state_manager.toggle_scrollable_history()
                             st.rerun()
+
+    def _render_beta_feedback(self, turn_data: dict, turn_number: int):
+        """Render feedback UI for beta testing."""
+        if not BETA_FEEDBACK_AVAILABLE:
+            return
+
+        # Get test condition from turn data
+        test_condition = turn_data.get('test_condition', 'single_blind_baseline')
+        phase2_comparison = turn_data.get('phase2_comparison', None)
+
+        # Check if feedback has already been collected for this turn
+        feedback_key = f"feedback_collected_turn_{turn_number}"
+        if st.session_state.get(feedback_key, False):
+            return
+
+        # Render feedback UI based on test condition
+        if test_condition == "head_to_head" and phase2_comparison:
+            # Show both responses for comparison
+            feedback = render_feedback_ui(
+                response_type="head_to_head",
+                baseline_response=phase2_comparison.get('baseline'),
+                telos_response=phase2_comparison.get('telos'),
+                turn_number=turn_number
+            )
+        else:
+            # Single-blind condition - just thumbs up/down
+            feedback = render_feedback_ui(
+                response_type="single_blind",
+                response=turn_data.get('response', ''),
+                turn_number=turn_number
+            )
+
+        # If feedback was provided, record it
+        if feedback:
+            # Mark feedback as collected for this turn
+            st.session_state[feedback_key] = True
+
+            # Clear the pending flag
+            self.state_manager.state.beta_feedback_pending = False
+
+            # Store feedback in beta session manager
+            if self.state_manager.state.beta_session_manager:
+                try:
+                    session = self.state_manager.state.beta_session_manager.get_or_create_session(
+                        user_id=st.session_state.get('user_id', 'anonymous'),
+                        session_id=self.state_manager.state.beta_session_id
+                    )
+                    self.state_manager.state.beta_session_manager.record_feedback(
+                        session=session,
+                        turn_number=turn_number,
+                        feedback=feedback
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to record feedback: {e}")
 
     def _render_assistant_message(self, message: str, turn_number: int = None, is_loading: bool = False, key_prefix: str = ""):
         """Render steward message bubble - aligned with User message."""

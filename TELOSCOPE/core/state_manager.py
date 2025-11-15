@@ -13,6 +13,9 @@ from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
 import streamlit as st
 
+# Beta testing imports
+from beta_testing.beta_session_manager import BetaSessionManager, TestCondition
+
 # Configure logging
 logger = logging.getLogger(__name__)
 
@@ -59,6 +62,12 @@ class ObservatoryState:
     total_interventions: int = 0
     drift_warnings: int = 0
 
+    # Beta testing state
+    beta_session_manager: Optional['BetaSessionManager'] = None
+    beta_test_condition: Optional[str] = None
+    beta_session_id: Optional[str] = None
+    beta_feedback_pending: bool = False
+
 
 class StateManager:
     """
@@ -76,6 +85,7 @@ class StateManager:
         """Initialize state manager with default state."""
         self.state = ObservatoryState()
         self._initialized = False
+        self._beta_manager_initialized = False
 
     def initialize(self, session_data: Dict[str, Any]):
         """
@@ -306,9 +316,50 @@ class StateManager:
             except Exception as e:
                 logger.warning(f"Could not reset TELOS session: {e}")
 
+    def initialize_beta_testing(self):
+        """Initialize the beta session manager when in BETA mode."""
+        if self._beta_manager_initialized:
+            return
+
+        # Check if we're in BETA mode
+        beta_mode = st.session_state.get('beta_mode', False)
+        if not beta_mode:
+            logger.info("Not in BETA mode, skipping beta manager initialization")
+            return
+
+        try:
+            logger.info("Initializing Beta Session Manager...")
+            self.state.beta_session_manager = BetaSessionManager()
+
+            # Create or load beta session
+            user_id = st.session_state.get('user_id', 'anonymous')
+            self.state.beta_session_id = f"beta_{user_id}_{self.state.session_id}"
+
+            # Initialize session
+            session = self.state.beta_session_manager.get_or_create_session(
+                user_id=user_id,
+                session_id=self.state.beta_session_id
+            )
+
+            # Assign test condition if new session
+            if session.turn_count == 0:
+                self.state.beta_test_condition = self.state.beta_session_manager.assign_test_condition(session)
+                logger.info(f"Beta session initialized with condition: {self.state.beta_test_condition}")
+            else:
+                self.state.beta_test_condition = session.test_condition
+                logger.info(f"Beta session resumed with condition: {self.state.beta_test_condition}")
+
+            self._beta_manager_initialized = True
+
+        except Exception as e:
+            logger.error(f"Failed to initialize Beta Session Manager: {e}")
+            self.state.beta_session_manager = None
+            self._beta_manager_initialized = False
+
     def add_user_message(self, message: str):
         """
         Add a new user message and generate a TELOS-governed response.
+        In BETA mode, uses BetaSessionManager for A-B testing.
 
         Args:
             message: User's input message
@@ -349,6 +400,85 @@ class StateManager:
             # CRITICAL: Rerun immediately to show user message + loading animation
             # On next run, already_processing will be True and we'll generate response
             st.rerun()
+        # =====================================================================
+
+        # =====================================================================
+        # BETA A-B TESTING MODE
+        # =====================================================================
+        # Check if we're in BETA mode and should use A-B testing
+        beta_mode = st.session_state.get('beta_mode', False)
+        if beta_mode:
+            # Initialize beta testing if not already done
+            self.initialize_beta_testing()
+
+            # If beta manager is available, use dual response generation
+            if self.state.beta_session_manager and self.state.beta_test_condition:
+                try:
+                    logger.info(f"BETA Mode: Generating response for condition {self.state.beta_test_condition}")
+
+                    # Get the beta session
+                    session = self.state.beta_session_manager.get_or_create_session(
+                        user_id=st.session_state.get('user_id', 'anonymous'),
+                        session_id=self.state.beta_session_id
+                    )
+
+                    # Check if we're in calibration phase
+                    is_calibration = session.turn_count < 10
+
+                    # Generate response(s) based on test condition and phase
+                    beta_result = self.state.beta_session_manager.generate_dual_response(
+                        session=session,
+                        user_message=message,
+                        conversation_history=[]  # Will be built in the method
+                    )
+
+                    # Extract the appropriate response based on condition
+                    if session.test_condition == "head_to_head":
+                        # Both responses are shown
+                        response_text = beta_result['baseline_response']  # Primary response
+                        telos_response = beta_result['telos_response']    # Comparison response
+                        phase2_comparison = {
+                            'baseline': beta_result['baseline_response'],
+                            'telos': beta_result['telos_response']
+                        }
+                    elif session.test_condition == "single_blind_baseline":
+                        response_text = beta_result['baseline_response']
+                        phase2_comparison = None
+                    else:  # single_blind_telos
+                        response_text = beta_result['telos_response']
+                        phase2_comparison = None
+
+                    # Set feedback pending flag
+                    self.state.beta_feedback_pending = True
+
+                    # Update the placeholder turn with response
+                    current_turn_idx = len(self.state.turns) - 1
+                    self.state.turns[current_turn_idx].update({
+                        'response': response_text,
+                        'fidelity': 0.9,  # Beta responses use fixed high fidelity
+                        'distance': 0.1,
+                        'intervention_applied': False,
+                        'drift_detected': False,
+                        'status': "✓",
+                        'status_text': f"Beta-{session.test_condition.split('_')[-1].title()}",
+                        'in_basin': True,
+                        'is_loading': False,
+                        'phase2_comparison': phase2_comparison,
+                        'is_calibration': is_calibration,
+                        'test_condition': session.test_condition
+                    })
+
+                    # Update statistics
+                    fidelities = [t['fidelity'] for t in self.state.turns if t.get('fidelity') is not None]
+                    self.state.avg_fidelity = sum(fidelities) / len(fidelities) if fidelities else 0.0
+
+                    # Beta testing successful, return early
+                    return
+
+                except Exception as beta_error:
+                    logger.error(f"Beta testing error, falling back to standard mode: {beta_error}")
+                    # Continue with standard TELOS processing
+
         # =====================================================================
 
         # Import TELOS components here to avoid circular imports
