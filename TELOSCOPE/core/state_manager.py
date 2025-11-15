@@ -353,7 +353,7 @@ class StateManager:
 
         # Import TELOS components here to avoid circular imports
         try:
-            from telos_observatory_v3.utils.telos_demo_data import generate_telos_demo_session
+            from utils.telos_demo_data import generate_telos_demo_session
             from telos_purpose.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
             from telos_purpose.core.embedding_provider import SentenceTransformerProvider
             from telos_purpose.llm_clients.mistral_client import MistralClient
@@ -525,7 +525,7 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             if demo_mode and (enable_async or enable_parallel):
                 try:
                     import asyncio
-                    from telos_observatory_v3.core.async_processor import AsyncStewardProcessor
+                    from core.async_processor import AsyncStewardProcessor
 
                     # Initialize async processor if not already done
                     if not hasattr(self, '_async_processor'):
@@ -725,7 +725,7 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
         """
         # Initialize TELOS if not already done
         if not hasattr(self, '_telos_steward'):
-            from telos_observatory_v3.utils.telos_demo_data import generate_telos_demo_session
+            from utils.telos_demo_data import generate_telos_demo_session
             from telos_purpose.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
             from telos_purpose.core.embedding_provider import SentenceTransformerProvider
             from telos_purpose.llm_clients.mistral_client import MistralClient

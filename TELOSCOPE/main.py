@@ -14,23 +14,24 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import streamlit as st
 
 # Import V3 components
-from telos_observatory_v3.core.state_manager import StateManager
+from core.state_manager import StateManager
 # Note: generate_telos_demo_session import removed - not needed for progressive demo slideshow
-from telos_observatory_v3.components.sidebar_actions import SidebarActions
-from telos_observatory_v3.components.conversation_display import ConversationDisplay
-from telos_observatory_v3.components.observation_deck import ObservationDeck
-from telos_observatory_v3.components.teloscope_controls import TELOSCOPEControls
-from telos_observatory_v3.components.beta_onboarding import BetaOnboarding
-from telos_observatory_v3.components.steward_panel import StewardPanel
-from telos_observatory_v3.components.observatory_lens import ObservatoryLens
+from components.sidebar_actions import SidebarActions
+from components.conversation_display import ConversationDisplay
+from components.observation_deck import ObservationDeck
+from components.teloscope_controls import TELOSCOPEControls
+from components.beta_onboarding import BetaOnboarding
+from components.steward_panel import StewardPanel
+from components.observatory_lens import ObservatoryLens
 
 
 def initialize_session():
     """Initialize session state - starts fresh (no pre-loaded demo data)."""
     if 'state_manager' not in st.session_state:
-        # Set Demo Mode OFF as DEFAULT (TELOS tab shows full controls)
+        # Set Demo Mode based on initial active_tab (DEMO is default)
         if 'telos_demo_mode' not in st.session_state:
-            st.session_state.telos_demo_mode = False
+            # Will be set to True when active_tab is "DEMO" (which is default)
+            st.session_state.telos_demo_mode = True
 
         # Create state manager
         state_manager = StateManager()
@@ -660,7 +661,7 @@ def main():
     # Instantiate components
     sidebar_actions = SidebarActions(state_manager)
     steward_panel = StewardPanel(state_manager)
-    conversation_display = ConversationDisplay(state_manager, steward_panel)
+    conversation_display = ConversationDisplay(state_manager)
     observation_deck = ObservationDeck(state_manager)
     teloscope_controls = TELOSCOPEControls(state_manager)
     beta_onboarding = BetaOnboarding(state_manager)
@@ -693,9 +694,13 @@ def main():
     # DEVOPS bypasses all restrictions for testing
     active_tab = st.session_state.active_tab
 
+    # Check for admin mode
+    query_params = st.query_params
+    is_admin = query_params.get("admin") == "true"
+
     # If user is trying to access BETA or TELOS without consent, show consent screen
-    # DEVOPS mode bypasses consent requirement
-    if (active_tab in ["BETA", "TELOS"]) and not has_beta_consent:
+    # DEVOPS mode and admin mode bypass consent requirement
+    if (active_tab in ["BETA", "TELOS"]) and not has_beta_consent and not is_admin:
         # Show consent screen for BETA/TELOS access
         beta_onboarding.render()
     else:
@@ -866,6 +871,11 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
 
     # PUBLIC UI: 3 tabs only (DEMO/BETA/TELOS)
     # DEVOPS mode is admin-only, accessible via URL parameter: ?admin=true
+
+    # Check for admin access via query params FIRST
+    query_params = st.query_params
+    is_admin = query_params.get("admin") == "true"
+
     col_demo, col_beta, col_telos = st.columns(3)
 
     with col_demo:
@@ -878,8 +888,8 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
 
     with col_beta:
         beta_active = active_tab == "BETA"
-        # BETA unlocks after completing demo (10 turns)
-        beta_locked = not demo_complete
+        # BETA unlocks after completing demo (10 turns) OR in admin mode
+        beta_locked = not demo_complete and not is_admin  # Bypass lock in admin mode
         if st.button("BETA", key="tab_beta", use_container_width=True,
                     type="primary" if beta_active else "secondary",
                     disabled=beta_locked):
@@ -889,19 +899,14 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
 
     with col_telos:
         telos_active = active_tab == "TELOS"
-        # TELOS unlocks after completing beta
-        telos_locked = not beta_complete
+        # TELOS unlocks after completing beta OR in admin mode
+        telos_locked = not beta_complete and not is_admin  # Bypass lock in admin mode
         if st.button("TELOS", key="tab_telos", use_container_width=True,
                     type="primary" if telos_active else "secondary",
                     disabled=telos_locked):
             if not telos_locked:
                 st.session_state.active_tab = "TELOS"
                 st.rerun()
-
-    # ADMIN-ONLY: DEVOPS tab (hidden from public, accessible via URL parameter)
-    # Check for admin access via query params
-    query_params = st.query_params
-    is_admin = query_params.get("admin") == "true"
 
     if is_admin:
         st.markdown("<div style='margin: 10px 0;'></div>", unsafe_allow_html=True)

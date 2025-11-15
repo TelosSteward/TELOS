@@ -1,0 +1,16 @@
+{
+  "consents": [
+    {
+      "session_id": "session_1763176554",
+      "timestamp": "2025-11-14T22:16:17.094835",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    },
+    {
+      "session_id": "session_1763176853",
+      "timestamp": "2025-11-14T22:21:16.823451",
+      "consent_statement": "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
+      "version": "1.0"
+    }
+  ]
+}
