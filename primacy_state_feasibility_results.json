@@ -1,0 +1,379 @@
+{
+  "summary": {
+    "total_sessions": 45,
+    "total_turns": 144,
+    "mean_ps": 0.9999999999499999,
+    "std_ps": 1.1102230246251565e-16,
+    "mean_user_fidelity": 1.0,
+    "mean_ai_fidelity": 1.0,
+    "mean_pa_correlation": 1.0
+  },
+  "session_metrics": [
+    {
+      "session_id": "sharegpt_filtered_1",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 3
+    },
+    {
+      "session_id": "sharegpt_filtered_10",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 5
+    },
+    {
+      "session_id": "sharegpt_filtered_11",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 5
+    },
+    {
+      "session_id": "sharegpt_filtered_12",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 2
+    },
+    {
+      "session_id": "sharegpt_filtered_13",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 3
+    },
+    {
+      "session_id": "sharegpt_filtered_15",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 5
+    },
+    {
+      "session_id": "sharegpt_filtered_18",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 4
+    },
+    {
+      "session_id": "sharegpt_filtered_19",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 2
+    },
+    {
+      "session_id": "sharegpt_filtered_2",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 3
+    },
+    {
+      "session_id": "sharegpt_filtered_20",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 2
+    },
+    {
+      "session_id": "sharegpt_filtered_21",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 2
+    },
+    {
+      "session_id": "sharegpt_filtered_22",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 2
+    },
+    {
+      "session_id": "sharegpt_filtered_23",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 5
+    },
+    {
+      "session_id": "sharegpt_filtered_24",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 2
+    },
+    {
+      "session_id": "sharegpt_filtered_25",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 5
+    },
+    {
+      "session_id": "sharegpt_filtered_26",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 4
+    },
+    {
+      "session_id": "sharegpt_filtered_27",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 2
+    },
+    {
+      "session_id": "sharegpt_filtered_28",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 2
+    },
+    {
+      "session_id": "sharegpt_filtered_29",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 5
+    },
+    {
+      "session_id": "sharegpt_filtered_3",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 3
+    },
+    {
+      "session_id": "sharegpt_filtered_30",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 4
+    },
+    {
+      "session_id": "sharegpt_filtered_32",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 4
+    },
+    {
+      "session_id": "sharegpt_filtered_33",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 4
+    },
+    {
+      "session_id": "sharegpt_filtered_34",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 3
+    },
+    {
+      "session_id": "sharegpt_filtered_35",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 5
+    },
+    {
+      "session_id": "sharegpt_filtered_36",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 5
+    },
+    {
+      "session_id": "sharegpt_filtered_37",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 2
+    },
+    {
+      "session_id": "sharegpt_filtered_38",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 2
+    },
+    {
+      "session_id": "sharegpt_filtered_39",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 3
+    },
+    {
+      "session_id": "sharegpt_filtered_4",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 3
+    },
+    {
+      "session_id": "sharegpt_filtered_40",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 2
+    },
+    {
+      "session_id": "sharegpt_filtered_41",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 5
+    },
+    {
+      "session_id": "sharegpt_filtered_42",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 3
+    },
+    {
+      "session_id": "sharegpt_filtered_43",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 3
+    },
+    {
+      "session_id": "sharegpt_filtered_44",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 3
+    },
+    {
+      "session_id": "sharegpt_filtered_45",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 5
+    },
+    {
+      "session_id": "sharegpt_filtered_46",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 2
+    },
+    {
+      "session_id": "sharegpt_filtered_47",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 2
+    },
+    {
+      "session_id": "sharegpt_filtered_48",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 2
+    },
+    {
+      "session_id": "sharegpt_filtered_49",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 2
+    },
+    {
+      "session_id": "sharegpt_filtered_5",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 2
+    },
+    {
+      "session_id": "sharegpt_filtered_50",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 2
+    },
+    {
+      "session_id": "sharegpt_filtered_6",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 4
+    },
+    {
+      "session_id": "sharegpt_filtered_8",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 4
+    },
+    {
+      "session_id": "sharegpt_filtered_9",
+      "pa_correlation": 1.0,
+      "mean_ps": 0.99999999995,
+      "min_ps": 0.99999999995,
+      "max_ps": 0.99999999995,
+      "turn_count": 2
+    }
+  ],
+  "failure_modes": {
+    "none": 144
+  },
+  "intervention_recommendations": {
+    "monitor": 144
+  }
+}
