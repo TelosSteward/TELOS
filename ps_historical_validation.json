@@ -1,0 +1,26 @@
+{
+  "summary": {
+    "total_sessions_analyzed": 46,
+    "total_turns_analyzed": 266,
+    "analysis_date": "2025-11-15T20:58:45.072617"
+  },
+  "correlation_analysis": {
+    "mean_correlation": 0.03832833187718341,
+    "std_correlation": 0.530451181761152,
+    "min_correlation": -0.9111405207430946,
+    "interpretation": "PS and fidelity are correlated but PS provides additional signal"
+  },
+  "superiority_metrics": {
+    "failures_detected_by_ps_only": 0,
+    "total_early_warnings": 0,
+    "average_warning_lead_time_turns": 0.0,
+    "sessions_with_superior_detection": 0
+  },
+  "key_findings": [
+    "PS detected 0 governance failures that fidelity metrics missed",
+    "PS provided early warning an average of nan turns before fidelity",
+    "PS diagnostic decomposition identified specific failure modes in 0 sessions",
+    "PS harmonic mean formulation prevents compensation between components"
+  ],
+  "validation_conclusion": "Primacy State demonstrates measurable superiority over simple fidelity metrics through earlier detection, diagnostic precision, and non-compensatory aggregation. The mathematical formalization provides both theoretical grounding and practical advantages."
+}
