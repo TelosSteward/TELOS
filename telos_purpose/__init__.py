@@ -1,9 +1,10 @@
 """
-TELOS - Telically Entrained Linguistic Operational Substrate
-=============================================================
+TELOS - A Mathematical Governance Framework
+===========================================
 
 A mathematical runtime framework for AI governance that maintains
-alignment across multi-turn conversations.
+alignment across multi-turn conversations. TELOS represents the
+τέλος (ultimate purpose) of achieving governed equilibrium.
 
 Version: 1.0.0
 Author: Origin Industries PBC / TELOS Labs LLC

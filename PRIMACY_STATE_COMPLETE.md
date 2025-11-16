@@ -143,7 +143,7 @@ python3 activate_primacy_state.py full
 ## Philosophical Impact
 
 ### Before:
-TELOS = Telically Entrained Linguistic Operating Substrate (forced backronym)
+TELOS = A governance framework (no specific meaning)
 
 ### After:
 **τέλος** = Ultimate purpose (Ancient Greek)

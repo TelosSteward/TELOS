@@ -8,13 +8,13 @@
 
 ## Abstract
 
-Artificial intelligence systems now operate as persistent decision engines across critical domains, yet governance remains externally imposed and largely heuristic. The TELOS framework—Telically Entrained Linguistic Operational Substrate—proposes a solution rooted in established control-engineering and quality-systems theory. TELOS functions as a Mathematical Intervention Layer implementing Proportional Control and Attractor Dynamics within semantic space, transforming purpose adherence into a measurable and self-correcting process.
+Artificial intelligence systems now operate as persistent decision engines across critical domains, yet governance remains externally imposed and largely heuristic. The TELOS framework proposes a solution rooted in established control-engineering and quality-systems theory. TELOS functions as a Mathematical Intervention Layer implementing Proportional Control and Attractor Dynamics within semantic space, transforming purpose adherence into a measurable and self-correcting process.
 
 Each conversational cycle follows a computational realization of the DMAIC methodology: Declare the purpose vector (Define), Measure semantic drift as deviation from the Primacy Attractor, Recalibrate through proportional control (Analyze/Improve), Stabilize within tolerance limits, and Monitor for continuous capability assurance (Control). The resulting feedback loop constitutes a form of Statistical Process Control (SPC) for cognition—tracking error signals, applying scaled corrections, and maintaining variance within defined limits.
 
 This architecture extends the principles codified in Quality Systems Regulation (QSR) and ISO 9001/13485, satisfying mandates for continuous monitoring, documented corrective action, and verifiable process control. Each interaction is treated as a process event with measurable deviation, intervention, and stabilization. Telemetry records create a complete audit trail, allowing post-market validation and regulatory compliance with frameworks such as the EU AI Act Article 72, which requires active, systematic runtime monitoring.
 
-Mathematically, TELOS integrates proportional control (operational mechanism) with attractor dynamics (stability description), creating a dual formalism in which the declared purpose vector serves as a stable equilibrium in high-dimensional semantic space. Drift from this equilibrium is treated as process variation, and proportional feedback F = K·e_t provides continuous recalibration toward the Primacy Basin. Over time, the system approaches a telically entrained Primacy State, characterized by statistical stability, reduced variance, and sustained purpose fidelity.
+Mathematically, TELOS integrates proportional control (operational mechanism) with attractor dynamics (stability description), creating a dual formalism in which the declared purpose vector serves as a stable equilibrium in high-dimensional semantic space. Drift from this equilibrium is treated as process variation, and proportional feedback F = K·e_t provides continuous recalibration toward the Primacy Basin. Over time, the system approaches Primacy State, characterized by statistical stability, reduced variance, and sustained purpose fidelity.
 
 **UPDATE (November 2024)**: Initial validation studies have been completed using dual Primacy Attractor architecture. Results from 46 real-world conversations demonstrate **+85.32% improvement** in purpose alignment over single-attractor baseline. This includes perfect 1.0000 fidelity scores across a 51-turn conversation that originally exhibited drift (the scenario that motivated TELOS development). These results validate the mathematical framework's core predictions while clarifying the distinction between:
 
@@ -1353,7 +1353,7 @@ This telemetry provides the evidence trail that regulators require - showing the
 
 **Primacy Attractor (PA)**: The governance center established from what the user asks for at the start.
 
-**TELOS**: Telically Entrained Linguistic Operational Substrate - the complete governance framework.
+**TELOS**: The complete governance framework. From the Greek τέλος (ultimate purpose).
 
 **Telemetry**: The audit trail showing all measurements and interventions.
 
