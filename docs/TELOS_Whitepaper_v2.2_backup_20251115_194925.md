@@ -500,122 +500,11 @@ These warrant dedicated research into multi-attractor governance dynamics, hiera
 
 #### Implementation Status
 
-**Current**: Dual PA is the canonical TELOS architecture (v1.0.0-dual-pa-canonical)
-**Deployment**: Production-ready for counterfactual analysis and fresh session initialization
+**Current**: Dual PA is the canonical TELOS architecture (v1.0.0-dual-pa-canonical)  
+**Deployment**: Production-ready for counterfactual analysis and fresh session initialization  
 **API**: `GovernanceConfig.dual_pa_config()` in telos_purpose/core/
 
-### 2.4 Primacy State: From Dual Attractors to Governed Equilibrium
-
-Building on the dual Primacy Attractor architecture (Section 2.3), we now formalize the emergent equilibrium condition that represents successful governance.
-
-We term this condition **Primacy State**—our designation for the convergence of established mathematical frameworks:
-- Basin stability from dynamical systems (Menck et al., 2013)
-- Lyapunov equilibrium from control theory (Khalil, 2002)
-- Cooperative stability from decentralized control (Siljak, 1991)
-- Attractor harmony from synchronized systems (Strogatz, 2014)
-
-Primacy State is not a novel mathematical construct but rather the specific application of these proven theories to AI governance. It represents the **τέλος** (ultimate purpose) of TELOS: achieving and maintaining the mathematical equilibrium where human intent and AI behavioral constraints are simultaneously satisfied.
-
-This is what TELOS measures, monitors, and maintains—the stable governed state expressed through established mathematical principles.
-
-The degradation from this equilibrium state is characterized as **Attractor Decoupling**, where the dual attractors lose synchronization (ρ_PA → 0). This represents the transition from governed to ungoverned dynamics. Individual components may remain functional while overall governance degrades.
-
-#### 2.4.1 Theoretical Foundation: Basin Dynamics in AI Systems
-
-Recent work has established that large language models exhibit basin-like structures in their loss landscapes (Zhang et al., 2024), where "models perform nearly identically within the basin, but rapidly lose capabilities once outside" [1]. This observation extends naturally to conversation governance: maintaining alignment requires keeping the system state within a stable basin of attraction.
-
-The dual PA architecture creates two overlapping basins:
-- **User PA Basin (B_user)**: The region where conversation purpose remains aligned
-- **AI PA Basin (B_AI)**: The region where AI behavioral constraints are satisfied
-
-**Definition (Primacy State)**: A conversation is in Primacy State (or equivalently, has achieved Primacy Attractor Equilibrium) when the system trajectory simultaneously maintains membership in both basins while the basins themselves remain coupled. Conversely, **Attractor Decoupling** occurs when the dual attractors diverge (ρ_PA → 0), representing governance degradation even when individual fidelities may remain high.
-
-This definition connects to established concepts in dynamical systems theory, where basin stability S_B measures "the volumes of the basins of attraction B in the D-dimensional state space" (Menck et al., 2013) [2]. Attractor Decoupling occurs when ρ_PA falls below operational thresholds.
-
-#### 2.4.2 Mathematical Formalization
-
-The Primacy State score quantifies how closely the system achieves the τέλος of TELOS through a harmonic coupling metric that ensures both basin memberships must be satisfied without compensation:
-
-**PS = ρ_PA · (2·F_user·F_AI)/(F_user + F_AI)**
-
-When PS = 1.0, the system has achieved its ultimate purpose—stable governance equilibrium.
-
-Where:
-- F_user ∈ [-1, 1]: Cosine similarity between response embedding and User PA center
-- F_AI ∈ [-1, 1]: Cosine similarity between response embedding and AI PA center
-- ρ_PA ∈ [-1, 1]: Cosine similarity between User PA and AI PA (basin coupling)
-
-This formulation has three critical properties:
-
-**1. Non-compensatory Aggregation**: The harmonic mean ensures that high alignment with one PA cannot compensate for drift from the other. This addresses the alignment tax problem identified by Anthropic (2022) [3], where optimizing for one objective degrades others.
-
-**2. Coupling Requirement**: The ρ_PA term acts as a multiplicative gate—even perfect individual fidelities (F_user = F_AI = 1) yield low PS if the attractors are misaligned (ρ_PA → 0). This enforces what control theorists call "cooperative stability" (Siljak, 1991) [4].
-
-**3. Lyapunov Stability**: The formulation corresponds to an inverse potential energy metric, where PS → 1 indicates minimum energy (stable equilibrium) and PS → 0 indicates maximum energy (unstable). This connects to Lyapunov stability analysis widely used in control systems.
-
-#### 2.4.3 Connection to Existing AI Alignment Research
-
-**Constitutional AI (Anthropic, 2022)**: While Constitutional AI defines behavioral constraints through natural language constitutions, Primacy State provides the mathematical framework to verify these constraints are maintained. The AI PA encodes constitutional principles, while PS measures adherence.
-
-**Debate and Amplification (OpenAI, 2018)**: The dual PA architecture implements a form of implicit debate where User PA (intent) and AI PA (behavior) must reach consensus. PS quantifies this consensus state.
-
-**Cooperative Inverse Reinforcement Learning (Hadfield-Menell et al., 2016)**: PS can be viewed as measuring the cooperative equilibrium between inferred human preferences (User PA) and AI behavioral policy (AI PA).
-
-**Mesa-Optimization (Hubinger et al., 2019)**: The diagnostic decomposition of PS enables detection of mesa-optimization, where F_AI might remain high (base objective satisfied) while F_user degrades (mesa-objective diverges).
-
-#### 2.4.4 Empirical Validation
-
-Applied to our dual PA validation corpus (N=46 sessions, 144 turns), Primacy State demonstrated:
-
-- **Perfect equilibrium achievement**: PS = 1.000 ± 0.000 for all successful governance turns
-- **Diagnostic precision**: PS decomposition correctly identified failure modes in 100% of intervention cases
-- **Computational efficiency**: Mean calculation time 0.020ms (p95 < 0.025ms)
-
-PS detected governance failures that simple fidelity metrics did not identify. In scenarios with F_avg = 0.845 (passing by traditional metrics), PS = 0.361 indicated PA misalignment requiring intervention.
-
-#### 2.4.5 Operational Advantages
-
-**Early Warning Capability**: The ρ_PA correlation term provides predictive power—declining correlation indicates **Attractor Decoupling** 2-5 conversation turns before alignment failures become apparent, allowing preventive intervention.
-
-**Diagnostic Decomposition**: PS decomposition identifies the specific failure mode:
-- **Purpose Drift**: User purpose deviation (F_user < threshold)
-- **Behavioral Violation**: AI constraint breach (F_AI < threshold)
-- **Attractor Decoupling**: Loss of PA synchronization (ρ_PA < threshold). Individual metrics may remain above threshold while overall governance degrades
-- **Combined Failure**: Multiple components below threshold simultaneously
-
-**Theoretical Interpretability**: PS defines alignment as the stable equilibrium condition where both human intent and AI behavioral constraints are simultaneously satisfied.
-
-#### 2.4.6 Relationship to Control Theory
-
-The PS formulation maps directly to established control theory concepts:
-
-**Coupled Oscillator Dynamics**: The harmonic mean reflects coupled oscillator behavior, where two systems must maintain phase lock. This is why harmonic (not arithmetic or geometric) mean is theoretically justified.
-
-**Sliding Mode Control**: PS thresholds (0.85 = achieved, 0.70 = weakening, 0.50 = violated) implement a form of sliding mode control, where intervention intensity varies based on distance from equilibrium.
-
-**Adaptive Control**: The energy tracking extension (V_dual and ΔV) enables adaptive control strategies, where intervention strength adjusts based on convergence/divergence trends.
-
-#### 2.4.7 Limitations and Future Work
-
-While PS provides significant advantages over single-metric approaches, several limitations merit acknowledgment:
-
-1. **Embedding Quality Dependency**: PS accuracy depends on embedding quality. Degenerate embeddings could yield misleading PS scores.
-
-2. **Static PA Assumption**: Current formulation assumes fixed PAs within a session. Dynamic PA adjustment requires extended formalism.
-
-3. **Binary Basin Membership**: Current PS uses continuous similarity rather than strict basin membership. Future work could incorporate manifold methods for precise basin boundary detection.
-
-#### 2.4.8 Implications for AI Governance
-
-Primacy State represents a shift from threshold-based compliance ("is fidelity > 0.85?") to equilibrium-based governance ("is the system achieving its τέλος?"). By grounding this in established mathematical frameworks rather than novel constructs, we provide a principled answer to what successful AI governance means: the convergence of basin stability, Lyapunov equilibrium, and cooperative stability. This paradigm shift has several implications:
-
-**Regulatory Compliance**: PS provides mathematical evidence of governance maintenance, satisfying requirements for "observable demonstrable due diligence" under emerging AI regulations (EU AI Act Article 72, NIST AI RMF).
-
-**Operational Monitoring**: PS enables continuous governance health monitoring with clear diagnostics, reducing mean time to intervention (MTTI) and improving governance reliability.
-
-**Theoretical Foundation**: By explicitly grounding Primacy State in dynamical systems theory, control theory, and cooperative stability, we connect AI governance to decades of established research. PS is not new mathematics—it is the application of proven stability principles to define and measure what it means for an AI system to achieve its purpose: maintaining governed equilibrium between human intent and AI behavior.
-
-### 2.5 The Dual Formalism: Control Theory and Dynamical Systems
+### 2.4 The Dual Formalism: Control Theory and Dynamical Systems
 
 **Proportional control** provides the operational law: how corrections are computed and applied.
 
@@ -631,7 +520,7 @@ The same mathematical invariants that describe quality stability in manufacturin
 
 This connects TELOS directly to established control theory (Ogata, 2009; Khalil, 2002) and dynamical-systems analysis (Strogatz, 2014; Hopfield, 1982). The contribution is not inventing new mathematics but applying proven frameworks to a previously ungoverned domain: maintaining session-level constraints across transformer interactions.
 
-### 2.6 Fidelity Measurement: Continuous Adherence Tracking
+### 2.5 Fidelity Measurement: Continuous Adherence Tracking
 
 Using cosine similarity from information theory (Cover & Thomas, 2006), we quantify alignment:
 
@@ -651,7 +540,7 @@ This metric provides:
 - **Intervention trigger**: When F < threshold, proportional control activates
 - **Audit evidence**: Complete fidelity history for regulatory compliance
 
-### 2.7 From Transformer Fragility to Governance Primitive
+### 2.6 From Transformer Fragility to Governance Primitive
 
 The attention-based architectures that enable transformers' capabilities also create their governance vulnerabilities:
 
@@ -1150,19 +1039,13 @@ This is what we have built. This is what we have validated. This is the path for
 
 Bai, Y., et al. (2022). Constitutional AI: Harmlessness from AI Feedback. arXiv:2212.08073.
 
-Christiano, P., et al. (2018). AI safety via debate. OpenAI technical report.
-
 Cover, T. M., & Thomas, J. A. (2006). Elements of Information Theory (2nd ed.). Wiley.
 
 EU AI Act. (2024). Regulation (EU) 2024/1689. European Parliament and Council.
 
 Gu, Y., et al. (2024). When Attention Sink Emerges in Language Models. arXiv:2401.00000.
 
-Hadfield-Menell, D., et al. (2016). Cooperative inverse reinforcement learning. Advances in Neural Information Processing Systems (NeurIPS).
-
 Hopfield, J. J. (1982). Neural networks and physical systems with emergent computational abilities. PNAS, 79(8), 2554-2558.
-
-Hubinger, E., et al. (2019). Risks from learned optimization in advanced machine learning systems. arXiv:1906.01820.
 
 ISO 9001:2015. Quality management systems — Requirements. International Organization for Standardization.
 
@@ -1173,8 +1056,6 @@ Khalil, H. K. (2002). Nonlinear Systems (3rd ed.). Prentice Hall.
 Laban, P., et al. (2025). LLMs Get Lost in the Middle of Long Contexts. Microsoft Research.
 
 Liu, N., et al. (2024). Lost in the Middle: How Language Models Use Long Contexts. arXiv:2307.03172.
-
-Menck, P. J., et al. (2013). How basin stability complements the linear-stability paradigm. Nature Physics, 9(2), 89-92.
 
 Montgomery, D. C. (2020). Introduction to Statistical Quality Control (8th ed.). Wiley.
 
@@ -1188,8 +1069,6 @@ Reimers, N., & Gurevych, I. (2019). Sentence-BERT: Sentence Embeddings using Sia
 
 Shewhart, W. A. (1931). Economic Control of Quality of Manufactured Product. Van Nostrand.
 
-Siljak, D. D. (1991). Decentralized control of complex systems. Academic Press.
-
 Strogatz, S. H. (2014). Nonlinear Dynamics and Chaos (2nd ed.). Westview Press.
 
 TELOS Labs. (2025). Validation Protocol v1.0: Federated Testing for Governance Systems.
@@ -1197,8 +1076,6 @@ TELOS Labs. (2025). Validation Protocol v1.0: Federated Testing for Governance S
 Wu, Z., et al. (2025). Position Bias in Transformer-based Models. arXiv:2401.00000.
 
 Yang, B., et al. (2025). RoPE to NoPE and Back Again: A New Hybrid Attention Strategy. arXiv:2501.18795.
-
-Zhang, L., et al. (2024). Basin-like structures in large language model loss landscapes. arXiv preprint.
 
 21 CFR Part 820. (2023). Quality System Regulation. U.S. Food and Drug Administration.
 
