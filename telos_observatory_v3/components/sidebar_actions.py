@@ -121,6 +121,13 @@ class SidebarActions:
                 """, unsafe_allow_html=True)
                 st.info("Opening GitHub repository in new tab...")
 
+            # Observatory Lens - Toggle
+            st.markdown("---")
+            lens_label = "✕ Close Observatory Lens" if self.state_manager.state.show_observatory_lens else "🔭 Observatory Lens"
+            if st.button(lens_label, use_container_width=True, key="toggle_observatory_lens"):
+                self.state_manager.toggle_component('observatory_lens')
+                st.rerun()
+
             # Settings - Toggle
             st.markdown("---")
             if 'settings_expanded' not in st.session_state:

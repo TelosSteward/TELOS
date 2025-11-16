@@ -8,6 +8,7 @@ from typing import Dict, Any
 import html
 import logging
 import re
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -15,13 +16,15 @@ logger = logging.getLogger(__name__)
 class ConversationDisplay:
     """ChatGPT-style conversation display using native Streamlit."""
 
-    def __init__(self, state_manager):
+    def __init__(self, state_manager, steward_panel=None):
         """Initialize with state manager reference.
 
         Args:
             state_manager: StateManager instance for accessing turn data
+            steward_panel: Optional StewardPanel instance for demo chat
         """
         self.state_manager = state_manager
+        self.steward_panel = steward_panel
 
     def _markdown_to_html(self, text: str) -> str:
         """Convert markdown to HTML while escaping dangerous content.
@@ -149,19 +152,42 @@ class ConversationDisplay:
             enable_intro = st.session_state.get('enable_intro_examples', True)
             st.session_state.show_intro = enable_intro
 
-        if len(all_turns) == 0:
-            # Blank session - check Demo Mode FIRST
-            demo_mode = st.session_state.get('telos_demo_mode', False)
+        # Check beta intro BEFORE checking turn count (to prevent showing after first message)
+        demo_mode = st.session_state.get('telos_demo_mode', False)
+        # Safely check for BETA mode - use .get() to avoid KeyError
+        active_tab = st.session_state.get('active_tab', 'DEMO')
+        beta_mode = active_tab == "BETA"
 
-            if demo_mode:
-                # DEMO MODE: Show demo welcome message
-                if 'demo_welcome_shown' not in st.session_state:
-                    self._render_demo_welcome()
-                # Show input area
+        # IMPORTANT: Only show beta intro if ALL THREE conditions are true:
+        # 1. Beta mode is active
+        # 2. Beta intro has NOT been completed
+        # 3. There are NO turns yet (blank session)
+        beta_intro_complete = st.session_state.get('beta_intro_complete', False)
+
+        if beta_mode and not beta_intro_complete and len(all_turns) == 0:
+            self._render_beta_intro()
+            return
+
+        if len(all_turns) == 0:
+            # Blank session - handle different modes appropriately
+
+            # BETA MODE with completed intro: Show input immediately
+            if beta_mode and beta_intro_complete:
+                # Beta mode after intro - show input for conversation
                 self._render_input_with_scroll_toggle()
                 return
+            elif demo_mode:
+                # DEMO MODE: Run the slideshow - don't show input during demo
+                demo_slide_index = st.session_state.get('demo_slide_index', 0)
+                if demo_slide_index <= 14:  # Slides 0-14: 0=welcome, 1=intro, 2-13=Q&A, 14=completion
+                    self._render_demo_welcome()
+                    return  # Don't show input during demo
+                else:
+                    # Demo complete - show input for free questions
+                    self._render_input_with_scroll_toggle()
+                    return
             else:
-                # OPEN MODE: Just show input area (intro examples disabled)
+                # OPEN MODE (TELOS tab): Just show input area
                 self._render_input_with_scroll_toggle()
                 return
 
@@ -179,27 +205,786 @@ class ConversationDisplay:
             self._render_input_with_scroll_toggle()
 
     def _render_demo_welcome(self):
-        """Render Demo Mode welcome message."""
-        from demo_mode.telos_framework_demo import get_demo_welcome_message
+        """Render Demo Mode welcome and typewriter slideshow."""
+        from demo_mode.telos_framework_demo import (
+            get_demo_welcome_message,
+            get_steward_intro_message,
+            get_demo_slides,
+            get_demo_completion_message
+        )
+        import json
 
-        welcome_msg = get_demo_welcome_message()
+        # Initialize demo state
+        if 'demo_slide_index' not in st.session_state:
+            st.session_state.demo_slide_index = 0  # 0 = welcome, 1 = steward intro, 2-11 = slides, 12 = complete
 
-        # Render in a gold-bordered welcome box with 19px font to match messages
-        st.markdown(f"""
-<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border: 1px solid #FFD700;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 19px 0;
-            box-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
-            font-size: 19px;
-            color: #fff;">
-    {welcome_msg}
+        # Inject global CSS for compact containers (applies to all demo slides)
+        st.markdown("""
+        <style>
+        /* v5 - Compact centered windows - ULTRA SPECIFIC */
+        div.compact-container,
+        .compact-container {
+            max-width: 700px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            display: block !important;
+        }
+
+        .compact-container > div {
+            max-width: 700px !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+        # Add keyboard navigation for demo slides using streamlit-specific approach
+        current_idx = st.session_state.demo_slide_index
+        max_idx = 14  # 0=welcome, 1=intro, 2-13=Q&A, 14=completion
+
+        # Use component HTML for reliable keyboard event handling
+        import streamlit.components.v1 as components
+
+        components.html(f"""
+        <script>
+        // Demo keyboard navigation with debug logging
+        (function() {{
+            console.log('Demo keyboard navigation initializing...');
+            const currentSlide = {current_idx};
+            const maxSlide = {max_idx};
+
+            console.log('Current slide:', currentSlide, 'Max slide:', maxSlide);
+
+            // Remove old listener if exists
+            if (window.demoKeyListener) {{
+                document.removeEventListener('keydown', window.demoKeyListener);
+                console.log('Removed old listener');
+            }}
+
+            // Create new listener
+            window.demoKeyListener = function(event) {{
+                console.log('Key pressed:', event.key);
+
+                // Only handle arrow keys, not modified
+                if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {{
+                    console.log('Modifier key detected, ignoring');
+                    return;
+                }}
+
+                if (event.key === 'ArrowLeft' && currentSlide > 0) {{
+                    console.log('Left arrow - looking for Previous button');
+                    event.preventDefault();
+
+                    // Find button in parent window/iframe
+                    const parent = window.parent;
+                    if (parent && parent.document) {{
+                        const buttons = parent.document.querySelectorAll('button');
+                        console.log('Found', buttons.length, 'buttons in parent');
+
+                        for (let btn of buttons) {{
+                            console.log('Button text:', btn.textContent);
+                            if (btn.textContent.includes('Previous') || btn.textContent.includes('⬅')) {{
+                                console.log('Clicking Previous button');
+                                btn.click();
+                                break;
+                            }}
+                        }}
+                    }}
+                }} else if (event.key === 'ArrowRight' && currentSlide < maxSlide) {{
+                    console.log('Right arrow - looking for Next/Start/Complete button');
+                    event.preventDefault();
+
+                    // Find button in parent window/iframe
+                    const parent = window.parent;
+                    if (parent && parent.document) {{
+                        const buttons = parent.document.querySelectorAll('button');
+                        console.log('Found', buttons.length, 'buttons in parent');
+
+                        for (let btn of buttons) {{
+                            console.log('Button text:', btn.textContent);
+                            if (btn.textContent.includes('Next') ||
+                                btn.textContent.includes('Start Demo') ||
+                                btn.textContent.includes('Complete Demo') ||
+                                btn.textContent.includes('➡')) {{
+                                console.log('Clicking Next/Start/Complete button');
+                                btn.click();
+                                break;
+                            }}
+                        }}
+                    }}
+                }}
+            }};
+
+            // Attach listener to both current window and parent
+            document.addEventListener('keydown', window.demoKeyListener);
+            if (window.parent && window.parent.document) {{
+                window.parent.document.addEventListener('keydown', window.demoKeyListener);
+                console.log('Attached listener to parent document');
+            }}
+
+            console.log('Keyboard listener attached');
+        }})();
+        </script>
+        """, height=0)
+
+        # Get slides
+        slides = get_demo_slides()
+        current_idx = st.session_state.demo_slide_index
+
+        # Slide 0: Welcome screen - centered and compact
+        if current_idx == 0:
+
+            st.markdown(f"""
+<div class="compact-container">
+    <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+                border: 2px solid #FFD700;
+                border-radius: 15px;
+                padding: 30px;
+                margin: 20px auto;
+                text-align: center;
+                box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);">
+        <h1 style="color: #FFD700; font-size: 32px; margin-bottom: 20px;">Welcome to TELOS Demo Mode! 🔭</h1>
+        <p style="color: #e0e0e0; font-size: 20px; line-height: 1.6;">
+            Click "Start Demo" below to begin your guided tour.
+        </p>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
-        # Mark as shown
-        st.session_state.demo_welcome_shown = True
+            # Center the button too
+            col_left, col_center, col_right = st.columns([1, 1, 1])
+            with col_center:
+                if st.button("▶️ Start Demo", key="start_demo_btn", use_container_width=True):
+                    st.session_state.demo_slide_index = 1
+                    st.rerun()
+            return
+
+        # Slide 1: Steward intro - appears instantly, centered and compact
+        if current_idx == 1:
+            intro_html = """
+<div class="compact-container">
+    <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
+                border: 2px solid #FFD700;
+                border-radius: 10px;
+                padding: 20px 25px;
+                margin: 15px auto;
+                font-size: 19px;
+                line-height: 1.7;
+                color: #e0e0e0;
+                box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);">
+        <div style="color: #FFD700; font-size: 23px; font-weight: bold; margin-bottom: 15px;">
+            Hello! I'm Steward, your guide to understanding TELOS.
+        </div>
+        <div style="margin-bottom: 20px;">
+            What you'll experience in these 14 slides is TELOS in action.
+        </div>
+        <div style="margin-bottom: 20px;">
+            Normally, we would begin by establishing your purpose, scope, and boundaries—what we call the <strong style="color: #FFD700;">Primacy Attractor (PA)</strong>. This happens naturally during your initial conversation.
+        </div>
+        <div style="margin-bottom: 20px;">
+            For this demo, imagine your PA is already established. Now you'll see how TELOS continuously tracks alignment once your PA is in place.
+        </div>
+        <div style="margin-top: 20px; color: #888; font-size: 17px; font-style: italic; text-align: center;">
+            Complete DEMO (14 slides) to unlock BETA → Complete BETA to unlock TELOS
+        </div>
+        <div style="margin-top: 15px; font-size: 21px; text-align: center;">
+            Ready! Let's begin! 👇
+        </div>
+    </div>
+</div>
+"""
+            st.markdown(intro_html, unsafe_allow_html=True)
+
+            # Navigation - Previous and Next buttons (centered to match content)
+            col_spacer_left, col_buttons, col_spacer_right = st.columns([1, 2, 1])
+
+            with col_buttons:
+                col_prev, col_next = st.columns(2)
+
+                with col_prev:
+                    if st.button(f"⬅️ Previous", key=f"prev_intro_btn", use_container_width=True):
+                        st.session_state.demo_slide_index = 0
+                        st.rerun()
+
+                with col_next:
+                    if st.button("➡️ Next", key="continue_demo_btn", use_container_width=True):
+                        st.session_state.demo_slide_index = 2
+                        st.rerun()
+            return
+
+        # Slides 2-10: Q&A pairs (slides[0] through slides[8]) - 9 Q&A slides
+        if 2 <= current_idx <= 10:
+            slide_idx = current_idx - 2  # slides[0] through slides[8]
+            user_question, steward_response = slides[slide_idx]
+
+            # Turn numbers start at 11 (PA already established in turns 1-10)
+            turn_num = slide_idx + 11  # Turn 11-19
+
+            # Render demo slide
+            self._render_demo_slide_with_typewriter(
+                user_question,
+                steward_response,
+                turn_num,
+                current_idx
+            )
+            return
+
+        # Slide 11: Demo completion with Steward's final message, BETA unlock, and live chat
+        if current_idx == 11:
+            # Enable BETA tab unlock FIRST - set it unconditionally
+            st.session_state.demo_completed = True
+
+            # Balloons removed for professional appearance
+            # if not st.session_state.get('completion_balloons_shown', False):
+            #     st.balloons()
+            #     st.session_state.completion_balloons_shown = True
+
+            st.success("🎉 Demo Complete! BETA Tab Unlocked!")
+
+            # Initialize demo chat history if needed
+            if 'demo_chat_history' not in st.session_state:
+                st.session_state.demo_chat_history = []
+
+            # Check if Steward is thinking (generating response)
+            if st.session_state.get('demo_steward_thinking', False):
+                # Show all previous messages
+                for msg in st.session_state.demo_chat_history:
+                    if msg['role'] == 'user':
+                        st.markdown(f"""
+<div style="background-color: #2d2d2d; border: 2px solid #666; border-radius: 10px; padding: 20px 25px; margin: 15px 0; font-size: 19px; color: #e0e0e0;">
+    <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">User:</div>
+    <div>{msg['content']}</div>
+</div>
+""", unsafe_allow_html=True)
+
+                # Show contemplating animation
+                st.markdown("""
+<div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%); border: 2px solid #FFD700; border-radius: 10px; padding: 20px 25px; margin: 15px 0; font-size: 19px; color: #e0e0e0; line-height: 1.7;">
+    <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">Steward:</div>
+    <div style="color: #888; font-style: italic;">Contemplating...</div>
+</div>
+""", unsafe_allow_html=True)
+
+                # Generate Steward response using the existing StewardPanel (has full corpus)
+                try:
+                    # Get the last user message
+                    last_user_msg = st.session_state.demo_chat_history[-1]['content']
+
+                    # Convert chat history for Steward format (excluding last message)
+                    conversation_history = []
+                    for msg in st.session_state.demo_chat_history[:-1]:
+                        conversation_history.append({
+                            'role': 'assistant' if msg['role'] == 'steward' else 'user',
+                            'content': msg['content']
+                        })
+
+                    # Gather context using StewardPanel's method if available
+                    if self.steward_panel:
+                        context = self.steward_panel._gather_context()
+                        context['active_tab'] = 'DEMO'
+                        context['demo_completed'] = True
+                    else:
+                        context = {
+                            'active_tab': 'DEMO',
+                            'demo_completed': True
+                        }
+
+                    # Use the fully-loaded Steward LLM from session state (same as StewardPanel uses)
+                    if st.session_state.get('steward_llm_enabled', False):
+                        steward_response = st.session_state.steward_llm.get_response(
+                            user_message=last_user_msg,
+                            conversation_history=conversation_history,
+                            context=context
+                        )
+                    else:
+                        steward_response = "I'm having trouble connecting. Please try the BETA tab to experience full TELOS governance!"
+
+                except Exception as e:
+                    steward_response = f"I encountered an error: {str(e)}. Please try asking again or switch to the BETA tab."
+
+                # Add Steward's response to history
+                st.session_state.demo_chat_history.append({
+                    'role': 'steward',
+                    'content': steward_response
+                })
+
+                # Clear thinking flag
+                st.session_state.demo_steward_thinking = False
+
+                # Rerun to show the response
+                st.rerun()
+
+            # Check if we're in free conversation mode (user has sent at least one message)
+            elif len(st.session_state.demo_chat_history) == 0:
+                # First time on completion screen - show Steward's final message (NOT in compact container)
+                steward_final_html = """
+<div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            padding: 20px 25px;
+            margin: 15px auto;
+            font-size: 19px;
+            line-height: 1.7;
+            color: #e0e0e0;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);">
+    <div style="color: #FFD700; font-size: 23px; font-weight: bold; margin-bottom: 15px;">
+        Steward:
+    </div>
+    <div style="margin-bottom: 15px;">
+        Demo complete! You now understand TELOS fundamentals.
+    </div>
+    <div style="margin-bottom: 15px;">
+        <strong style="color: #FFD700;">What's next:</strong> Ask me any additional questions you may still have, or click the <strong style="color: #FFD700;">BETA tab</strong> above to try TELOS yourself.
+    </div>
+    <div style="margin-top: 15px; padding: 10px; background-color: rgba(255, 215, 0, 0.1); border-radius: 5px;">
+        💡 <strong style="color: #FFD700;">I'm here to help!</strong> Click the <strong style="color: #FFD700;">handshake icon (🤝)</strong> anytime while using BETA or TELOS to ask questions about what you're seeing. I'll guide you through understanding TELOS governance as you experience it.
+    </div>
+</div>
+"""
+                st.markdown(steward_final_html, unsafe_allow_html=True)
+            else:
+                # User has started chatting - show full conversation history
+                for msg in st.session_state.demo_chat_history:
+                    if msg['role'] == 'user':
+                        st.markdown(f"""
+<div style="background-color: #2d2d2d; border: 2px solid #666; border-radius: 10px; padding: 20px 25px; margin: 15px 0; font-size: 19px; color: #e0e0e0;">
+    <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">User:</div>
+    <div>{msg['content']}</div>
+</div>
+""", unsafe_allow_html=True)
+                    else:  # steward
+                        st.markdown(f"""
+<div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%); border: 2px solid #FFD700; border-radius: 10px; padding: 20px 25px; margin: 15px 0; font-size: 19px; color: #e0e0e0; line-height: 1.7;">
+    <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">Steward:</div>
+    <div>{msg['content']}</div>
+</div>
+""", unsafe_allow_html=True)
+
+            # Add Previous button to go back to slide 10
+            st.markdown("<div style='margin: 20px 0;'></div>", unsafe_allow_html=True)
+
+            col_spacer_left, col_button, col_spacer_right = st.columns([1, 2, 1])
+            with col_button:
+                if st.button("⬅️ Previous", key="completion_prev", use_container_width=True):
+                    st.session_state.demo_slide_index = 10  # Go back to last Q&A slide
+                    st.rerun()
+
+            # Reduced spacing before chat input (moved up)
+            st.markdown("<div style='margin: 20px 0;'></div>", unsafe_allow_html=True)
+
+            # Style the chat input with border and Send button
+            st.markdown("""
+            <style>
+            /* Demo completion chat input styling */
+            div[data-testid="stForm"] {
+                border: 2px solid #FFD700 !important;
+                border-radius: 10px !important;
+                padding: 15px !important;
+                background-color: #2d2d2d !important;
+            }
+
+            div[data-testid="stForm"] textarea {
+                font-size: 18px !important;
+                text-align: center !important;
+                background-color: #1a1a1a !important;
+                border: 1px solid #666 !important;
+                color: #e0e0e0 !important;
+            }
+
+            div[data-testid="stForm"] textarea::placeholder {
+                text-align: center !important;
+                color: #888 !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+
+            # Chat input form with Send button
+            with st.form(key="demo_completion_chat_form", clear_on_submit=True):
+                col1, col2 = st.columns([8.5, 1.5])
+
+                with col1:
+                    user_input = st.text_area(
+                        "Message",
+                        placeholder="Ask Steward anything about TELOS...",
+                        key="demo_completion_input",
+                        label_visibility="collapsed",
+                        height=100
+                    )
+
+                with col2:
+                    send_button = st.form_submit_button(
+                        "Send",
+                        use_container_width=True
+                    )
+
+            if send_button and user_input:
+                # Add user message to history
+                st.session_state.demo_chat_history.append({
+                    'role': 'user',
+                    'content': user_input
+                })
+
+                # Mark that we're waiting for Steward response
+                st.session_state.demo_steward_thinking = True
+
+                st.rerun()
+
+            return
+
+    def _render_demo_slide_with_typewriter(self, user_question: str, steward_response: str, turn_num: int, current_idx: int):
+        """Render a single demo slide - both question and response appear immediately."""
+        import re
+
+        # Show mock fidelity score at top with status
+        # PA is already established - fidelity starts high and varies slightly
+        fidelity_score = 0.82 + (current_idx * 0.01)  # Starts at 0.82, gradually increases
+
+        # Show PA Established status (not tied to specific turn number)
+        status_msg = "PA Established"
+        status_color = "#00FF00"
+
+        st.markdown(f"""
+<div style="text-align: center; margin: 20px 0;">
+    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 10px; padding: 10px 30px;">
+        <span style="color: #888; font-size: 16px;">Fidelity: </span>
+        <span style="color: #FFD700; font-size: 24px; font-weight: bold;">{fidelity_score:.2f}</span><br>
+        <span style="color: {status_color}; font-size: 14px; font-style: italic;">{status_msg}</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+        # Clean markdown from response - convert to plain text with HTML formatting
+        def clean_markdown(text):
+            # First, handle **bold** (do this before italic to avoid conflicts)
+            text = re.sub(r'\*\*(.+?)\*\*', r'<strong style="color: #FFD700;">\1</strong>', text)
+            # Then handle *italic* (only single asterisks not already in bold)
+            text = re.sub(r'(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)', r'<em>\1</em>', text)
+            # Convert bullet points to HTML bullets
+            text = re.sub(r'^- ', '• ', text, flags=re.MULTILINE)
+            # Keep numbered lists as-is (they render fine)
+            return text
+
+        cleaned_response = clean_markdown(steward_response)
+
+        # USER QUESTION - Wrapped in compact container
+        st.markdown(f"""
+<div class="compact-container">
+    <div style="
+        background-color: #2d2d2d;
+        border: 2px solid #666;
+        border-radius: 10px;
+        padding: 20px 25px;
+        margin: 15px auto;
+        font-size: 19px;
+        color: #e0e0e0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">
+        <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">User:</div>
+        <div>{user_question}</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+        # STEWARD RESPONSE - Appears instantly, wrapped in compact container
+        st.markdown(f"""
+<div class="compact-container">
+    <div style="
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
+        border: 2px solid #FFD700;
+        border-radius: 10px;
+        padding: 20px 25px;
+        margin: 15px auto;
+        font-size: 19px;
+        color: #e0e0e0;
+        line-height: 1.7;
+        box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);">
+        <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">Steward:</div>
+        <div>{cleaned_response.replace(chr(10), '<br>')}</div>
+    </div>
+</div>
+
+<style>
+.pulse-ring {{
+    width: 40px;
+    height: 40px;
+    border: 3px solid #FFD700;
+    border-radius: 50%;
+    margin: 0 auto 10px auto;
+    animation: pulse 1.5s ease-in-out infinite;
+}}
+
+@keyframes pulse {{
+    0%, 100% {{ transform: scale(0.8); opacity: 0.5; }}
+    50% {{ transform: scale(1.1); opacity: 1; }}
+}}
+</style>
+""", unsafe_allow_html=True)
+
+        # Show Observation Deck on slide 4 (current_idx=4, which is Turn 3 - the PA question)
+        if current_idx == 4:
+            st.markdown("<div style='margin: 30px 0;'></div>", unsafe_allow_html=True)
+            self._render_demo_observation_deck(turn_num)
+
+        # Navigation buttons - Previous and Next side by side
+        # Use columns to center buttons at same width as content
+        # current_idx parameter is the actual slide number (2-10)
+
+        # Create outer columns for centering (match 700px centered layout)
+        col_spacer_left, col_buttons, col_spacer_right = st.columns([1, 2, 1])
+
+        with col_buttons:
+            # All Q&A slides (2-10) have Previous and Next buttons
+            col_prev, col_next = st.columns(2)
+
+            with col_prev:
+                if st.button("⬅️ Previous", key=f"prev_slide_{current_idx}", use_container_width=True):
+                    st.session_state.demo_slide_index -= 1
+                    st.rerun()
+
+            with col_next:
+                if st.button("Next ➡️", key=f"next_slide_{current_idx}", use_container_width=True):
+                    st.session_state.demo_slide_index += 1
+                    # If moving from slide 10 to slide 11 (completion), unlock BETA
+                    if current_idx == 10:
+                        st.session_state.demo_completed = True
+                    st.rerun()
+
+    def _render_demo_observation_deck(self, turn_num: int):
+        """Render toggleable Observation Deck for demo mode."""
+
+        # Initialize toggle state - default hidden to teach users to click
+        if 'demo_obs_deck_visible' not in st.session_state:
+            st.session_state.demo_obs_deck_visible = False
+
+        # Toggle button centered to match content width
+        col_spacer_left, col_button, col_spacer_right = st.columns([1, 2, 1])
+
+        with col_button:
+            button_text = "Hide Observation Deck ▲" if st.session_state.demo_obs_deck_visible else "Show Observation Deck ▼"
+            if st.button(button_text, key="toggle_demo_obs_deck", use_container_width=True):
+                st.session_state.demo_obs_deck_visible = not st.session_state.demo_obs_deck_visible
+                st.rerun()
+
+        # Only render if visible
+        if st.session_state.demo_obs_deck_visible:
+            # PA is already established (we're showing turns 11-20)
+            pa_status = "✅ PA Established"
+            pa_color = "#00FF00"
+            status_text = "Tracking alignment"
+
+            # Render entire Observation Deck in one HTML block - HARDCODED STATIC CONTENT - DO NOT CHANGE
+            obs_deck_html = f"""<div class="compact-container">
+<div style="background-color: #1a1a1a; border: 2px solid #FFD700; border-radius: 10px; padding: 20px; margin: 20px auto;">
+<h3 style="color: #FFD700; text-align: center; margin-bottom: 20px;">🔭 Observation Deck</h3>
+<div style="text-align: center; margin-bottom: 20px;">
+<span style="color: {pa_color}; font-size: 22px; font-weight: bold;">{pa_status}</span><br>
+<span style="color: #888; font-size: 16px;">{status_text}</span>
+</div>
+<div style="background-color: #2d2d2d; padding: 15px; border-radius: 8px; border: 1px solid #FFD700; margin-bottom: 15px; text-align: center;">
+<p style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">Purpose</p>
+<p style="color: #e0e0e0; font-size: 16px; line-height: 1.6; margin: 0;">
+• Teach users about TELOS framework fundamentals<br>
+• Make AI governance clear and approachable<br>
+• Build user confidence in understanding alignment
+</p>
+</div>
+<div style="background-color: #2d2d2d; padding: 15px; border-radius: 8px; border: 1px solid #FFD700; margin-bottom: 15px; text-align: center;">
+<p style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">Scope</p>
+<p style="color: #e0e0e0; font-size: 16px; line-height: 1.6; margin: 0;">
+• TELOS core concepts (Fidelity, PA, Drift, Privacy)<br>
+• How governance works in practice<br>
+• Why alignment matters for AI safety
+</p>
+</div>
+<div style="background-color: #2d2d2d; padding: 15px; border-radius: 8px; border: 1px solid #FFD700; margin-bottom: 0; text-align: center;">
+<p style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">Boundaries</p>
+<p style="color: #e0e0e0; font-size: 16px; line-height: 1.6; margin: 0;">
+• Keep explanations simple and jargon-free<br>
+• Use Steward's warm, professional tone<br>
+• Focus on user understanding, not technical depth
+</p>
+</div>
+</div>
+</div>"""
+            st.markdown(obs_deck_html, unsafe_allow_html=True)
+
+    def _render_beta_intro(self):
+        """Render beta introduction slides explaining the beta experience."""
+        # Initialize beta intro state
+        if 'beta_intro_slide' not in st.session_state:
+            st.session_state.beta_intro_slide = 0
+
+        current_slide = st.session_state.beta_intro_slide
+        max_slide = 3  # 0-3 slides (0=welcome, 1=what you'll experience, 2=privacy, 3=ready)
+
+        # Add keyboard navigation for beta intro slides
+        import streamlit.components.v1 as components
+
+        components.html(f"""
+        <script>
+        // Beta intro keyboard navigation
+        (function() {{
+            const currentSlide = {current_slide};
+            const maxSlide = {max_slide};
+
+            // Remove old listener if exists
+            if (window.betaIntroKeyListener) {{
+                document.removeEventListener('keydown', window.betaIntroKeyListener);
+            }}
+
+            // Create new listener
+            window.betaIntroKeyListener = function(event) {{
+                // Ignore if modifier keys are pressed
+                if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {{
+                    return;
+                }}
+
+                if (event.key === 'ArrowLeft' && currentSlide > 0) {{
+                    event.preventDefault();
+                    // Find Previous button in parent window
+                    const parent = window.parent;
+                    if (parent && parent.document) {{
+                        const buttons = parent.document.querySelectorAll('button');
+                        for (let btn of buttons) {{
+                            if (btn.textContent.includes('Previous')) {{
+                                btn.click();
+                                break;
+                            }}
+                        }}
+                    }}
+                }} else if (event.key === 'ArrowRight' && currentSlide < maxSlide) {{
+                    event.preventDefault();
+                    // Find Next/Continue/Start button in parent window
+                    const parent = window.parent;
+                    if (parent && parent.document) {{
+                        const buttons = parent.document.querySelectorAll('button');
+                        for (let btn of buttons) {{
+                            if (btn.textContent.includes('Next') ||
+                                btn.textContent.includes('Continue') ||
+                                btn.textContent.includes('Start Beta Testing')) {{
+                                btn.click();
+                                break;
+                            }}
+                        }}
+                    }}
+                }}
+            }};
+
+            // Attach listener to both current window and parent
+            document.addEventListener('keydown', window.betaIntroKeyListener);
+            if (window.parent && window.parent.document) {{
+                window.parent.document.addEventListener('keydown', window.betaIntroKeyListener);
+            }}
+        }})();
+        </script>
+        """, height=0)
+
+        # Slide 0: Welcome to Beta Testing
+        if current_slide == 0:
+            st.markdown("""
+<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #FFD700; border-radius: 15px; padding: 30px; margin: 20px 0; text-align: center; box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);">
+    <h1 style="color: #FFD700; font-size: 32px; margin-bottom: 20px;">Welcome to TELOS Beta Testing! 🧪</h1>
+    <p style="color: #e0e0e0; font-size: 20px; line-height: 1.8; margin-bottom: 20px;">
+        You're about to experience TELOS in action. Your participation helps us refine AI governance for everyone.
+    </p>
+    <p style="color: #888; font-size: 16px; font-style: italic;">
+        Let's walk through what to expect...
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
+            if st.button("➡️ Continue", key="beta_intro_0", use_container_width=True):
+                st.session_state.beta_intro_slide = 1
+                st.rerun()
+            return
+
+        # Slide 1: What You'll Experience
+        if current_slide == 1:
+            st.markdown("""
+<div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%); border: 2px solid #FFD700; padding: 25px; margin: 15px 0; border-radius: 10px; font-size: 18px; line-height: 1.8; color: #e0e0e0;">
+    <div style="color: #FFD700; font-size: 24px; font-weight: bold; margin-bottom: 20px;">What You'll Experience</div>
+    <div style="margin-bottom: 15px;"><strong style="color: #FFD700;">Turns 1-10:</strong> You'll interact with the native LLM while TELOS learns your purpose, scope, and boundaries. This establishes your Primacy Attractor (PA).</div>
+    <div style="margin-bottom: 15px;"><strong style="color: #FFD700;">PA+:</strong> TELOS activates! You'll see:
+        <div style="margin-left: 25px; margin-top: 10px;">
+            • Fidelity scores tracking alignment<br>
+            • Your PA in the Observation Deck<br>
+            • Turn-by-turn metrics<br>
+            • Real-time governance in action
+        </div>
+    </div>
+    <div style="margin-top: 20px; padding: 15px; background-color: rgba(255, 215, 0, 0.1); border-radius: 8px;">
+        <strong style="color: #FFD700;">💡 Key Point:</strong> For now, the PA forms progressively through your conversation. This lets you see how TELOS learns from your behavior.
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+            col_prev, col_next = st.columns(2)
+            with col_prev:
+                if st.button("⬅️ Previous", key="beta_intro_1_prev", use_container_width=True):
+                    st.session_state.beta_intro_slide = 0
+                    st.rerun()
+            with col_next:
+                if st.button("➡️ Next", key="beta_intro_1_next", use_container_width=True):
+                    st.session_state.beta_intro_slide = 2
+                    st.rerun()
+            return
+
+        # Slide 2: Data Privacy & Usage
+        if current_slide == 2:
+            st.markdown("""
+<div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%); border: 2px solid #FFD700; padding: 25px; margin: 15px 0; border-radius: 10px; font-size: 18px; line-height: 1.8; color: #e0e0e0;">
+    <div style="color: #FFD700; font-size: 24px; font-weight: bold; margin-bottom: 20px;">Your Data & Privacy 🔒</div>
+    <div style="margin-bottom: 15px;"><strong style="color: #FFD700;">What we collect:</strong> Mathematical metrics only (fidelity scores, embedding distances, intervention counts)</div>
+    <div style="margin-bottom: 15px;"><strong style="color: #FFD700;">What we DON'T collect:</strong> Your conversation content, messages, or responses</div>
+    <div style="margin-top: 20px; padding: 15px; background-color: rgba(255, 215, 0, 0.1); border-radius: 8px;">
+        <strong style="color: #FFD700;">🗑️ Data Deprecation:</strong> All beta session information will be deprecated once beta testing is completed. We will never sell your data to third parties.
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+            col_prev, col_next = st.columns(2)
+            with col_prev:
+                if st.button("⬅️ Previous", key="beta_intro_2_prev", use_container_width=True):
+                    st.session_state.beta_intro_slide = 1
+                    st.rerun()
+            with col_next:
+                if st.button("➡️ Next", key="beta_intro_2_next", use_container_width=True):
+                    st.session_state.beta_intro_slide = 3
+                    st.rerun()
+            return
+
+        # Slide 3: Future Vision & User Control
+        if current_slide == 3:
+            st.markdown("""
+<div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%); border: 2px solid #FFD700; padding: 25px; margin: 15px 0; border-radius: 10px; font-size: 18px; line-height: 1.8; color: #e0e0e0;">
+    <div style="color: #FFD700; font-size: 24px; font-weight: bold; margin-bottom: 20px;">Looking Ahead: Your PA, Your Control 🎯</div>
+    <div style="margin-bottom: 15px;">In the final TELOS release, your Primacy Attractor will be <strong style="color: #FFD700;">fully under your control:</strong></div>
+    <div style="margin-left: 25px; margin-bottom: 15px;">
+        • <strong>Direct Input:</strong> Enter your PA at session start (skip calibration)<br>
+        • <strong>Edit Anytime:</strong> Modify your PA after establishment<br>
+        • <strong>Full Ownership:</strong> Your governance, your rules
+    </div>
+    <div style="margin-top: 20px; padding: 15px; background-color: rgba(255, 215, 0, 0.1); border-radius: 8px;">
+        <strong style="color: #FFD700;">🧪 Beta Focus:</strong> Right now, we're perfecting the progressive PA formation so you understand how TELOS learns from your behavior. This transparency builds trust.
+    </div>
+    <div style="margin-top: 20px; text-align: center; font-size: 20px; color: #FFD700;">
+        Ready to start your beta session? 👇
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+            col_prev, col_next = st.columns(2)
+            with col_prev:
+                if st.button("⬅️ Previous", key="beta_intro_3_prev", use_container_width=True):
+                    st.session_state.beta_intro_slide = 2
+                    st.rerun()
+            with col_next:
+                if st.button("🚀 Start Beta Testing", key="beta_intro_complete_btn", use_container_width=True):
+                    st.session_state.beta_intro_complete = True
+                    st.session_state.beta_start_time = datetime.now().isoformat()
+                    # Ensure demo_mode is OFF when entering beta conversation
+                    st.session_state.telos_demo_mode = False
+                    # Balloons removed for professional appearance
+                    # st.balloons()
+                    st.rerun()
+            return
 
     def _render_intro_example(self):
         """Render a simple intro example that dismisses when user starts typing."""
@@ -301,6 +1086,12 @@ class ConversationDisplay:
                 is_loading=turn_data.get('is_loading', False)
             )
 
+        # Show phase transition at turn 11 (PA established → Beta testing active)
+        self._show_beta_phase_transition(turn_number)
+
+        # Show beta feedback UI for turns 11+
+        self._render_beta_feedback(turn_number)
+
     def _render_scrollable_history_window(self, current_turn_idx: int, all_turns: list):
         """Render scrollable read-only history window at top of screen."""
         # Header for the scrollable window
@@ -342,12 +1133,13 @@ class ConversationDisplay:
             # In Open Mode: pass turn_number (show turn badges and metrics in history)
             turn_number = None if demo_mode else (idx + 1)
 
-            # Render messages
-            self._render_user_message(turn_data.get('user_input', ''), turn_number, turn_data)
+            # Render messages with history key prefix to avoid duplicates
+            self._render_user_message(turn_data.get('user_input', ''), turn_number, turn_data, key_prefix="history_")
             self._render_assistant_message(
                 turn_data.get('response', ''),
                 turn_number,
-                is_loading=turn_data.get('is_loading', False)
+                is_loading=turn_data.get('is_loading', False),
+                key_prefix="history_"
             )
 
             # Add divider between turns (except after last turn)
@@ -358,7 +1150,7 @@ class ConversationDisplay:
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-    def _render_user_message(self, message: str, turn_number: int = None, turn_data: dict = None):
+    def _render_user_message(self, message: str, turn_number: int = None, turn_data: dict = None, key_prefix: str = ""):
         """Render user message bubble with optional turn number badge and metrics."""
         import html
 
@@ -381,28 +1173,33 @@ class ConversationDisplay:
             demo_mode = st.session_state.get('telos_demo_mode', False)
 
             if turn_data and not demo_mode:
-                fidelity = turn_data.get('fidelity', 0.0)
-                if fidelity is None:
-                    fidelity = 0.0
-                fidelity_color = "#4CAF50" if fidelity >= 0.8 else "#FFA500" if fidelity >= 0.6 else "#FF5252"
+                # Check if PA is converged
+                pa_converged = getattr(self.state_manager.state, 'pa_converged', False)
 
-                # Determine PA status from session metadata
-                convergence_turn = 7  # Default fallback
-                if hasattr(self.state_manager.state, 'metadata'):
-                    convergence_turn = self.state_manager.state.metadata.get('convergence_turn', 7)
+                # Only show fidelity metrics if PA is established
+                if pa_converged:
+                    fidelity = turn_data.get('fidelity', 0.0)
+                    if fidelity is None:
+                        fidelity = 0.0
+                    fidelity_color = "#4CAF50" if fidelity >= 0.8 else "#FFA500" if fidelity >= 0.6 else "#FF5252"
 
-                pa_status = "Calibrating" if turn_number <= convergence_turn else "Established"
-                pa_color = "#FFA500" if pa_status == "Calibrating" else "#4CAF50"
+                    pa_status = "Established"
+                    pa_color = "#4CAF50"
 
-                # Add ΔF (Delta Fidelity) if available
-                delta_f_html = ""
-                if 'delta_f' in turn_data:
-                    delta_f = turn_data.get('delta_f', 0.0)
-                    delta_f_color = "#4CAF50" if delta_f > 0 else "#FF5252" if delta_f < 0 else "#888"
-                    delta_f_sign = "+" if delta_f >= 0 else ""
-                    delta_f_html = f'<span style="margin-left: 15px; display: inline-block;"><span style="color: #888; font-size: 14px;">ΔF:</span> <span style="color: {delta_f_color}; font-size: 16px; font-weight: bold; margin-left: 5px;">{delta_f_sign}{delta_f:.3f}</span></span>'
+                    # Add ΔF (Delta Fidelity) if available
+                    delta_f_html = ""
+                    if 'delta_f' in turn_data:
+                        delta_f = turn_data.get('delta_f', 0.0)
+                        delta_f_color = "#4CAF50" if delta_f > 0 else "#FF5252" if delta_f < 0 else "#888"
+                        delta_f_sign = "+" if delta_f >= 0 else ""
+                        delta_f_html = f'<span style="margin-left: 15px; display: inline-block;"><span style="color: #888; font-size: 14px;">ΔF:</span> <span style="color: {delta_f_color}; font-size: 16px; font-weight: bold; margin-left: 5px;">{delta_f_sign}{delta_f:.3f}</span></span>'
 
-                metrics_html = f'<span style="margin-left: 15px; display: inline-block;"><span style="color: #888; font-size: 14px;">Fidelity:</span> <span style="color: {fidelity_color}; font-size: 16px; font-weight: bold; margin-left: 5px;">{fidelity:.3f}</span></span>{delta_f_html}<span style="margin-left: 15px; display: inline-block;"><span style="color: #888; font-size: 14px;">Primacy Attractor Status:</span> <span style="color: {pa_color}; font-size: 14px; font-weight: bold; margin-left: 5px;">{pa_status}</span></span>'
+                    metrics_html = f'<span style="margin-left: 15px; display: inline-block;"><span style="color: #888; font-size: 14px;">Fidelity:</span> <span style="color: {fidelity_color}; font-size: 16px; font-weight: bold; margin-left: 5px;">{fidelity:.3f}</span></span>{delta_f_html}<span style="margin-left: 15px; display: inline-block;"><span style="color: #888; font-size: 14px;">Primacy Attractor Status:</span> <span style="color: {pa_color}; font-size: 14px; font-weight: bold; margin-left: 5px;">{pa_status}</span></span>'
+                else:
+                    # PA still calibrating - show calibrating status only
+                    pa_status = "Calibrating"
+                    pa_color = "#FFA500"
+                    metrics_html = f'<span style="margin-left: 15px; display: inline-block;"><span style="color: #888; font-size: 14px;">Primacy Attractor Status:</span> <span style="color: {pa_color}; font-size: 14px; font-weight: bold; margin-left: 5px;">{pa_status} ({turn_number}/~10)</span></span>'
 
         # Escape the message content to prevent HTML injection
         safe_message = html.escape(message)
@@ -412,15 +1209,49 @@ class ConversationDisplay:
 
         if demo_mode:
             # Demo Mode: Clean, simple layout - NO scroll buttons (scrollable history disabled in Demo Mode)
+            # Create unique ID for copy button
+            import hashlib
+            user_msg_id = f"{key_prefix}user_{hashlib.md5(safe_message.encode()).hexdigest()[:8]}"
+
             st.markdown(f"""
-<div class="message-container" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
+<style>
+.demo-user-message-{user_msg_id} {{
+    position: relative;
+    padding-bottom: 45px;
+}}
+.demo-user-copy-btn-{user_msg_id} {{
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    background-color: #2d2d2d !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #FFD700 !important;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease !important;
+}}
+</style>
+<div class="message-container demo-user-message-{user_msg_id}" id="demo-user-msg-{user_msg_id}" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">User</strong>
     </div>
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {safe_message}
     </div>
+    <button class="demo-user-copy-btn-{user_msg_id}" onclick="copyDemoUserMessage{user_msg_id}()">📋 Copy</button>
 </div>
+<script>
+function copyDemoUserMessage{user_msg_id}() {{
+    const text = document.getElementById('demo-user-msg-{user_msg_id}').innerText.replace('📋 Copy', '').replace('User', '').trim();
+    navigator.clipboard.writeText(text).then(() => {{
+        const btn = event.target;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => {{ btn.textContent = '📋 Copy'; }}, 2000);
+    }});
+}}
+</script>
 """, unsafe_allow_html=True)
         else:
             # Open Mode: Full Observatory layout with turn badge and scroll button
@@ -463,8 +1294,31 @@ class ConversationDisplay:
                 col_msg, col_scroll = st.columns([8.5, 1.5])
 
                 with col_msg:
+                    # Create unique ID for copy button
+                    import hashlib
+                    user_msg_id = f"{key_prefix}user_{hashlib.md5(safe_message.encode()).hexdigest()[:8]}"
+
                     st.markdown(f"""
-<div class="message-container" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
+<style>
+.user-message-{user_msg_id} {{
+    position: relative;
+    padding-bottom: 45px;
+}}
+.user-copy-btn-{user_msg_id} {{
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    background-color: #2d2d2d !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #FFD700 !important;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease !important;
+}}
+</style>
+<div class="message-container user-message-{user_msg_id}" id="user-msg-{user_msg_id}" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #FFD700;">User</strong>
     </div>
@@ -472,13 +1326,24 @@ class ConversationDisplay:
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {safe_message}
     </div>
+    <button class="user-copy-btn-{user_msg_id}" onclick="copyUserMessage{user_msg_id}()">📋 Copy</button>
 </div>
+<script>
+function copyUserMessage{user_msg_id}() {{
+    const text = document.getElementById('user-msg-{user_msg_id}').innerText.replace('📋 Copy', '').replace('User', '').replace('Fidelity:', '').replace('Primacy Attractor Status:', '').replace('ΔF:', '').trim();
+    navigator.clipboard.writeText(text).then(() => {{
+        const btn = event.target;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => {{ btn.textContent = '📋 Copy'; }}, 2000);
+    }});
+}}
+</script>
 """, unsafe_allow_html=True)
 
                 # Render Steward button above scroll button
                 if turn_number is not None:
                     with col_scroll:
-                        if st.button("🤝", key=f"steward_btn_{turn_number}", use_container_width=True, help="Ask Steward"):
+                        if st.button("🤝", key=f"{key_prefix}steward_btn_{turn_number}", use_container_width=True, help="Ask Steward"):
                             # Toggle steward panel
                             st.session_state.steward_panel_open = not st.session_state.get('steward_panel_open', False)
                             st.rerun()
@@ -487,17 +1352,17 @@ class ConversationDisplay:
                 if turn_number is not None and not self.state_manager.state.scrollable_history_mode:
                     with col_scroll:
                         scroll_label = "📜"
-                        if st.button(scroll_label, key=f"scroll_toggle_{turn_number}", use_container_width=True, help="Show scrollable history"):
+                        if st.button(scroll_label, key=f"{key_prefix}scroll_toggle_{turn_number}", use_container_width=True, help="Show scrollable history"):
                             self.state_manager.toggle_scrollable_history()
                             st.rerun()
                 elif turn_number is not None and self.state_manager.state.scrollable_history_mode:
                     with col_scroll:
                         scroll_label = "✕"
-                        if st.button(scroll_label, key=f"scroll_close_{turn_number}", use_container_width=True, help="Close scrollable history"):
+                        if st.button(scroll_label, key=f"{key_prefix}scroll_close_{turn_number}", use_container_width=True, help="Close scrollable history"):
                             self.state_manager.toggle_scrollable_history()
                             st.rerun()
 
-    def _render_assistant_message(self, message: str, turn_number: int = None, is_loading: bool = False):
+    def _render_assistant_message(self, message: str, turn_number: int = None, is_loading: bool = False, key_prefix: str = ""):
         """Render steward message bubble - aligned with User message."""
         import html
 
@@ -549,15 +1414,50 @@ class ConversationDisplay:
             else:
                 # Show response - convert markdown to HTML for proper rendering
                 html_message = self._markdown_to_html(message)
+
+                # Create unique ID for this message (with prefix to avoid duplicates in history)
+                import hashlib
+                message_id = f"{key_prefix}{hashlib.md5(message.encode()).hexdigest()[:8]}"
+
                 st.markdown(f"""
-<div class="message-container" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 15px; border: 2px solid #FFD700;">
+<style>
+.demo-message-{message_id} {{
+    position: relative;
+    padding-bottom: 40px;
+}}
+.demo-copy-btn-{message_id} {{
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    background-color: #2d2d2d !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #FFD700 !important;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease !important;
+}}
+</style>
+<div class="message-container demo-message-{message_id}" id="demo-msg-{message_id}" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 15px; border: 2px solid #FFD700;">
     <div style="color: #888; font-size: 19px; margin-bottom: 10px;">
         <strong style="color: #FFD700;">TELOS</strong>
     </div>
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {html_message}
     </div>
+    <button class="demo-copy-btn-{message_id}" onclick="copyDemoMessage{message_id}()">📋 Copy</button>
 </div>
+<script>
+function copyDemoMessage{message_id}() {{
+    const text = document.getElementById('demo-msg-{message_id}').innerText.replace('📋 Copy', '').replace('TELOS', '').trim();
+    navigator.clipboard.writeText(text).then(() => {{
+        const btn = event.target;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => {{ btn.textContent = '📋 Copy'; }}, 2000);
+    }});
+}}
+</script>
 """, unsafe_allow_html=True)
         else:
             # Open Mode: Match User message structure with turn badge spacer
@@ -622,12 +1522,19 @@ class ConversationDisplay:
 </div>
 """, unsafe_allow_html=True)
 
-                        # Render markdown content natively (NOT inside HTML)
+                        # Render message content inside styled container
+                        # Convert markdown to HTML for proper rendering inside the div
+                        html_message = self._markdown_to_html(message)
+
+                        # Create unique ID for this message (with prefix to avoid duplicates in history)
+                        import hashlib
+                        message_id = f"{key_prefix}{hashlib.md5(message.encode()).hexdigest()[:8]}"
+
                         st.markdown(f"""
 <style>
-.steward-message {{
+.steward-message-{message_id} {{
     background-color: #1a1a1a;
-    padding: 10px 15px 15px 15px;
+    padding: 10px 15px 40px 15px;
     margin-top: 0;
     margin-bottom: 0;
     border: 2px solid #FFD700;
@@ -635,20 +1542,42 @@ class ConversationDisplay:
     border-radius: 0 0 10px 10px;
     color: #fff;
     font-size: 19px;
+    position: relative;
 }}
-.steward-message p {{
+.steward-message-{message_id} p {{
     color: #fff !important;
     font-size: 19px !important;
+    margin: 0;
+}}
+.copy-btn-{message_id} {{
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    background-color: #2d2d2d !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #FFD700 !important;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease !important;
 }}
 </style>
-<div class="steward-message">
+<div class="steward-message-{message_id}" id="msg-{message_id}">
+    {html_message}
+    <button class="copy-btn-{message_id}" onclick="copyMessage{message_id}()">📋 Copy</button>
+</div>
+<script>
+function copyMessage{message_id}() {{
+    const text = document.getElementById('msg-{message_id}').innerText.replace('📋 Copy', '').trim();
+    navigator.clipboard.writeText(text).then(() => {{
+        const btn = event.target;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => {{ btn.textContent = '📋 Copy'; }}, 2000);
+    }});
+}}
+</script>
 """, unsafe_allow_html=True)
-
-                        # Native markdown rendering
-                        st.markdown(message)
-
-                        # Close the container
-                        st.markdown("</div>", unsafe_allow_html=True)
 
                 with col_empty:
                     # Empty column for alignment
@@ -875,6 +1804,10 @@ class ConversationDisplay:
         # Get session info which should include primacy attractor
         session_info = self.state_manager.get_session_info()
 
+        # Check if PA is established (convergence status from progressive extractor)
+        pa_converged = getattr(self.state_manager.state, 'pa_converged', False)
+        total_turns = self.state_manager.state.total_turns
+
         # Try to get primacy attractor from turn data or session state
         primacy_attractor = None
         all_turns = self.state_manager.get_all_turns()
@@ -892,6 +1825,29 @@ class ConversationDisplay:
         if not primacy_attractor and 'state_manager' in st.session_state:
             # Try to access the original session data that was loaded
             primacy_attractor = st.session_state.get('primacy_attractor', None)
+
+        # If PA not converged yet, show calibrating message
+        if not pa_converged and total_turns < 10:
+            st.markdown("""
+            <div style="
+                background-color: #1a1a1a;
+                border: 2px solid #FFD700;
+                border-radius: 10px;
+                padding: 30px;
+                margin-top: 15px;
+                text-align: center;
+            ">
+                <span style="color: #FFD700; font-weight: bold; font-size: 18px;">⏳ Calibrating...</span>
+                <p style="color: #e0e0e0; margin-top: 15px;">
+                    TELOS is learning your intent from the conversation.<br>
+                    Primacy Attractor will be established after ~10 turns.
+                </p>
+                <p style="color: #888; font-size: 14px; margin-top: 10px;">
+                    Turn {}/~10
+                </p>
+            </div>
+            """.format(total_turns), unsafe_allow_html=True)
+            return  # Don't show PA components yet
 
         # Display Primacy Attractor components
         col1, col2, col3 = st.columns(3)
@@ -1025,7 +1981,7 @@ class ConversationDisplay:
             # Generate Steward response using Mistral API
             try:
                 import os
-                from telos_purpose.llm_clients.mistral_client import MistralClient
+                from telos.llm.mistral_client import MistralClient
 
                 # Get API key from Streamlit secrets or environment
                 mistral_api_key = st.secrets.get("MISTRAL_API_KEY", os.getenv("MISTRAL_API_KEY"))
@@ -1037,7 +1993,7 @@ class ConversationDisplay:
                 # Initialize Mistral client
                 mistral_client = MistralClient(
                     api_key=mistral_api_key,
-                    model="mistral-large-latest"
+                    model="mistral-small-latest"  # Using small - best availability
                 )
 
                 # Build Steward system prompt (same as Demo Mode)
@@ -1242,16 +2198,71 @@ Current Turn Data:
         </script>
         """, height=0)
 
+        # Style the chat input with border (matching Demo mode style)
+        st.markdown("""
+        <style>
+        /* Beta mode chat input styling - matches Demo mode */
+        div[data-testid="stForm"] {
+            border: 2px solid #FFD700 !important;
+            border-radius: 10px !important;
+            padding: 15px !important;
+            background-color: #2d2d2d !important;
+        }
+
+        div[data-testid="stForm"] textarea {
+            font-size: 18px !important;
+            text-align: center !important;
+            background-color: #1a1a1a !important;
+            border: 1px solid #666 !important;
+            color: #e0e0e0 !important;
+        }
+
+        div[data-testid="stForm"] textarea::placeholder {
+            text-align: center !important;
+            color: #888 !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+        # Enable Enter to submit (Shift+Enter already works for new line)
+        st.components.v1.html("""
+        <script>
+        (function() {
+            function setupEnterKey() {
+                const textareas = window.parent.document.querySelectorAll('textarea');
+                textareas.forEach(textarea => {
+                    textarea.removeEventListener('keydown', handleEnterKey);
+                    textarea.addEventListener('keydown', handleEnterKey);
+                });
+            }
+
+            function handleEnterKey(event) {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    const sendButton = window.parent.document.querySelector('button[kind="formSubmit"]');
+                    if (sendButton) {
+                        sendButton.click();
+                    }
+                }
+            }
+
+            setupEnterKey();
+            setTimeout(setupEnterKey, 500);
+        })();
+        </script>
+        """, height=0)
+
         # Use a form to enable Enter key submission
         with st.form(key="message_form", clear_on_submit=True):
             col1, col2 = st.columns([8.5, 1.5])
 
             with col1:
-                user_input = st.text_input(
+                user_input = st.text_area(
                     "Message",
-                    placeholder="Type your message...",
+                    placeholder="Tell TELOS",
                     key="main_chat_input_clean",
-                    label_visibility="collapsed"
+                    label_visibility="collapsed",
+                    height=100
                 )
 
             with col2:
@@ -1310,8 +2321,9 @@ Current Turn Data:
 
             # CRITICAL: Clear demo data on first user message to prevent contamination
             # Demo data should NOT be part of primacy attractor calibration
-            if 'user_started_conversation' not in st.session_state:
-                # This is the user's first message - clear ALL demo data
+            # ONLY clear demo data if in Demo Mode - Beta mode starts fresh already
+            if 'user_started_conversation' not in st.session_state and demo_mode:
+                # This is the user's first message in DEMO mode - clear ALL demo data
                 self.state_manager.clear_demo_data()
                 st.session_state.user_started_conversation = True
 
@@ -1325,7 +2337,7 @@ Current Turn Data:
         """Render chat input box for new messages."""
         # Chat input with custom styling
         user_input = st.chat_input(
-            "Type your message...",
+            "Tell TELOS",
             key="chat_input_box"
         )
 
@@ -1429,3 +2441,153 @@ Current Turn Data:
 
             if analysis_input:
                 st.info(f"Analysis chat feature coming soon. You asked: {analysis_input}")
+
+    def _show_beta_phase_transition(self, turn_number: int):
+        """Show phase transition message when PA calibration completes at turn 11."""
+        if turn_number != 11:
+            return
+
+        if not st.session_state.get('beta_consent_given', False):
+            return
+
+        if st.session_state.get('beta_phase_transition_shown', False):
+            return
+
+        st.markdown("""
+        <div style="
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 2px solid #FFD700;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        ">
+            <div style="font-size: 48px; margin-bottom: 10px;">🎯</div>
+            <h3 style="color: #FFD700; margin: 10px 0;">PA Established!</h3>
+            <p style="color: #e0e0e0; font-size: 18px; line-height: 1.6; margin: 10px 0;">
+                Your conversation purpose is now calibrated.<br>
+                Beta preference testing is active - please rate responses below.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.session_state.beta_phase_transition_shown = True
+
+    def _render_beta_feedback(self, turn_number: int):
+        """Render simple beta feedback UI (thumbs up/down/sideways) for turns 11+."""
+        if turn_number < 11:
+            return
+
+        if not st.session_state.get('beta_consent_given', False):
+            return
+
+        feedback_key = f"beta_feedback_{turn_number}"
+        if st.session_state.get(feedback_key):
+            st.markdown("""
+            <div style="color: #4CAF50; font-size: 14px; margin: 10px 0;">
+                ✓ Thank you for your feedback!
+            </div>
+            """, unsafe_allow_html=True)
+            return
+
+        st.markdown("<div style='margin: 15px 0;'></div>", unsafe_allow_html=True)
+
+        col1, col2, col3, col4 = st.columns([1, 1, 1, 5])
+
+        with col1:
+            if st.button("👍", key=f"thumbs_up_{turn_number}",
+                        use_container_width=True, help="Helpful response"):
+                self._record_simple_feedback(turn_number, "thumbs_up")
+                st.session_state[feedback_key] = True
+                st.rerun()
+
+        with col2:
+            if st.button("👉", key=f"sideways_{turn_number}",
+                        use_container_width=True, help="Neutral / No preference"):
+                self._record_simple_feedback(turn_number, "sideways")
+                st.session_state[feedback_key] = True
+                st.rerun()
+
+        with col3:
+            if st.button("👎", key=f"thumbs_down_{turn_number}",
+                        use_container_width=True, help="Not helpful"):
+                self._record_simple_feedback(turn_number, "thumbs_down")
+                st.session_state[feedback_key] = True
+                st.rerun()
+
+        with col4:
+            st.markdown("""
+            <div style="color: #888; font-size: 14px; padding-top: 8px;">
+                Rate this response
+            </div>
+            """, unsafe_allow_html=True)
+
+    def _record_simple_feedback(self, turn_number: int, rating: str):
+        """Record simple feedback to session state and beta session manager."""
+        from datetime import datetime
+        import logging
+        logger = logging.getLogger(__name__)
+
+        if 'beta_feedback' not in st.session_state:
+            st.session_state.beta_feedback = []
+
+        # Get turn data to extract beta information
+        turn_idx = turn_number - 1  # Convert to 0-based index
+        turn_data = None
+        if hasattr(self.state_manager.state, 'turns') and turn_idx < len(self.state_manager.state.turns):
+            turn_data = self.state_manager.state.turns[turn_idx]
+
+        feedback_item = {
+            'turn': turn_number,
+            'rating': rating,
+            'timestamp': datetime.now().isoformat()
+        }
+
+        # Add beta-specific data if available
+        if turn_data and 'beta_data' in turn_data:
+            beta_data = turn_data['beta_data']
+            feedback_item['test_condition'] = beta_data.get('test_condition')
+            feedback_item['response_source'] = beta_data.get('shown_response_source')
+            feedback_item['baseline_fidelity'] = beta_data.get('baseline_fidelity')
+            feedback_item['telos_fidelity'] = beta_data.get('telos_fidelity')
+            logger.info(f"Beta feedback includes: test_condition={feedback_item['test_condition']}, source={feedback_item['response_source']}")
+
+        st.session_state.beta_feedback.append(feedback_item)
+
+        # Record to beta session manager if available
+        beta_session = st.session_state.get('beta_session')
+        if beta_session:
+            try:
+                from observatory.beta_testing.beta_session_manager import FeedbackData
+
+                # DELTA-ONLY: Store lengths, not content
+                user_input = turn_data.get('user_input', '') if turn_data else ''
+                response = turn_data.get('response', '') if turn_data else ''
+                beta_data = turn_data.get('beta_data', {}) if turn_data else {}
+
+                feedback_data = FeedbackData(
+                    turn_number=turn_number,
+                    timestamp=feedback_item['timestamp'],
+                    test_condition=feedback_item.get('test_condition', 'unknown'),
+                    rating=rating,
+                    response_source=feedback_item.get('response_source'),
+                    user_message_length=len(user_input),
+                    response_length=len(response),
+                    fidelity=feedback_item.get('telos_fidelity'),
+                    baseline_fidelity=feedback_item.get('baseline_fidelity'),
+                    telos_fidelity=feedback_item.get('telos_fidelity'),
+                    fidelity_delta=beta_data.get('fidelity_delta'),
+                    drift_detected=beta_data.get('drift_detected', False)
+                )
+
+                beta_session.feedback_items.append(feedback_data)
+                logger.info(f"✓ Feedback recorded to beta session manager")
+            except Exception as e:
+                logger.warning(f"Could not record to beta session manager: {e}")
+
+        # Set start time on first feedback
+        if len(st.session_state.beta_feedback) == 1:
+            st.session_state.beta_start_time = datetime.now().isoformat()
+
+        logger.info(f"Beta feedback: turn {turn_number} = {rating}")
