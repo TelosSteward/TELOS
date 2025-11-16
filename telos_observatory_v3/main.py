@@ -22,6 +22,7 @@ from telos_observatory_v3.components.observation_deck import ObservationDeck
 from telos_observatory_v3.components.teloscope_controls import TELOSCOPEControls
 from telos_observatory_v3.components.beta_onboarding import BetaOnboarding
 from telos_observatory_v3.components.steward_panel import StewardPanel
+from telos_observatory_v3.components.observatory_lens import ObservatoryLens
 
 
 def initialize_session():
@@ -33,6 +34,23 @@ def initialize_session():
 
         # Create state manager
         state_manager = StateManager()
+
+        # Initialize Primacy State if configured
+        try:
+            import json
+            import os
+            config_path = os.path.join(os.path.dirname(__file__), '..', '..', 'primacy_state_config.json')
+            if os.path.exists(config_path):
+                with open(config_path) as f:
+                    ps_config = json.load(f)
+                if ps_config.get('primacy_state', {}).get('enabled', False):
+                    state_manager.initialize_primacy_state(
+                        enable=True,
+                        parallel_mode=ps_config['primacy_state'].get('parallel_mode', True)
+                    )
+                    print("✅ Primacy State activated in parallel mode")
+        except Exception as e:
+            print(f"PS initialization skipped: {e}")
 
         # Start with EMPTY session (no pre-loaded turns)
         # Demo Mode will show welcome message and start fresh
@@ -65,7 +83,27 @@ def main():
     # Dark theme styling and hide Streamlit defaults
     st.markdown("""
     <style>
-    /* Cache buster: v2024-11-04-19:10 */
+    /* Cache buster: v2024-11-13-17:15 */
+
+    /* NUCLEAR DARK MODE - Force dark on absolutely everything */
+    *, *::before, *::after {{
+        background-color: #1a1a1a !important;
+    }}
+
+    /* Force dark on html and body */
+    html, body {{
+        background-color: #1a1a1a !important;
+    }}
+
+    /* Force dark on iframes and their parents */
+    iframe {{
+        background-color: #1a1a1a !important;
+    }}
+
+    iframe body {{
+        background-color: #1a1a1a !important;
+    }}
+
     /* Hide Streamlit's built-in sidebar collapse button */
     button[kind="header"] {{
         display: none !important;
@@ -103,12 +141,102 @@ def main():
         display: none !important;
     }}
 
-    /* Main content: dark grey background */
+    /* HIDE DEPLOY BUTTON - Multiple targeting strategies */
+    button[kind="secondary"] {{
+        display: none !important;
+    }}
+
+    div[data-testid="stToolbar"] {{
+        display: none !important;
+    }}
+
+    button[data-testid="deployButton"] {{
+        display: none !important;
+    }}
+
+    .stDeployButton {{
+        display: none !important;
+    }}
+
+    #stDecoration {{
+        display: none !important;
+    }}
+
+    /* HIDE DEBUG/FOOTER INFO AT BOTTOM */
+    .reportview-container .main footer {{
+        display: none !important;
+    }}
+
+    footer {{
+        display: none !important;
+        visibility: hidden !important;
+    }}
+
+    div[data-testid="stBottomBlockContainer"] {{
+        display: none !important;
+    }}
+
+    .viewerBadge_container__1QSob {{
+        display: none !important;
+    }}
+
+    .viewerBadge_link__1S137 {{
+        display: none !important;
+    }}
+
+    /* Hide any remaining Streamlit branding */
+    a[href*="streamlit.io"] {{
+        display: none !important;
+    }}
+
+    /* Main content: dark grey background - ULTRA AGGRESSIVE */
     .stApp {{
         background-color: #1a1a1a !important;
     }}
 
     .main {{
+        background-color: #1a1a1a !important;
+    }}
+
+    /* Force dark on all main content containers */
+    [data-testid="stAppViewContainer"] {{
+        background-color: #1a1a1a !important;
+    }}
+
+    [data-testid="stMain"] {{
+        background-color: #1a1a1a !important;
+    }}
+
+    .block-container {{
+        background-color: #1a1a1a !important;
+    }}
+
+    /* Force dark on all generic containers */
+    section {{
+        background-color: transparent !important;
+    }}
+
+    /* Chat and input areas */
+    [data-testid="stChatInput"] {{
+        background-color: #2d2d2d !important;
+    }}
+
+    [data-testid="stChatInputTextArea"] {{
+        background-color: #2d2d2d !important;
+        color: #e0e0e0 !important;
+    }}
+
+    /* Iframe containers */
+    iframe {{
+        background-color: #1a1a1a !important;
+    }}
+
+    /* Tab content areas */
+    [data-testid="stTabs"] {{
+        background-color: #1a1a1a !important;
+    }}
+
+    [data-testid="stTabPanel"] {{
         background-color: #1a1a1a !important;
     }}
 
@@ -136,6 +264,7 @@ def main():
     .block-container {{
         padding-top: 5rem;
         padding-bottom: 1rem;
+        background-color: #1a1a1a !important;
     }}
 
     /* Button styling - force gold borders and hover effects */
@@ -195,6 +324,7 @@ def main():
         border: 1px solid #FFD700;
         border-radius: 10px;
         padding: 20px;
+        background-color: #1a1a1a !important;
     }}
 
     /* Lighter text for better readability */
@@ -379,6 +509,7 @@ def main():
     teloscope_controls = TELOSCOPEControls(state_manager)
     beta_onboarding = BetaOnboarding(state_manager)
     steward_panel = StewardPanel(state_manager)
+    observatory_lens = ObservatoryLens(state_manager)
 
     # Check if user has given beta consent
     has_beta_consent = st.session_state.get('beta_consent_given', False)
@@ -481,20 +612,18 @@ def main():
         """, unsafe_allow_html=True)
 
         # Tab selection using columns for custom styling
-        # Initialize active tab if not set - default to BETA for new users
+        # Initialize active tab if not set - default to DEMO for new users
         if 'active_tab' not in st.session_state:
-            st.session_state.active_tab = "BETA"
+            st.session_state.active_tab = "DEMO"
 
         # Get current active tab
         active_tab = st.session_state.active_tab
 
-        col_beta, col_demo, col_telos = st.columns(3)
+        # Check progression unlocks
+        demo_completed = st.session_state.get('demo_completed', False)
+        beta_intro_complete = st.session_state.get('beta_intro_complete', False)
 
-        with col_beta:
-            beta_active = active_tab == "BETA"
-            if st.button("BETA", key="tab_beta", use_container_width=True, type="primary" if beta_active else "secondary"):
-                st.session_state.active_tab = "BETA"
-                st.rerun()
+        col_demo, col_beta, col_telos = st.columns(3)
 
         with col_demo:
             demo_active = active_tab == "DEMO"
@@ -502,15 +631,36 @@ def main():
                 st.session_state.active_tab = "DEMO"
                 st.rerun()
 
+        with col_beta:
+            beta_active = active_tab == "BETA"
+            # BETA tab disabled until demo completed
+            beta_disabled = not demo_completed
+            if st.button("BETA", key="tab_beta", use_container_width=True,
+                        type="primary" if beta_active else "secondary",
+                        disabled=beta_disabled):
+                st.session_state.active_tab = "BETA"
+                st.rerun()
+
         with col_telos:
             telos_active = active_tab == "TELOS"
-            if st.button("TELOS", key="tab_telos", use_container_width=True, type="primary" if telos_active else "secondary"):
+            # TELOS tab disabled until beta intro completed
+            telos_disabled = not beta_intro_complete
+            if st.button("TELOS", key="tab_telos", use_container_width=True,
+                        type="primary" if telos_active else "secondary",
+                        disabled=telos_disabled):
                 st.session_state.active_tab = "TELOS"
                 st.rerun()
 
+        # Sync telos_demo_mode with active tab
+        # DEMO tab = demo mode ON, BETA/TELOS tabs = demo mode OFF
+        if st.session_state.active_tab == "DEMO":
+            st.session_state.telos_demo_mode = True
+        else:
+            st.session_state.telos_demo_mode = False
+
         st.markdown("<hr style='border: 1px solid #FFD700; margin: 10px 0;'>", unsafe_allow_html=True)
     else:
-        # Hide sidebar completely before consent
+        # Hide sidebar completely before consent + FORCE DARK BACKGROUND
         st.markdown("""
         <style>
         /* Hide sidebar before consent */
@@ -523,6 +673,36 @@ def main():
             max-width: 100%;
             padding-left: 5rem;
             padding-right: 5rem;
+        }
+
+        /* FORCE DARK BACKGROUND EVERYWHERE */
+        html, body, .stApp, .main, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .block-container {
+            background-color: #1a1a1a !important;
+        }
+
+        /* Kill any white backgrounds */
+        * {
+            background-color: transparent !important;
+        }
+
+        /* Restore dark for specific containers */
+        .stApp, .main, .block-container, [data-testid="stAppViewContainer"] {
+            background-color: #1a1a1a !important;
+        }
+
+        /* Beta onboarding container backgrounds */
+        .message-container {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+        }
+
+        /* Force all text to be light */
+        p, span, div, h1, h2, h3, h4, ul, li, label {
+            color: #e0e0e0 !important;
+        }
+
+        /* Checkbox styling */
+        .stCheckbox label {
+            color: #e0e0e0 !important;
         }
         </style>
         """, unsafe_allow_html=True)
@@ -541,16 +721,20 @@ def main():
 
             with col_main:
                 # Render content based on active tab
-                if st.session_state.active_tab == "BETA":
+                if st.session_state.active_tab == "DEMO":
+                    # Demo Tab - conversation display with demo mode
                     conversation_display.render()
-                elif st.session_state.active_tab == "DEMO":
-                    st.info("Demo Tab - Coming Soon")
+                elif st.session_state.active_tab == "BETA":
+                    # Beta Tab - conversation display with beta mode
+                    conversation_display.render()
                 elif st.session_state.active_tab == "TELOS":
                     conversation_display.render()
                     st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
                     observation_deck.render()
                     st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
                     teloscope_controls.render()
+                    st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
+                    observatory_lens.render()
 
             with col_steward:
                 # Render Steward chat panel
@@ -559,13 +743,13 @@ def main():
         else:
             # Normal full-width layout
             # Render content based on active tab
-            if st.session_state.active_tab == "BETA":
-                # Beta Tab - simple chat interface
+            if st.session_state.active_tab == "DEMO":
+                # Demo Tab - conversation display with demo mode
                 conversation_display.render()
 
-            elif st.session_state.active_tab == "DEMO":
-                # Demo Tab
-                st.info("Demo Tab - Coming Soon")
+            elif st.session_state.active_tab == "BETA":
+                # Beta Tab - simple chat interface
+                conversation_display.render()
 
             elif st.session_state.active_tab == "TELOS":
                 # TELOS Tab - full Observatory
@@ -574,6 +758,8 @@ def main():
                 observation_deck.render()
                 st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
                 teloscope_controls.render()
+                st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
+                observatory_lens.render()
 
     # FINAL CSS OVERRIDE - Inject with highest specificity at runtime
     st.html("""

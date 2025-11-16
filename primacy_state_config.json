@@ -1,0 +1,37 @@
+{
+  "primacy_state": {
+    "enabled": true,
+    "parallel_mode": true,
+    "track_energy": true,
+    "thresholds": {
+      "achieved": 0.85,
+      "weakening": 0.7,
+      "violated": 0.5,
+      "collapsed": 0.0
+    },
+    "intervention_levels": {
+      "MONITOR": 0.85,
+      "CORRECT": 0.7,
+      "INTERVENE": 0.5,
+      "ESCALATE": 0.0
+    },
+    "energy_weights": {
+      "alpha": 0.5,
+      "beta": 0.4,
+      "gamma": 0.1
+    },
+    "logging": {
+      "verbose": true,
+      "log_comparisons": true,
+      "log_diagnostics": true
+    },
+    "rollout_phase": "parallel_validation",
+    "rollout_phases": [
+      "disabled",
+      "shadow_mode",
+      "parallel_validation",
+      "primary_with_fallback",
+      "primary_only"
+    ]
+  }
+}

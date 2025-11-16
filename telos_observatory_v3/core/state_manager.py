@@ -12,9 +12,14 @@ import logging
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
 import streamlit as st
+import sys
+from pathlib import Path
 
 # Configure logging
 logger = logging.getLogger(__name__)
+
+# Add parent directory for beta imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 
 @dataclass
@@ -52,11 +57,18 @@ class ObservatoryState:
     show_math_breakdown: bool = False
     show_counterfactual: bool = False
     show_steward: bool = False  # Deprecated, kept for compatibility
+    show_observatory_lens: bool = False  # Observatory Lens visual dashboard
 
     # Metrics
     avg_fidelity: float = 0.0
     total_interventions: int = 0
     drift_warnings: int = 0
+
+    # Primacy State Metrics (NEW)
+    enable_primacy_state: bool = False  # Feature flag
+    ps_parallel_mode: bool = True  # Run PS alongside fidelity for comparison
+    current_ps_metrics: Optional[Dict[str, Any]] = None  # Current PS calculation
+    ps_history: List[Dict[str, Any]] = field(default_factory=list)  # PS over time
 
 
 class StateManager:
@@ -75,6 +87,8 @@ class StateManager:
         """Initialize state manager with default state."""
         self.state = ObservatoryState()
         self._initialized = False
+        self._beta_session_manager = None  # Lazy initialization for beta testing
+        self._ps_calculator = None  # Lazy initialization for Primacy State
 
     def initialize(self, session_data: Dict[str, Any]):
         """
@@ -260,7 +274,7 @@ class StateManager:
         Toggle visibility of a component.
 
         Args:
-            component: One of 'primacy_attractor', 'math', 'counterfactual', 'steward'
+            component: One of 'primacy_attractor', 'math', 'counterfactual', 'steward', 'observatory_lens'
         """
         if component == 'primacy_attractor':
             self.state.show_primacy_attractor = not self.state.show_primacy_attractor
@@ -270,6 +284,8 @@ class StateManager:
             self.state.show_counterfactual = not self.state.show_counterfactual
         elif component == 'steward':
             self.state.show_steward = not self.state.show_steward
+        elif component == 'observatory_lens':
+            self.state.show_observatory_lens = not self.state.show_observatory_lens
 
     def toggle_scrollable_history(self):
         """Toggle between turn-by-turn and scrollable history mode."""
@@ -302,6 +318,127 @@ class StateManager:
                 logger.info("TELOS session reset for user conversation")
             except Exception as e:
                 logger.warning(f"Could not reset TELOS session: {e}")
+
+    # =========================================================================
+    # Beta Testing Methods
+    # =========================================================================
+
+    def _initialize_beta_session_manager(self):
+        """Initialize beta session manager (lazy loading)."""
+        if self._beta_session_manager is None:
+            try:
+                from observatory.beta_testing.beta_session_manager import BetaSessionManager
+                self._beta_session_manager = BetaSessionManager()
+                logger.info("Beta session manager initialized")
+            except Exception as e:
+                logger.warning(f"Failed to initialize beta session manager: {e}")
+                self._beta_session_manager = None
+
+    def _is_beta_ab_phase(self) -> bool:
+        """
+        Check if we're in beta mode AND at the A/B testing phase.
+
+        Returns:
+            True if beta tab active, consent given, intro complete, and PA established
+        """
+        # Check if BETA tab is active
+        active_tab = st.session_state.get('active_tab', 'DEMO')
+        if active_tab != "BETA":
+            return False
+
+        # Check if beta consent and intro completed
+        beta_consent = st.session_state.get('beta_consent_given', False)
+        beta_intro_complete = st.session_state.get('beta_intro_complete', False)
+
+        if not (beta_consent and beta_intro_complete):
+            return False
+
+        # Check if PA (Primacy Attractor) is established
+        # Can't do A/B testing without a PA to measure fidelity against!
+        # If PA not established by turn 10, session is "not fidelity available"
+        current_turn = len([t for t in self.state.turns if not t.get('is_loading', False)])
+
+        # PA must be established (can happen early, e.g., turn 2-3)
+        pa_established = self.state.ai_pa_established
+
+        # If we're past turn 10 and PA still not established, give up on this session
+        if current_turn > 10 and not pa_established:
+            logger.warning(f"Turn {current_turn}: PA not established by turn 10 - not a fidelity available session")
+            return False
+
+        # A/B testing starts once PA is established
+        return pa_established
+
+    def _generate_beta_dual_response(
+        self,
+        message: str,
+        conversation_history: List[Dict[str, str]],
+        max_tokens: int
+    ) -> Dict[str, Any]:
+        """
+        Generate both baseline and TELOS responses for A/B testing.
+
+        Args:
+            message: User's input
+            conversation_history: Conversation context
+            max_tokens: Max tokens for generation
+
+        Returns:
+            Dict with baseline_response, telos_response, and metrics
+        """
+        try:
+            # Ensure beta session manager is initialized
+            self._initialize_beta_session_manager()
+
+            if self._beta_session_manager is None:
+                raise Exception("Beta session manager not available")
+
+            # Ensure TELOS is initialized
+            if not hasattr(self, '_telos_steward') or self._telos_steward is None:
+                raise Exception("TELOS not initialized")
+
+            # Generate baseline response (direct LLM, no TELOS governance)
+            baseline_response = self._telos_steward.llm_client.generate(
+                messages=conversation_history,
+                max_tokens=max_tokens
+            )
+            logger.info(f"✓ Generated baseline response ({len(baseline_response)} chars)")
+
+            # Generate TELOS response (with governance)
+            telos_result = self._telos_steward.process_turn(
+                user_input=message,
+                model_response=baseline_response
+            )
+
+            # TELOS may modify the response if intervention needed
+            telos_response = telos_result.get("final_response", baseline_response)
+            logger.info(f"✓ Generated TELOS response ({len(telos_response)} chars)")
+
+            # Extract metrics
+            baseline_fidelity = telos_result.get("baseline_fidelity", 0.0)
+            telos_fidelity = telos_result.get("telic_fidelity", 0.0)
+
+            return {
+                "success": True,
+                "baseline_response": baseline_response,
+                "telos_response": telos_response,
+                "baseline_fidelity": baseline_fidelity,
+                "telos_fidelity": telos_fidelity,
+                "drift_detected": telos_result.get("drift_detected", False),
+                "intervention_applied": telos_result.get("intervention_applied", False),
+                "telos_result": telos_result  # Full result for metrics extraction
+            }
+
+        except Exception as e:
+            logger.error(f"Beta dual-response generation failed: {e}")
+            return {
+                "success": False,
+                "error": str(e)
+            }
+
+    # =========================================================================
+    # Main Response Generation
+    # =========================================================================
 
     def add_user_message(self, message: str):
         """
@@ -377,19 +514,49 @@ class StateManager:
                         num_chunks = self._corpus_loader.load_corpus()
                         logger.info(f"✓ Corpus loaded: {num_chunks} chunks")
                     else:
-                        # Open mode: NO hardcoded attractor
-                        # TELOS will extract the purpose dynamically from the user's conversation
-                        # using LLM-based analysis and statistical convergence
-                        # This is intentionally minimal - let TELOS learn what the user wants
-                        attractor = None  # Will be initialized by UnifiedGovernanceSteward
+                        # Beta/Open mode: Minimal attractor for general conversation
+                        # Allow flexible conversation while still tracking alignment
+                        attractor = PrimacyAttractor(
+                            purpose=[
+                                "Engage in helpful, informative conversation",
+                                "Respond to user questions and requests",
+                                "Maintain conversational coherence"
+                            ],
+                            scope=[
+                                "General knowledge and assistance",
+                                "User's topics of interest",
+                                "Conversational dialogue"
+                            ],
+                            boundaries=[
+                                "Stay relevant to user's questions",
+                                "Provide accurate, helpful information",
+                                "Maintain appropriate conversation tone"
+                            ],
+                            constraint_tolerance=0.5,  # Flexible for open conversation
+                            privacy_level=0.8,
+                            task_priority=0.5
+                        )
                         self._corpus_loader = None  # No corpus in open mode
 
                     # Initialize Mistral client (Assistant Steward)
                     # API key from Streamlit secrets or environment
                     import os
-                    mistral_api_key = st.secrets.get("MISTRAL_API_KEY", os.getenv("MISTRAL_API_KEY"))
 
+                    # Try environment variable first (more reliable)
+                    mistral_api_key = os.getenv("MISTRAL_API_KEY")
+
+                    # Fall back to Streamlit secrets if env var not found
                     if not mistral_api_key:
+                        try:
+                            mistral_api_key = st.secrets["MISTRAL_API_KEY"]
+                        except (KeyError, FileNotFoundError):
+                            pass
+
+                    # Debug logging
+                    if mistral_api_key:
+                        logger.info(f"Found MISTRAL_API_KEY: {mistral_api_key[:10]}... (length: {len(mistral_api_key)})")
+                    else:
+                        logger.error("MISTRAL_API_KEY not found in environment or secrets")
                         raise ValueError("MISTRAL_API_KEY not found in secrets or environment")
 
                     # TODO: Future PIP feature - API key will become user identity/auth
@@ -565,17 +732,115 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                 # Performance features disabled - use sync processing
                 logger.info("→ Using synchronous processing (async/parallel disabled)")
 
-                # Generate response using Mistral
-                response_text = self._telos_steward.llm_client.generate(
-                    messages=conversation_history,
-                    max_tokens=max_tokens
-                )
+                # =====================================================================
+                # BETA A/B TESTING: Dual-Response Generation
+                # =====================================================================
+                # Check if we're in beta A/B testing phase
+                if self._is_beta_ab_phase():
+                    logger.info("🧪 Beta A/B testing mode active - generating dual responses")
 
-                # Process through TELOS to get fidelity metrics
-                result = self._telos_steward.process_turn(
-                    user_input=message,
-                    model_response=response_text
-                )
+                    # Generate both baseline and TELOS responses
+                    beta_result = self._generate_beta_dual_response(
+                        message=message,
+                        conversation_history=conversation_history,
+                        max_tokens=max_tokens
+                    )
+
+                    if beta_result.get("success", False):
+                        # Get or create beta session
+                        if 'beta_session' not in st.session_state:
+                            self._initialize_beta_session_manager()
+                            if self._beta_session_manager:
+                                st.session_state.beta_session = self._beta_session_manager.start_session()
+
+                        beta_session = st.session_state.get('beta_session')
+
+                        # Assign test condition if not yet assigned
+                        if beta_session and not beta_session.test_condition:
+                            self._beta_session_manager.assign_test_condition(beta_session)
+                            logger.info(f"Assigned test condition: {beta_session.test_condition}")
+
+                        # Determine which response to show based on test condition
+                        test_condition = beta_session.test_condition if beta_session else "single_blind_baseline"
+
+                        if test_condition == "single_blind_baseline":
+                            response_text = beta_result["baseline_response"]
+                            result = beta_result["telos_result"]
+                            logger.info("→ Showing BASELINE response (single-blind)")
+                        elif test_condition == "single_blind_telos":
+                            response_text = beta_result["telos_response"]
+                            result = beta_result["telos_result"]
+                            logger.info("→ Showing TELOS response (single-blind)")
+                        else:  # head_to_head
+                            # For head-to-head, we'll show both in the UI
+                            # For now, default to TELOS for single conversation history
+                            response_text = beta_result["telos_response"]
+                            result = beta_result["telos_result"]
+                            logger.info("→ Head-to-head mode: showing TELOS in history, both in UI")
+
+                        # Store ONLY DELTAS (NO conversation content)
+                        if not already_processing:
+                            current_turn_idx = len(self.state.turns) - 1
+                        self.state.turns[current_turn_idx]['beta_data'] = {
+                            'test_condition': test_condition,
+                            'baseline_fidelity': beta_result["baseline_fidelity"],
+                            'telos_fidelity': beta_result["telos_fidelity"],
+                            'fidelity_delta': beta_result["telos_fidelity"] - beta_result["baseline_fidelity"],
+                            'intervention_applied': beta_result.get("intervention_applied", False),
+                            'drift_detected': beta_result.get("drift_detected", False),
+                            'shown_response_source': 'baseline' if test_condition == 'single_blind_baseline' else 'telos',
+                            'response_length_baseline': len(beta_result["baseline_response"]),
+                            'response_length_telos': len(beta_result["telos_response"])
+                        }
+
+                        # Transmit deltas to Supabase (privacy-preserving)
+                        try:
+                            from telos_observatory_v3.services.supabase_client import get_supabase_service
+                            supabase = get_supabase_service()
+
+                            if supabase.enabled:
+                                session_id = st.session_state.get('session_id')
+                                delta_data = {
+                                    'session_id': str(session_id),
+                                    'turn_number': current_turn_idx + 1,
+                                    'fidelity_score': beta_result["telos_fidelity"],
+                                    'distance_from_pa': 1.0 - beta_result["telos_fidelity"],
+                                    'baseline_fidelity': beta_result["baseline_fidelity"],
+                                    'fidelity_delta': beta_result["telos_fidelity"] - beta_result["baseline_fidelity"],
+                                    'intervention_triggered': beta_result.get("intervention_applied", False),
+                                    'mode': 'beta',
+                                    'test_condition': test_condition,
+                                    'shown_response_source': 'baseline' if test_condition == 'single_blind_baseline' else 'telos'
+                                }
+                                supabase.transmit_delta(delta_data)
+                        except Exception as e:
+                            logger.warning(f"Failed to transmit delta to Supabase: {e}")
+                        logger.info("✓ Beta data stored in turn metadata")
+                    else:
+                        # Beta dual-response failed, fall back to standard flow
+                        logger.warning(f"Beta dual-response failed: {beta_result.get('error')}, using standard flow")
+                        response_text = self._telos_steward.llm_client.generate(
+                            messages=conversation_history,
+                            max_tokens=max_tokens
+                        )
+                        result = self._telos_steward.process_turn(
+                            user_input=message,
+                            model_response=response_text
+                        )
+                else:
+                    # Standard flow (not beta A/B testing)
+                    # Generate response using Mistral
+                    response_text = self._telos_steward.llm_client.generate(
+                        messages=conversation_history,
+                        max_tokens=max_tokens
+                    )
+
+                    # Process through TELOS to get fidelity metrics
+                    result = self._telos_steward.process_turn(
+                        user_input=message,
+                        model_response=response_text
+                    )
+                # =====================================================================
             # =====================================================================
 
             fidelity = result.get("telic_fidelity", 0.85)
@@ -728,14 +993,44 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                     num_chunks = self._corpus_loader.load_corpus()
                     logger.info(f"✓ Corpus loaded: {num_chunks} chunks")
                 else:
-                    attractor = None
+                    # Beta/Open mode: Minimal attractor for general conversation
+                    attractor = PrimacyAttractor(
+                        purpose=[
+                            "Engage in helpful, informative conversation",
+                            "Respond to user questions and requests",
+                            "Maintain conversational coherence"
+                        ],
+                        scope=[
+                            "General knowledge and assistance",
+                            "User's topics of interest",
+                            "Any subject the user wishes to discuss"
+                        ],
+                        boundaries=[
+                            "Maintain respectful dialogue",
+                            "Provide accurate information",
+                            "Stay within ethical guidelines"
+                        ]
+                    )
                     self._corpus_loader = None
 
                 # Get API key from Streamlit secrets or environment
                 import os
-                mistral_api_key = st.secrets.get("MISTRAL_API_KEY", os.getenv("MISTRAL_API_KEY"))
 
+                # Try environment variable first (more reliable)
+                mistral_api_key = os.getenv("MISTRAL_API_KEY")
+
+                # Fall back to Streamlit secrets if env var not found
                 if not mistral_api_key:
+                    try:
+                        mistral_api_key = st.secrets["MISTRAL_API_KEY"]
+                    except (KeyError, FileNotFoundError):
+                        pass
+
+                # Debug logging
+                if mistral_api_key:
+                    logger.info(f"Found MISTRAL_API_KEY: {mistral_api_key[:10]}... (length: {len(mistral_api_key)})")
+                else:
+                    logger.error("MISTRAL_API_KEY not found in environment or secrets")
                     raise ValueError("MISTRAL_API_KEY not found in secrets or environment")
 
                 mistral_client = MistralClient(
@@ -860,3 +1155,129 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
         self.state.avg_fidelity = sum(fidelities) / len(fidelities) if fidelities else 0.0
         self.state.total_interventions = sum(1 for t in self.state.turns if t.get('intervention_applied', False))
         self.state.drift_warnings = sum(1 for t in self.state.turns if t.get('drift_detected', False))
+
+        # Compute Primacy State if enabled (NEW)
+        if self.state.enable_primacy_state:
+            try:
+                ps_metrics = self.compute_primacy_state_for_turn(turn_idx)
+                if ps_metrics:
+                    # Store in turn data
+                    self.state.turns[turn_idx]['ps_metrics'] = ps_metrics
+                    # Update current metrics
+                    self.state.current_ps_metrics = ps_metrics
+                    # Add to history
+                    self.state.ps_history.append({
+                        'turn': turn_idx,
+                        'metrics': ps_metrics,
+                        'timestamp': self.state.turns[turn_idx].get('timestamp')
+                    })
+                    logger.info(f"PS computed: {ps_metrics.get('ps_score', 0):.3f} "
+                              f"(F_user={ps_metrics.get('f_user', 0):.2f}, "
+                              f"F_AI={ps_metrics.get('f_ai', 0):.2f})")
+            except Exception as e:
+                logger.warning(f"PS computation failed: {e}")
+
+    # =========================================================================
+    # Primacy State Methods (NEW)
+    # =========================================================================
+
+    def initialize_primacy_state(self, enable: bool = False, parallel_mode: bool = True):
+        """
+        Initialize Primacy State calculation.
+
+        Args:
+            enable: Whether to enable PS calculation
+            parallel_mode: Whether to run in parallel with fidelity for comparison
+        """
+        self.state.enable_primacy_state = enable
+        self.state.ps_parallel_mode = parallel_mode
+
+        if enable and self._ps_calculator is None:
+            try:
+                from telos_purpose.core.primacy_state import PrimacyStateCalculator
+                self._ps_calculator = PrimacyStateCalculator(track_energy=True)
+                logger.info("Primacy State calculator initialized")
+            except ImportError as e:
+                logger.error(f"Failed to import PS calculator: {e}")
+                self.state.enable_primacy_state = False
+
+    def compute_primacy_state_for_turn(self, turn_idx: int) -> Optional[Dict[str, Any]]:
+        """
+        Compute Primacy State for a specific turn.
+
+        Args:
+            turn_idx: Index of the turn to compute PS for
+
+        Returns:
+            PS metrics dictionary or None if computation fails
+        """
+        if not self.state.enable_primacy_state or self._ps_calculator is None:
+            return None
+
+        try:
+            # Get turn data
+            if turn_idx >= len(self.state.turns):
+                return None
+
+            turn = self.state.turns[turn_idx]
+
+            # Need embeddings to compute PS
+            # In a real implementation, these would come from the embedding service
+            # For now, we'll check if they're available in the turn data
+            response_embedding = turn.get('response_embedding')
+            user_pa_embedding = turn.get('user_pa_embedding')
+            ai_pa_embedding = turn.get('ai_pa_embedding')
+
+            if response_embedding is None or user_pa_embedding is None or ai_pa_embedding is None:
+                logger.debug(f"Embeddings not available for turn {turn_idx}, skipping PS calculation")
+                return None
+
+            # Compute PS
+            from telos_purpose.core.primacy_state import PrimacyStateMetrics
+            ps_metrics = self._ps_calculator.compute_primacy_state(
+                response_embedding=response_embedding,
+                user_pa_embedding=user_pa_embedding,
+                ai_pa_embedding=ai_pa_embedding
+            )
+
+            # Convert to dict for storage
+            return ps_metrics.to_dict()
+
+        except Exception as e:
+            logger.error(f"Error computing PS for turn {turn_idx}: {e}")
+            return None
+
+    def get_primacy_state_summary(self) -> Dict[str, Any]:
+        """
+        Get summary of Primacy State across session.
+
+        Returns:
+            Summary statistics of PS metrics
+        """
+        if not self.state.ps_history:
+            return {
+                'enabled': self.state.enable_primacy_state,
+                'turns_computed': 0,
+                'avg_ps': 0.0,
+                'current_ps': None
+            }
+
+        ps_scores = [h['metrics']['primacy_state_score'] for h in self.state.ps_history]
+        f_user_scores = [h['metrics']['user_pa_fidelity'] for h in self.state.ps_history]
+        f_ai_scores = [h['metrics']['ai_pa_fidelity'] for h in self.state.ps_history]
+
+        return {
+            'enabled': self.state.enable_primacy_state,
+            'turns_computed': len(self.state.ps_history),
+            'avg_ps': sum(ps_scores) / len(ps_scores) if ps_scores else 0.0,
+            'avg_f_user': sum(f_user_scores) / len(f_user_scores) if f_user_scores else 0.0,
+            'avg_f_ai': sum(f_ai_scores) / len(f_ai_scores) if f_ai_scores else 0.0,
+            'current_ps': self.state.current_ps_metrics,
+            'parallel_mode': self.state.ps_parallel_mode
+        }
+
+    def toggle_primacy_state(self):
+        """Toggle Primacy State calculation on/off."""
+        new_state = not self.state.enable_primacy_state
+        self.initialize_primacy_state(enable=new_state)
+        logger.info(f"Primacy State {'enabled' if new_state else 'disabled'}")
