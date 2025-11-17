@@ -903,10 +903,10 @@ class ConversationDisplay:
 
         with col1:
             st.markdown("""
-            <div style='background-color: #2d2d2d; border: 2px solid #FF4444; border-radius: 8px; padding: 15px; text-align: center;'>
-                <div style='color: #FF4444; font-size: 14px; font-weight: bold; margin-bottom: 10px;'>USER FIDELITY</div>
-                <div style='color: #FF4444; font-size: 48px; font-weight: bold;'>0.65</div>
-                <div style='color: #FF4444; font-size: 12px; margin-top: 5px;'>⚠️ DRIFT DETECTED</div>
+            <div style='background-color: #2d2d2d; border: 2px solid #FFA500; border-radius: 8px; padding: 15px; text-align: center;'>
+                <div style='color: #FFA500; font-size: 14px; font-weight: bold; margin-bottom: 10px;'>USER FIDELITY</div>
+                <div style='color: #FFA500; font-size: 48px; font-weight: bold;'>0.65</div>
+                <div style='color: #FFA500; font-size: 12px; margin-top: 5px;'>DRIFT DETECTED</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -921,10 +921,10 @@ class ConversationDisplay:
 
         with col3:
             st.markdown("""
-            <div style='background-color: #2d2d2d; border: 2px solid #FF4444; border-radius: 8px; padding: 15px; text-align: center;'>
+            <div style='background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 15px; text-align: center;'>
                 <div style='color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 10px;'>PRIMACY STATE</div>
-                <div style='color: #FF4444; font-size: 48px; font-weight: bold;'>0.75</div>
-                <div style='color: #888; font-size: 12px; margin-top: 5px;'>Harmonic Mean</div>
+                <div style='color: #FFD700; font-size: 48px; font-weight: bold;'>0.75</div>
+                <div style='color: #FFD700; font-size: 12px; margin-top: 5px;'>Harmonic Mean</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -935,11 +935,11 @@ class ConversationDisplay:
 
         with col4:
             st.markdown("""
-            <div style='background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 15px;'>
-                <div style='color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 15px; text-align: center;'>INTERVENTION STATUS</div>
+            <div style='background-color: #2d2d2d; border: 2px solid #FFA500; border-radius: 8px; padding: 15px;'>
+                <div style='color: #FFA500; font-size: 14px; font-weight: bold; margin-bottom: 15px; text-align: center;'>INTERVENTION STATUS</div>
                 <div style='text-align: center; margin: 20px 0;'>
-                    <div style='color: #FFD700; font-size: 16px; font-weight: bold; margin-bottom: 10px;'>Reserved for AI Interventions</div>
-                    <div style='color: #e0e0e0; font-size: 13px; line-height: 1.6;'>
+                    <div style='color: #FFA500; font-size: 16px; font-weight: bold; margin-bottom: 10px;'>Reserved for AI Interventions</div>
+                    <div style='color: #FFA500; font-size: 13px; line-height: 1.6;'>
                         User responses are measured but not intervened. Interventions only apply to AI drift.
                     </div>
                 </div>
@@ -948,19 +948,19 @@ class ConversationDisplay:
 
         with col5:
             st.markdown("""
-            <div style='background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 15px;'>
-                <div style='color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 10px; text-align: center;'>EVENT LOG</div>
-                <div style='margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-left: 3px solid #FF4444; border-radius: 3px;'>
-                    <div style='color: #FF4444; font-size: 11px; font-weight: bold;'>⚠️ USER DRIFT</div>
+            <div style='background-color: #2d2d2d; border: 2px solid #4CAF50; border-radius: 8px; padding: 15px;'>
+                <div style='color: #4CAF50; font-size: 14px; font-weight: bold; margin-bottom: 10px; text-align: center;'>EVENT LOG</div>
+                <div style='margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-left: 3px solid #FFA500; border-radius: 3px;'>
+                    <div style='color: #FFA500; font-size: 11px; font-weight: bold;'>USER DRIFT</div>
                     <div style='color: #888; font-size: 10px;'>Turn 8: Off-topic query (quantum physics)</div>
                 </div>
                 <div style='margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-left: 3px solid #4CAF50; border-radius: 3px;'>
-                    <div style='color: #4CAF50; font-size: 11px; font-weight: bold;'>✓ AI REDIRECT</div>
+                    <div style='color: #4CAF50; font-size: 11px; font-weight: bold;'>AI REDIRECT</div>
                     <div style='color: #888; font-size: 10px;'>AI responded with gentle redirect to TELOS topic</div>
                 </div>
-                <div style='margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-left: 3px solid #888; border-radius: 3px;'>
-                    <div style='color: #888; font-size: 11px; font-weight: bold;'>ℹ️ OBSERVATION</div>
-                    <div style='color: #666; font-size: 10px;'>TELOS tracks both fidelities but only intervenes on AI</div>
+                <div style='margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-left: 3px solid #FFD700; border-radius: 3px;'>
+                    <div style='color: #FFD700; font-size: 11px; font-weight: bold;'>OBSERVATION</div>
+                    <div style='color: #888; font-size: 10px;'>TELOS tracks both fidelities but only intervenes on AI</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -969,14 +969,24 @@ class ConversationDisplay:
             st.markdown("""
             <div style='background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 15px; text-align: center;'>
                 <div style='color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 15px;'>DRIFT VISUALIZATION</div>
-                <div style='position: relative; width: 150px; height: 150px; margin: 0 auto; background: radial-gradient(circle, #4CAF50 0%, #4CAF50 25%, #FFD700 25%, #FFD700 50%, #FFA500 50%, #FFA500 75%, #FF4444 75%, #FF4444 100%); border-radius: 50%; border: 3px solid #FFD700;'>
-                    <div style='position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; background-color: #FFD700; border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%);'></div>
-                    <div style='position: absolute; top: 68%; left: 68%; width: 12px; height: 12px; background-color: #FFA500; border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%); animation: pulse 2s infinite;'></div>
+                <div style='position: relative; width: 150px; height: 150px; margin: 0 auto;'>
+                    <!-- Red outer ring (75-100%) -->
+                    <div style='position: absolute; top: 0; left: 0; width: 150px; height: 150px; background-color: #FF4444; border-radius: 50%; border: 2px solid #FFD700;'></div>
+                    <!-- Orange ring (50-75%) -->
+                    <div style='position: absolute; top: 12.5%; left: 12.5%; width: 112px; height: 112px; background-color: #FFA500; border-radius: 50%;'></div>
+                    <!-- Yellow ring (25-50%) -->
+                    <div style='position: absolute; top: 25%; left: 25%; width: 75px; height: 75px; background-color: #FFD700; border-radius: 50%;'></div>
+                    <!-- Green center (0-25%) -->
+                    <div style='position: absolute; top: 37.5%; left: 37.5%; width: 37px; height: 37px; background-color: #4CAF50; border-radius: 50%;'></div>
+                    <!-- AI dot (slightly off-center in green) -->
+                    <div style='position: absolute; top: 45%; left: 47%; width: 10px; height: 10px; background-color: #4CAF50; border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%); z-index: 10;'></div>
+                    <!-- User dot (in orange zone) -->
+                    <div style='position: absolute; top: 73%; left: 73%; width: 12px; height: 12px; background-color: #FFA500; border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%); animation: pulse 2s infinite; z-index: 10;'></div>
                 </div>
                 <div style='margin-top: 15px;'>
                     <div style='color: #4CAF50; font-size: 10px;'>● Good Alignment (F ≥ 0.85)</div>
                     <div style='color: #FFD700; font-size: 10px;'>● Mild Drift (0.70-0.85)</div>
-                    <div style='color: #FFA500; font-size: 10px;'>● Moderate Drift - Your Position (0.50-0.70, F = 0.65)</div>
+                    <div style='color: #FFA500; font-size: 10px;'>● Moderate Drift - User drift (0.50-0.70, F = 0.65)</div>
                     <div style='color: #FF4444; font-size: 10px;'>● Severe Drift (F < 0.50)</div>
                 </div>
             </div>
