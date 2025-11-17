@@ -461,13 +461,13 @@ class ConversationDisplay:
                         st.rerun()
             return
 
-        # Slides 3-15: Q&A pairs (slides[0] through slides[12]) - 13 Q&A slides
-        if 3 <= current_idx <= 15:
-            slide_idx = current_idx - 3  # slides[0] through slides[12]
+        # Slides 3-12: Q&A pairs (slides[0] through slides[9]) - 10 Q&A slides
+        if 3 <= current_idx <= 12:
+            slide_idx = current_idx - 3  # slides[0] through slides[9]
             user_question, steward_response = slides[slide_idx]
 
             # Turn numbers start at 11 (PA already established in turns 1-10)
-            turn_num = slide_idx + 11  # Turn 11-19
+            turn_num = slide_idx + 11  # Turn 11-20
 
             # Render demo slide
             self._render_demo_slide_with_typewriter(
