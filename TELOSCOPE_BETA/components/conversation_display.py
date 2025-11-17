@@ -2904,24 +2904,54 @@ Current Turn Data:
         </script>
         """, height=0)
 
-        # Use a form to enable Enter key submission
-        with st.form(key="message_form", clear_on_submit=True):
-            col1, col2 = st.columns([8.5, 1.5])
+        # Check if BETA mode - apply centered layout
+        active_tab = st.session_state.get('active_tab', 'DEMO')
+        beta_mode = active_tab == "BETA"
 
-            with col1:
-                user_input = st.text_area(
-                    "Message",
-                    placeholder="Tell TELOS",
-                    key="main_chat_input_clean",
-                    label_visibility="collapsed",
-                    height=100
-                )
+        if beta_mode:
+            # BETA mode: Center the input form to match conversation layout
+            # Use same centering as messages: [1.5, 0.5, 6.0, 1.0, 1.0] = spacers 3.0, content 7.0
+            col_spacer_left, col_form, col_spacer_right = st.columns([3.0, 7.0, 0.0])
 
-            with col2:
-                send_button = st.form_submit_button(
-                    "Send",
-                    use_container_width=True
-                )
+            with col_form:
+                # Use a form to enable Enter key submission
+                with st.form(key="message_form", clear_on_submit=True):
+                    col1, col2 = st.columns([8.5, 1.5])
+
+                    with col1:
+                        user_input = st.text_area(
+                            "Message",
+                            placeholder="Tell TELOS",
+                            key="main_chat_input_clean",
+                            label_visibility="collapsed",
+                            height=100
+                        )
+
+                    with col2:
+                        send_button = st.form_submit_button(
+                            "Send",
+                            use_container_width=True
+                        )
+        else:
+            # Demo/Open mode: Full-width input form
+            # Use a form to enable Enter key submission
+            with st.form(key="message_form", clear_on_submit=True):
+                col1, col2 = st.columns([8.5, 1.5])
+
+                with col1:
+                    user_input = st.text_area(
+                        "Message",
+                        placeholder="Tell TELOS",
+                        key="main_chat_input_clean",
+                        label_visibility="collapsed",
+                        height=100
+                    )
+
+                with col2:
+                    send_button = st.form_submit_button(
+                        "Send",
+                        use_container_width=True
+                    )
 
         # Check if Demo Mode and enforce 5-message limit
         demo_mode = st.session_state.get('telos_demo_mode', False)
