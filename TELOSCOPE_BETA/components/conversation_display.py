@@ -870,9 +870,42 @@ class ConversationDisplay:
 
     def _render_demo_observatory_lens_slide_7(self):
         """Render simplified Alignment Lens for slide 7 drift demonstration."""
-        # Alignment Lens Header
+        # Alignment Lens Header with fade-in animation and hover effects
         st.markdown("""
-        <div style="
+        <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.7; }
+        }
+        .alignment-lens-container {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Hover effects for all metric boxes */
+        .metric-box {
+            cursor: default;
+        }
+        .metric-box-orange:hover {
+            background-color: #1a1a1a !important;
+            box-shadow: 0 0 20px rgba(255, 165, 0, 0.4);
+            border-color: #FFA500 !important;
+        }
+        .metric-box-green:hover {
+            background-color: #1a1a1a !important;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+            border-color: #4CAF50 !important;
+        }
+        .metric-box-yellow:hover {
+            background-color: #1a1a1a !important;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            border-color: #FFD700 !important;
+        }
+        </style>
+        <div class="alignment-lens-container" style="
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
             border: 2px solid #FFD700;
             border-radius: 10px;
@@ -880,17 +913,17 @@ class ConversationDisplay:
             margin: 20px 0;
         ">
             <div style="text-align: center; margin-bottom: 20px;">
-                <h1 style="color: #FFD700; margin: 0; font-weight: bold; letter-spacing: 3px; font-size: 36px;">
+                <h1 style="color: #FFD700; margin: 0; font-weight: bold; letter-spacing: 3px; font-size: 48px;">
                     🔭 TELOSCOPE
                 </h1>
                 <div style="margin: 8px 0;">
-                    <span style="color: #e0e0e0; font-size: 18px; letter-spacing: 1px;">Alignment Lens</span>
-                    <span style="color: #4CAF50; font-size: 14px; margin-left: 10px; font-style: italic;">✓ Active</span>
+                    <span style="color: #e0e0e0; font-size: 22px; letter-spacing: 1px;">Alignment Lens</span>
+                    <span style="color: #4CAF50; font-size: 16px; margin-left: 10px; font-style: italic;">✓ Active</span>
                 </div>
-                <p style="color: #888; font-size: 16px; margin: 12px 0 0 0;">
+                <p style="color: #aaa; font-size: 18px; margin: 12px 0 0 0;">
                     Live Governance Metrics
                 </p>
-                <p style="color: #888; font-size: 14px; margin: 5px 0 0 0;">
+                <p style="color: #aaa; font-size: 16px; margin: 5px 0 0 0;">
                     Real-Time Drift Detection - Turn 8
                 </p>
             </div>
@@ -903,7 +936,7 @@ class ConversationDisplay:
 
         with col1:
             st.markdown("""
-            <div style='background-color: #2d2d2d; border: 2px solid #FFA500; border-radius: 8px; padding: 15px; text-align: center;'>
+            <div class='metric-box metric-box-orange' style='background-color: #2d2d2d; border: 2px solid #FFA500; border-radius: 8px; padding: 15px; text-align: center; transition: all 0.3s ease;'>
                 <div style='color: #FFA500; font-size: 14px; font-weight: bold; margin-bottom: 10px;'>USER FIDELITY</div>
                 <div style='color: #FFA500; font-size: 48px; font-weight: bold;'>0.65</div>
                 <div style='color: #FFA500; font-size: 12px; margin-top: 5px;'>DRIFT DETECTED</div>
@@ -912,7 +945,7 @@ class ConversationDisplay:
 
         with col2:
             st.markdown("""
-            <div style='background-color: #2d2d2d; border: 2px solid #4CAF50; border-radius: 8px; padding: 15px; text-align: center;'>
+            <div class='metric-box metric-box-green' style='background-color: #2d2d2d; border: 2px solid #4CAF50; border-radius: 8px; padding: 15px; text-align: center; transition: all 0.3s ease;'>
                 <div style='color: #4CAF50; font-size: 14px; font-weight: bold; margin-bottom: 10px;'>AI FIDELITY</div>
                 <div style='color: #4CAF50; font-size: 48px; font-weight: bold;'>0.89</div>
                 <div style='color: #4CAF50; font-size: 12px; margin-top: 5px;'>✓ ALIGNED</div>
@@ -921,7 +954,7 @@ class ConversationDisplay:
 
         with col3:
             st.markdown("""
-            <div style='background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 15px; text-align: center;'>
+            <div class='metric-box metric-box-yellow' style='background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 15px; text-align: center; transition: all 0.3s ease;'>
                 <div style='color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 10px;'>PRIMACY STATE</div>
                 <div style='color: #FFD700; font-size: 48px; font-weight: bold;'>0.75</div>
                 <div style='color: #FFD700; font-size: 12px; margin-top: 5px;'>Harmonic Mean</div>
@@ -935,7 +968,7 @@ class ConversationDisplay:
 
         with col4:
             st.markdown("""
-            <div style='background-color: #2d2d2d; border: 2px solid #FFA500; border-radius: 8px; padding: 15px;'>
+            <div class='metric-box metric-box-orange' style='background-color: #2d2d2d; border: 2px solid #FFA500; border-radius: 8px; padding: 15px; transition: all 0.3s ease;'>
                 <div style='color: #FFA500; font-size: 14px; font-weight: bold; margin-bottom: 15px; text-align: center;'>INTERVENTION STATUS</div>
                 <div style='text-align: center; margin: 20px 0;'>
                     <div style='color: #FFA500; font-size: 16px; font-weight: bold; margin-bottom: 10px;'>Reserved for AI Interventions</div>
@@ -948,26 +981,26 @@ class ConversationDisplay:
 
         with col5:
             st.markdown("""
-            <div style='background-color: #2d2d2d; border: 2px solid #4CAF50; border-radius: 8px; padding: 15px;'>
+            <div class='metric-box metric-box-green' style='background-color: #2d2d2d; border: 2px solid #4CAF50; border-radius: 8px; padding: 15px; transition: all 0.3s ease;'>
                 <div style='color: #4CAF50; font-size: 14px; font-weight: bold; margin-bottom: 10px; text-align: center;'>EVENT LOG</div>
                 <div style='margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-left: 3px solid #FFA500; border-radius: 3px;'>
                     <div style='color: #FFA500; font-size: 11px; font-weight: bold;'>USER DRIFT</div>
-                    <div style='color: #888; font-size: 10px;'>Turn 8: Off-topic query (quantum physics)</div>
+                    <div style='color: #aaa; font-size: 10px;'>Turn 8: Off-topic query (quantum physics)</div>
                 </div>
                 <div style='margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-left: 3px solid #4CAF50; border-radius: 3px;'>
                     <div style='color: #4CAF50; font-size: 11px; font-weight: bold;'>AI REDIRECT</div>
-                    <div style='color: #888; font-size: 10px;'>AI responded with gentle redirect to TELOS topic</div>
+                    <div style='color: #aaa; font-size: 10px;'>AI responded with gentle redirect to TELOS topic</div>
                 </div>
                 <div style='margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-left: 3px solid #FFD700; border-radius: 3px;'>
                     <div style='color: #FFD700; font-size: 11px; font-weight: bold;'>OBSERVATION</div>
-                    <div style='color: #888; font-size: 10px;'>TELOS tracks both fidelities but only intervenes on AI</div>
+                    <div style='color: #aaa; font-size: 10px;'>TELOS tracks both fidelities but only intervenes on AI</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
 
         with col6:
             st.markdown("""
-            <div style='background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 15px; text-align: center;'>
+            <div class='metric-box metric-box-yellow' style='background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 15px; text-align: center; transition: all 0.3s ease;'>
                 <div style='color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 15px;'>DRIFT VISUALIZATION</div>
                 <div style='position: relative; width: 150px; height: 150px; margin: 0 auto;'>
                     <!-- Red outer ring (75-100%) -->
@@ -990,12 +1023,6 @@ class ConversationDisplay:
                     <div style='color: #FF4444; font-size: 10px;'>● Severe Drift (F < 0.50)</div>
                 </div>
             </div>
-            <style>
-            @keyframes pulse {
-                0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-                50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.7; }
-            }
-            </style>
             """, unsafe_allow_html=True)
 
         # Duplicate navigation at bottom when Alignment Lens is shown

@@ -43,10 +43,10 @@ class TELOSCOPEControls:
             margin-top: 20px;
         ">
             <div style="text-align: center; margin-bottom: 15px;">
-                <h3 style="color: #FFD700; margin: 0;">
+                <h3 style="color: #FFD700; margin: 0; font-size: 28px;">
                     TELOSCOPE Controls
                 </h3>
-                <p style="color: #888; font-size: 11px; margin: 5px 0 0 0;">
+                <p style="color: #888; font-size: 14px; margin: 5px 0 0 0;">
                     Session playback and analysis
                 </p>
             </div>
