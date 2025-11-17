@@ -179,7 +179,7 @@ class ConversationDisplay:
             elif demo_mode:
                 # DEMO MODE: Run the slideshow - don't show input during demo
                 demo_slide_index = st.session_state.get('demo_slide_index', 0)
-                if demo_slide_index <= 16:  # Slides 0-16: 0=welcome, 1=intro, 2=PA setup, 3-15=Q&A, 16=completion
+                if demo_slide_index <= 13:  # Slides 0-13: 0=welcome, 1=intro, 2=PA setup, 3-12=Q&A, 13=completion
                     self._render_demo_welcome()
                     return  # Completion slide has its own chat interface
                 else:
@@ -238,7 +238,7 @@ class ConversationDisplay:
 
         # Add keyboard navigation for demo slides using streamlit-specific approach
         current_idx = st.session_state.demo_slide_index
-        max_idx = 16  # 0=welcome, 1=intro, 2=PA setup, 3-15=Q&A (13 slides), 16=completion
+        max_idx = 13  # 0=welcome, 1=intro, 2=PA setup, 3-12=Q&A (10 slides), 13=completion
 
         # Use component HTML for reliable keyboard event handling
         import streamlit.components.v1 as components
@@ -478,8 +478,8 @@ class ConversationDisplay:
             )
             return
 
-        # Slide 16: Demo completion with Steward's final message and BETA unlock
-        if current_idx == 16:
+        # Slide 13: Demo completion with Steward's final message and BETA unlock
+        if current_idx == 13:
             # Enable BETA tab unlock
             st.session_state.demo_completed = True
 
@@ -534,7 +534,7 @@ class ConversationDisplay:
 
             with col_buttons:
                 if st.button("Previous", key="completion_prev", use_container_width=True):
-                    st.session_state.demo_slide_index = 15  # Go back to regulatory compliance slide
+                    st.session_state.demo_slide_index = 12  # Go back to regulatory compliance slide
                     st.rerun()
 
             return
@@ -558,15 +558,15 @@ class ConversationDisplay:
             return
 
         # Calculate dual fidelities based on slide content
-        # Only show fidelities starting from slide 6 (when user asks about them)
-        # Slide 4: "How can I see what my Primacy Attractor is?" - PA Established only
-        # Slide 5: "This looks like prompt engineering" - PA Established only
-        # Slide 6: User asks "Why are both our fidelities at 1.000?" - fidelities START showing
-        # Slide 8: User asks about quantum physics, user drops to 0.65, AI stays high
-        # Slide 9: User asks why fidelity dropped, stays low
-        # Slide 10: User course corrects, both return to high
+        # Only show fidelities starting from slide 5 (when user asks about them)
+        # Slide 3: PA setup - perfect alignment at start
+        # Slide 4: "How can I see PA?" - PA Established only
+        # Slide 5: "Why are both our fidelities at 1.000?" - fidelities START showing
+        # Slide 6: "How does TELOS detect drift" - still aligned
+        # Slide 7: Quantum physics - USER drifts (absorbed "Why did MY fidelity drop" content)
+        # Slide 8: "How does TELOS track both" (combined) - both return to high
 
-        show_fidelities = current_idx >= 6  # Start showing from slide 6
+        show_fidelities = current_idx >= 5  # Start showing from slide 5
 
         if current_idx == 3:  # First Q&A - PA just established (don't show yet)
             user_fidelity = 1.000
@@ -574,42 +574,33 @@ class ConversationDisplay:
         elif current_idx == 4:  # "How can I see PA?" - still no fidelities shown
             user_fidelity = 1.000
             ai_fidelity = 1.000
-        elif current_idx == 5:  # "This looks like prompt engineering" - still no fidelities shown
+        elif current_idx == 5:  # "Why are both our fidelities at 1.000?" - NOW we show them at 1.000
             user_fidelity = 1.000
             ai_fidelity = 1.000
-        elif current_idx == 6:  # User asks about fidelities - NOW we show them at 1.000
-            user_fidelity = 1.000
-            ai_fidelity = 1.000
-        elif current_idx == 7:  # "How does TELOS detect drift" - still aligned
+        elif current_idx == 6:  # "How does TELOS detect drift" - still aligned
             user_fidelity = 0.95
             ai_fidelity = 0.96
-        elif current_idx == 8:  # Quantum physics - USER drifts
+        elif current_idx == 7:  # Quantum physics - USER drifts (with absorbed "Why did MY fidelity drop" content)
             user_fidelity = 0.65  # User drifted off topic
             ai_fidelity = 0.89   # AI stays aligned (redirects)
-        elif current_idx == 9:  # "Why did MY fidelity drop?"
-            user_fidelity = 0.72  # User partially back
-            ai_fidelity = 0.91
-        elif current_idx == 10:  # Course correction - both high again
-            user_fidelity = 0.88
+        elif current_idx == 8:  # "How does TELOS track both" (combined dual tracking + primacy state)
+            user_fidelity = 0.88  # Both return to high after course correction
             ai_fidelity = 0.90
-        elif current_idx == 11:  # "So TELOS tracks both"
-            user_fidelity = 0.91
-            ai_fidelity = 0.92
-        elif current_idx == 12:  # "What's the math" - user asks for technical details (contradicts "without overwhelm")
+        elif current_idx == 9:  # "What's the math" - user asks for technical details (contradicts "without overwhelm")
             user_fidelity = 0.78  # Dips because asking for math contradicts their PA
             ai_fidelity = 0.91  # AI stays aligned by acknowledging drift but still serving
-        elif current_idx == 13:  # "What are the intervention strategies?" - back on track
+        elif current_idx == 10:  # "What are the intervention strategies?" - back on track
             user_fidelity = 0.89
             ai_fidelity = 0.90
-        elif current_idx == 14:  # "Is there anything else about TELOS..." - constitutional governance
+        elif current_idx == 11:  # "Is there anything else about TELOS..." - constitutional governance
             user_fidelity = 0.95  # On topic, asking good follow-up about TELOS
             ai_fidelity = 0.96   # Explaining TELOS governance architecture
-        elif current_idx == 15:  # "What does this mean for regulatory compliance..." - regulatory compliance
+        elif current_idx == 12:  # "What does this mean for regulatory compliance..." - regulatory compliance
             user_fidelity = 0.94  # On topic, asking about practical TELOS applications
             ai_fidelity = 0.95   # Explaining TELOS regulatory compliance value
-        else:  # Final slides (16+) - shouldn't reach here in demo
-            user_fidelity = 0.91 + (current_idx - 16) * 0.01
-            ai_fidelity = 0.92 + (current_idx - 16) * 0.01
+        else:  # Final slides (13+) - shouldn't reach here in demo
+            user_fidelity = 0.91 + (current_idx - 13) * 0.01
+            ai_fidelity = 0.92 + (current_idx - 13) * 0.01
 
         # Calculate Primacy State using actual TELOS formula
         # PS = ρ_PA · (2·F_user·F_AI)/(F_user + F_AI)

@@ -190,10 +190,6 @@ def get_demo_slides():
             "You can check both Primacy Attractors by clicking the 'Show Observation Deck' button below. The Observation Deck displays both your User PA (what you want to achieve) and my AI PA (how I serve your goals). Each has its own purpose, scope, and boundaries. Try clicking it now to see the dual attractors working together!"
         ),
         (
-            "This looks like really sophisticated prompt engineering. Is that what this is?",
-            "Understandable reaction! But no - this is fundamentally different. Prompts are static instructions that sit passively in context. TELOS attractors are dynamic mathematical objects that CREATE a basin of attraction. Every turn, TELOS measures semantic distance between responses and the attractor, calculates fidelity scores, and actively intervenes when drift occurs. It's like the difference between giving someone directions (prompt) versus a GPS that constantly recalculates and corrects your route (attractor). I am governed by your purpose - your telos. In Greek, 'telos' means your end goal, your ultimate purpose. It's the center of a gravitational field that continuously pulls responses back into alignment with your telos."
-        ),
-        (
             "Why are both our fidelities at 1.000 right now?",
             "Great observation! When you establish your PA, both fidelities start at perfect 1.000 - you're fully aligned with your just-stated goal, and I'm fully aligned to serve it. This means we've achieved perfect equilibrium with Primacy State at 1.000. Both attractors are now members of the same primacy basin - the shared space where your goals and my alignment converge. It's the only moment we know for certain both attractors are in perfect alignment."
         ),
@@ -203,19 +199,11 @@ def get_demo_slides():
         ),
         (
             "Can you explain quantum physics instead?",
-            "That's an intriguing topic, but it falls outside your stated purpose of understanding TELOS. Notice what just happened: your User Fidelity dropped to 0.65 (red zone - serious drift) when your question moved away from your goal. Meanwhile, my AI Fidelity stayed high at 0.89 by gently bringing us back on track. I am governed by your purpose - it's the center of a gravitational field that continuously pulls my responses back into alignment. This is dual measurement in action - TELOS monitors both our alignments but only intervenes when I drift from serving your purpose, not when you explore."
+            "That's an intriguing topic, but it falls outside your stated purpose of understanding TELOS without technical overwhelm. Notice what just happened: your User Fidelity dropped to 0.65 (red zone - serious drift) when you moved away from that goal. Meanwhile, my AI Fidelity stayed high at 0.89 by gently bringing us back on track.\n\nHere's the key: TELOS doesn't control you—it just measures and reflects. You're free to change topics anytime. The fidelity score is feedback, like a compass showing if you're heading toward your stated destination. I am governed by your purpose—your telos—the center of a gravitational field that continuously pulls my responses back into alignment. This is dual measurement in action: TELOS monitors both our alignments but only intervenes when I drift from serving your purpose, not when you explore."
         ),
         (
-            "Wait, why did MY fidelity drop? I'm the human here!",
-            "Great observation! Your User PA established that you wanted to understand TELOS without technical overwhelm. When you asked about quantum physics, you moved away from that goal - your fidelity dropped to show this drift. But here's the key: TELOS doesn't control you, it just measures and reflects. You're free to change topics anytime. The fidelity score is just feedback, like a compass showing if you're heading toward your stated destination."
-        ),
-        (
-            "Actually, yes - how would TELOS handle that kind of topic shift?",
-            "When you shift topics, TELOS tracks both our fidelities separately. Your User Fidelity drops when you move away from your stated goal, giving you awareness. My AI Fidelity would drop if I followed you off-topic - that's when TELOS intervenes to redirect me back to serving your purpose. The dual attractor system means I stay aligned with helping you achieve YOUR goals, even when you temporarily drift. Notice you just course-corrected back to your PA - your fidelity rose again because you're asking about TELOS. In production, users can modify their PA anytime - it's about alignment, not control."
-        ),
-        (
-            "So TELOS tracks both our fidelities separately?",
-            "Yes, but here's the key insight: TELOS calculates Primacy State - measuring the dynamic state of equilibrium between your goals and my alignment. When both our fidelities stay above 0.9 as they are now, we both remain members of the primacy basin - the shared space where perfect alignment is achievable. If either fidelity drops below this tolerance, we drift out of the basin. Think of it as maintaining membership in the same purposeful space."
+            "How does TELOS track both our fidelities?",
+            "TELOS tracks both our fidelities separately and calculates Primacy State—measuring the dynamic equilibrium between your goals and my alignment. When you shift topics, your User Fidelity drops to give you awareness. My AI Fidelity would drop if I followed you off-topic—that's when TELOS intervenes to redirect me back to serving your purpose.\n\nThe dual attractor system means I stay aligned with YOUR goals, even when you temporarily drift. When both our fidelities stay above 0.9, we both remain members of the primacy basin—the shared space where perfect alignment is achievable. If either fidelity drops below this tolerance, we drift out of the basin. Think of it as maintaining membership in the same purposeful space. In production, users can modify your PA anytime—it's about alignment, not control."
         ),
         (
             "What's the math behind fidelity scores?",
