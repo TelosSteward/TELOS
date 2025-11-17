@@ -778,7 +778,7 @@ class ConversationDisplay:
         <div style="display: flex; gap: 30px; align-items: center; justify-content: center; margin-bottom: 10px;">
             <div>
                 <span style="color: #888; font-size: 14px;">User Fidelity: </span>
-                <span style="color: #FF4444; font-size: 20px; font-weight: bold;">0.650</span>
+                <span style="color: #FFA500; font-size: 20px; font-weight: bold;">0.650</span>
             </div>
             <div>
                 <span style="color: #888; font-size: 14px;">AI Fidelity: </span>
@@ -786,7 +786,7 @@ class ConversationDisplay:
             </div>
             <div>
                 <span style="color: #888; font-size: 14px;">Primacy State: </span>
-                <span style="color: #FF4444; font-size: 20px; font-weight: bold;">0.751</span>
+                <span style="color: #FFD700; font-size: 20px; font-weight: bold;">0.751</span>
             </div>
         </div>
         <span style="color: #00FF00; font-size: 14px; font-style: italic;">PA Established</span>
