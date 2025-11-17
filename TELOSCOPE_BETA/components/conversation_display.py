@@ -1485,65 +1485,30 @@ class ConversationDisplay:
         # Add spacing before turn
         st.markdown("<div style='margin-top: 30px;'></div>", unsafe_allow_html=True)
 
-        # Check if BETA mode - apply centered column layout
-        active_tab = st.session_state.get('active_tab', 'DEMO')
-        beta_mode = active_tab == "BETA"
+        # Render user message
+        self._render_user_message(turn_data.get('user_input', ''), turn_number, turn_data)
 
-        if beta_mode:
-            # BETA mode: Use centered column layout [0.5, 3, 0.5]
-            col_spacer_left, col_center, col_spacer_right = st.columns([0.5, 3, 0.5])
-
-            with col_center:
-                # Render user message
-                self._render_user_message(turn_data.get('user_input', ''), turn_number, turn_data)
-
-                # Check if this turn needs streaming
-                if turn_data.get('is_streaming', False) and not turn_data.get('response'):
-                    # First, show the animation
-                    self._render_assistant_message('', turn_number, is_loading=True)
-                    # Then trigger streaming on next render
-                    import time
-                    time.sleep(0.1)  # Small delay to show animation
-                    self._process_streaming_turn(turn_data.get('user_input', ''), current_turn_idx)
-                else:
-                    # Normal rendering (either completed or already has response)
-                    self._render_assistant_message(
-                        turn_data.get('response', ''),
-                        turn_number,
-                        is_loading=turn_data.get('is_loading', False)
-                    )
-
-                # Show phase transition at turn 11 (PA established → Beta testing active)
-                self._show_beta_phase_transition(turn_number)
-
-                # Show beta feedback UI for turns 11+
-                self._render_beta_feedback(turn_number)
+        # Check if this turn needs streaming
+        if turn_data.get('is_streaming', False) and not turn_data.get('response'):
+            # First, show the animation
+            self._render_assistant_message('', turn_number, is_loading=True)
+            # Then trigger streaming on next render
+            import time
+            time.sleep(0.1)  # Small delay to show animation
+            self._process_streaming_turn(turn_data.get('user_input', ''), current_turn_idx)
         else:
-            # Open/Demo mode: Use existing full-width layout
-            # Render user message
-            self._render_user_message(turn_data.get('user_input', ''), turn_number, turn_data)
+            # Normal rendering (either completed or already has response)
+            self._render_assistant_message(
+                turn_data.get('response', ''),
+                turn_number,
+                is_loading=turn_data.get('is_loading', False)
+            )
 
-            # Check if this turn needs streaming
-            if turn_data.get('is_streaming', False) and not turn_data.get('response'):
-                # First, show the animation
-                self._render_assistant_message('', turn_number, is_loading=True)
-                # Then trigger streaming on next render
-                import time
-                time.sleep(0.1)  # Small delay to show animation
-                self._process_streaming_turn(turn_data.get('user_input', ''), current_turn_idx)
-            else:
-                # Normal rendering (either completed or already has response)
-                self._render_assistant_message(
-                    turn_data.get('response', ''),
-                    turn_number,
-                    is_loading=turn_data.get('is_loading', False)
-                )
+        # Show phase transition at turn 11 (PA established → Beta testing active)
+        self._show_beta_phase_transition(turn_number)
 
-            # Show phase transition at turn 11 (PA established → Beta testing active)
-            self._show_beta_phase_transition(turn_number)
-
-            # Show beta feedback UI for turns 11+
-            self._render_beta_feedback(turn_number)
+        # Show beta feedback UI for turns 11+
+        self._render_beta_feedback(turn_number)
 
     def _render_scrollable_history_window(self, current_turn_idx: int, all_turns: list):
         """Render scrollable read-only history window at top of screen."""
@@ -2705,53 +2670,24 @@ Current Turn Data:
         </script>
         """, height=0)
 
-        # Check if BETA mode - apply centered column layout
-        active_tab = st.session_state.get('active_tab', 'DEMO')
-        beta_mode = active_tab == "BETA"
+        # Use a form to enable Enter key submission
+        with st.form(key="message_form", clear_on_submit=True):
+            col1, col2 = st.columns([8.5, 1.5])
 
-        if beta_mode:
-            # BETA mode: Use centered column layout [0.5, 3, 0.5]
-            col_spacer_left, col_center, col_spacer_right = st.columns([0.5, 3, 0.5])
+            with col1:
+                user_input = st.text_area(
+                    "Message",
+                    placeholder="Tell TELOS",
+                    key="main_chat_input_clean",
+                    label_visibility="collapsed",
+                    height=100
+                )
 
-            with col_center:
-                # Use a form to enable Enter key submission
-                with st.form(key="message_form", clear_on_submit=True):
-                    col1, col2 = st.columns([8.5, 1.5])
-
-                    with col1:
-                        user_input = st.text_area(
-                            "Message",
-                            placeholder="Tell TELOS",
-                            key="main_chat_input_clean",
-                            label_visibility="collapsed",
-                            height=100
-                        )
-
-                    with col2:
-                        send_button = st.form_submit_button(
-                            "Send",
-                            use_container_width=True
-                        )
-        else:
-            # Open/Demo mode: Use existing full-width layout
-            # Use a form to enable Enter key submission
-            with st.form(key="message_form", clear_on_submit=True):
-                col1, col2 = st.columns([8.5, 1.5])
-
-                with col1:
-                    user_input = st.text_area(
-                        "Message",
-                        placeholder="Tell TELOS",
-                        key="main_chat_input_clean",
-                        label_visibility="collapsed",
-                        height=100
-                    )
-
-                with col2:
-                    send_button = st.form_submit_button(
-                        "Send",
-                        use_container_width=True
-                    )
+            with col2:
+                send_button = st.form_submit_button(
+                    "Send",
+                    use_container_width=True
+                )
 
         # Check if Demo Mode and enforce 5-message limit
         demo_mode = st.session_state.get('telos_demo_mode', False)
