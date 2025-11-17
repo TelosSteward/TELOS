@@ -195,7 +195,7 @@ def get_demo_slides():
         ),
         (
             "How does TELOS detect when a conversation is drifting off-topic or out of alignment?",
-            "TELOS measures how far each response strays from your defined purpose. Think of it like a target with zones: responses inside the tolerance zone are aligned, while those drifting too far trigger TELOS to intervene and redirect the conversation back on track."
+            "TELOS measures how far each response moves away from your defined purpose. Think of it like a target with zones: responses inside the tolerance zone are aligned, while those drifting too far trigger TELOS to intervene and redirect the conversation back on track."
         ),
         (
             "Can you explain quantum physics instead?",
