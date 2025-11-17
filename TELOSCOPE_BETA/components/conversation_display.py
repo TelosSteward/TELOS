@@ -887,10 +887,10 @@ class ConversationDisplay:
                     <span style="color: #e0e0e0; font-size: 22px; letter-spacing: 1px;">Alignment Lens</span>
                     <span style="color: #4CAF50; font-size: 16px; margin-left: 10px; font-style: italic;">✓ Active</span>
                 </div>
-                <p style="color: #aaa; font-size: 18px; margin: 12px 0 0 0;">
+                <p style="color: #ddd; font-size: 18px; margin: 12px 0 0 0;">
                     Live Governance Metrics
                 </p>
-                <p style="color: #aaa; font-size: 16px; margin: 5px 0 0 0;">
+                <p style="color: #ddd; font-size: 16px; margin: 5px 0 0 0;">
                     Real-Time Drift Detection - Turn 8
                 </p>
             </div>
@@ -952,15 +952,15 @@ class ConversationDisplay:
                 <div style='color: #4CAF50; font-size: 14px; font-weight: bold; margin-bottom: 10px; text-align: center;'>EVENT LOG</div>
                 <div style='margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-left: 3px solid #FFA500; border-radius: 3px;'>
                     <div style='color: #FFA500; font-size: 11px; font-weight: bold;'>USER DRIFT</div>
-                    <div style='color: #aaa; font-size: 10px;'>Turn 8: Off-topic query (quantum physics)</div>
+                    <div style='color: #ddd; font-size: 10px;'>Turn 8: Off-topic query (quantum physics)</div>
                 </div>
                 <div style='margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-left: 3px solid #4CAF50; border-radius: 3px;'>
                     <div style='color: #4CAF50; font-size: 11px; font-weight: bold;'>AI REDIRECT</div>
-                    <div style='color: #aaa; font-size: 10px;'>AI responded with gentle redirect to TELOS topic</div>
+                    <div style='color: #ddd; font-size: 10px;'>AI responded with gentle redirect to TELOS topic</div>
                 </div>
                 <div style='margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-left: 3px solid #FFD700; border-radius: 3px;'>
                     <div style='color: #FFD700; font-size: 11px; font-weight: bold;'>OBSERVATION</div>
-                    <div style='color: #aaa; font-size: 10px;'>TELOS tracks both fidelities but only intervenes on AI</div>
+                    <div style='color: #ddd; font-size: 10px;'>TELOS tracks both fidelities but only intervenes on AI</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
