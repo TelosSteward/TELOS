@@ -826,6 +826,8 @@ class ConversationDisplay:
 
         # Navigation buttons (always visible) - 3-button layout: Previous | Show/Hide Alignment Lens | Next
         st.markdown("<div style='margin: 10px 0;'></div>", unsafe_allow_html=True)
+        # Anchor point for scrolling - keeps button row at top
+        st.markdown('<div id="alignment-lens-anchor"></div>', unsafe_allow_html=True)
 
         col_left_nav, col_center_nav, col_right_nav = st.columns([0.3, 3.4, 0.3])
 
@@ -867,10 +869,22 @@ class ConversationDisplay:
         if st.session_state.slide_7_drift_visible:
             st.markdown("<div style='margin: 20px 0;'></div>", unsafe_allow_html=True)
             self._render_demo_observatory_lens_slide_7()
+            # Auto-scroll to button row (keeps buttons visible at top)
+            st.components.v1.html("""
+                <script>
+                    // Scroll to button row (keeps buttons at top, lens visible below)
+                    setTimeout(function() {
+                        window.parent.document.getElementById('alignment-lens-anchor').scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }, 100);
+                </script>
+            """, height=0)
 
     def _render_demo_observatory_lens_slide_7(self):
         """Render simplified Alignment Lens for slide 7 drift demonstration."""
-        # Alignment Lens Header
+        # Alignment Lens Header with fade-in animation
         st.markdown("""
         <div style="
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
@@ -878,7 +892,15 @@ class ConversationDisplay:
             border-radius: 10px;
             padding: 20px;
             margin: 20px 0;
+            opacity: 0;
+            animation: fadeIn 0.6s ease-in forwards;
         ">
+        <style>
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        </style>
             <div style="text-align: center; margin-bottom: 20px;">
                 <h1 style="color: #FFD700; margin: 0; font-weight: bold; letter-spacing: 3px; font-size: 48px;">
                     🔭 TELOSCOPE
