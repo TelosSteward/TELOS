@@ -1625,6 +1625,10 @@ class ConversationDisplay:
         # Check if Demo Mode (affects layout - no turn badges, no scroll button)
         demo_mode = st.session_state.get('telos_demo_mode', False)
 
+        # Check if BETA mode - apply centered Observatory layout
+        active_tab = st.session_state.get('active_tab', 'DEMO')
+        beta_mode = active_tab == "BETA"
+
         if demo_mode:
             # Demo Mode: Clean, simple layout - NO scroll buttons (scrollable history disabled in Demo Mode)
             # Create unique ID for copy button
@@ -1671,6 +1675,111 @@ function copyDemoUserMessage{user_msg_id}() {{
 }}
 </script>
 """, unsafe_allow_html=True)
+        elif beta_mode:
+            # BETA Mode: Centered Observatory layout with all features
+            # Create columns: [spacer_left 1.5, turn_badge 0.5, content 6.0, buttons 1.0, spacer_right 1.0]
+            col_spacer_left, col_turn, col_content, col_buttons, col_spacer_right = st.columns([1.5, 0.5, 6.0, 1.0, 1.0])
+
+            # Turn badge on the left
+            if turn_number is not None:
+                with col_turn:
+                    st.markdown(f"""
+<style>
+.turn-badge {{
+    background-color: #2d2d2d;
+    color: #FFD700;
+    border: 1px solid #FFD700;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 24px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    cursor: default;
+    transition: all 0.3s ease;
+}}
+
+.turn-badge:hover {{
+    box-shadow: 0 0 6px #FFD700;
+}}
+</style>
+<div style="display: flex; align-items: flex-start; height: 100%; padding-bottom: 20px;">
+    <span class="turn-badge">{turn_number}</span>
+</div>
+""", unsafe_allow_html=True)
+
+            # Message content in center column
+            with col_content:
+                # Create unique ID for copy button
+                import hashlib
+                user_msg_id = f"{key_prefix}user_{hashlib.md5(safe_message.encode()).hexdigest()[:8]}"
+
+                st.markdown(f"""
+<style>
+.user-message-{user_msg_id} {{
+    position: relative;
+    padding-bottom: 45px;
+}}
+.user-copy-btn-{user_msg_id} {{
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    background-color: #2d2d2d !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #FFD700 !important;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease !important;
+}}
+</style>
+<div class="message-container user-message-{user_msg_id}" id="user-msg-{user_msg_id}" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
+    <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
+        <strong style="color: #FFD700;">User</strong>
+    </div>
+    {f'<div style="margin-top: 10px; margin-bottom: 10px; display: flex; align-items: center; flex-wrap: wrap;">{metrics_html}</div>' if metrics_html else ''}
+    <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
+        {safe_message}
+    </div>
+    <button class="user-copy-btn-{user_msg_id}" onclick="copyUserMessage{user_msg_id}()">📋 Copy</button>
+</div>
+<script>
+function copyUserMessage{user_msg_id}() {{
+    const text = document.getElementById('user-msg-{user_msg_id}').innerText.replace('📋 Copy', '').replace('User', '').replace('Fidelity:', '').replace('Primacy Attractor Status:', '').replace('ΔF:', '').trim();
+    navigator.clipboard.writeText(text).then(() => {{
+        const btn = event.target;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => {{ btn.textContent = '📋 Copy'; }}, 2000);
+    }});
+}}
+</script>
+""", unsafe_allow_html=True)
+
+            # Buttons on the right (Steward + Scroll)
+            if turn_number is not None:
+                with col_buttons:
+                    # Steward button (🤝)
+                    if st.button("🤝", key=f"{key_prefix}steward_btn_{turn_number}", use_container_width=True, help="Ask Steward"):
+                        # Toggle steward panel
+                        st.session_state.steward_panel_open = not st.session_state.get('steward_panel_open', False)
+                        st.rerun()
+
+                    # Scroll button (📜) - only if not in history mode
+                    if not self.state_manager.state.scrollable_history_mode:
+                        scroll_label = "📜"
+                        if st.button(scroll_label, key=f"{key_prefix}scroll_toggle_{turn_number}", use_container_width=True, help="Show scrollable history"):
+                            self.state_manager.toggle_scrollable_history()
+                            st.rerun()
+                    else:
+                        scroll_label = "✕"
+                        if st.button(scroll_label, key=f"{key_prefix}scroll_close_{turn_number}", use_container_width=True, help="Close scrollable history"):
+                            self.state_manager.toggle_scrollable_history()
+                            st.rerun()
+
         else:
             # Open Mode: Full Observatory layout with turn badge and scroll button
             # Create columns: Turn badge on left, message+scroll on right
@@ -1787,6 +1896,10 @@ function copyUserMessage{user_msg_id}() {{
         # Check if Demo Mode (affects layout)
         demo_mode = st.session_state.get('telos_demo_mode', False)
 
+        # Check if BETA mode - apply centered Observatory layout
+        active_tab = st.session_state.get('active_tab', 'DEMO')
+        beta_mode = active_tab == "BETA"
+
         if demo_mode:
             # Demo Mode: Simple clean layout
             if is_loading:
@@ -1877,6 +1990,127 @@ function copyDemoMessage{message_id}() {{
 }}
 </script>
 """, unsafe_allow_html=True)
+        elif beta_mode:
+            # BETA Mode: Centered Observatory layout with all features
+            # Create columns: [spacer_left 1.5, turn_badge_spacer 0.5, content 6.0, buttons 1.0, spacer_right 1.0]
+            col_spacer_left, col_turn_spacer, col_content, col_buttons, col_spacer_right = st.columns([1.5, 0.5, 6.0, 1.0, 1.0])
+
+            # Empty spacer for turn badge alignment (matches user message structure)
+            with col_turn_spacer:
+                st.markdown("")
+
+            # Message content in center column
+            with col_content:
+                if is_loading:
+                    # Show contemplative pulsing animation
+                    st.markdown(f"""
+<style>
+@keyframes border-pulse {{
+    0%, 100% {{
+        border-color: #888;
+        box-shadow: 0 0 6px rgba(136, 136, 136, 0.3);
+    }}
+    50% {{
+        border-color: #FFD700;
+        box-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
+    }}
+}}
+@keyframes text-pulse {{
+    0%, 100% {{
+        color: #FFD700;
+    }}
+    50% {{
+        color: #888;
+    }}
+}}
+.contemplating-border {{
+    animation: border-pulse 2s ease-in-out infinite;
+}}
+.contemplating-text {{
+    animation: text-pulse 2s ease-in-out infinite;
+}}
+</style>
+<div class="contemplating-border" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888;">
+    <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
+        <strong style="color: #FFD700;">TELOS</strong>
+    </div>
+    <div class="contemplating-text" style="font-size: 19px; font-style: italic; opacity: 0.9;">
+        Contemplating...
+    </div>
+</div>
+""", unsafe_allow_html=True)
+                else:
+                    # Show response with native markdown rendering
+                    # Header with "TELOS" label
+                    st.markdown("""
+<div style="background-color: #1a1a1a; padding: 15px 15px 5px 15px; border-radius: 10px 10px 0 0; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700; border-bottom: none;">
+    <div style="color: #888; font-size: 19px;">
+        <strong style="color: #FFD700;">TELOS</strong>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+                    # Render message content inside styled container
+                    # Convert markdown to HTML for proper rendering inside the div
+                    html_message = self._markdown_to_html(message)
+
+                    # Create unique ID for this message (with prefix to avoid duplicates in history)
+                    import hashlib
+                    message_id = f"{key_prefix}{hashlib.md5(message.encode()).hexdigest()[:8]}"
+
+                    st.markdown(f"""
+<style>
+.steward-message-{message_id} {{
+    background-color: #1a1a1a;
+    padding: 10px 15px 40px 15px;
+    margin-top: 0;
+    margin-bottom: 0;
+    border: 2px solid #FFD700;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    color: #fff;
+    font-size: 19px;
+    position: relative;
+}}
+.steward-message-{message_id} p {{
+    color: #fff !important;
+    font-size: 19px !important;
+    margin: 0;
+}}
+.copy-btn-{message_id} {{
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    background-color: #2d2d2d !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #FFD700 !important;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease !important;
+}}
+</style>
+<div class="steward-message-{message_id}" id="msg-{message_id}">
+    {html_message}
+    <button class="copy-btn-{message_id}" onclick="copyMessage{message_id}()">📋 Copy</button>
+</div>
+<script>
+function copyMessage{message_id}() {{
+    const text = document.getElementById('msg-{message_id}').innerText.replace('📋 Copy', '').trim();
+    navigator.clipboard.writeText(text).then(() => {{
+        const btn = event.target;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => {{ btn.textContent = '📋 Copy'; }}, 2000);
+    }});
+}}
+</script>
+""", unsafe_allow_html=True)
+
+            # Empty column for buttons alignment (no buttons on assistant messages)
+            with col_buttons:
+                st.markdown("")
+
         else:
             # Open Mode: Match User message structure with turn badge spacer
             col_spacer, col_content = st.columns([0.5, 9.5])
