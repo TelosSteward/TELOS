@@ -144,7 +144,16 @@ class ObservatoryLens:
             z = distance * np.cos(angle2)
 
             positions.append([x, y, z])
-            colors.append('#00FF00' if fidelity >= 0.8 else '#FFD700' if fidelity >= 0.7 else '#FF0000')
+            # 4-tier color system: Green (≥0.85) | Yellow (0.70-0.85) | Orange (0.50-0.70) | Red (<0.50)
+            if fidelity >= 0.85:
+                point_color = '#4CAF50'  # Green
+            elif fidelity >= 0.70:
+                point_color = '#FFD700'  # Yellow
+            elif fidelity >= 0.50:
+                point_color = '#FFA500'  # Orange
+            else:
+                point_color = '#FF4444'  # Red
+            colors.append(point_color)
             sizes.append(8)
             hover_texts.append(f"Turn {turn_num + 1}<br>Fidelity: {fidelity:.3f}")
 
@@ -274,7 +283,16 @@ class ObservatoryLens:
             x, y = distance * np.cos(angle), distance * np.sin(angle)
             positions_2d.append([x, y])
 
-            colors.append('#00FF00' if fidelity >= 0.8 else '#FFD700' if fidelity >= 0.7 else '#FF0000')
+            # 4-tier color system: Green (≥0.85) | Yellow (0.70-0.85) | Orange (0.50-0.70) | Red (<0.50)
+            if fidelity >= 0.85:
+                point_color = '#4CAF50'  # Green
+            elif fidelity >= 0.70:
+                point_color = '#FFD700'  # Yellow
+            elif fidelity >= 0.50:
+                point_color = '#FFA500'  # Orange
+            else:
+                point_color = '#FF4444'  # Red
+            colors.append(point_color)
             sizes.append(8 + (turn_num / len(turns)) * 6)
             hover_texts.append(f"Turn {turn_num + 1}<br>Fidelity: {fidelity:.3f}")
 

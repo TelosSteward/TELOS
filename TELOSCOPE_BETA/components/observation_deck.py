@@ -283,7 +283,15 @@ class ObservationDeck:
 
         with col1:
             user_fidelity = turn_data.get('user_fidelity', 1.0)
-            user_color = "#4CAF50" if user_fidelity >= 0.8 else "#FFA500" if user_fidelity >= 0.6 else "#FF4444"
+            # 4-tier color system: Green (≥0.85) | Yellow (0.70-0.85) | Orange (0.50-0.70) | Red (<0.50)
+            if user_fidelity >= 0.85:
+                user_color = "#4CAF50"  # Green
+            elif user_fidelity >= 0.70:
+                user_color = "#FFD700"  # Yellow
+            elif user_fidelity >= 0.50:
+                user_color = "#FFA500"  # Orange
+            else:
+                user_color = "#FF4444"  # Red
             self._render_metric_card(
                 "User Fidelity",
                 f"{user_fidelity:.3f}",
@@ -294,7 +302,15 @@ class ObservationDeck:
 
         with col2:
             ai_fidelity = turn_data.get('ai_fidelity', 1.0)
-            ai_color = "#4CAF50" if ai_fidelity >= 0.8 else "#FFA500" if ai_fidelity >= 0.6 else "#FF4444"
+            # 4-tier color system: Green (≥0.85) | Yellow (0.70-0.85) | Orange (0.50-0.70) | Red (<0.50)
+            if ai_fidelity >= 0.85:
+                ai_color = "#4CAF50"  # Green
+            elif ai_fidelity >= 0.70:
+                ai_color = "#FFD700"  # Yellow
+            elif ai_fidelity >= 0.50:
+                ai_color = "#FFA500"  # Orange
+            else:
+                ai_color = "#FF4444"  # Red
             self._render_metric_card(
                 "AI Fidelity",
                 f"{ai_fidelity:.3f}",
@@ -311,13 +327,20 @@ class ObservationDeck:
             user_f = turn_data.get('user_fidelity', 1.0)
             ai_f = turn_data.get('ai_fidelity', 1.0)
             primacy_state = turn_data.get('primacy_state', (user_f * ai_f))  # Simple PS approximation
-            # Color based on primacy basin membership (0.9-1.0)
-            ps_color = "#FFD700" if primacy_state >= 0.9 else "#FFA500" if primacy_state >= 0.7 else "#FF4444"
+            # 4-tier color system: Green (≥0.85) | Yellow (0.70-0.85) | Orange (0.50-0.70) | Red (<0.50)
+            if primacy_state >= 0.85:
+                ps_color = "#4CAF50"  # Green
+            elif primacy_state >= 0.70:
+                ps_color = "#FFD700"  # Yellow
+            elif primacy_state >= 0.50:
+                ps_color = "#FFA500"  # Orange
+            else:
+                ps_color = "#FF4444"  # Red
             self._render_metric_card(
                 "Primacy State",
                 f"{primacy_state:.3f}",
                 "🎯",
-                "Perfect equilibrium (0.9-1.0 basin)",
+                "Dynamic equilibrium between your goals and AI alignment",
                 value_color=ps_color
             )
 
