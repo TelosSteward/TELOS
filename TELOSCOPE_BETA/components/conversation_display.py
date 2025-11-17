@@ -826,8 +826,6 @@ class ConversationDisplay:
 
         # Navigation buttons (always visible) - 3-button layout: Previous | Show/Hide Alignment Lens | Next
         st.markdown("<div style='margin: 10px 0;'></div>", unsafe_allow_html=True)
-        # Anchor point for scrolling - keeps button row at top
-        st.markdown('<div id="alignment-lens-anchor"></div>', unsafe_allow_html=True)
 
         col_left_nav, col_center_nav, col_right_nav = st.columns([0.3, 3.4, 0.3])
 
@@ -868,11 +866,13 @@ class ConversationDisplay:
         # Render Alignment Lens if visible (below the buttons)
         if st.session_state.slide_7_drift_visible:
             st.markdown("<div style='margin: 20px 0;'></div>", unsafe_allow_html=True)
+            # Anchor point for scrolling - scrolls to lens content
+            st.markdown('<div id="alignment-lens-anchor"></div>', unsafe_allow_html=True)
             self._render_demo_observatory_lens_slide_7()
-            # Auto-scroll to button row (keeps buttons visible at top)
+            # Auto-scroll to alignment lens content
             st.components.v1.html("""
                 <script>
-                    // Scroll to button row (keeps buttons at top, lens visible below)
+                    // Scroll to alignment lens - user scrolls down slightly to reach Hide button
                     setTimeout(function() {
                         window.parent.document.getElementById('alignment-lens-anchor').scrollIntoView({
                             behavior: 'smooth',
