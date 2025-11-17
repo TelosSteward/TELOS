@@ -543,18 +543,18 @@ class ConversationDisplay:
         """Render a single demo slide - both question and response appear immediately."""
         import re
 
-        # Slide 8: Drift Event - Progressive Alignment Lens + Steward Introduction
+        # Slide 7: Drift Event - Progressive Alignment Lens (quantum physics drift)
         # Handle this BEFORE rendering standard Q&A
-        if current_idx == 8:
-            # Reset drift visibility when first entering slide 8 (unless explicitly set by button)
-            # Check if this is a fresh entry to slide 8 by seeing if we just came from slide 7 or 9
-            if 'last_demo_slide' not in st.session_state or st.session_state.last_demo_slide != 8:
-                # Fresh entry to slide 8 - reset the drift visibility
-                st.session_state.slide_8_drift_visible = False
+        if current_idx == 7:
+            # Reset drift visibility when first entering slide 7 (unless explicitly set by button)
+            # Check if this is a fresh entry to slide 7 by seeing if we just came from slide 6 or 8
+            if 'last_demo_slide' not in st.session_state or st.session_state.last_demo_slide != 7:
+                # Fresh entry to slide 7 - reset the drift visibility
+                st.session_state.slide_7_drift_visible = False
                 st.session_state.show_observatory_lens = False
                 st.session_state.steward_panel_open = False
-            st.session_state.last_demo_slide = 8
-            self._render_slide_8_drift_detection(turn_num)
+            st.session_state.last_demo_slide = 7
+            self._render_slide_7_drift_detection(turn_num)
             return
 
         # Calculate dual fidelities based on slide content
@@ -753,12 +753,12 @@ class ConversationDisplay:
                         st.session_state.demo_completed = True
                     st.rerun()
 
-    def _render_slide_8_drift_detection(self, turn_num: int):
-        """Render slide 8 with drift detection and progressive Alignment Lens + Steward introduction."""
+    def _render_slide_7_drift_detection(self, turn_num: int):
+        """Render slide 7 with drift detection and progressive Alignment Lens (quantum physics drift)."""
 
         # Initialize session state for drift event visibility
-        if 'slide_8_drift_visible' not in st.session_state:
-            st.session_state.slide_8_drift_visible = False
+        if 'slide_7_drift_visible' not in st.session_state:
+            st.session_state.slide_7_drift_visible = False
 
         # Show fidelity metrics with drift values
         st.markdown("""
@@ -822,43 +822,43 @@ class ConversationDisplay:
             col_prev, col_toggle, col_next = st.columns(3)
 
             with col_prev:
-                if st.button("⬅️ Previous", key="slide_8_prev", use_container_width=True):
+                if st.button("⬅️ Previous", key="slide_7_prev", use_container_width=True):
                     # Reset drift visibility when going back
-                    st.session_state.slide_8_drift_visible = False
+                    st.session_state.slide_7_drift_visible = False
                     st.session_state.show_observatory_lens = False
                     st.session_state.steward_panel_open = False
-                    st.session_state.demo_slide_index = 7
+                    st.session_state.demo_slide_index = 6
                     st.rerun()
 
             with col_toggle:
                 # Alignment Lens toggle button
-                lens_active = st.session_state.slide_8_drift_visible
+                lens_active = st.session_state.slide_7_drift_visible
                 button_text = "Hide Alignment Lens" if lens_active else "Show Alignment Lens"
 
                 if st.button(
                     button_text,
-                    key="slide_8_observatory_toggle",
+                    key="slide_7_observatory_toggle",
                     use_container_width=True,
                     type="primary",
                     help="View real-time visualization of the drift event"
                 ):
-                    st.session_state.slide_8_drift_visible = not lens_active
+                    st.session_state.slide_7_drift_visible = not lens_active
                     # Don't auto-open Steward - let user click handshake if they want help
                     # The orange explanation box already provides context
                     st.rerun()
 
             with col_next:
-                if st.button("Next ➡️", key="slide_8_next", use_container_width=True):
-                    st.session_state.demo_slide_index = 9
+                if st.button("Next ➡️", key="slide_7_next", use_container_width=True):
+                    st.session_state.demo_slide_index = 8
                     st.rerun()
 
         # Render Alignment Lens if visible (below the buttons)
-        if st.session_state.slide_8_drift_visible:
+        if st.session_state.slide_7_drift_visible:
             st.markdown("<div style='margin: 20px 0;'></div>", unsafe_allow_html=True)
-            self._render_demo_observatory_lens_slide_8()
+            self._render_demo_observatory_lens_slide_7()
 
-    def _render_demo_observatory_lens_slide_8(self):
-        """Render simplified Alignment Lens for slide 8 drift demonstration."""
+    def _render_demo_observatory_lens_slide_7(self):
+        """Render simplified Alignment Lens for slide 7 drift demonstration."""
         # Alignment Lens Header
         st.markdown("""
         <div style="
@@ -985,27 +985,27 @@ class ConversationDisplay:
             col_prev_bottom, col_toggle_bottom, col_next_bottom = st.columns(3)
 
             with col_prev_bottom:
-                if st.button("⬅️ Previous", key="slide_8_prev_bottom", use_container_width=True):
-                    st.session_state.slide_8_drift_visible = False
+                if st.button("⬅️ Previous", key="slide_7_prev_bottom", use_container_width=True):
+                    st.session_state.slide_7_drift_visible = False
                     st.session_state.show_observatory_lens = False
                     st.session_state.steward_panel_open = False
-                    st.session_state.demo_slide_index = 7
+                    st.session_state.demo_slide_index = 6
                     st.rerun()
 
             with col_toggle_bottom:
                 if st.button(
                     "Hide Alignment Lens",
-                    key="slide_8_observatory_toggle_bottom",
+                    key="slide_7_observatory_toggle_bottom",
                     use_container_width=True,
                     type="primary",
                     help="Hide the Alignment Lens visualization"
                 ):
-                    st.session_state.slide_8_drift_visible = False
+                    st.session_state.slide_7_drift_visible = False
                     st.rerun()
 
             with col_next_bottom:
-                if st.button("Next ➡️", key="slide_8_next_bottom", use_container_width=True):
-                    st.session_state.demo_slide_index = 9
+                if st.button("Next ➡️", key="slide_7_next_bottom", use_container_width=True):
+                    st.session_state.demo_slide_index = 8
                     st.rerun()
 
     def _render_demo_observation_deck(self, turn_num: int):

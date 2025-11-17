@@ -40,7 +40,7 @@ class StewardPanel:
         # Initialize chat history if not exists
         if 'steward_chat_history' not in st.session_state:
             # Check if this is a drift event context (slide 8)
-            drift_context = st.session_state.get('slide_8_steward_context') == 'drift_event'
+            drift_context = st.session_state.get('slide_7_steward_context') == 'drift_event'
 
             if drift_context:
                 # Drift event walkthrough message for slide 8
@@ -69,8 +69,8 @@ TELOS tracks both our alignments but only intervenes on mine. This dual measurem
             if st.button("✕", key="close_steward", help="Close Steward", use_container_width=True):
                 st.session_state.steward_panel_open = False
                 # Clear drift context and chat history so next open is fresh
-                if 'slide_8_steward_context' in st.session_state:
-                    del st.session_state.slide_8_steward_context
+                if 'slide_7_steward_context' in st.session_state:
+                    del st.session_state.slide_7_steward_context
                 if 'steward_chat_history' in st.session_state:
                     del st.session_state.steward_chat_history
                 st.rerun()
