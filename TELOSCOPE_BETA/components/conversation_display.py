@@ -893,7 +893,7 @@ class ConversationDisplay:
             padding: 20px;
             margin: 20px 0;
             opacity: 0;
-            animation: fadeIn 0.6s ease-in forwards;
+            animation: fadeIn 1.0s ease-in-out forwards;
         ">
         <style>
             @keyframes fadeIn {
