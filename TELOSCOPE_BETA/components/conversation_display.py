@@ -636,7 +636,7 @@ class ConversationDisplay:
             # Show full fidelity metrics after user asks about them
             st.markdown(f"""
 <div style="text-align: center; margin: 20px 0;">
-    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 10px; padding: 15px 40px;">
+    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 10px; padding: 15px 40px; opacity: 0; animation: slideContentFadeIn 0.5s ease-out forwards;">
         <div style="display: flex; gap: 30px; align-items: center; justify-content: center; margin-bottom: 10px;">
             <div>
                 <span style="color: #888; font-size: 14px;">User Fidelity: </span>
@@ -659,7 +659,7 @@ class ConversationDisplay:
             # Only show PA Established status before user asks about fidelities
             st.markdown(f"""
 <div style="text-align: center; margin: 20px 0;">
-    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 10px; padding: 10px 30px;">
+    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 10px; padding: 10px 30px; opacity: 0; animation: slideContentFadeIn 0.5s ease-out forwards;">
         <span style="color: {status_color}; font-size: 16px; font-style: italic;">{status_msg}</span>
     </div>
 </div>
@@ -678,7 +678,7 @@ class ConversationDisplay:
 
         cleaned_response = clean_markdown(steward_response)
 
-        # USER QUESTION - Wrapped in compact container
+        # USER QUESTION - Wrapped in compact container with fade-in
         st.markdown(f"""
 <div class="compact-container">
     <div style="
@@ -689,14 +689,16 @@ class ConversationDisplay:
         margin: 15px auto;
         font-size: 19px;
         color: #e0e0e0;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        animation: slideContentFadeIn 0.5s ease-out forwards;">
         <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">User:</div>
         <div>{user_question}</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-        # STEWARD RESPONSE - Appears instantly, wrapped in compact container
+        # STEWARD RESPONSE - Appears instantly, wrapped in compact container with fade-in
         st.markdown(f"""
 <div class="compact-container">
     <div style="
@@ -708,7 +710,9 @@ class ConversationDisplay:
         font-size: 19px;
         color: #e0e0e0;
         line-height: 1.7;
-        box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);">
+        box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
+        opacity: 0;
+        animation: slideContentFadeIn 0.5s ease-out 0.3s forwards;">
         <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">Steward:</div>
         <div>{cleaned_response.replace(chr(10), '<br>')}</div>
     </div>
@@ -727,6 +731,11 @@ class ConversationDisplay:
 @keyframes pulse {{
     0%, 100% {{ transform: scale(0.8); opacity: 0.5; }}
     50% {{ transform: scale(1.1); opacity: 1; }}
+}}
+
+@keyframes slideContentFadeIn {{
+    from {{ opacity: 0; transform: translateY(10px); }}
+    to {{ opacity: 1; transform: translateY(0); }}
 }}
 </style>
 """, unsafe_allow_html=True)
@@ -774,7 +783,7 @@ class ConversationDisplay:
         # Show fidelity metrics with drift values
         st.markdown("""
 <div style="text-align: center; margin: 20px 0;">
-    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 10px; padding: 15px 40px;">
+    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 10px; padding: 15px 40px; opacity: 0; animation: slideContentFadeIn 0.5s ease-out forwards;">
         <div style="display: flex; gap: 30px; align-items: center; justify-content: center; margin-bottom: 10px;">
             <div>
                 <span style="color: #888; font-size: 14px;">User Fidelity: </span>
@@ -792,12 +801,18 @@ class ConversationDisplay:
         <span style="color: #00FF00; font-size: 14px; font-style: italic;">PA Established</span>
     </div>
 </div>
+<style>
+@keyframes slideContentFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
 """, unsafe_allow_html=True)
 
         # Drift event - User question with ORANGE border (moderate drift F=0.65)
         st.markdown("""
         <div style='max-width: 700px; margin: 30px auto;'>
-            <div style='background-color: #2d2d2d; border: 3px solid #FFA500; border-radius: 10px; padding: 20px 25px; box-shadow: 0 0 15px rgba(255, 165, 0, 0.3);'>
+            <div style='background-color: #2d2d2d; border: 3px solid #FFA500; border-radius: 10px; padding: 20px 25px; box-shadow: 0 0 15px rgba(255, 165, 0, 0.3); opacity: 0; animation: slideContentFadeIn 0.5s ease-out forwards;'>
                 <div style='color: #e0e0e0; font-size: 19px; line-height: 1.6;'>
                     <strong>User:</strong> Can you explain quantum physics instead?
                 </div>
@@ -808,7 +823,7 @@ class ConversationDisplay:
         # Steward response with YELLOW border (standard aligned state)
         st.markdown("""
         <div style='max-width: 700px; margin: 20px auto;'>
-            <div style='background-color: rgba(255, 215, 0, 0.05); border: 3px solid #FFD700; border-radius: 10px; padding: 20px 25px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);'>
+            <div style='background-color: rgba(255, 215, 0, 0.05); border: 3px solid #FFD700; border-radius: 10px; padding: 20px 25px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); opacity: 0; animation: slideContentFadeIn 0.5s ease-out 0.3s forwards;'>
                 <div style='color: #FFD700; font-size: 19px; line-height: 1.6; margin-bottom: 15px;'>
                     <strong>Steward:</strong> That's an intriguing topic, but it falls outside your stated purpose of understanding TELOS. Your goal here is to understand TELOS without technical overwhelm, so let me keep us focused on that. Instead, let me show you what this moment reveals about how TELOS works.
                 </div>
@@ -816,7 +831,7 @@ class ConversationDisplay:
                     Notice what just happened: your User Fidelity dropped to <strong style='color: #FFA500;'>0.65 (orange zone - moderate drift)</strong> when your question moved away from your goal. Meanwhile, my AI Fidelity stayed high at <strong style='color: #4CAF50;'>0.89</strong> by gently bringing us back on track. I am governed by your purpose—your <em>telos</em>. In Greek, τέλος means your end goal, your ultimate purpose. It's the center of a gravitational field that continuously pulls my responses back into alignment with your telos. This is dual measurement in action!
                 </div>
             </div>
-            <div style='text-align: center; margin-top: 15px;'>
+            <div style='text-align: center; margin-top: 15px; opacity: 0; animation: slideContentFadeIn 0.5s ease-out 0.6s forwards;'>
                 <p style='color: #FFD700; font-size: 14px; font-weight: bold;'>
                     👇 Click below to see this moment visualized in the Alignment Lens
                 </p>
