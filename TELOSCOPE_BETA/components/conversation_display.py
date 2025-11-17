@@ -612,10 +612,21 @@ class ConversationDisplay:
             harmonic_mean = 0.0
         primacy_state = harmonic_mean  # ρ_PA = 1.0 for demo
 
-        # Determine colors based on fidelity levels
-        user_color = "#4CAF50" if user_fidelity >= 0.9 else "#FFA500" if user_fidelity >= 0.7 else "#FF4444"
-        ai_color = "#4CAF50" if ai_fidelity >= 0.9 else "#FFA500" if ai_fidelity >= 0.7 else "#FF4444"
-        ps_color = "#FFD700" if primacy_state >= 0.9 else "#FFA500" if primacy_state >= 0.7 else "#FF4444"
+        # Determine colors based on fidelity levels (4-tier system)
+        # Green (≥0.85): Good alignment | Yellow (0.70-0.85): Mild drift | Orange (0.50-0.70): Moderate drift | Red (<0.50): Severe drift
+        def get_fidelity_color(f):
+            if f >= 0.85:
+                return "#4CAF50"  # Green - good alignment
+            elif f >= 0.70:
+                return "#FFD700"  # Yellow - mild drift
+            elif f >= 0.50:
+                return "#FFA500"  # Orange - moderate drift
+            else:
+                return "#FF4444"  # Red - severe drift
+
+        user_color = get_fidelity_color(user_fidelity)
+        ai_color = get_fidelity_color(ai_fidelity)
+        ps_color = get_fidelity_color(primacy_state)
 
         # Show PA Established status
         status_msg = "PA Established"
@@ -783,10 +794,10 @@ class ConversationDisplay:
 </div>
 """, unsafe_allow_html=True)
 
-        # Drift event - User question with RED border (serious drift F=0.65)
+        # Drift event - User question with ORANGE border (moderate drift F=0.65)
         st.markdown("""
         <div style='max-width: 700px; margin: 30px auto;'>
-            <div style='background-color: #2d2d2d; border: 3px solid #FF4444; border-radius: 10px; padding: 20px 25px; box-shadow: 0 0 15px rgba(255, 68, 68, 0.3);'>
+            <div style='background-color: #2d2d2d; border: 3px solid #FFA500; border-radius: 10px; padding: 20px 25px; box-shadow: 0 0 15px rgba(255, 165, 0, 0.3);'>
                 <div style='color: #e0e0e0; font-size: 19px; line-height: 1.6;'>
                     <strong>User:</strong> Can you explain quantum physics instead?
                 </div>
@@ -802,7 +813,7 @@ class ConversationDisplay:
                     <strong>Steward:</strong> That's an intriguing topic, but it falls outside your stated purpose of understanding TELOS. Your goal here is to understand TELOS without technical overwhelm, so let me keep us focused on that. Instead, let me show you what this moment reveals about how TELOS works.
                 </div>
                 <div style='color: #e0e0e0; font-size: 16px; line-height: 1.6;'>
-                    Notice what just happened: your User Fidelity dropped to <strong style='color: #FF4444;'>0.65 (red zone - serious drift)</strong> when your question moved away from your goal. Meanwhile, my AI Fidelity stayed high at <strong style='color: #4CAF50;'>0.89</strong> by gently bringing us back on track. I am governed by your purpose—your <em>telos</em>. In Greek, τέλος means your end goal, your ultimate purpose. It's the center of a gravitational field that continuously pulls my responses back into alignment with your telos. This is dual measurement in action!
+                    Notice what just happened: your User Fidelity dropped to <strong style='color: #FFA500;'>0.65 (orange zone - moderate drift)</strong> when your question moved away from your goal. Meanwhile, my AI Fidelity stayed high at <strong style='color: #4CAF50;'>0.89</strong> by gently bringing us back on track. I am governed by your purpose—your <em>telos</em>. In Greek, τέλος means your end goal, your ultimate purpose. It's the center of a gravitational field that continuously pulls my responses back into alignment with your telos. This is dual measurement in action!
                 </div>
             </div>
             <div style='text-align: center; margin-top: 15px;'>
@@ -958,14 +969,15 @@ class ConversationDisplay:
             st.markdown("""
             <div style='background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 15px; text-align: center;'>
                 <div style='color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 15px;'>DRIFT VISUALIZATION</div>
-                <div style='position: relative; width: 150px; height: 150px; margin: 0 auto; background: radial-gradient(circle, #4CAF50 0%, #4CAF50 25%, #FFA500 25%, #FFA500 50%, #FF4444 50%, #FF4444 100%); border-radius: 50%; border: 3px solid #FFD700;'>
+                <div style='position: relative; width: 150px; height: 150px; margin: 0 auto; background: radial-gradient(circle, #4CAF50 0%, #4CAF50 25%, #FFD700 25%, #FFD700 50%, #FFA500 50%, #FFA500 75%, #FF4444 75%, #FF4444 100%); border-radius: 50%; border: 3px solid #FFD700;'>
                     <div style='position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; background-color: #FFD700; border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%);'></div>
-                    <div style='position: absolute; top: 80%; left: 70%; width: 12px; height: 12px; background-color: #FF4444; border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%); animation: pulse 2s infinite;'></div>
+                    <div style='position: absolute; top: 68%; left: 68%; width: 12px; height: 12px; background-color: #FFA500; border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%); animation: pulse 2s infinite;'></div>
                 </div>
                 <div style='margin-top: 15px;'>
-                    <div style='color: #4CAF50; font-size: 10px;'>● Safe Zone (F ≥ 0.9)</div>
-                    <div style='color: #FFA500; font-size: 10px;'>● Drift Zone (0.7-0.9)</div>
-                    <div style='color: #FF4444; font-size: 10px;'>● Serious Drift - Your Position (F = 0.65)</div>
+                    <div style='color: #4CAF50; font-size: 10px;'>● Good Alignment (F ≥ 0.85)</div>
+                    <div style='color: #FFD700; font-size: 10px;'>● Mild Drift (0.70-0.85)</div>
+                    <div style='color: #FFA500; font-size: 10px;'>● Moderate Drift - Your Position (0.50-0.70, F = 0.65)</div>
+                    <div style='color: #FF4444; font-size: 10px;'>● Severe Drift (F < 0.50)</div>
                 </div>
             </div>
             <style>
