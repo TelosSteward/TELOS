@@ -1099,13 +1099,6 @@ class ConversationDisplay:
         if 'demo_obs_deck_visible' not in st.session_state:
             st.session_state.demo_obs_deck_visible = False
 
-        # Reset to hidden when returning to this slide from a different slide
-        if 'last_demo_slide' not in st.session_state or st.session_state.last_demo_slide != 3:
-            st.session_state.demo_obs_deck_visible = False
-
-        # Track that we're on slide 3
-        st.session_state.last_demo_slide = 3
-
         # 3-button navigation goes first (right below the yellow-bordered message)
 
         # Render navigation row
@@ -1123,6 +1116,7 @@ class ConversationDisplay:
                     key="obs_deck_prev_3",
                     use_container_width=True
                 ):
+                    st.session_state.demo_obs_deck_visible = False  # Reset when navigating away
                     st.session_state.demo_slide_index = 2  # Go back to PA setup
                     st.rerun()
 
@@ -1143,6 +1137,7 @@ class ConversationDisplay:
                     key="obs_deck_next_3",
                     use_container_width=True
                 ):
+                    st.session_state.demo_obs_deck_visible = False  # Reset when navigating away
                     st.session_state.demo_slide_index = 4  # Go to "Why are both our fidelities at 1.000?"
                     st.rerun()
 
@@ -1289,6 +1284,7 @@ class ConversationDisplay:
                         key="obs_deck_prev_3_bottom",
                         use_container_width=True
                     ):
+                        st.session_state.demo_obs_deck_visible = False  # Reset when navigating away
                         st.session_state.demo_slide_index = 2  # Go back to PA setup
                         st.rerun()
 
@@ -1308,6 +1304,7 @@ class ConversationDisplay:
                         key="obs_deck_next_3_bottom",
                         use_container_width=True
                     ):
+                        st.session_state.demo_obs_deck_visible = False  # Reset when navigating away
                         st.session_state.demo_slide_index = 4  # Go to "Why are both our fidelities at 1.000?"
                         st.rerun()
 
