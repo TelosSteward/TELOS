@@ -1150,11 +1150,11 @@ class ConversationDisplay:
             st.markdown("""
 <style>
     @keyframes obsDeckFadeIn {
-        from { opacity: 0; transform: translateY(10px); }
+        from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
     }
 </style>
-<div style="max-width: 900px; margin: 0 auto; opacity: 0; animation: obsDeckFadeIn 1.0s ease-out forwards;">
+<div style="max-width: 900px; margin: 0 auto; opacity: 0; animation: obsDeckFadeIn 1.0s ease-in-out forwards;">
     <div class="compact-container">
     <div style="background-color: #1a1a1a; border: 3px solid #FFD700; border-radius: 10px; padding: 20px; margin: 20px auto; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);">
         <h3 style="color: #FFD700; text-align: center; margin-bottom: 20px; font-size: 26px;">🔭 Observation Deck</h3>
