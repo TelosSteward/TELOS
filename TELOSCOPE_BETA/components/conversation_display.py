@@ -1306,13 +1306,13 @@ class ConversationDisplay:
 
             st.markdown("</div>", unsafe_allow_html=True)
 
-            # Auto-scroll to Observation Deck content
+            # Auto-scroll to Observation Deck content - center positioning brings bottom nav closer to view
             st.components.v1.html("""
                 <script>
                     setTimeout(function() {
                         window.parent.document.getElementById('observation-deck-anchor').scrollIntoView({
                             behavior: 'smooth',
-                            block: 'start'
+                            block: 'center'
                         });
                     }, 100);
                 </script>
