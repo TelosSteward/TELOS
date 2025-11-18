@@ -131,7 +131,147 @@ Users transitioning from Demo → Beta should feel they're using **the same appl
 
 ---
 
-## 6. Files Implementing This Schema
+## 6. Interactive Toggle Components (Observation Deck & Alignment Lens)
+
+### Animation Specifications
+
+**Observation Deck (Slide 3)**
+```css
+@keyframes obsDeckFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+animation: obsDeckFadeIn 1.0s ease-in-out forwards;
+```
+
+**Alignment Lens (Slide 6)**
+```css
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+animation: fadeIn 1.0s ease-in-out forwards;
+```
+
+**Critical Parameters:**
+- **Duration:** 1.0s (consistent across all components)
+- **Timing Function:** `ease-in-out` (smooth acceleration/deceleration)
+- **Transform Distance:** `translateY(20px)` (NOT 10px - needs more dramatic motion)
+- **Fill Mode:** `forwards` (maintains final state)
+
+### Scroll Behavior
+
+**Observation Deck**
+- **Anchor Position:** Right BEFORE bottom navigation buttons
+- **Anchor ID:** `observation-deck-anchor`
+- **Scroll Positioning:** `block: 'start'` (anchor at top of viewport)
+- **Delay:** 100ms setTimeout for Streamlit compatibility
+- **Result:** Bottom nav buttons immediately visible, zero manual scrolling
+
+**Alignment Lens**
+- **Anchor Position:** Right BEFORE lens content
+- **Anchor ID:** `alignment-lens-anchor`
+- **Scroll Positioning:** `block: 'start'`
+- **Delay:** 100ms setTimeout
+- **Result:** Lens content and controls immediately accessible
+
+**Scroll Implementation:**
+```javascript
+setTimeout(function() {
+    window.parent.document.getElementById('[anchor-id]').scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+    });
+}, 100);
+```
+
+### Reset Behavior
+
+**When Navigating Away (Previous/Next buttons):**
+
+Both Observation Deck and Alignment Lens MUST reset to hidden state when user navigates to different slide.
+
+**Implementation:**
+```python
+# In navigation button handlers
+if st.button("Previous"):
+    st.session_state.demo_obs_deck_visible = False  # Reset
+    st.session_state.slide_7_drift_visible = False  # Reset
+    st.session_state.demo_slide_index -= 1
+    st.rerun()
+```
+
+**Reset triggers:**
+- Top Previous button (resets before slide change)
+- Top Next button (resets before slide change)
+- Bottom Previous button (resets before slide change)
+- Bottom Next button (resets before slide change)
+
+**When Returning to Slide:**
+- Observation Deck: Starts hidden (default state)
+- Alignment Lens: Starts hidden (default state)
+- User must click "Show" button to reveal again
+- Clean state ensures consistent UX
+
+### Toggle Button States
+
+**Observation Deck (3-button layout)**
+```
+[← Previous] [Show/Hide Observation Deck] [Next →]
+```
+- Previous: Resets visibility, navigates to slide 2
+- Toggle: Shows "Hide" when visible, "Show" when hidden
+- Next: Resets visibility, navigates to slide 4
+
+**Alignment Lens (3-button layout)**
+```
+[← Previous] [Show/Hide Alignment Lens] [Next →]
+```
+- Previous: Resets visibility, navigates to slide 5
+- Toggle: Shows "Hide" when visible, "Show" when hidden
+- Next: Resets visibility, navigates to slide 7
+
+**Duplicate Navigation at Bottom:**
+Both components render duplicate nav buttons at bottom when expanded:
+- Same functionality as top buttons
+- Accessible without scrolling back up
+- Consistent styling and behavior
+
+### State Management
+
+**Session State Keys:**
+- `demo_obs_deck_visible` (Boolean) - Observation Deck visibility
+- `slide_7_drift_visible` (Boolean) - Alignment Lens visibility
+- `last_demo_slide` (Integer) - Track current slide for reset logic
+
+**Default State:**
+- Both start as `False` (hidden)
+- Initialize on first render if key doesn't exist
+- Explicitly reset to `False` on navigation away
+
+### Why These Specifics Matter
+
+1. **20px transform** creates dramatic, professional motion (10px felt too subtle)
+2. **ease-in-out** provides balanced, smooth animation (vs ease-out's abrupt start)
+3. **Anchor before buttons** ensures immediate accessibility (vs content anchor)
+4. **Explicit reset** is reliable (vs tracking previous slide state)
+5. **100ms delay** allows Streamlit DOM to render before scroll
+
+### Testing Checklist
+
+When modifying these components:
+- [ ] Fade animation is smooth (1.0s ease-in-out)
+- [ ] Transform distance is 20px (not 10px)
+- [ ] Auto-scroll brings buttons into immediate view
+- [ ] Navigation away resets visibility to hidden
+- [ ] Returning to slide shows default hidden state
+- [ ] Toggle button text updates correctly (Show/Hide)
+- [ ] Both top and bottom nav buttons work identically
+- [ ] Behavior matches between Observation Deck and Alignment Lens
+
+---
+
+## 7. Files Implementing This Schema
 
 ### Primary Components
 - `components/conversation_display.py` - Demo Mode Q&A slides, Alignment Lens
@@ -145,7 +285,7 @@ Users transitioning from Demo → Beta should feel they're using **the same appl
 
 ---
 
-## 7. Future Maintenance
+## 8. Future Maintenance
 
 When updating UI elements:
 
