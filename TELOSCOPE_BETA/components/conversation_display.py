@@ -1147,6 +1147,9 @@ class ConversationDisplay:
 
         # Now render the Observation Deck content (only if visible)
         if st.session_state.demo_obs_deck_visible:
+            # Anchor point for scrolling
+            st.markdown('<div id="observation-deck-anchor"></div>', unsafe_allow_html=True)
+
             # Wrap everything in a container with max-width to prevent expansion
             st.markdown("""
 <style>
@@ -1306,6 +1309,18 @@ class ConversationDisplay:
                         st.rerun()
 
             st.markdown("</div>", unsafe_allow_html=True)
+
+            # Auto-scroll to Observation Deck content
+            st.components.v1.html("""
+                <script>
+                    setTimeout(function() {
+                        window.parent.document.getElementById('observation-deck-anchor').scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }, 100);
+                </script>
+            """, height=0)
 
     def _render_beta_intro(self):
         """Render beta introduction slides explaining the beta experience."""
