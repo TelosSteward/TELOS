@@ -1183,15 +1183,12 @@ class ConversationDisplay:
                 # Fidelity metrics row - use flexbox to align User/AI with their PAs below
                 st.markdown("""
 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 10px;">
-    <!-- User Fidelity (left) -->
     <div style="flex: 1; text-align: center;">
         <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #4CAF50; border-radius: 8px; padding: 10px; display: inline-block;">
             <div style="color: #4CAF50; font-size: 12px; margin-bottom: 5px;">User Fidelity</div>
             <div style="color: #4CAF50; font-size: 24px; font-weight: bold;">1.000</div>
         </div>
     </div>
-
-    <!-- Primacy State (center) -->
     <div style="flex: 0 0 auto; text-align: center;">
         <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #4CAF50; border-radius: 8px; padding: 10px 20px; display: inline-block;">
             <div style="color: #4CAF50; font-size: 12px; margin-bottom: 5px;">Primacy State</div>
@@ -1199,8 +1196,6 @@ class ConversationDisplay:
             <div style="color: #ddd; font-size: 10px; margin-top: 5px;">Perfect Equilibrium</div>
         </div>
     </div>
-
-    <!-- AI Fidelity (right) -->
     <div style="flex: 1; text-align: center;">
         <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #4CAF50; border-radius: 8px; padding: 10px; display: inline-block;">
             <div style="color: #4CAF50; font-size: 12px; margin-bottom: 5px;">AI Fidelity</div>
