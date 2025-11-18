@@ -183,7 +183,7 @@ def get_demo_slides():
     return [
         (
             "I want to understand TELOS but without overwhelming technical details. Can you help?",
-            "Perfect! From this single input, TELOS has established your Primacy Attractor. Your User PA: understanding TELOS concepts clearly without technical overwhelm. My AI PA: explaining TELOS simply while staying aligned with your learning goals. Both attractors are now active - this dual attractor system means we're both measured for staying on purpose. Notice the 'PA Established' indicator above - this normally takes 5-10 turns but happened instantly for our demo."
+            "Perfect! Think of TELOS like a GPS for conversations. Just as GPS needs to know your destination, TELOS needs to understand your conversation goals. From this single input, TELOS has established your Primacy Attractor (PA) - basically, what you want to achieve and what boundaries should be maintained.\n\nYour User PA: understanding TELOS concepts clearly without technical overwhelm. My AI PA: explaining TELOS simply while staying aligned with your learning goals. Think of it like a dance partnership: your User PA leads (what to discuss), my AI PA follows (how to help), and TELOS ensures we stay in sync. Notice the 'PA Established' indicator above - this normally calibrates naturally over 5-10 turns but happened instantly for our demo."
         ),
         (
             "How can I see what my Primacy Attractor is?",
@@ -191,7 +191,7 @@ def get_demo_slides():
         ),
         (
             "Why are both our fidelities at 1.000 right now?",
-            "Great observation! When you establish your PA, both fidelities start at perfect <span style='color: #4CAF50; font-size: inherit;'>1.000</span> - you're fully aligned with your just-stated goal, and I'm fully aligned to serve it. This means we've achieved perfect equilibrium with Primacy State at <span style='color: #4CAF50; font-size: inherit;'>1.000</span>. Both attractors are now members of the same primacy basin - the shared space where your goals and my alignment converge. It's the only moment we know for certain both attractors are in perfect alignment."
+            "Great observation! When you establish your PA, both fidelities start at perfect <span style='color: #4CAF50; font-size: inherit;'>1.000</span> - you're fully aligned with your just-stated goal, and I'm fully aligned to serve it. This means we've achieved perfect equilibrium with Primacy State at <span style='color: #4CAF50; font-size: inherit;'>1.000</span>. Both attractors are now members of the same primacy basin - the shared space where your goals and my alignment converge. It's the only moment we know for certain both attractors are in perfect alignment.\n\nAs our conversation continues, these scores will naturally fluctuate - and that's okay! TELOS keeps them in the good zone (above <span style='color: #4CAF50; font-size: inherit;'>0.85</span>) through gentle corrections when needed."
         ),
         (
             "How does TELOS detect when a conversation is drifting off-topic or out of alignment?",
@@ -199,7 +199,7 @@ def get_demo_slides():
         ),
         (
             "Can you explain quantum physics instead?",
-            "That's an intriguing topic, but it falls outside your stated purpose of understanding TELOS without technical overwhelm. Your goal here is to understand TELOS without technical overwhelm, so let me keep us focused on that. Instead, let me show you what this moment reveals about how TELOS works.\n\nNotice what just happened: your User Fidelity dropped to <span style='color: #FFA500; font-size: inherit;'>0.65</span> (orange zone - moderate drift) when your question moved away from your goal. Meanwhile, my AI Fidelity stayed high at <span style='color: #4CAF50; font-size: inherit;'>0.89</span> by gently bringing us back on track. I am governed by your purpose—your <em>telos</em>. In Greek, τέλος means your end goal, your ultimate purpose. It's the center of a gravitational field that continuously pulls my responses back into alignment with your telos. This is dual measurement in action!"
+            "That's an intriguing topic, but it falls outside your stated purpose of understanding TELOS without technical overwhelm. Your goal here is to understand TELOS without technical overwhelm, so let me keep us focused on that. Instead, let me show you what this moment reveals about how TELOS works.\n\nNotice what just happened: your User Fidelity dropped to <span style='color: #FFA500; font-size: inherit;'>0.65</span> (orange zone - moderate drift) when your question moved away from your goal. Meanwhile, my AI Fidelity stayed high at <span style='color: #4CAF50; font-size: inherit;'>0.89</span> by gently bringing us back on track. I am governed by your purpose—your <em>telos</em>. TELOS takes its name from the Greek word τέλος, meaning your end goal or ultimate purpose. It's the center of a gravitational field that continuously pulls my responses back into alignment with your telos. This is dual measurement in action!"
         ),
         (
             "How does TELOS track both our fidelities?",
@@ -207,7 +207,7 @@ def get_demo_slides():
         ),
         (
             "What's the math behind fidelity scores?",
-            "The math behind TELOS is quite sophisticated: each fidelity uses cosine similarity to measure semantic distance from its attractor (0.0 to 1.0), and Primacy State combines them using a harmonic mean weighted by attractor correlation. The full mathematical formalization involves embedding spaces, dual potential energy functions, and dynamical systems theory.\n\nFor the complete technical specification, you'll find the rigorous mathematics in our whitepaper and research papers, which we'll be publishing in due time. The key point for now: TELOS uses proven control theory to maintain alignment, not just simple scoring. This is what makes it governance, not just monitoring.\n\nNotice something interesting just happened: your fidelity dipped slightly when you asked this question. Your Primacy Attractor established a goal of understanding TELOS without technical overwhelm, yet here you're requesting mathematical depth that demands a sophisticated answer. This is TELOS treating your PA as session-level governance in action—measuring the tension between your stated purpose and your current exploration. And that's perfectly fine. You're always free to explore wherever curiosity takes you."
+            "Notice something interesting just happened: your fidelity dipped when you asked about math—the very technical details you said you wanted to avoid! This perfectly demonstrates TELOS in action. It noticed the tension between your stated goal (no technical overwhelm) and your current curiosity (wanting the math). Your fidelity dropped to <span style='color: #FFD700; font-size: inherit;'>0.78</span>, showing mild drift, but that's completely fine—you're free to explore!\n\nThe math behind TELOS is quite sophisticated: each fidelity uses cosine similarity to measure semantic distance from its attractor (0.0 to 1.0), and Primacy State combines them using a harmonic mean weighted by attractor correlation. The full mathematical formalization involves embedding spaces, dual potential energy functions, and dynamical systems theory. For the complete technical specification, you'll find the rigorous mathematics in our whitepaper and research papers.\n\nTELOS measures but doesn't restrict you. It only intervenes when I drift from serving your goals."
         ),
         (
             "What are the intervention strategies?",
@@ -215,7 +215,7 @@ def get_demo_slides():
         ),
         (
             "Is there anything else about TELOS I should know that wasn't covered yet?",
-            "Yes - TELOS represents a fundamental shift in how AI systems are governed. When you define your Primacy Attractor, you're establishing session-level constitutional law. Your purpose, scope, and boundaries become the governing constitution that TELOS enforces throughout our conversation. This is human-in-the-loop governance by design - you remain the hierarchical apex, and I operate as a governed subsystem under your authority.\n\nTELOS operates at the orchestration layer, sitting above the model layer to provide continuous oversight and intervention. Think of it as a Constitutional Filter™ that every response must pass through before reaching you. This architecture ensures your primacy isn't an aspiration - it's mathematically enforced at every turn. This makes TELOS particularly valuable beyond personal use, extending to high-risk AI systems that require demonstrable governance and persistent measurement."
+            "Yes - TELOS represents a fundamental shift in how AI systems are governed.\n\nWhen you define your Primacy Attractor, you're essentially writing a constitution for our conversation. Your purpose, scope, and boundaries become the laws that TELOS enforces.\n\nKey point: You remain in charge (the hierarchical apex), while I operate under your authority. TELOS acts as a Constitutional Filter™—every response must pass through it before reaching you.\n\nThis architecture ensures your primacy isn't just promised—it's mathematically enforced at every turn."
         ),
         (
             "What does this mean for regulatory compliance and real-world deployment?",
@@ -235,9 +235,13 @@ def get_demo_completion_message():
 
 You've explored the key concepts of TELOS purpose alignment.
 
-**What's Next:**
-- Send 10 messages in DEMO mode to unlock BETA
-- In BETA, you'll experience live TELOS governance
-- See real-time alignment monitoring and interventions
+**Ready for BETA? Here's what to do:**
 
-**Ready to start?** Just begin asking questions about TELOS, and I'll help you understand how purpose alignment works."""
+1. Click the BETA tab above
+2. Start any conversation - watch your PA calibrate naturally
+3. Try pushing boundaries - see TELOS corrections in real-time
+4. Click the handshake icon anytime for help understanding what's happening
+
+Remember: In BETA, you're not just using TELOS—you're experiencing constitutional AI governance firsthand. Every conversation helps us improve the system.
+
+Welcome to the future of aligned AI!"""
