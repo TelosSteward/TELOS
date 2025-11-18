@@ -179,7 +179,7 @@ class ConversationDisplay:
             elif demo_mode:
                 # DEMO MODE: Run the slideshow - don't show input during demo
                 demo_slide_index = st.session_state.get('demo_slide_index', 0)
-                if demo_slide_index <= 13:  # Slides 0-13: 0=welcome, 1=intro, 2=PA setup, 3-12=Q&A, 13=completion
+                if demo_slide_index <= 12:  # Slides 0-12: 0=welcome, 1=intro, 2=PA setup, 3-11=Q&A, 12=completion
                     self._render_demo_welcome()
                     return  # Completion slide has its own chat interface
                 else:
@@ -505,8 +505,8 @@ class ConversationDisplay:
             )
             return
 
-        # Slide 13: Demo completion with Steward's final message and BETA unlock
-        if current_idx == 13:
+        # Slide 12: Demo completion with Steward's final message and BETA unlock
+        if current_idx == 12:
             # Enable BETA tab unlock
             st.session_state.demo_completed = True
 
@@ -570,64 +570,60 @@ class ConversationDisplay:
         """Render a single demo slide - both question and response appear immediately."""
         import re
 
-        # Slide 7: Drift Event - Progressive Alignment Lens (quantum physics drift)
+        # Slide 6: Drift Event - Progressive Alignment Lens (quantum physics drift)
         # Handle this BEFORE rendering standard Q&A
-        if current_idx == 7:
-            # Reset drift visibility when first entering slide 7 (unless explicitly set by button)
-            # Check if this is a fresh entry to slide 7 by seeing if we just came from slide 6 or 8
-            if 'last_demo_slide' not in st.session_state or st.session_state.last_demo_slide != 7:
-                # Fresh entry to slide 7 - reset the drift visibility
+        if current_idx == 6:
+            # Reset drift visibility when first entering slide 6 (unless explicitly set by button)
+            # Check if this is a fresh entry to slide 6 by seeing if we just came from slide 5 or 7
+            if 'last_demo_slide' not in st.session_state or st.session_state.last_demo_slide != 6:
+                # Fresh entry to slide 6 - reset the drift visibility
                 st.session_state.slide_7_drift_visible = False
                 st.session_state.show_observatory_lens = False
                 st.session_state.steward_panel_open = False
-            st.session_state.last_demo_slide = 7
+            st.session_state.last_demo_slide = 6
             self._render_slide_7_drift_detection(turn_num)
             return
 
         # Calculate dual fidelities based on slide content
-        # Only show fidelities starting from slide 5 (when user asks about them)
-        # Slide 3: PA setup - perfect alignment at start
-        # Slide 4: "How can I see PA?" - PA Established only
-        # Slide 5: "Why are both our fidelities at 1.000?" - fidelities START showing
-        # Slide 6: "How does TELOS detect drift" - still aligned
-        # Slide 7: Quantum physics - USER drifts (absorbed "Why did MY fidelity drop" content)
-        # Slide 8: "How does TELOS track both" (combined) - both return to high
+        # Only show fidelities starting from slide 4 (when user asks about them)
+        # Slide 3: PA setup - perfect alignment at start (consolidated slide)
+        # Slide 4: "Why are both our fidelities at 1.000?" - fidelities START showing
+        # Slide 5: "How does TELOS detect drift" - still aligned
+        # Slide 6: Quantum physics - USER drifts (absorbed "Why did MY fidelity drop" content)
+        # Slide 7: "How does TELOS track both" (combined) - both return to high
 
-        show_fidelities = current_idx >= 5  # Start showing from slide 5
+        show_fidelities = current_idx >= 4  # Start showing from slide 4
 
-        if current_idx == 3:  # First Q&A - PA just established (don't show yet)
+        if current_idx == 3:  # First Q&A - PA just established (consolidated slide, don't show yet)
             user_fidelity = 1.000
             ai_fidelity = 1.000
-        elif current_idx == 4:  # "How can I see PA?" - still no fidelities shown
+        elif current_idx == 4:  # "Why are both our fidelities at 1.000?" - NOW we show them at 1.000
             user_fidelity = 1.000
             ai_fidelity = 1.000
-        elif current_idx == 5:  # "Why are both our fidelities at 1.000?" - NOW we show them at 1.000
-            user_fidelity = 1.000
-            ai_fidelity = 1.000
-        elif current_idx == 6:  # "How does TELOS detect drift" - still aligned
+        elif current_idx == 5:  # "How does TELOS detect drift" - still aligned
             user_fidelity = 0.95
             ai_fidelity = 0.96
-        elif current_idx == 7:  # Quantum physics - USER drifts (with absorbed "Why did MY fidelity drop" content)
+        elif current_idx == 6:  # Quantum physics - USER drifts (with absorbed "Why did MY fidelity drop" content)
             user_fidelity = 0.65  # User drifted off topic
             ai_fidelity = 0.89   # AI stays aligned (redirects)
-        elif current_idx == 8:  # "How does TELOS track both" (combined dual tracking + primacy state)
+        elif current_idx == 7:  # "How does TELOS track both" (combined dual tracking + primacy state)
             user_fidelity = 0.88  # Both return to high after course correction
             ai_fidelity = 0.90
-        elif current_idx == 9:  # "What's the math" - user asks for technical details (contradicts "without overwhelm")
+        elif current_idx == 8:  # "What's the math" - user asks for technical details (contradicts "without overwhelm")
             user_fidelity = 0.78  # Dips because asking for math contradicts their PA
             ai_fidelity = 0.91  # AI stays aligned by acknowledging drift but still serving
-        elif current_idx == 10:  # "What are the intervention strategies?" - back on track
+        elif current_idx == 9:  # "What are the intervention strategies?" - back on track
             user_fidelity = 0.89
             ai_fidelity = 0.90
-        elif current_idx == 11:  # "Is there anything else about TELOS..." - constitutional governance
+        elif current_idx == 10:  # "Is there anything else about TELOS..." - constitutional governance
             user_fidelity = 0.95  # On topic, asking good follow-up about TELOS
             ai_fidelity = 0.96   # Explaining TELOS governance architecture
-        elif current_idx == 12:  # "What does this mean for regulatory compliance..." - regulatory compliance
+        elif current_idx == 11:  # "What does this mean for regulatory compliance..." - regulatory compliance
             user_fidelity = 0.94  # On topic, asking about practical TELOS applications
             ai_fidelity = 0.95   # Explaining TELOS regulatory compliance value
-        else:  # Final slides (13+) - shouldn't reach here in demo
-            user_fidelity = 0.91 + (current_idx - 13) * 0.01
-            ai_fidelity = 0.92 + (current_idx - 13) * 0.01
+        else:  # Final slides (12+) - shouldn't reach here in demo
+            user_fidelity = 0.91 + (current_idx - 12) * 0.01
+            ai_fidelity = 0.92 + (current_idx - 12) * 0.01
 
         # Calculate Primacy State using actual TELOS formula
         # PS = ρ_PA · (2·F_user·F_AI)/(F_user + F_AI)
@@ -769,9 +765,9 @@ class ConversationDisplay:
 </style>
 """, unsafe_allow_html=True)
 
-        # Slide 4: Show Observation Deck after Q&A content
-        if current_idx == 4:
-            st.session_state.last_demo_slide = 4
+        # Slide 3: Show Observation Deck after Q&A content (consolidated slide)
+        if current_idx == 3:
+            st.session_state.last_demo_slide = 3
             self._render_demo_observation_deck(turn_num)
             return
 
@@ -797,13 +793,13 @@ class ConversationDisplay:
             with col_next:
                 if st.button("Next ➡️", key=f"next_slide_{current_idx}", use_container_width=True):
                     st.session_state.demo_slide_index += 1
-                    # If moving from slide 13 to slide 14 (completion), unlock BETA
-                    if current_idx == 13:
+                    # If moving from slide 12 to slide 13 (completion), unlock BETA
+                    if current_idx == 12:
                         st.session_state.demo_completed = True
                     st.rerun()
 
     def _render_slide_7_drift_detection(self, turn_num: int):
-        """Render slide 7 with drift detection and progressive Alignment Lens (quantum physics drift)."""
+        """Render slide 6 with drift detection and progressive Alignment Lens (quantum physics drift)."""
 
         # Initialize session state for drift event visibility
         if 'slide_7_drift_visible' not in st.session_state:
