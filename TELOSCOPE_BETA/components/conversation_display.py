@@ -1158,7 +1158,7 @@ class ConversationDisplay:
     <div style="background-color: #1a1a1a; border: 3px solid #FFD700; border-radius: 10px; padding: 20px; margin: 20px auto; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);">
         <h3 style="color: #FFD700; text-align: center; margin-bottom: 20px; font-size: 26px;">🔭 Observation Deck</h3>
         <div style="text-align: center; margin-bottom: 15px;">
-            <span style="background-color: #2d2d2d; border: 1px solid #4CAF50; border-radius: 20px; padding: 8px 20px; color: #4CAF50; font-weight: bold; font-size: 16px;">✓ Dual PAs Established - Primacy Basin Achieved</span>
+            <span style="background-color: #2d2d2d; border: 1px solid #4CAF50; border-radius: 20px; padding: 8px 20px; color: #4CAF50; font-weight: bold; font-size: 16px;">✓ Dual PAs Established - Primacy State Achieved</span>
         </div>
         <div style="color: #FFD700; text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 20px;">Dual Primacy Attractors</div>
     </div>
@@ -1193,18 +1193,18 @@ class ConversationDisplay:
 
     <!-- Primacy State (center) -->
     <div style="flex: 0 0 auto; text-align: center;">
-        <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #FFD700; border-radius: 8px; padding: 10px 20px; display: inline-block;">
-            <div style="color: #FFD700; font-size: 12px; margin-bottom: 5px;">Primacy State</div>
-            <div style="color: #FFD700; font-size: 24px; font-weight: bold;">1.000</div>
-            <div style="color: #888; font-size: 10px; margin-top: 5px;">Perfect Equilibrium</div>
+        <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #4CAF50; border-radius: 8px; padding: 10px 20px; display: inline-block;">
+            <div style="color: #4CAF50; font-size: 12px; margin-bottom: 5px;">Primacy State</div>
+            <div style="color: #4CAF50; font-size: 24px; font-weight: bold;">1.000</div>
+            <div style="color: #ddd; font-size: 10px; margin-top: 5px;">Perfect Equilibrium</div>
         </div>
     </div>
 
     <!-- AI Fidelity (right) -->
     <div style="flex: 1; text-align: center;">
-        <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #FFD700; border-radius: 8px; padding: 10px; display: inline-block;">
-            <div style="color: #FFD700; font-size: 12px; margin-bottom: 5px;">AI Fidelity</div>
-            <div style="color: #FFD700; font-size: 24px; font-weight: bold;">1.000</div>
+        <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #4CAF50; border-radius: 8px; padding: 10px; display: inline-block;">
+            <div style="color: #4CAF50; font-size: 12px; margin-bottom: 5px;">AI Fidelity</div>
+            <div style="color: #4CAF50; font-size: 24px; font-weight: bold;">1.000</div>
         </div>
     </div>
 </div>
@@ -1237,19 +1237,19 @@ class ConversationDisplay:
                     # AI PA - centered with larger font
                     st.markdown("""
 <div style="text-align: center; padding: 0 5px;">
-    <div style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #1a1a1a; padding: 12px; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 19px;">
+    <div style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: #1a1a1a; padding: 12px; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 19px;">
         AI Primacy Attractor
     </div>
-    <div style="background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 0 0 8px 8px; padding: 18px; margin-bottom: 12px; text-align: center;">
-        <div style="color: #FFD700; font-weight: bold; margin-bottom: 12px; font-size: 17px;">Purpose</div>
+    <div style="background-color: #2d2d2d; border: 2px solid #4CAF50; border-radius: 0 0 8px 8px; padding: 18px; margin-bottom: 12px; text-align: center;">
+        <div style="color: #4CAF50; font-weight: bold; margin-bottom: 12px; font-size: 17px;">Purpose</div>
         <div style="color: #e0e0e0; line-height: 1.9; font-size: 16px;">
             • Help you understand TELOS naturally<br/>
             • Stay aligned with your learning goals<br/>
             • Embody human dignity through action
         </div>
     </div>
-    <div style="background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 18px; margin-bottom: 12px; text-align: center;">
-        <div style="color: #FFD700; font-weight: bold; margin-bottom: 12px; font-size: 17px;">Scope</div>
+    <div style="background-color: #2d2d2d; border: 2px solid #4CAF50; border-radius: 8px; padding: 18px; margin-bottom: 12px; text-align: center;">
+        <div style="color: #4CAF50; font-weight: bold; margin-bottom: 12px; font-size: 17px;">Scope</div>
         <div style="color: #e0e0e0; line-height: 1.9; font-size: 16px;">
             • TELOS dual attractor system<br/>
             • Perfect equilibrium &amp; primacy basin<br/>
@@ -1257,8 +1257,8 @@ class ConversationDisplay:
             • Trust through transparency
         </div>
     </div>
-    <div style="background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 18px; text-align: center;">
-        <div style="color: #FFD700; font-weight: bold; margin-bottom: 12px; font-size: 17px;">Boundaries</div>
+    <div style="background-color: #2d2d2d; border: 2px solid #4CAF50; border-radius: 8px; padding: 18px; text-align: center;">
+        <div style="color: #4CAF50; font-weight: bold; margin-bottom: 12px; font-size: 17px;">Boundaries</div>
         <div style="color: #e0e0e0; line-height: 1.9; font-size: 16px;">
             • Answer what you asked<br/>
             • Stay conversational<br/>
