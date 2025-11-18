@@ -1099,6 +1099,13 @@ class ConversationDisplay:
         if 'demo_obs_deck_visible' not in st.session_state:
             st.session_state.demo_obs_deck_visible = False
 
+        # Reset to hidden when returning to this slide from a different slide
+        if 'last_demo_slide' not in st.session_state or st.session_state.last_demo_slide != 3:
+            st.session_state.demo_obs_deck_visible = False
+
+        # Track that we're on slide 3
+        st.session_state.last_demo_slide = 3
+
         # 3-button navigation goes first (right below the yellow-bordered message)
 
         # Render navigation row
