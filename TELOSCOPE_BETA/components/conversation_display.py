@@ -970,7 +970,7 @@ class ConversationDisplay:
         with col1:
             st.markdown("""
             <div style='text-align: center;'>
-                <div style='background-color: #2d2d2d; border: 2px solid #FFA500; border-radius: 8px; padding: 15px; text-align: center; display: inline-block; min-width: 200px;'>
+                <div style='background-color: #2d2d2d; border: 2px solid #FFA500; border-radius: 8px; padding: 15px; text-align: center; display: inline-block; width: 200px; max-width: 100%;'>
                     <div style='color: #FFA500; font-size: 14px; font-weight: bold; margin-bottom: 10px;'>USER FIDELITY</div>
                     <div style='color: #FFA500; font-size: 48px; font-weight: bold;'>0.65</div>
                     <div style='color: #FFA500; font-size: 12px; margin-top: 5px;'>DRIFT DETECTED</div>
@@ -981,7 +981,7 @@ class ConversationDisplay:
         with col2:
             st.markdown("""
             <div style='text-align: center;'>
-                <div style='background-color: #2d2d2d; border: 2px solid #4CAF50; border-radius: 8px; padding: 15px; text-align: center; display: inline-block; min-width: 200px;'>
+                <div style='background-color: #2d2d2d; border: 2px solid #4CAF50; border-radius: 8px; padding: 15px; text-align: center; display: inline-block; width: 200px; max-width: 100%;'>
                     <div style='color: #4CAF50; font-size: 14px; font-weight: bold; margin-bottom: 10px;'>AI FIDELITY</div>
                     <div style='color: #4CAF50; font-size: 48px; font-weight: bold;'>0.89</div>
                     <div style='color: #4CAF50; font-size: 12px; margin-top: 5px;'>✓ ALIGNED</div>
@@ -992,7 +992,7 @@ class ConversationDisplay:
         with col3:
             st.markdown("""
             <div style='text-align: center;'>
-                <div style='background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 15px; text-align: center; display: inline-block; min-width: 200px;'>
+                <div style='background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 15px; text-align: center; display: inline-block; width: 200px; max-width: 100%;'>
                     <div style='color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 10px;'>PRIMACY STATE</div>
                     <div style='color: #FFD700; font-size: 48px; font-weight: bold;'>0.75</div>
                     <div style='color: #FFD700; font-size: 12px; margin-top: 5px;'>Harmonic Mean</div>
