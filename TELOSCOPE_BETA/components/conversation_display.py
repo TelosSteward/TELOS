@@ -1143,9 +1143,6 @@ class ConversationDisplay:
 
         # Now render the Observation Deck content (only if visible)
         if st.session_state.demo_obs_deck_visible:
-            # Anchor point for scrolling
-            st.markdown('<div id="observation-deck-anchor"></div>', unsafe_allow_html=True)
-
             # Wrap everything in a container with max-width to prevent expansion
             st.markdown("""
 <style>
@@ -1267,6 +1264,9 @@ class ConversationDisplay:
                 # Close the observation deck content container
                 st.markdown("</div>", unsafe_allow_html=True)
 
+            # Anchor point for scrolling - positioned here to bring bottom nav into view
+            st.markdown('<div id="observation-deck-anchor"></div>', unsafe_allow_html=True)
+
             # Add duplicate navigation at bottom when Observation Deck is shown
             st.markdown("<div style='margin: 20px 0; padding: 10px;'>", unsafe_allow_html=True)
 
@@ -1306,13 +1306,13 @@ class ConversationDisplay:
 
             st.markdown("</div>", unsafe_allow_html=True)
 
-            # Auto-scroll to Observation Deck content - end positioning scrolls further down for easier nav access
+            # Auto-scroll to bottom nav - anchor positioned before buttons, 'start' brings them into view
             st.components.v1.html("""
                 <script>
                     setTimeout(function() {
                         window.parent.document.getElementById('observation-deck-anchor').scrollIntoView({
                             behavior: 'smooth',
-                            block: 'end'
+                            block: 'start'
                         });
                     }, 100);
                 </script>
