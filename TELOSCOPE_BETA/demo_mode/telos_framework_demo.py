@@ -183,11 +183,7 @@ def get_demo_slides():
     return [
         (
             "I want to understand TELOS but without overwhelming technical details. Can you help?",
-            "Perfect! Think of TELOS like a GPS for conversations. Just as GPS needs to know your destination, TELOS needs to understand your conversation goals. From this single input, TELOS has established your Primacy Attractor (PA) - basically, what you want to achieve and what boundaries should be maintained.\n\nYour User PA: understanding TELOS concepts clearly without technical overwhelm. My AI PA: explaining TELOS simply while staying aligned with your learning goals. Think of it like a dance partnership: your User PA leads (what to discuss), my AI PA follows (how to help), and TELOS ensures we stay in sync."
-        ),
-        (
-            "How can I see what my Primacy Attractor is?",
-            "You can check both Primacy Attractors by clicking the 'Show Observation Deck' button below. The Observation Deck displays both your User PA (what you want to achieve) and my AI PA (how I serve your goals). Each has its own purpose, scope, and boundaries. Try clicking it now to see the dual attractors working together!"
+            "Perfect! Think of TELOS like a GPS for conversations. Just as GPS needs to know your destination, TELOS needs to understand your conversation goals.\n\nFrom this single input, TELOS has established your Primacy Attractor (PA) - what you want to achieve and the boundaries to maintain.\n\nYour dual attractors are now active:\n- Your User PA: understanding TELOS without technical overwhelm\n- My AI PA: explaining TELOS simply while staying aligned\n\nThink of it like a dance partnership - you lead (what to discuss), I follow (how to help), and TELOS ensures we stay in sync. Want to see them? Click 'Show Observation Deck' below."
         ),
         (
             "Why are both our fidelities at 1.000 right now?",
