@@ -680,8 +680,8 @@ class ConversationDisplay:
 
         # USER QUESTION - Wrapped in compact container with fade-in
         st.markdown(f"""
-<div class="compact-container">
-    <div style="
+<div class="compact-container" key="slide-{current_idx}">
+    <div data-slide="{current_idx}" style="
         background-color: #2d2d2d;
         border: 2px solid #666;
         border-radius: 10px;
@@ -691,7 +691,8 @@ class ConversationDisplay:
         color: #e0e0e0;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         opacity: 0;
-        animation: slideContentFadeIn 0.5s ease-out forwards;">
+        animation: slideContentFadeIn 0.5s ease-out forwards;
+        animation-fill-mode: forwards;">
         <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">User:</div>
         <div>{user_question}</div>
     </div>
@@ -700,8 +701,8 @@ class ConversationDisplay:
 
         # STEWARD RESPONSE - Appears instantly, wrapped in compact container with fade-in
         st.markdown(f"""
-<div class="compact-container">
-    <div style="
+<div class="compact-container" key="response-{current_idx}">
+    <div data-slide="{current_idx}" style="
         background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
         border: 2px solid #FFD700;
         border-radius: 10px;
@@ -712,7 +713,8 @@ class ConversationDisplay:
         line-height: 1.7;
         box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
         opacity: 0;
-        animation: slideContentFadeIn 0.5s ease-out 0.3s forwards;">
+        animation: slideContentFadeIn 0.5s ease-out 0.3s forwards;
+        animation-fill-mode: forwards;">
         <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">Steward:</div>
         <div>{cleaned_response.replace(chr(10), '<br>')}</div>
     </div>
