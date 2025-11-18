@@ -488,13 +488,13 @@ class ConversationDisplay:
                         st.rerun()
             return
 
-        # Slides 3-12: Q&A pairs (slides[0] through slides[9]) - 10 Q&A slides
-        if 3 <= current_idx <= 12:
-            slide_idx = current_idx - 3  # slides[0] through slides[9]
+        # Slides 3-11: Q&A pairs (slides[0] through slides[8]) - 9 Q&A slides (after consolidation)
+        if 3 <= current_idx <= 11:
+            slide_idx = current_idx - 3  # slides[0] through slides[8]
             user_question, steward_response = slides[slide_idx]
 
             # Turn numbers start at 11 (PA already established in turns 1-10)
-            turn_num = slide_idx + 11  # Turn 11-20
+            turn_num = slide_idx + 11  # Turn 11-19
 
             # Render demo slide
             self._render_demo_slide_with_typewriter(
@@ -561,7 +561,7 @@ class ConversationDisplay:
 
             with col_buttons:
                 if st.button("Previous", key="completion_prev", use_container_width=True):
-                    st.session_state.demo_slide_index = 12  # Go back to regulatory compliance slide
+                    st.session_state.demo_slide_index = 11  # Go back to regulatory compliance slide
                     st.rerun()
 
             return
@@ -878,7 +878,7 @@ class ConversationDisplay:
                     st.session_state.slide_7_drift_visible = False
                     st.session_state.show_observatory_lens = False
                     st.session_state.steward_panel_open = False
-                    st.session_state.demo_slide_index = 6
+                    st.session_state.demo_slide_index = 5  # Go back to "How does TELOS detect drift"
                     st.rerun()
 
             with col_toggle:
@@ -900,7 +900,7 @@ class ConversationDisplay:
 
             with col_next:
                 if st.button("Next ➡️", key="slide_7_next", use_container_width=True):
-                    st.session_state.demo_slide_index = 8
+                    st.session_state.demo_slide_index = 7  # Go to "How does TELOS track both"
                     st.rerun()
 
         # Render Alignment Lens if visible (below the buttons)
@@ -1073,7 +1073,7 @@ class ConversationDisplay:
                     st.session_state.slide_7_drift_visible = False
                     st.session_state.show_observatory_lens = False
                     st.session_state.steward_panel_open = False
-                    st.session_state.demo_slide_index = 6
+                    st.session_state.demo_slide_index = 5  # Go back to "How does TELOS detect drift"
                     st.rerun()
 
             with col_toggle_bottom:
@@ -1089,7 +1089,7 @@ class ConversationDisplay:
 
             with col_next_bottom:
                 if st.button("Next ➡️", key="slide_7_next_bottom", use_container_width=True):
-                    st.session_state.demo_slide_index = 8
+                    st.session_state.demo_slide_index = 7  # Go to "How does TELOS track both"
                     st.rerun()
 
     def _render_demo_observation_deck(self, turn_num: int):
@@ -1113,10 +1113,10 @@ class ConversationDisplay:
             with col_prev:
                 if st.button(
                     "⬅️ Previous",
-                    key="obs_deck_prev_4",
+                    key="obs_deck_prev_3",
                     use_container_width=True
                 ):
-                    st.session_state.demo_slide_index = 3
+                    st.session_state.demo_slide_index = 2  # Go back to PA setup
                     st.rerun()
 
             with col_toggle:
@@ -1133,10 +1133,10 @@ class ConversationDisplay:
             with col_next:
                 if st.button(
                     "Next ➡️",
-                    key="obs_deck_next_4",
+                    key="obs_deck_next_3",
                     use_container_width=True
                 ):
-                    st.session_state.demo_slide_index = 5
+                    st.session_state.demo_slide_index = 4  # Go to "Why are both our fidelities at 1.000?"
                     st.rerun()
 
         st.markdown("</div>", unsafe_allow_html=True)
@@ -1279,10 +1279,10 @@ class ConversationDisplay:
                 with col_prev_bottom:
                     if st.button(
                         "⬅️ Previous",
-                        key="obs_deck_prev_4_bottom",
+                        key="obs_deck_prev_3_bottom",
                         use_container_width=True
                     ):
-                        st.session_state.demo_slide_index = 3
+                        st.session_state.demo_slide_index = 2  # Go back to PA setup
                         st.rerun()
 
                 with col_toggle_bottom:
@@ -1298,10 +1298,10 @@ class ConversationDisplay:
                 with col_next_bottom:
                     if st.button(
                         "Next ➡️",
-                        key="obs_deck_next_4_bottom",
+                        key="obs_deck_next_3_bottom",
                         use_container_width=True
                     ):
-                        st.session_state.demo_slide_index = 5
+                        st.session_state.demo_slide_index = 4  # Go to "Why are both our fidelities at 1.000?"
                         st.rerun()
 
             st.markdown("</div>", unsafe_allow_html=True)
