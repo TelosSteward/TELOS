@@ -341,20 +341,29 @@ class ConversationDisplay:
         if current_idx == 0:
 
             st.markdown(f"""
-<div class="compact-container">
-    <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+<div class="compact-container" key="slide-0">
+    <div data-slide="0" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
                 border: 2px solid #FFD700;
                 border-radius: 15px;
                 padding: 30px;
                 margin: 20px auto;
                 text-align: center;
-                box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);">
+                box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+                opacity: 0;
+                animation: slideContentFadeIn 0.5s ease-out forwards;
+                animation-fill-mode: forwards;">
         <h1 style="color: #FFD700; font-size: 32px; margin-bottom: 20px;">Welcome to TELOS Demo Mode! 🔭</h1>
         <p style="color: #e0e0e0; font-size: 20px; line-height: 1.6;">
             Click "Start Demo" below to begin your guided tour.
         </p>
     </div>
 </div>
+<style>
+@keyframes slideContentFadeIn {{
+    from {{ opacity: 0; transform: translateY(10px); }}
+    to {{ opacity: 1; transform: translateY(0); }}
+}}
+</style>
 """, unsafe_allow_html=True)
 
             # Center the button too
@@ -368,8 +377,8 @@ class ConversationDisplay:
         # Slide 1: Original Steward intro - appears instantly, centered and compact
         if current_idx == 1:
             intro_html = """
-<div class="compact-container">
-    <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
+<div class="compact-container" key="slide-1">
+    <div data-slide="1" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
                 border: 2px solid #FFD700;
                 border-radius: 10px;
                 padding: 20px 25px;
@@ -378,7 +387,10 @@ class ConversationDisplay:
                 line-height: 1.7;
                 color: #e0e0e0;
                 text-align: center;
-                box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);">
+                box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
+                opacity: 0;
+                animation: slideContentFadeIn 0.5s ease-out forwards;
+                animation-fill-mode: forwards;">
         <div style="color: #FFD700; font-size: 23px; font-weight: bold; margin-bottom: 15px;">
             Hello! I'm Steward, your guide to understanding TELOS.
         </div>
@@ -393,6 +405,12 @@ class ConversationDisplay:
         </div>
     </div>
 </div>
+<style>
+@keyframes slideContentFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
 """
             st.markdown(intro_html, unsafe_allow_html=True)
 
@@ -416,8 +434,8 @@ class ConversationDisplay:
         # Slide 2: NEW - How TELOS establishes PA
         if current_idx == 2:
             pa_setup_html = """
-<div class="compact-container">
-    <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
+<div class="compact-container" key="slide-2">
+    <div data-slide="2" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
                 border: 2px solid #FFD700;
                 border-radius: 10px;
                 padding: 20px 25px;
@@ -426,7 +444,10 @@ class ConversationDisplay:
                 line-height: 1.7;
                 color: #e0e0e0;
                 text-align: center;
-                box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);">
+                box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
+                opacity: 0;
+                animation: slideContentFadeIn 0.5s ease-out forwards;
+                animation-fill-mode: forwards;">
         <div style="color: #FFD700; font-size: 23px; font-weight: bold; margin-bottom: 15px;">
             How TELOS Establishes Your Governance
         </div>
@@ -441,6 +462,12 @@ class ConversationDisplay:
         </div>
     </div>
 </div>
+<style>
+@keyframes slideContentFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
 """
             st.markdown(pa_setup_html, unsafe_allow_html=True)
 
