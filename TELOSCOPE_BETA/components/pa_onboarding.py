@@ -11,7 +11,7 @@ from typing import Dict, Optional
 from datetime import datetime
 
 # Import color configuration
-from config.colors import GOLD, GOLD_80
+from config.colors import GOLD, GOLD_80  # GOLD = #F4D03F (refined, easier on eyes)
 
 
 class PAOnboarding:
@@ -58,17 +58,17 @@ class PAOnboarding:
             return st.session_state.get('pa_answers')
 
         # Header with explanation
-        st.markdown("""
+        st.markdown(f"""
         <div style="
             background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
-            border: 3px solid #FFD700;
+            border: 3px solid {GOLD};
             border-radius: 15px;
             padding: 30px;
             margin: 20px 0;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 20px {GOLD_80};
         ">
             <div style="text-align: center; margin-bottom: 20px;">
-                <div style="color: #FFD700; font-size: 32px; font-weight: bold; margin-bottom: 15px;">
+                <div style="color: {GOLD}; font-size: 32px; font-weight: bold; margin-bottom: 15px;">
                     Let's Establish Your Purpose
                 </div>
                 <div style="color: #e0e0e0; font-size: 20px; margin-top: 10px; line-height: 1.6;">
@@ -100,12 +100,12 @@ class PAOnboarding:
                 st.markdown(f"""
                 <div style="
                     background-color: #1a1a1a;
-                    border: 2px solid #FFD700;
+                    border: 2px solid {GOLD};
                     border-radius: 10px;
                     padding: 20px;
                     margin: 15px 0;
                 ">
-                    <div style="color: #FFD700; font-size: 22px; font-weight: bold; margin-bottom: 10px;">
+                    <div style="color: {GOLD}; font-size: 22px; font-weight: bold; margin-bottom: 10px;">
                         {q['question']}
                     </div>
                     <div style="color: #999; font-size: 16px;">
