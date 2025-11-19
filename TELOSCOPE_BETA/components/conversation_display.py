@@ -158,21 +158,16 @@ class ConversationDisplay:
         active_tab = st.session_state.get('active_tab', 'DEMO')
         beta_mode = active_tab == "BETA"
 
-        # IMPORTANT: Only show beta intro if ALL THREE conditions are true:
-        # 1. Beta mode is active
-        # 2. Beta intro has NOT been completed
-        # 3. There are NO turns yet (blank session)
-        beta_intro_complete = st.session_state.get('beta_intro_complete', False)
-
-        if beta_mode and not beta_intro_complete and len(all_turns) == 0:
-            self._render_beta_intro()
-            return
+        # BETA intro slideshow is now replaced by PA questionnaire + welcome message
+        # Mark intro as complete to skip old slideshow
+        if beta_mode and 'beta_intro_complete' not in st.session_state:
+            st.session_state.beta_intro_complete = True
 
         if len(all_turns) == 0:
             # Blank session - handle different modes appropriately
 
             # BETA MODE with completed intro: Show input immediately
-            if beta_mode and beta_intro_complete:
+            if beta_mode and st.session_state.get('beta_intro_complete', True):
                 # Beta mode after intro - show input for conversation
                 self._render_input_with_scroll_toggle()
                 return
@@ -3009,29 +3004,25 @@ Current Turn Data:
         beta_mode = active_tab == "BETA"
 
         if beta_mode:
-            # BETA mode: Center the input form to match conversation layout
-            # Use same centering as messages: [1.5, 0.5, 6.0, 1.0, 1.0] = spacers 3.0, content 7.0
-            col_spacer_left, col_form = st.columns([3.0, 7.0])
+            # BETA mode: Full-width input form (same as regular conversation)
+            # Use a form to enable Enter key submission
+            with st.form(key="message_form", clear_on_submit=True):
+                col1, col2 = st.columns([8.5, 1.5])
 
-            with col_form:
-                # Use a form to enable Enter key submission
-                with st.form(key="message_form", clear_on_submit=True):
-                    col1, col2 = st.columns([8.5, 1.5])
+                with col1:
+                    user_input = st.text_area(
+                        "Message",
+                        placeholder="Tell TELOS",
+                        key="main_chat_input_clean",
+                        label_visibility="collapsed",
+                        height=50
+                    )
 
-                    with col1:
-                        user_input = st.text_area(
-                            "Message",
-                            placeholder="Tell TELOS",
-                            key="main_chat_input_clean",
-                            label_visibility="collapsed",
-                            height=100
-                        )
-
-                    with col2:
-                        send_button = st.form_submit_button(
-                            "Send",
-                            use_container_width=True
-                        )
+                with col2:
+                    send_button = st.form_submit_button(
+                        "Send",
+                        use_container_width=True
+                    )
         else:
             # Demo/Open mode: Full-width input form
             # Use a form to enable Enter key submission

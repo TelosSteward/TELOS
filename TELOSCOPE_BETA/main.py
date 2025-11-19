@@ -19,6 +19,7 @@ from core.state_manager import StateManager
 from components.sidebar_actions_beta import SidebarActionsBeta
 from components.conversation_display import ConversationDisplay
 from components.observation_deck import ObservationDeck
+from components.beta_observation_deck import BetaObservationDeck
 from components.beta_completion import BetaCompletion
 from components.teloscope_controls import TELOSCOPEControls
 from components.beta_onboarding import BetaOnboarding
@@ -740,6 +741,7 @@ def main():
     steward_panel = StewardPanel(state_manager)
     conversation_display = ConversationDisplay(state_manager)
     observation_deck = ObservationDeck(state_manager)
+    beta_observation_deck = BetaObservationDeck()
     teloscope_controls = TELOSCOPEControls(state_manager)
     beta_onboarding = BetaOnboarding(state_manager)
     pa_onboarding = PAOnboarding()
@@ -784,13 +786,13 @@ def main():
     else:
         # Render tabs and content (DEMO is always accessible, BETA/TELOS require consent, DEVOPS is unrestricted)
         render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
-                                conversation_display, observation_deck,
+                                conversation_display, observation_deck, beta_observation_deck,
                                 teloscope_controls, steward_panel, beta_onboarding,
                                 pa_onboarding, observatory_lens)
 
 
 def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
-                            conversation_display, observation_deck,
+                            conversation_display, observation_deck, beta_observation_deck,
                             teloscope_controls, steward_panel, beta_onboarding,
                             pa_onboarding, observatory_lens):
     """Render tabs and main content area."""
@@ -1068,30 +1070,54 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
             # Show BETA welcome message if PA just established and no turns yet
             if st.session_state.get('pa_established', False) and st.session_state.get('beta_current_turn', 1) == 1:
                 if 'conversation_turns' not in st.session_state or len(st.session_state.conversation_turns) == 0:
-                    st.markdown(f"""
-<div style="
-    background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
-    border: 2px solid {GOLD};
-    border-radius: 10px;
-    padding: 20px;
-    margin: 20px 0;
-">
-    <div style="color: {GOLD}; font-size: 24px; font-weight: bold; margin-bottom: 15px;">
-        Welcome to BETA Testing!
+                    welcome_html = f"""
+<div style="background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); border: 3px solid {GOLD}; border-radius: 15px; padding: 30px; margin: 20px 0;">
+    <div style="text-align: center; color: {GOLD}; font-size: 28px; font-weight: bold; margin-bottom: 20px;">
+        Welcome to BETA Testing
     </div>
-    <div style="color: #e0e0e0; font-size: 18px; line-height: 1.6;">
-        Your Primacy Attractor has been established. You're now ready to begin the 15-turn conversation experience.
-        <br><br>
-        <strong>What to expect:</strong><br>
-        • You'll have 15 conversation turns<br>
-        • Some turns will show one response, others will show two responses side-by-side<br>
-        • Your conversation will be guided by the purpose you just defined<br>
-        • Use the "Observation Deck" button below to view metrics at any time<br>
-        <br>
-        <strong>Start by asking a question or making a request below.</strong>
+    <div style="color: #e0e0e0; font-size: 18px; line-height: 1.8;">
+        <div style="margin-bottom: 20px;">
+            Your <strong style="color: {GOLD};">Primacy Attractor</strong> has been established.
+            You're about to experience a 15-turn conversation where we'll test how well AI stays
+            aligned with your stated purpose.
+        </div>
+        <div style="background-color: #1a1a1a; padding: 20px; border-radius: 10px; margin: 20px 0;">
+            <div style="color: {GOLD}; font-size: 20px; font-weight: bold; margin-bottom: 15px;">
+                Here's What Will Happen:
+            </div>
+            <div style="margin-bottom: 15px;">
+                <strong style="color: {GOLD};">15 Conversation Turns</strong><br>
+                You'll have a natural conversation over 15 turns. Just ask questions or make requests
+                as you normally would.
+            </div>
+            <div style="margin-bottom: 15px;">
+                <strong style="color: {GOLD};">Two Types of Responses</strong><br>
+                • Some turns will show <strong>one response</strong> (you won't know the source)<br>
+                • Other turns will show <strong>two responses side-by-side</strong> (you'll choose your preference)
+            </div>
+            <div style="margin-bottom: 15px;">
+                <strong style="color: {GOLD};">Live Alignment Tracking</strong><br>
+                The Observation Deck (below) shows if the conversation is staying aligned with
+                your stated purpose. You'll see your fidelity score in real-time.
+            </div>
+            <div style="margin-bottom: 15px;">
+                <strong style="color: {GOLD};">After 15 Turns</strong><br>
+                You'll get access to the full Observatory to see detailed metrics, and the
+                TELOS tab will unlock for full governed conversations.
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 25px; padding: 20px; background-color: #1a1a1a; border-radius: 10px;">
+            <div style="color: {GOLD}; font-size: 20px; font-weight: bold; margin-bottom: 10px;">
+                Ready to Begin?
+            </div>
+            <div style="color: #e0e0e0; font-size: 16px;">
+                Start by asking a question or making a request in the chat below.
+            </div>
+        </div>
     </div>
 </div>
-""", unsafe_allow_html=True)
+"""
+                    st.markdown(welcome_html, unsafe_allow_html=True)
 
         # Main conversation display (all modes)
         conversation_display.render()
@@ -1109,84 +1135,28 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
             pass
 
         elif mode == "BETA":
-            # In BETA mode, only show buttons after PA is established
-            # Use the explicit PA established flag from questionnaire
-            pa_established = st.session_state.get('pa_established', False)
+            # In BETA mode, show simplified Observation Deck (no complex tools)
+            # No toggle buttons - Observation Deck is always available
+            pass
 
-            if pa_established:
-                st.markdown("<div style='margin: 30px 0;'></div>", unsafe_allow_html=True)
-
-                # Create centered columns for visualization toggle buttons
-                col_left_spacer, col_center, col_right_spacer = st.columns([0.3, 3.4, 0.3])
-
-                with col_center:
-                    col1, col2, col3 = st.columns([1, 1, 1])
-
-                    with col1:
-                        # Alignment Lens toggle button
-                        lens_active = st.session_state.get('show_observatory_lens', False)
-                        if st.button(
-                            f"{'Hide' if lens_active else 'Show'} Alignment Lens",
-                            key=f"toggle_lens_{mode}",
-                            use_container_width=True,
-                            help="TELOSCOPE: Real-time alignment and drift monitoring"
-                        ):
-                            st.session_state.show_observatory_lens = not lens_active
-                            # Track A/B test metric
-                            if 'ab_manager' in st.session_state:
-                                st.session_state.ab_manager.track_event('observatory_lens_toggled', {
-                                    'new_state': not lens_active,
-                                    'mode': mode
-                                })
-                            st.rerun()
-
-                    with col2:
-                        # Observation Deck toggle button
-                        deck_active = st.session_state.get('show_observation_deck', False)
-                        if st.button(
-                            f"{'Hide' if deck_active else 'Show'} Observation Deck",
-                            key=f"toggle_deck_{mode}",
-                            use_container_width=True,
-                            help="View your established Primacy Attractor and governance metrics"
-                        ):
-                            st.session_state.show_observation_deck = not deck_active
-                            # Track A/B test metric
-                            if 'ab_manager' in st.session_state:
-                                st.session_state.ab_manager.track_event('observation_deck_toggled', {
-                                    'new_state': not deck_active,
-                                    'mode': mode
-                                })
-                            st.rerun()
-
-                    with col3:
-                        # Info button for help
-                        if st.button(
-                            "About These Tools",
-                            key=f"info_viz_{mode}",
-                            use_container_width=True,
-                            help="Learn about visualization tools"
-                        ):
-                            st.info("""
-                            **TELOSCOPE: Alignment Lens**: Real-time visual dashboard showing TELOS governance in action through 6 core visualizations focused on alignment and drift monitoring.
-
-                            **Observation Deck**: View your established Primacy Attractor (purpose, scope, boundaries) and detailed governance metrics.
-
-                            These tools help you understand how TELOS maintains alignment with your stated purpose.
-                            """)
-
-        # Observation Deck (show if toggled in DEMO/BETA, or always in TELOS/DEVOPS)
-        if mode in ["DEMO", "BETA"]:
+        # Observation Deck (different rendering based on mode)
+        if mode == "BETA":
+            # BETA mode uses simplified BetaObservationDeck (always visible if PA established)
+            if st.session_state.get('pa_established', False):
+                st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
+                beta_observation_deck.render()
+        elif mode == "DEMO":
             # For DEMO, don't render the main observation deck on slide 4
             # (it has its own embedded observation deck in the demo)
-            if mode == "DEMO" and st.session_state.get('demo_slide_index', 0) == 4:
+            if st.session_state.get('demo_slide_index', 0) == 4:
                 # Skip rendering - demo slide 4 has its own observation deck
                 pass
             elif st.session_state.get('show_observation_deck', False):
-                # For DEMO (other slides) and BETA, only show if toggled on
+                # For DEMO (other slides), only show if toggled on
                 st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
                 observation_deck.render()
         elif show_observation_deck:
-            # For TELOS and DEVOPS, always show
+            # For TELOS and DEVOPS, always show full observation deck
             st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
             observation_deck.render()
 

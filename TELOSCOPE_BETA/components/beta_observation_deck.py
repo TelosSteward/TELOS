@@ -1,0 +1,108 @@
+"""
+BETA Observation Deck - Simplified view for BETA testers
+Shows PA + current fidelity score only (no complex metrics)
+"""
+
+import streamlit as st
+from config.colors import GOLD
+
+class BetaObservationDeck:
+    """Simplified Observation Deck for BETA mode showing PA and fidelity."""
+
+    def render(self):
+        """Render the BETA observation deck button and content."""
+
+        # Only show if PA is established
+        if not st.session_state.get('pa_established', False):
+            return
+
+        # Collapsible Observation Deck
+        with st.expander("🔭 Observation Deck", expanded=False):
+            self._render_pa_summary()
+
+            # Only show fidelity if there's at least one turn
+            current_turn = st.session_state.get('beta_current_turn', 1)
+            if current_turn > 1 or len(st.session_state.get('conversation_turns', [])) > 0:
+                st.markdown("<div style='margin: 20px 0;'></div>", unsafe_allow_html=True)
+                self._render_fidelity()
+
+    def _render_pa_summary(self):
+        """Render the user's Primacy Attractor."""
+        pa = st.session_state.get('primacy_attractor', {})
+
+        st.markdown(f"""
+<div style="
+    background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+    border: 2px solid {GOLD};
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px 0;
+">
+    <div style="color: {GOLD}; font-size: 20px; font-weight: bold; margin-bottom: 15px;">
+        Your Primacy Attractor
+    </div>
+    <div style="color: #e0e0e0; font-size: 16px; line-height: 1.8;">
+        <div style="margin-bottom: 12px;">
+            <strong style="color: {GOLD};">Purpose:</strong><br>
+            {pa.get('purpose', 'Not set')}
+        </div>
+        <div style="margin-bottom: 12px;">
+            <strong style="color: {GOLD};">Scope:</strong><br>
+            {pa.get('scope', 'Not set')}
+        </div>
+        <div style="margin-bottom: 12px;">
+            <strong style="color: {GOLD};">Success Criteria:</strong><br>
+            {pa.get('success_criteria', 'Not set')}
+        </div>
+        {f'''<div style="margin-bottom: 12px;">
+            <strong style="color: {GOLD};">Style:</strong><br>
+            {pa.get('style', 'Not set')}
+        </div>''' if pa.get('style') else ''}
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+    def _render_fidelity(self):
+        """Render current fidelity/alignment status."""
+
+        # TODO: Get actual fidelity from BETA response manager
+        # For now, placeholder
+        fidelity = 0.92  # Placeholder - will be computed from actual response
+
+        # Determine status and color
+        if fidelity >= 0.85:
+            status = "Aligned"
+            color = "#4CAF50"  # Green
+            explanation = "Your conversation is staying well-aligned with your stated purpose."
+        elif fidelity >= 0.70:
+            status = "Minor Drift"
+            color = "#FFA500"  # Orange
+            explanation = "The conversation has drifted slightly from your original purpose."
+        else:
+            status = "Significant Drift"
+            color = "#FF4444"  # Red
+            explanation = "The conversation has drifted significantly from your stated purpose."
+
+        st.markdown(f"""
+<div style="
+    background-color: #1a1a1a;
+    border: 2px solid {color};
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px 0;
+">
+    <div style="color: {color}; font-size: 20px; font-weight: bold; margin-bottom: 10px;">
+        Current Alignment: {status}
+    </div>
+    <div style="color: #e0e0e0; font-size: 32px; font-weight: bold; margin: 15px 0;">
+        {fidelity:.2f}
+    </div>
+    <div style="color: #e0e0e0; font-size: 14px; line-height: 1.6;">
+        {explanation}
+    </div>
+    <div style="color: #888; font-size: 13px; margin-top: 15px; font-style: italic;">
+        This measures how well the conversation is staying aligned with your stated purpose.
+        After completing BETA, you'll see detailed metrics in the Observatory.
+    </div>
+</div>
+""", unsafe_allow_html=True)

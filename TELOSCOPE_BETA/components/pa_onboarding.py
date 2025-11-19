@@ -35,7 +35,7 @@ class PAOnboarding:
             {
                 "key": "success_criteria",
                 "question": "How will you know if this conversation is successful?",
-                "placeholder": "e.g., I understand how TELOS works, I have actionable next steps, my questions are answered...",
+                "placeholder": "e.g., I got clear answers, I learned something new, I have actionable next steps...",
                 "help": "This sets measurable outcomes"
             },
             {
