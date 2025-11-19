@@ -179,7 +179,7 @@ class PAOnboarding:
                                 st.error("Please provide an answer or skip (if available)")
                     else:
                         # Final question - complete button
-                        if st.form_submit_button("✅ Complete Setup", use_container_width=True, type="primary"):
+                        if st.form_submit_button("✅ Complete Setup", use_container_width=True):
                             if answer:
                                 if 'pa_answers' not in st.session_state:
                                     st.session_state.pa_answers = {}

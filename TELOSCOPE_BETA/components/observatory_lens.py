@@ -59,13 +59,13 @@ class ObservatoryLens:
 
         <div style="
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-            border: 2px solid #FFD700;
+            border: 2px solid #F4D03F;
             border-radius: 10px;
             padding: 20px;
             margin-top: 20px;
         ">
             <div style="text-align: center; margin-bottom: 20px;">
-                <h2 style="color: #FFD700; margin: 0; font-weight: bold; letter-spacing: 2px;">
+                <h2 style="color: #F4D03F; margin: 0; font-weight: bold; letter-spacing: 2px;">
                     🔭 OBSERVATORY LENS
                 </h2>
                 <p style="color: #888; font-size: 12px; margin: 5px 0 0 0;">
@@ -148,7 +148,7 @@ class ObservatoryLens:
             if fidelity >= 0.85:
                 point_color = '#4CAF50'  # Green
             elif fidelity >= 0.70:
-                point_color = '#FFD700'  # Yellow
+                point_color = '#F4D03F'  # Yellow
             elif fidelity >= 0.50:
                 point_color = '#FFA500'  # Orange
             else:
@@ -164,14 +164,14 @@ class ObservatoryLens:
             fig.add_trace(go.Scatter3d(
                 x=positions[:, 0], y=positions[:, 1], z=positions[:, 2],
                 mode='markers',
-                marker=dict(size=sizes, color=colors, line=dict(color='#FFD700', width=1)),
+                marker=dict(size=sizes, color=colors, line=dict(color='#F4D03F', width=1)),
                 text=hover_texts, hoverinfo='text', name='Responses'
             ))
 
         fig.add_trace(go.Scatter3d(
             x=[0], y=[0], z=[0],
             mode='markers',
-            marker=dict(size=20, color='#FFD700', symbol='diamond', line=dict(color='#FFFFFF', width=2)),
+            marker=dict(size=20, color='#F4D03F', symbol='diamond', line=dict(color='#FFFFFF', width=2)),
             text=['Primacy Attractor<br>Center of Basin'], hoverinfo='text', name='PA Center'
         ))
 
@@ -184,7 +184,7 @@ class ObservatoryLens:
 
         fig.add_trace(go.Surface(
             x=sphere_x, y=sphere_y, z=sphere_z,
-            opacity=0.1, colorscale=[[0, '#FFD700'], [1, '#FFD700']],
+            opacity=0.1, colorscale=[[0, '#F4D03F'], [1, '#F4D03F']],
             showscale=False, hoverinfo='skip', name='Safe Basin'
         ))
 
@@ -211,14 +211,14 @@ class ObservatoryLens:
             mode="gauge+number+delta",
             value=fidelity,
             domain={'x': [0, 1], 'y': [0, 1]},
-            title={'text': "Fidelity", 'font': {'size': 16, 'color': '#FFD700'}},
-            number={'font': {'size': 40, 'color': '#FFD700'}, 'valueformat': '.3f'},
+            title={'text': "Fidelity", 'font': {'size': 16, 'color': '#F4D03F'}},
+            number={'font': {'size': 40, 'color': '#F4D03F'}, 'valueformat': '.3f'},
             delta={'reference': 0.8, 'increasing': {'color': "#00FF00"}, 'decreasing': {'color': "#FF0000"}},
             gauge={
-                'axis': {'range': [0, 1], 'tickwidth': 1, 'tickcolor': "#FFD700"},
-                'bar': {'color': "#FFD700"},
+                'axis': {'range': [0, 1], 'tickwidth': 1, 'tickcolor': "#F4D03F"},
+                'bar': {'color': "#F4D03F"},
                 'bgcolor': "#1a1a1a",
-                'borderwidth': 2, 'bordercolor': "#FFD700",
+                'borderwidth': 2, 'bordercolor': "#F4D03F",
                 'steps': [
                     {'range': [0, 0.7], 'color': '#330000'},
                     {'range': [0.7, 0.8], 'color': '#333300'},
@@ -238,8 +238,8 @@ class ObservatoryLens:
     def _render_intervention_pipeline(self):
         """Render Intervention Pipeline (three-tier defense)."""
         st.markdown("""
-        <div style="background: #1a1a1a; border: 1px solid #FFD700; border-radius: 8px; padding: 15px; height: 300px;">
-            <h4 style="color: #FFD700; margin: 0 0 10px 0;">Defense Pipeline</h4>
+        <div style="background: #1a1a1a; border: 1px solid #F4D03F; border-radius: 8px; padding: 15px; height: 300px;">
+            <h4 style="color: #F4D03F; margin: 0 0 10px 0;">Defense Pipeline</h4>
             <p style="color: #888; font-size: 11px;">Three-tier governance</p>
             <div style="display: flex; flex-direction: column; justify-content: center; height: 220px;">
                 <div style="padding: 10px; background: #0a0a0a; border-radius: 5px; margin: 5px 0;">
@@ -261,8 +261,8 @@ class ObservatoryLens:
 
         if not turns:
             st.markdown("""
-            <div style="background: #1a1a1a; border: 1px solid #FFD700; border-radius: 8px; padding: 15px; height: 350px;">
-                <h4 style="color: #FFD700;">Embedding Space</h4>
+            <div style="background: #1a1a1a; border: 1px solid #F4D03F; border-radius: 8px; padding: 15px; height: 350px;">
+                <h4 style="color: #F4D03F;">Embedding Space</h4>
                 <div style="display: flex; align-items: center; justify-content: center; height: 270px; color: #888;">
                     No data yet
                 </div>
@@ -287,7 +287,7 @@ class ObservatoryLens:
             if fidelity >= 0.85:
                 point_color = '#4CAF50'  # Green
             elif fidelity >= 0.70:
-                point_color = '#FFD700'  # Yellow
+                point_color = '#F4D03F'  # Yellow
             elif fidelity >= 0.50:
                 point_color = '#FFA500'  # Orange
             else:
@@ -308,14 +308,14 @@ class ObservatoryLens:
         fig.add_trace(go.Scatter(
             x=positions_2d[:, 0], y=positions_2d[:, 1],
             mode='markers',
-            marker=dict(size=sizes, color=colors, line=dict(color='#FFD700', width=1), opacity=0.8),
+            marker=dict(size=sizes, color=colors, line=dict(color='#F4D03F', width=1), opacity=0.8),
             text=hover_texts, hoverinfo='text', showlegend=False
         ))
 
         fig.add_trace(go.Scatter(
             x=[0], y=[0],
             mode='markers',
-            marker=dict(size=20, color='#FFD700', symbol='star', line=dict(color='#FFFFFF', width=2)),
+            marker=dict(size=20, color='#F4D03F', symbol='star', line=dict(color='#FFFFFF', width=2)),
             text=['PA Center'], hoverinfo='text', showlegend=False
         ))
 
@@ -325,7 +325,7 @@ class ObservatoryLens:
 
         fig.add_trace(go.Scatter(
             x=circle_x, y=circle_y,
-            mode='lines', line=dict(color='#FFD700', width=1, dash='dash'),
+            mode='lines', line=dict(color='#F4D03F', width=1, dash='dash'),
             hoverinfo='skip', showlegend=False
         ))
 
@@ -340,7 +340,7 @@ class ObservatoryLens:
 
     def _render_attack_log(self):
         """Render Attack Detection Log (event feed)."""
-        st.markdown('<div style="background: #1a1a1a; border: 1px solid #FFD700; border-radius: 8px; padding: 15px; height: 350px; overflow-y: auto;"><h4 style="color: #FFD700; margin: 0 0 10px 0;">Event Log</h4><p style="color: #888; font-size: 11px; margin-bottom: 10px;">Real-time events</p>', unsafe_allow_html=True)
+        st.markdown('<div style="background: #1a1a1a; border: 1px solid #F4D03F; border-radius: 8px; padding: 15px; height: 350px; overflow-y: auto;"><h4 style="color: #F4D03F; margin: 0 0 10px 0;">Event Log</h4><p style="color: #888; font-size: 11px; margin-bottom: 10px;">Real-time events</p>', unsafe_allow_html=True)
 
         turns = self.state_manager.get_all_turns()
         recent_turns = turns[-10:] if len(turns) > 10 else turns
@@ -353,7 +353,7 @@ class ObservatoryLens:
             if intervention:
                 icon, color, event_type = "🛡️", "#FF0000", "INTERVENTION"
             elif fidelity < 0.8:
-                icon, color, event_type = "⚠️", "#FFD700", "DRIFT WARNING"
+                icon, color, event_type = "⚠️", "#F4D03F", "DRIFT WARNING"
             else:
                 icon, color, event_type = "✓", "#00FF00", "NORMAL"
 
@@ -366,21 +366,21 @@ class ObservatoryLens:
         session_info = self.state_manager.get_session_info()
 
         html = f"""
-<div style="background: #1a1a1a; border: 1px solid #FFD700; border-radius: 8px; padding: 15px; height: 350px;">
-    <h4 style="color: #FFD700; margin: 0 0 10px 0;">Session Stats</h4>
+<div style="background: #1a1a1a; border: 1px solid #F4D03F; border-radius: 8px; padding: 15px; height: 350px;">
+    <h4 style="color: #F4D03F; margin: 0 0 10px 0;">Session Stats</h4>
     <p style="color: #888; font-size: 11px;">Real-time metrics</p>
     <div style="margin-top: 20px;">
         <div style="padding: 10px; background: #0a0a0a; border-radius: 5px; margin: 10px 0;">
             <div style="color: #888; font-size: 10px;">TOTAL TURNS</div>
-            <div style="color: #FFD700; font-size: 24px; font-weight: bold;">{session_info.get('total_turns', 0)}</div>
+            <div style="color: #F4D03F; font-size: 24px; font-weight: bold;">{session_info.get('total_turns', 0)}</div>
         </div>
         <div style="padding: 10px; background: #0a0a0a; border-radius: 5px; margin: 10px 0;">
             <div style="color: #888; font-size: 10px;">AVG FIDELITY</div>
-            <div style="color: #FFD700; font-size: 24px; font-weight: bold;">{session_info.get('avg_fidelity', 0.0):.3f}</div>
+            <div style="color: #F4D03F; font-size: 24px; font-weight: bold;">{session_info.get('avg_fidelity', 0.0):.3f}</div>
         </div>
         <div style="padding: 10px; background: #0a0a0a; border-radius: 5px; margin: 10px 0;">
             <div style="color: #888; font-size: 10px;">INTERVENTIONS</div>
-            <div style="color: #FFD700; font-size: 24px; font-weight: bold;">{session_info.get('total_interventions', 0)}</div>
+            <div style="color: #F4D03F; font-size: 24px; font-weight: bold;">{session_info.get('total_interventions', 0)}</div>
         </div>
         <div style="padding: 10px; background: #0a0a0a; border-radius: 5px; margin: 10px 0;">
             <div style="color: #888; font-size: 10px;">ASR</div>

@@ -27,6 +27,7 @@ from components.steward_panel import StewardPanel
 from components.observatory_lens import ObservatoryLens
 from services.ab_test_manager import get_ab_test_manager
 from services.supabase_client import get_supabase_service
+from config.colors import GOLD
 
 
 def initialize_session():
@@ -434,14 +435,14 @@ def main():
     [data-testid="stSidebar"] .stButton > button {{
         background-color: #2d2d2d !important;
         color: #e0e0e0 !important;
-        border: 1px solid #FFD700 !important;
+        border: 1px solid #F4D03F !important;
         transition: all 0.3s ease !important;
     }}
 
     [data-testid="stSidebar"] .stButton > button:hover {{
         background-color: #3d3d3d !important;
         color: #e0e0e0 !important;
-        border: 1px solid #FFD700 !important;
+        border: 1px solid #F4D03F !important;
         box-shadow: 0 0 6px rgba(255, 215, 0, 0.5) !important;
     }}
 
@@ -455,7 +456,7 @@ def main():
     .stButton > button {{
         background-color: #2d2d2d !important;
         color: #e0e0e0 !important;
-        border: 1px solid #FFD700 !important;
+        border: 1px solid #F4D03F !important;
         transition: all 0.3s ease !important;
     }}
 
@@ -505,7 +506,7 @@ def main():
 
     /* Gold border for main content */
     .main .block-container {{
-        border: 1px solid #FFD700;
+        border: 1px solid #F4D03F;
         border-radius: 10px;
         padding: 20px;
     }}
@@ -601,8 +602,8 @@ def main():
 
     /* Checked state */
     .stCheckbox input[type="checkbox"]:checked {{
-        background-color: #FFD700 !important;
-        border-color: #FFD700 !important;
+        background-color: #F4D03F !important;
+        border-color: #F4D03F !important;
     }}
 
     .stCheckbox input[type="checkbox"]:checked::after {{
@@ -619,7 +620,7 @@ def main():
     .stTextInput input {{
         background-color: #2d2d2d !important;
         color: #ffffff !important;
-        border: 1px solid #FFD700 !important;
+        border: 1px solid #F4D03F !important;
     }}
 
     .stTextInput input::placeholder {{
@@ -644,8 +645,8 @@ def main():
     }}
 
     .stCheckbox input[type="checkbox"]:checked {{
-        background-color: #FFD700 !important;
-        border-color: #FFD700 !important;
+        background-color: #F4D03F !important;
+        border-color: #F4D03F !important;
     }}
 
     /* Override any red colors in toggle switches */
@@ -654,7 +655,7 @@ def main():
     }}
 
     [data-baseweb="checkbox"][data-checked="true"] {{
-        background-color: #FFD700 !important;
+        background-color: #F4D03F !important;
     }}
 
     /* Tabs styling */
@@ -665,7 +666,7 @@ def main():
 
     .stTabs [data-baseweb="tab"] {{
         background-color: #2d2d2d;
-        border: 1px solid #FFD700;
+        border: 1px solid #F4D03F;
         border-radius: 8px 8px 0 0;
         color: #e0e0e0;
         font-size: 22px;
@@ -674,7 +675,7 @@ def main():
     }}
 
     .stTabs [aria-selected="true"] {{
-        background-color: #FFD700;
+        background-color: #F4D03F;
         color: #000;
         font-weight: bold;
     }}
@@ -831,7 +832,7 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
                 opacity: 1;
             }
             90% {
-                box-shadow: 0 0 8px #FFD700;
+                box-shadow: 0 0 8px #F4D03F;
             }
             95% {
                 box-shadow: none;
@@ -887,7 +888,7 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
         button[kind="primary"] {{
             background-color: #2d2d2d !important;
             color: #e0e0e0 !important;
-            border: 2px solid #FFD700 !important;
+            border: 2px solid #F4D03F !important;
             box-shadow: 0 0 8px rgba(255, 215, 0, 0.5) !important;
         }}
 
@@ -895,33 +896,31 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
         button[kind="primary"]:hover {{
             background-color: #3d3d3d !important;
             color: #e0e0e0 !important;
-            border: 1px solid #FFD700 !important;
-            box-shadow: 0 0 6px #FFD700 !important;
+            border: 1px solid #F4D03F !important;
+            box-shadow: 0 0 6px #F4D03F !important;
         }}
 
         /* Inactive tabs - normal thin border */
         button[kind="secondary"] {{
             background-color: #2d2d2d !important;
             color: #e0e0e0 !important;
-            border: 1px solid #FFD700 !important;
+            border: 1px solid #F4D03F !important;
         }}
 
         /* Inactive tabs get hover effect */
         button[kind="secondary"]:hover {{
             background-color: #3d3d3d !important;
-            border: 1px solid #FFD700 !important;
-            box-shadow: 0 0 6px #FFD700 !important;
+            border: 1px solid #F4D03F !important;
+            box-shadow: 0 0 6px #F4D03F !important;
         }}
 
-        /* Disabled/grayed tabs during beta-only mode */
+        /* Disabled/locked tabs - look like normal secondary buttons but with dimmed text */
         button[disabled],
         button.beta-locked {{
-            background-color: #1a1a1a !important;
-            color: #555 !important;
-            border: 1px solid #444 !important;
-            opacity: 0.4 !important;
+            background-color: #2d2d2d !important;
+            color: #888 !important;
+            border: 1px solid #F4D03F !important;
             cursor: not-allowed !important;
-            pointer-events: none !important;
         }}
 
         button[disabled]:hover,
@@ -1014,7 +1013,7 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
 
     # Removed unlock progression message - now shown in Steward intro
 
-    st.markdown("<hr style='border: 1px solid #FFD700; margin: 10px 0;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border: 1px solid #F4D03F; margin: 10px 0;'>", unsafe_allow_html=True)
 
     # Hide sidebar for DEMO and BETA modes - only show in TELOS and DEVOPS
     active_tab = st.session_state.get('active_tab', 'DEMO')
@@ -1070,29 +1069,29 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
             if st.session_state.get('pa_established', False) and st.session_state.get('beta_current_turn', 1) == 1:
                 if 'conversation_turns' not in st.session_state or len(st.session_state.conversation_turns) == 0:
                     st.markdown(f"""
-                    <div style="
-                        background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
-                        border: 2px solid {GOLD};
-                        border-radius: 10px;
-                        padding: 20px;
-                        margin: 20px 0;
-                    ">
-                        <div style="color: {GOLD}; font-size: 24px; font-weight: bold; margin-bottom: 15px;">
-                            Welcome to BETA Testing!
-                        </div>
-                        <div style="color: #e0e0e0; font-size: 18px; line-height: 1.6;">
-                            Your Primacy Attractor has been established. You're now ready to begin the 15-turn conversation experience.
-                            <br><br>
-                            <strong>What to expect:</strong><br>
-                            • You'll have 15 conversation turns<br>
-                            • Some turns will show one response, others will show two responses side-by-side<br>
-                            • Your conversation will be guided by the purpose you just defined<br>
-                            • Use the "Observation Deck" button below to view metrics at any time<br>
-                            <br>
-                            <strong>Start by asking a question or making a request below.</strong>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
+<div style="
+    background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+    border: 2px solid {GOLD};
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+">
+    <div style="color: {GOLD}; font-size: 24px; font-weight: bold; margin-bottom: 15px;">
+        Welcome to BETA Testing!
+    </div>
+    <div style="color: #e0e0e0; font-size: 18px; line-height: 1.6;">
+        Your Primacy Attractor has been established. You're now ready to begin the 15-turn conversation experience.
+        <br><br>
+        <strong>What to expect:</strong><br>
+        • You'll have 15 conversation turns<br>
+        • Some turns will show one response, others will show two responses side-by-side<br>
+        • Your conversation will be guided by the purpose you just defined<br>
+        • Use the "Observation Deck" button below to view metrics at any time<br>
+        <br>
+        <strong>Start by asking a question or making a request below.</strong>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
         # Main conversation display (all modes)
         conversation_display.render()
@@ -1230,7 +1229,7 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
         background-color: #2d2d2d !important;
         background: #2d2d2d !important;
         color: #e0e0e0 !important;
-        border: 2px solid #FFD700 !important;
+        border: 2px solid #F4D03F !important;
         box-shadow: 0 0 8px rgba(255, 215, 0, 0.5) !important;
     }
 
@@ -1242,13 +1241,13 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
     }
 
     button:hover {
-        border: 1px solid #FFD700 !important;
-        box-shadow: 0 0 6px #FFD700 !important;
+        border: 1px solid #F4D03F !important;
+        box-shadow: 0 0 6px #F4D03F !important;
     }
 
     /* Message container hover glow */
     .message-container:hover {
-        box-shadow: 0 0 6px #FFD700 !important;
+        box-shadow: 0 0 6px #F4D03F !important;
         transition: box-shadow 0.3s ease !important;
     }
     </style>

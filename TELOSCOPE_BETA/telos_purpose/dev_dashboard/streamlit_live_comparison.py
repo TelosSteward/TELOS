@@ -4055,7 +4055,7 @@ def render_observatory_control_strip():
             <div style="border-left: 1px solid rgba(255,255,255,0.2); height: 40px;"></div>
             <div>
                 <div style="font-size: 0.75rem; color: #888; margin-bottom: 0.25rem;">Fidelity</div>
-                <div style="font-size: 1.25rem; font-weight: bold; color: #FFD700;">{fidelity_display}</div>
+                <div style="font-size: 1.25rem; font-weight: bold; color: #F4D03F;">{fidelity_display}</div>
             </div>
             <div style="border-left: 1px solid rgba(255,255,255,0.2); height: 40px;"></div>
             <div>
@@ -4064,7 +4064,7 @@ def render_observatory_control_strip():
             </div>
             <div style="border-left: 1px solid rgba(255,255,255,0.2); height: 40px;"></div>
             <div style="text-align: center;">
-                <div style="font-size: 1.2rem; color: #FFD700;">🔭</div>
+                <div style="font-size: 1.2rem; color: #F4D03F;">🔭</div>
                 <div class="control-strip-hint">Click here</div>
             </div>
         </div>

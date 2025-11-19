@@ -79,9 +79,9 @@ TELOS tracks both our alignments but only intervenes on mine. This dual measurem
         for message in st.session_state.steward_chat_history:
             if message['role'] == 'assistant':
                 st.markdown(f"""
-                <div class="message-container" style="background-color: rgba(255, 215, 0, 0.1); border: 1px solid #FFD700; border-radius: 8px; padding: 12px; margin-bottom: 15px;">
-                    <strong style="color: #FFD700; font-size: 18px;">Steward:</strong><br>
-                    <span style="color: #FFD700; font-size: 16px; line-height: 1.6;">{message['content']}</span>
+                <div class="message-container" style="background-color: rgba(255, 215, 0, 0.1); border: 1px solid #F4D03F; border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+                    <strong style="color: #F4D03F; font-size: 18px;">Steward:</strong><br>
+                    <span style="color: #F4D03F; font-size: 16px; line-height: 1.6;">{message['content']}</span>
                 </div>
                 """, unsafe_allow_html=True)
             else:

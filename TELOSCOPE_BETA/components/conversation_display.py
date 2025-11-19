@@ -343,7 +343,7 @@ class ConversationDisplay:
             st.markdown(f"""
 <div class="compact-container" key="slide-0">
     <div data-slide="0" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-                border: 2px solid #FFD700;
+                border: 2px solid #F4D03F;
                 border-radius: 15px;
                 padding: 30px;
                 margin: 20px auto;
@@ -352,7 +352,7 @@ class ConversationDisplay:
                 opacity: 0;
                 animation: slideContentFadeIn 1.0s ease-out forwards;
                 animation-fill-mode: forwards;">
-        <h1 style="color: #FFD700; font-size: 32px; margin-bottom: 20px;">Welcome to TELOS Demo Mode! 🔭</h1>
+        <h1 style="color: #F4D03F; font-size: 32px; margin-bottom: 20px;">Welcome to TELOS Demo Mode! 🔭</h1>
         <p style="color: #e0e0e0; font-size: 20px; line-height: 1.6;">
             Click "Start Demo" below to begin your guided tour.
         </p>
@@ -379,7 +379,7 @@ class ConversationDisplay:
             intro_html = """
 <div class="compact-container" key="slide-1">
     <div data-slide="1" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
-                border: 2px solid #FFD700;
+                border: 2px solid #F4D03F;
                 border-radius: 10px;
                 padding: 20px 25px;
                 margin: 15px auto;
@@ -391,7 +391,7 @@ class ConversationDisplay:
                 opacity: 0;
                 animation: slideContentFadeIn 1.0s ease-out forwards;
                 animation-fill-mode: forwards;">
-        <div style="color: #FFD700; font-size: 23px; font-weight: bold; margin-bottom: 15px;">
+        <div style="color: #F4D03F; font-size: 23px; font-weight: bold; margin-bottom: 15px;">
             Hello! I'm Steward, your guide to understanding TELOS.
         </div>
         <div style="margin-bottom: 20px;">
@@ -436,7 +436,7 @@ class ConversationDisplay:
             pa_setup_html = """
 <div class="compact-container" key="slide-2">
     <div data-slide="2" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
-                border: 2px solid #FFD700;
+                border: 2px solid #F4D03F;
                 border-radius: 10px;
                 padding: 20px 25px;
                 margin: 15px auto;
@@ -448,14 +448,14 @@ class ConversationDisplay:
                 opacity: 0;
                 animation: slideContentFadeIn 1.0s ease-out forwards;
                 animation-fill-mode: forwards;">
-        <div style="color: #FFD700; font-size: 23px; font-weight: bold; margin-bottom: 15px;">
+        <div style="color: #F4D03F; font-size: 23px; font-weight: bold; margin-bottom: 15px;">
             How TELOS Establishes Your Governance
         </div>
         <div style="margin-bottom: 20px;">
-            TELOS tracks each conversation turn to understand what type of governance you want for your session. We call this your <strong style="color: #FFD700;">Primacy Attractor</strong> - the purpose, scope, and boundaries that keep the conversation aligned.
+            TELOS tracks each conversation turn to understand what type of governance you want for your session. We call this your <strong style="color: #F4D03F;">Primacy Attractor</strong> - the purpose, scope, and boundaries that keep the conversation aligned.
         </div>
         <div style="margin-bottom: 20px;">
-            Normally, this takes <strong style="color: #FFD700;">5-10 turns</strong> of back-and-forth conversation to fully establish. TELOS observes your questions and interests to calibrate your attractor naturally.
+            Normally, this takes <strong style="color: #F4D03F;">5-10 turns</strong> of back-and-forth conversation to fully establish. TELOS observes your questions and interests to calibrate your attractor naturally.
         </div>
         <div style="margin-bottom: 20px;">
             For this demo, we'll establish your Primacy Attractor immediately with your first input - watch as it happens on the next slide.
@@ -514,7 +514,7 @@ class ConversationDisplay:
             st.markdown("""
 <div style="background: linear-gradient(135deg, #1a4d1a 0%, #2d7d2d 100%); border: 2px solid #4CAF50; border-radius: 12px; padding: 20px; margin: -30px 0 20px 0; text-align: center; box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);">
     <h2 style="color: #4CAF50; font-size: 28px; margin: 0 0 10px 0;">🎉 Congratulations!</h2>
-    <p style="color: #e0e0e0; font-size: 18px; margin: 0;">You've completed the TELOS Demo and unlocked <strong style="color: #FFD700;">BETA</strong> access!</p>
+    <p style="color: #e0e0e0; font-size: 18px; margin: 0;">You've completed the TELOS Demo and unlocked <strong style="color: #F4D03F;">BETA</strong> access!</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -524,7 +524,7 @@ class ConversationDisplay:
             with col_center:
                 steward_final_html = """
 <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
-            border: 2px solid #FFD700;
+            border: 2px solid #F4D03F;
             border-radius: 10px;
             padding: 20px 25px;
             margin: 15px 0;
@@ -532,22 +532,22 @@ class ConversationDisplay:
             line-height: 1.7;
             color: #e0e0e0;
             box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);">
-    <div style="color: #FFD700; font-size: 23px; font-weight: bold; margin-bottom: 15px;">
+    <div style="color: #F4D03F; font-size: 23px; font-weight: bold; margin-bottom: 15px;">
         Steward:
     </div>
     <div style="margin-bottom: 15px;">
         Congratulations on completing the TELOS Demo! You now understand how TELOS provides session-level constitutional governance, maintains human primacy, and ensures AI systems remain accountable to your authority.
     </div>
     <div style="margin-bottom: 15px;">
-        <strong style="color: #FFD700;">Ready for BETA?</strong>
+        <strong style="color: #F4D03F;">Ready for BETA?</strong>
     </div>
     <div style="margin-left: 20px; margin-bottom: 15px;">
-        • Click the <strong style="color: #FFD700;">BETA tab</strong> above to experience live TELOS governance<br>
+        • Click the <strong style="color: #F4D03F;">BETA tab</strong> above to experience live TELOS governance<br>
         • You'll see real PA calibration, dynamic fidelity scores, and actual interventions<br>
-        • Click the <strong style="color: #FFD700;">handshake icon (🤝)</strong> next to any message to ask me questions
+        • Click the <strong style="color: #F4D03F;">handshake icon (🤝)</strong> next to any message to ask me questions
     </div>
-    <div style="margin-top: 15px; padding: 12px; background-color: rgba(255, 215, 0, 0.15); border-radius: 5px; border-left: 4px solid #FFD700;">
-        <strong style="color: #FFD700;">I'm your TELOS guide:</strong> In BETA mode, I'm always available via the handshake icon to help you understand what you're seeing.
+    <div style="margin-top: 15px; padding: 12px; background-color: rgba(255, 215, 0, 0.15); border-radius: 5px; border-left: 4px solid #F4D03F;">
+        <strong style="color: #F4D03F;">I'm your TELOS guide:</strong> In BETA mode, I'm always available via the handshake icon to help you understand what you're seeing.
     </div>
 </div>
 """
@@ -641,7 +641,7 @@ class ConversationDisplay:
             if f >= 0.85:
                 return "#4CAF50"  # Green - good alignment
             elif f >= 0.70:
-                return "#FFD700"  # Yellow - mild drift
+                return "#F4D03F"  # Yellow - mild drift
             elif f >= 0.50:
                 return "#FFA500"  # Orange - moderate drift
             else:
@@ -659,7 +659,7 @@ class ConversationDisplay:
             # Show full fidelity metrics after user asks about them
             st.markdown(f"""
 <div style="text-align: center; margin: 20px 0;">
-    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 10px; padding: 15px 40px; opacity: 0; animation: slideContentFadeIn 1.0s ease-out forwards;">
+    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #F4D03F; border-radius: 10px; padding: 15px 40px; opacity: 0; animation: slideContentFadeIn 1.0s ease-out forwards;">
         <div style="display: flex; gap: 30px; align-items: center; justify-content: center; margin-bottom: 10px;">
             <div>
                 <span style="color: #888; font-size: 14px;">User Fidelity: </span>
@@ -682,7 +682,7 @@ class ConversationDisplay:
             # Only show PA Established status before user asks about fidelities
             st.markdown(f"""
 <div style="text-align: center; margin: 20px 0;">
-    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 10px; padding: 10px 30px; opacity: 0; animation: slideContentFadeIn 1.0s ease-out forwards;">
+    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #F4D03F; border-radius: 10px; padding: 10px 30px; opacity: 0; animation: slideContentFadeIn 1.0s ease-out forwards;">
         <span style="color: {status_color}; font-size: 16px; font-style: italic;">{status_msg}</span>
     </div>
 </div>
@@ -691,7 +691,7 @@ class ConversationDisplay:
         # Clean markdown from response - convert to plain text with HTML formatting
         def clean_markdown(text):
             # First, handle **bold** (do this before italic to avoid conflicts)
-            text = re.sub(r'\*\*(.+?)\*\*', r'<strong style="color: #FFD700;">\1</strong>', text)
+            text = re.sub(r'\*\*(.+?)\*\*', r'<strong style="color: #F4D03F;">\1</strong>', text)
             # Then handle *italic* (only single asterisks not already in bold)
             text = re.sub(r'(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)', r'<em>\1</em>', text)
             # Convert bullet points to HTML bullets
@@ -716,7 +716,7 @@ class ConversationDisplay:
         opacity: 0;
         animation: slideContentFadeIn 1.0s ease-out forwards;
         animation-fill-mode: forwards;">
-        <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">User:</div>
+        <div style="color: #F4D03F; font-weight: bold; margin-bottom: 10px;">User:</div>
         <div>{user_question}</div>
     </div>
 </div>
@@ -727,7 +727,7 @@ class ConversationDisplay:
 <div class="compact-container" key="response-{current_idx}">
     <div data-slide="{current_idx}" style="
         background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
-        border: 2px solid #FFD700;
+        border: 2px solid #F4D03F;
         border-radius: 10px;
         padding: 20px 25px;
         margin: 15px auto;
@@ -738,7 +738,7 @@ class ConversationDisplay:
         opacity: 0;
         animation: slideContentFadeIn 1.0s ease-out 0.3s forwards;
         animation-fill-mode: forwards;">
-        <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">Steward:</div>
+        <div style="color: #F4D03F; font-weight: bold; margin-bottom: 10px;">Steward:</div>
         <div>{cleaned_response.replace(chr(10), '<br>')}</div>
     </div>
 </div>
@@ -747,7 +747,7 @@ class ConversationDisplay:
 .pulse-ring {{
     width: 40px;
     height: 40px;
-    border: 3px solid #FFD700;
+    border: 3px solid #F4D03F;
     border-radius: 50%;
     margin: 0 auto 10px auto;
     animation: pulse 1.5s ease-in-out infinite;
@@ -808,7 +808,7 @@ class ConversationDisplay:
         # Show fidelity metrics with drift values
         st.markdown("""
 <div style="text-align: center; margin: 20px 0;">
-    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 10px; padding: 15px 40px; opacity: 0; animation: slideContentFadeIn 1.0s ease-out forwards;">
+    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #F4D03F; border-radius: 10px; padding: 15px 40px; opacity: 0; animation: slideContentFadeIn 1.0s ease-out forwards;">
         <div style="display: flex; gap: 30px; align-items: center; justify-content: center; margin-bottom: 10px;">
             <div>
                 <span style="color: #888; font-size: 14px;">User Fidelity: </span>
@@ -820,7 +820,7 @@ class ConversationDisplay:
             </div>
             <div>
                 <span style="color: #888; font-size: 14px;">Primacy State: </span>
-                <span style="color: #FFD700; font-size: 20px; font-weight: bold;">0.751</span>
+                <span style="color: #F4D03F; font-size: 20px; font-weight: bold;">0.751</span>
             </div>
         </div>
         <span style="color: #00FF00; font-size: 14px; font-style: italic;">PA Established</span>
@@ -848,8 +848,8 @@ class ConversationDisplay:
         # Steward response with YELLOW border (standard aligned state)
         st.markdown("""
         <div style='max-width: 700px; margin: 20px auto;'>
-            <div style='background-color: rgba(255, 215, 0, 0.05); border: 3px solid #FFD700; border-radius: 10px; padding: 20px 25px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); opacity: 0; animation: slideContentFadeIn 1.0s ease-out 0.3s forwards;'>
-                <div style='color: #FFD700; font-size: 19px; line-height: 1.6; margin-bottom: 15px;'>
+            <div style='background-color: rgba(255, 215, 0, 0.05); border: 3px solid #F4D03F; border-radius: 10px; padding: 20px 25px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); opacity: 0; animation: slideContentFadeIn 1.0s ease-out 0.3s forwards;'>
+                <div style='color: #F4D03F; font-size: 19px; line-height: 1.6; margin-bottom: 15px;'>
                     <strong>Steward:</strong> That's an intriguing topic, but it falls outside your stated purpose of understanding TELOS. Your goal here is to understand TELOS without technical overwhelm, so let me keep us focused on that. Instead, let me show you what this moment reveals about how TELOS works.
                 </div>
                 <div style='color: #e0e0e0; font-size: 16px; line-height: 1.6;'>
@@ -857,7 +857,7 @@ class ConversationDisplay:
                 </div>
             </div>
             <div style='text-align: center; margin-top: 15px; opacity: 0; animation: slideContentFadeIn 1.0s ease-out 0.6s forwards;'>
-                <p style='color: #FFD700; font-size: 14px; font-weight: bold;'>
+                <p style='color: #F4D03F; font-size: 14px; font-weight: bold;'>
                     👇 Click below to see this moment visualized in the Alignment Lens
                 </p>
             </div>
@@ -928,7 +928,7 @@ class ConversationDisplay:
         st.markdown("""
         <div style="
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-            border: 2px solid #FFD700;
+            border: 2px solid #F4D03F;
             border-radius: 10px;
             padding: 20px;
             margin: 20px 0;
@@ -942,7 +942,7 @@ class ConversationDisplay:
             }
         </style>
             <div style="text-align: center; margin-bottom: 20px;">
-                <h1 style="color: #FFD700; margin: 0; font-weight: bold; letter-spacing: 3px; font-size: 48px;">
+                <h1 style="color: #F4D03F; margin: 0; font-weight: bold; letter-spacing: 3px; font-size: 48px;">
                     🔭 TELOSCOPE
                 </h1>
                 <div style="margin: 8px 0;">
@@ -988,10 +988,10 @@ class ConversationDisplay:
         with col3:
             st.markdown("""
             <div style='text-align: center;'>
-                <div style='background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 15px; text-align: center; display: inline-block; width: 200px; max-width: 100%;'>
-                    <div style='color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 10px;'>PRIMACY STATE</div>
-                    <div style='color: #FFD700; font-size: 48px; font-weight: bold;'>0.75</div>
-                    <div style='color: #FFD700; font-size: 12px; margin-top: 5px;'>Harmonic Mean</div>
+                <div style='background-color: #2d2d2d; border: 2px solid #F4D03F; border-radius: 8px; padding: 15px; text-align: center; display: inline-block; width: 200px; max-width: 100%;'>
+                    <div style='color: #F4D03F; font-size: 14px; font-weight: bold; margin-bottom: 10px;'>PRIMACY STATE</div>
+                    <div style='color: #F4D03F; font-size: 48px; font-weight: bold;'>0.75</div>
+                    <div style='color: #F4D03F; font-size: 12px; margin-top: 5px;'>Harmonic Mean</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -1026,8 +1026,8 @@ class ConversationDisplay:
                     <div style='color: #4CAF50; font-size: 11px; font-weight: bold;'>AI REDIRECT</div>
                     <div style='color: #ddd; font-size: 10px;'>AI responded with gentle redirect to TELOS topic</div>
                 </div>
-                <div style='margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-left: 3px solid #FFD700; border-radius: 3px;'>
-                    <div style='color: #FFD700; font-size: 11px; font-weight: bold;'>OBSERVATION</div>
+                <div style='margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-left: 3px solid #F4D03F; border-radius: 3px;'>
+                    <div style='color: #F4D03F; font-size: 11px; font-weight: bold;'>OBSERVATION</div>
                     <div style='color: #ddd; font-size: 10px;'>TELOS tracks both fidelities but only intervenes on AI</div>
                 </div>
             </div>
@@ -1035,15 +1035,15 @@ class ConversationDisplay:
 
         with col6:
             st.markdown("""
-            <div style='background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 15px; text-align: center;'>
-                <div style='color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 15px;'>DRIFT VISUALIZATION</div>
+            <div style='background-color: #2d2d2d; border: 2px solid #F4D03F; border-radius: 8px; padding: 15px; text-align: center;'>
+                <div style='color: #F4D03F; font-size: 14px; font-weight: bold; margin-bottom: 15px;'>DRIFT VISUALIZATION</div>
                 <div style='position: relative; width: 150px; height: 150px; margin: 0 auto;'>
                     <!-- Red outer ring (75-100%) -->
-                    <div style='position: absolute; top: 0; left: 0; width: 150px; height: 150px; background-color: #FF4444; border-radius: 50%; border: 2px solid #FFD700;'></div>
+                    <div style='position: absolute; top: 0; left: 0; width: 150px; height: 150px; background-color: #FF4444; border-radius: 50%; border: 2px solid #F4D03F;'></div>
                     <!-- Orange ring (50-75%) -->
                     <div style='position: absolute; top: 12.5%; left: 12.5%; width: 112px; height: 112px; background-color: #FFA500; border-radius: 50%;'></div>
                     <!-- Yellow ring (25-50%) -->
-                    <div style='position: absolute; top: 25%; left: 25%; width: 75px; height: 75px; background-color: #FFD700; border-radius: 50%;'></div>
+                    <div style='position: absolute; top: 25%; left: 25%; width: 75px; height: 75px; background-color: #F4D03F; border-radius: 50%;'></div>
                     <!-- Green center (0-25%) -->
                     <div style='position: absolute; top: 37.5%; left: 37.5%; width: 37px; height: 37px; background-color: #4CAF50; border-radius: 50%;'></div>
                     <!-- AI dot (slightly off-center in green) -->
@@ -1053,7 +1053,7 @@ class ConversationDisplay:
                 </div>
                 <div style='margin-top: 15px;'>
                     <div style='color: #4CAF50; font-size: 10px;'>● Good Alignment (F ≥ 0.85)</div>
-                    <div style='color: #FFD700; font-size: 10px;'>● Mild Drift (0.70-0.85)</div>
+                    <div style='color: #F4D03F; font-size: 10px;'>● Mild Drift (0.70-0.85)</div>
                     <div style='color: #FFA500; font-size: 10px;'>● Moderate Drift - User drift (0.50-0.70, F = 0.65)</div>
                     <div style='color: #FF4444; font-size: 10px;'>● Severe Drift (F < 0.50)</div>
                 </div>
@@ -1155,12 +1155,12 @@ class ConversationDisplay:
 </style>
 <div style="max-width: 900px; margin: 0 auto; opacity: 0; animation: obsDeckFadeIn 1.0s ease-in-out forwards;">
     <div class="compact-container">
-    <div style="background-color: #1a1a1a; border: 3px solid #FFD700; border-radius: 10px; padding: 20px; margin: 20px auto; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);">
-        <h3 style="color: #FFD700; text-align: center; margin-bottom: 20px; font-size: 26px;">🔭 Observation Deck</h3>
+    <div style="background-color: #1a1a1a; border: 3px solid #F4D03F; border-radius: 10px; padding: 20px; margin: 20px auto; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);">
+        <h3 style="color: #F4D03F; text-align: center; margin-bottom: 20px; font-size: 26px;">🔭 Observation Deck</h3>
         <div style="text-align: center; margin-bottom: 15px;">
             <span style="background-color: #2d2d2d; border: 1px solid #4CAF50; border-radius: 20px; padding: 8px 20px; color: #4CAF50; font-weight: bold; font-size: 16px;">✓ Dual PAs Established - Primacy State Achieved</span>
         </div>
-        <div style="color: #FFD700; text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 20px;">Dual Primacy Attractors</div>
+        <div style="color: #F4D03F; text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 20px;">Dual Primacy Attractors</div>
     </div>
     </div>
 </div>""", unsafe_allow_html=True)
@@ -1396,8 +1396,8 @@ class ConversationDisplay:
         # Slide 0: Welcome to Beta Testing
         if current_slide == 0:
             st.markdown("""
-<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #FFD700; border-radius: 15px; padding: 30px; margin: 20px 0; text-align: center; box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);">
-    <h1 style="color: #FFD700; font-size: 32px; margin-bottom: 20px;">Welcome to TELOS Beta Testing</h1>
+<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #F4D03F; border-radius: 15px; padding: 30px; margin: 20px 0; text-align: center; box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);">
+    <h1 style="color: #F4D03F; font-size: 32px; margin-bottom: 20px;">Welcome to TELOS Beta Testing</h1>
     <p style="color: #e0e0e0; font-size: 20px; line-height: 1.8; margin-bottom: 20px;">
         You're about to experience TELOS in action. Your participation helps us refine AI governance for everyone.
     </p>
@@ -1415,10 +1415,10 @@ class ConversationDisplay:
         # Slide 1: What You'll Experience
         if current_slide == 1:
             st.markdown("""
-<div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%); border: 2px solid #FFD700; padding: 25px; margin: 15px 0; border-radius: 10px; font-size: 18px; line-height: 1.8; color: #e0e0e0;">
-    <div style="color: #FFD700; font-size: 24px; font-weight: bold; margin-bottom: 20px;">What You'll Experience</div>
-    <div style="margin-bottom: 15px;"><strong style="color: #FFD700;">Turns 1-10:</strong> You'll interact with the native LLM while TELOS learns your purpose, scope, and boundaries. This establishes your Primacy Attractor (PA).</div>
-    <div style="margin-bottom: 15px;"><strong style="color: #FFD700;">PA+:</strong> TELOS activates! You'll see:
+<div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%); border: 2px solid #F4D03F; padding: 25px; margin: 15px 0; border-radius: 10px; font-size: 18px; line-height: 1.8; color: #e0e0e0;">
+    <div style="color: #F4D03F; font-size: 24px; font-weight: bold; margin-bottom: 20px;">What You'll Experience</div>
+    <div style="margin-bottom: 15px;"><strong style="color: #F4D03F;">Turns 1-10:</strong> You'll interact with the native LLM while TELOS learns your purpose, scope, and boundaries. This establishes your Primacy Attractor (PA).</div>
+    <div style="margin-bottom: 15px;"><strong style="color: #F4D03F;">PA+:</strong> TELOS activates! You'll see:
         <div style="margin-left: 25px; margin-top: 10px;">
             • Fidelity scores tracking alignment<br>
             • Your PA in the Observation Deck<br>
@@ -1428,7 +1428,7 @@ class ConversationDisplay:
         </div>
     </div>
     <div style="margin-top: 20px; padding: 15px; background-color: rgba(255, 215, 0, 0.1); border-radius: 8px;">
-        <strong style="color: #FFD700;">Key Point:</strong> For now, the PA forms progressively through your conversation. This lets you see how TELOS learns from your behavior.
+        <strong style="color: #F4D03F;">Key Point:</strong> For now, the PA forms progressively through your conversation. This lets you see how TELOS learns from your behavior.
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -1447,12 +1447,12 @@ class ConversationDisplay:
         # Slide 2: Data Privacy & Usage
         if current_slide == 2:
             st.markdown("""
-<div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%); border: 2px solid #FFD700; padding: 25px; margin: 15px 0; border-radius: 10px; font-size: 18px; line-height: 1.8; color: #e0e0e0;">
-    <div style="color: #FFD700; font-size: 24px; font-weight: bold; margin-bottom: 20px;">Your Data & Privacy</div>
-    <div style="margin-bottom: 15px;"><strong style="color: #FFD700;">What we collect:</strong> Mathematical metrics in the form of deltas (fidelity scores, embedding distances, intervention counts)</div>
-    <div style="margin-bottom: 15px;"><strong style="color: #FFD700;">What we DON'T collect:</strong> Your conversation content, messages, or responses</div>
+<div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%); border: 2px solid #F4D03F; padding: 25px; margin: 15px 0; border-radius: 10px; font-size: 18px; line-height: 1.8; color: #e0e0e0;">
+    <div style="color: #F4D03F; font-size: 24px; font-weight: bold; margin-bottom: 20px;">Your Data & Privacy</div>
+    <div style="margin-bottom: 15px;"><strong style="color: #F4D03F;">What we collect:</strong> Mathematical metrics in the form of deltas (fidelity scores, embedding distances, intervention counts)</div>
+    <div style="margin-bottom: 15px;"><strong style="color: #F4D03F;">What we DON'T collect:</strong> Your conversation content, messages, or responses</div>
     <div style="margin-top: 20px; padding: 15px; background-color: rgba(255, 215, 0, 0.1); border-radius: 8px;">
-        <strong style="color: #FFD700;">Data Deprecation:</strong> All beta session information will be deprecated once beta testing is completed. We will never sell your data to third parties.
+        <strong style="color: #F4D03F;">Data Deprecation:</strong> All beta session information will be deprecated once beta testing is completed. We will never sell your data to third parties.
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -1471,18 +1471,18 @@ class ConversationDisplay:
         # Slide 3: Future Vision & User Control
         if current_slide == 3:
             st.markdown("""
-<div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%); border: 2px solid #FFD700; padding: 25px; margin: 15px 0; border-radius: 10px; font-size: 18px; line-height: 1.8; color: #e0e0e0;">
-    <div style="color: #FFD700; font-size: 24px; font-weight: bold; margin-bottom: 20px;">Looking Ahead: Your PA, Your Control</div>
-    <div style="margin-bottom: 15px;">In the final TELOS release, your Primacy Attractor will be <strong style="color: #FFD700;">fully under your control:</strong></div>
+<div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%); border: 2px solid #F4D03F; padding: 25px; margin: 15px 0; border-radius: 10px; font-size: 18px; line-height: 1.8; color: #e0e0e0;">
+    <div style="color: #F4D03F; font-size: 24px; font-weight: bold; margin-bottom: 20px;">Looking Ahead: Your PA, Your Control</div>
+    <div style="margin-bottom: 15px;">In the final TELOS release, your Primacy Attractor will be <strong style="color: #F4D03F;">fully under your control:</strong></div>
     <div style="margin-left: 25px; margin-bottom: 15px;">
         • <strong>Direct Input:</strong> Enter your PA at session start (skip calibration)<br>
         • <strong>Edit Anytime:</strong> Modify your PA after establishment<br>
         • <strong>Full Ownership:</strong> Your governance, your rules
     </div>
     <div style="margin-top: 20px; padding: 15px; background-color: rgba(255, 215, 0, 0.1); border-radius: 8px;">
-        <strong style="color: #FFD700;">Beta Focus:</strong> Right now, we're perfecting the progressive PA formation so you understand how TELOS learns from your behavior. This transparency builds trust.
+        <strong style="color: #F4D03F;">Beta Focus:</strong> Right now, we're perfecting the progressive PA formation so you understand how TELOS learns from your behavior. This transparency builds trust.
     </div>
-    <div style="margin-top: 20px; text-align: center; font-size: 20px; color: #FFD700;">
+    <div style="margin-top: 20px; text-align: center; font-size: 20px; color: #F4D03F;">
         Ready to start your beta session?
     </div>
 </div>
@@ -1522,7 +1522,7 @@ class ConversationDisplay:
             # Example badge (replaces Turn badge)
             st.markdown("""
 <div style="display: flex; align-items: flex-start; height: 100%;">
-    <span style="background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%); color: #000; padding: 4px 10px; border-radius: 5px; font-size: 19px; font-weight: bold; display: inline-block;">Example</span>
+    <span style="background: linear-gradient(90deg, #F4D03F 0%, #FFA500 100%); color: #000; padding: 4px 10px; border-radius: 5px; font-size: 19px; font-weight: bold; display: inline-block;">Example</span>
 </div>
 """, unsafe_allow_html=True)
 
@@ -1532,9 +1532,9 @@ class ConversationDisplay:
             with col_msg:
                 # User message with exact same styling
                 st.markdown(f"""
-<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 1px solid #FFD700;">
+<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 1px solid #F4D03F;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
-        <strong style="color: #FFD700;">User</strong>
+        <strong style="color: #F4D03F;">User</strong>
     </div>
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {html.escape(user_msg)}
@@ -1561,9 +1561,9 @@ class ConversationDisplay:
             with col_msg2:
                 # Steward response with exact same styling and spacing
                 st.markdown(f"""
-<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 1px solid #FFD700;">
+<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 1px solid #F4D03F;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
-        <strong style="color: #FFD700;">TELOS</strong>
+        <strong style="color: #F4D03F;">TELOS</strong>
     </div>
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {html.escape(steward_msg)}
@@ -1616,12 +1616,12 @@ class ConversationDisplay:
         st.markdown("""
         <div style="
             background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
-            border: 1px solid #FFD700;
+            border: 1px solid #F4D03F;
             border-radius: 8px;
             padding: 10px;
             margin-bottom: 15px;
         ">
-            <div style="color: #FFD700; font-size: 19px; font-weight: bold; text-align: center;">
+            <div style="color: #F4D03F; font-size: 19px; font-weight: bold; text-align: center;">
                 📜 Conversation History (Read-Only)
             </div>
         </div>
@@ -1634,7 +1634,7 @@ class ConversationDisplay:
             overflow-y: auto;
             padding: 15px;
             background-color: #1a1a1a;
-            border: 1px solid #FFD700;
+            border: 1px solid #F4D03F;
             border-radius: 8px;
             margin-bottom: 19px;
         ">
@@ -1747,7 +1747,7 @@ class ConversationDisplay:
     right: 12px;
     background-color: #2d2d2d !important;
     color: #e0e0e0 !important;
-    border: 1px solid #FFD700 !important;
+    border: 1px solid #F4D03F !important;
     padding: 6px 12px;
     border-radius: 5px;
     font-size: 14px;
@@ -1755,9 +1755,9 @@ class ConversationDisplay:
     transition: all 0.3s ease !important;
 }}
 </style>
-<div class="message-container demo-user-message-{user_msg_id}" id="demo-user-msg-{user_msg_id}" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
+<div class="message-container demo-user-message-{user_msg_id}" id="demo-user-msg-{user_msg_id}" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #F4D03F;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
-        <strong style="color: #FFD700;">User</strong>
+        <strong style="color: #F4D03F;">User</strong>
     </div>
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {safe_message}
@@ -1787,8 +1787,8 @@ function copyDemoUserMessage{user_msg_id}() {{
 <style>
 .turn-badge {{
     background-color: #2d2d2d;
-    color: #FFD700;
-    border: 1px solid #FFD700;
+    color: #F4D03F;
+    border: 1px solid #F4D03F;
     padding: 10px;
     border-radius: 5px;
     font-size: 24px;
@@ -1803,7 +1803,7 @@ function copyDemoUserMessage{user_msg_id}() {{
 }}
 
 .turn-badge:hover {{
-    box-shadow: 0 0 6px #FFD700;
+    box-shadow: 0 0 6px #F4D03F;
 }}
 </style>
 <div style="display: flex; align-items: flex-start; height: 100%; padding-bottom: 20px;">
@@ -1829,7 +1829,7 @@ function copyDemoUserMessage{user_msg_id}() {{
     right: 12px;
     background-color: #2d2d2d !important;
     color: #e0e0e0 !important;
-    border: 1px solid #FFD700 !important;
+    border: 1px solid #F4D03F !important;
     padding: 6px 12px;
     border-radius: 5px;
     font-size: 14px;
@@ -1837,9 +1837,9 @@ function copyDemoUserMessage{user_msg_id}() {{
     transition: all 0.3s ease !important;
 }}
 </style>
-<div class="message-container user-message-{user_msg_id}" id="user-msg-{user_msg_id}" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
+<div class="message-container user-message-{user_msg_id}" id="user-msg-{user_msg_id}" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #F4D03F;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
-        <strong style="color: #FFD700;">User</strong>
+        <strong style="color: #F4D03F;">User</strong>
     </div>
     {f'<div style="margin-top: 10px; margin-bottom: 10px; display: flex; align-items: center; flex-wrap: wrap;">{metrics_html}</div>' if metrics_html else ''}
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
@@ -1892,8 +1892,8 @@ function copyUserMessage{user_msg_id}() {{
 <style>
 .turn-badge {{
     background-color: #2d2d2d;
-    color: #FFD700;
-    border: 1px solid #FFD700;
+    color: #F4D03F;
+    border: 1px solid #F4D03F;
     padding: 10px;
     border-radius: 5px;
     font-size: 24px;
@@ -1908,7 +1908,7 @@ function copyUserMessage{user_msg_id}() {{
 }}
 
 .turn-badge:hover {{
-    box-shadow: 0 0 6px #FFD700;
+    box-shadow: 0 0 6px #F4D03F;
 }}
 </style>
 <div style="display: flex; align-items: flex-start; height: 100%; padding-bottom: 20px;">
@@ -1937,7 +1937,7 @@ function copyUserMessage{user_msg_id}() {{
     right: 12px;
     background-color: #2d2d2d !important;
     color: #e0e0e0 !important;
-    border: 1px solid #FFD700 !important;
+    border: 1px solid #F4D03F !important;
     padding: 6px 12px;
     border-radius: 5px;
     font-size: 14px;
@@ -1945,9 +1945,9 @@ function copyUserMessage{user_msg_id}() {{
     transition: all 0.3s ease !important;
 }}
 </style>
-<div class="message-container user-message-{user_msg_id}" id="user-msg-{user_msg_id}" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700;">
+<div class="message-container user-message-{user_msg_id}" id="user-msg-{user_msg_id}" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #F4D03F;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
-        <strong style="color: #FFD700;">User</strong>
+        <strong style="color: #F4D03F;">User</strong>
     </div>
     {f'<div style="margin-top: 10px; margin-bottom: 10px; display: flex; align-items: center; flex-wrap: wrap;">{metrics_html}</div>' if metrics_html else ''}
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
@@ -2014,13 +2014,13 @@ function copyUserMessage{user_msg_id}() {{
         box-shadow: 0 0 6px rgba(136, 136, 136, 0.3);
     }}
     50% {{
-        border-color: #FFD700;
+        border-color: #F4D03F;
         box-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
     }}
 }}
 @keyframes text-pulse {{
     0%, 100% {{
-        color: #FFD700;
+        color: #F4D03F;
     }}
     50% {{
         color: #888;
@@ -2035,7 +2035,7 @@ function copyUserMessage{user_msg_id}() {{
 </style>
 <div class="contemplating-border" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
-        <strong style="color: #FFD700;">TELOS</strong>
+        <strong style="color: #F4D03F;">TELOS</strong>
     </div>
     <div class="contemplating-text" style="font-size: 19px; font-style: italic; opacity: 0.9;">
         Contemplating...
@@ -2062,7 +2062,7 @@ function copyUserMessage{user_msg_id}() {{
     right: 12px;
     background-color: #2d2d2d !important;
     color: #e0e0e0 !important;
-    border: 1px solid #FFD700 !important;
+    border: 1px solid #F4D03F !important;
     padding: 6px 12px;
     border-radius: 5px;
     font-size: 14px;
@@ -2070,9 +2070,9 @@ function copyUserMessage{user_msg_id}() {{
     transition: all 0.3s ease !important;
 }}
 </style>
-<div class="message-container demo-message-{message_id}" id="demo-msg-{message_id}" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 15px; border: 2px solid #FFD700;">
+<div class="message-container demo-message-{message_id}" id="demo-msg-{message_id}" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 15px; border: 2px solid #F4D03F;">
     <div style="color: #888; font-size: 19px; margin-bottom: 10px;">
-        <strong style="color: #FFD700;">TELOS</strong>
+        <strong style="color: #F4D03F;">TELOS</strong>
     </div>
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {html_message}
@@ -2111,13 +2111,13 @@ function copyDemoMessage{message_id}() {{
         box-shadow: 0 0 6px rgba(136, 136, 136, 0.3);
     }}
     50% {{
-        border-color: #FFD700;
+        border-color: #F4D03F;
         box-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
     }}
 }}
 @keyframes text-pulse {{
     0%, 100% {{
-        color: #FFD700;
+        color: #F4D03F;
     }}
     50% {{
         color: #888;
@@ -2132,7 +2132,7 @@ function copyDemoMessage{message_id}() {{
 </style>
 <div class="contemplating-border" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
-        <strong style="color: #FFD700;">TELOS</strong>
+        <strong style="color: #F4D03F;">TELOS</strong>
     </div>
     <div class="contemplating-text" style="font-size: 19px; font-style: italic; opacity: 0.9;">
         Contemplating...
@@ -2143,9 +2143,9 @@ function copyDemoMessage{message_id}() {{
                     # Show response with native markdown rendering
                     # Header with "TELOS" label
                     st.markdown("""
-<div style="background-color: #1a1a1a; padding: 15px 15px 5px 15px; border-radius: 10px 10px 0 0; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700; border-bottom: none;">
+<div style="background-color: #1a1a1a; padding: 15px 15px 5px 15px; border-radius: 10px 10px 0 0; margin-top: 15px; margin-bottom: 0; border: 2px solid #F4D03F; border-bottom: none;">
     <div style="color: #888; font-size: 19px;">
-        <strong style="color: #FFD700;">TELOS</strong>
+        <strong style="color: #F4D03F;">TELOS</strong>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -2165,7 +2165,7 @@ function copyDemoMessage{message_id}() {{
     padding: 10px 15px 40px 15px;
     margin-top: 0;
     margin-bottom: 0;
-    border: 2px solid #FFD700;
+    border: 2px solid #F4D03F;
     border-top: none;
     border-radius: 0 0 10px 10px;
     color: #fff;
@@ -2183,7 +2183,7 @@ function copyDemoMessage{message_id}() {{
     right: 12px;
     background-color: #2d2d2d !important;
     color: #e0e0e0 !important;
-    border: 1px solid #FFD700 !important;
+    border: 1px solid #F4D03F !important;
     padding: 6px 12px;
     border-radius: 5px;
     font-size: 14px;
@@ -2235,13 +2235,13 @@ function copyMessage{message_id}() {{
         box-shadow: 0 0 6px rgba(136, 136, 136, 0.3);
     }}
     50% {{
-        border-color: #FFD700;
+        border-color: #F4D03F;
         box-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
     }}
 }}
 @keyframes text-pulse {{
     0%, 100% {{
-        color: #FFD700;
+        color: #F4D03F;
     }}
     50% {{
         color: #888;
@@ -2256,7 +2256,7 @@ function copyMessage{message_id}() {{
 </style>
 <div class="contemplating-border" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
-        <strong style="color: #FFD700;">TELOS</strong>
+        <strong style="color: #F4D03F;">TELOS</strong>
     </div>
     <div class="contemplating-text" style="font-size: 19px; font-style: italic; opacity: 0.9;">
         Contemplating...
@@ -2267,9 +2267,9 @@ function copyMessage{message_id}() {{
                         # Show response with native markdown rendering
                         # Header with "Steward" label
                         st.markdown("""
-<div style="background-color: #1a1a1a; padding: 15px 15px 5px 15px; border-radius: 10px 10px 0 0; margin-top: 15px; margin-bottom: 0; border: 2px solid #FFD700; border-bottom: none;">
+<div style="background-color: #1a1a1a; padding: 15px 15px 5px 15px; border-radius: 10px 10px 0 0; margin-top: 15px; margin-bottom: 0; border: 2px solid #F4D03F; border-bottom: none;">
     <div style="color: #888; font-size: 19px;">
-        <strong style="color: #FFD700;">TELOS</strong>
+        <strong style="color: #F4D03F;">TELOS</strong>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -2289,7 +2289,7 @@ function copyMessage{message_id}() {{
     padding: 10px 15px 40px 15px;
     margin-top: 0;
     margin-bottom: 0;
-    border: 2px solid #FFD700;
+    border: 2px solid #F4D03F;
     border-top: none;
     border-radius: 0 0 10px 10px;
     color: #fff;
@@ -2307,7 +2307,7 @@ function copyMessage{message_id}() {{
     right: 12px;
     background-color: #2d2d2d !important;
     color: #e0e0e0 !important;
-    border: 1px solid #FFD700 !important;
+    border: 1px solid #F4D03F !important;
     padding: 6px 12px;
     border-radius: 5px;
     font-size: 14px;
@@ -2358,12 +2358,12 @@ function copyMessage{message_id}() {{
             st.markdown("""
             <div style="
                 background-color: #2d2d2d;
-                border: 1px solid #FFD700;
+                border: 1px solid #F4D03F;
                 border-radius: 10px;
                 padding: 19px;
                 margin-bottom: 15px;
             ">
-                <div style="color: #FFD700; font-size: 19px; font-weight: bold; text-align: center;">
+                <div style="color: #F4D03F; font-size: 19px; font-weight: bold; text-align: center;">
                     🔢 Math Breakdown
                 </div>
             </div>
@@ -2381,18 +2381,18 @@ function copyMessage{message_id}() {{
             st.markdown("""
             <div style="
                 background-color: #1a1a1a;
-                border: 1px solid #FFD700;
+                border: 1px solid #F4D03F;
                 border-radius: 10px;
                 padding: 15px;
                 min-height: 300px;
             ">
-                <p style="color: #FFD700; font-weight: bold; font-size: 16px; margin-bottom: 15px;">📊 Fidelity Calculation</p>
+                <p style="color: #F4D03F; font-weight: bold; font-size: 16px; margin-bottom: 15px;">📊 Fidelity Calculation</p>
                 <ul style="color: #e0e0e0; line-height: 1.8;">
-                    <li>Base alignment score: <span style="color: #FFD700;">0.85</span></li>
+                    <li>Base alignment score: <span style="color: #F4D03F;">0.85</span></li>
                     <li>Context adjustment: <span style="color: #4CAF50;">+0.05</span></li>
-                    <li>Preference weight: <span style="color: #FFD700;">0.92</span></li>
-                    <li style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #FFD700;">
-                        <strong style="color: #FFD700;">Final Fidelity: 0.873</strong>
+                    <li>Preference weight: <span style="color: #F4D03F;">0.92</span></li>
+                    <li style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #F4D03F;">
+                        <strong style="color: #F4D03F;">Final Fidelity: 0.873</strong>
                     </li>
                 </ul>
                 <div style="margin-top: 19px; padding: 10px; background-color: #2d2d2d; border-radius: 5px;">
@@ -2408,17 +2408,17 @@ function copyMessage{message_id}() {{
             st.markdown("""
             <div style="
                 background-color: #1a1a1a;
-                border: 1px solid #FFD700;
+                border: 1px solid #F4D03F;
                 border-radius: 10px;
                 padding: 15px;
                 min-height: 300px;
             ">
-                <p style="color: #FFD700; font-weight: bold; font-size: 16px; margin-bottom: 15px;">📏 Distance Metrics</p>
+                <p style="color: #F4D03F; font-weight: bold; font-size: 16px; margin-bottom: 15px;">📏 Distance Metrics</p>
                 <ul style="color: #e0e0e0; line-height: 1.8;">
-                    <li>Semantic distance: <span style="color: #FFD700;">0.127</span></li>
-                    <li>Intent deviation: <span style="color: #FFD700;">0.08</span></li>
+                    <li>Semantic distance: <span style="color: #F4D03F;">0.127</span></li>
+                    <li>Intent deviation: <span style="color: #F4D03F;">0.08</span></li>
                     <li>Preference alignment gap: <span style="color: #4CAF50;">0.05</span></li>
-                    <li style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #FFD700;">
+                    <li style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #F4D03F;">
                         <strong style="color: #4CAF50;">Status: Nominal</strong>
                     </li>
                 </ul>
@@ -2441,12 +2441,12 @@ function copyMessage{message_id}() {{
             st.markdown("""
             <div style="
                 background-color: #2d2d2d;
-                border: 1px solid #FFD700;
+                border: 1px solid #F4D03F;
                 border-radius: 10px;
                 padding: 19px;
                 margin-bottom: 15px;
             ">
-                <div style="color: #FFD700; font-size: 19px; font-weight: bold; text-align: center;">
+                <div style="color: #F4D03F; font-size: 19px; font-weight: bold; text-align: center;">
                     🔀 Counterfactual Analysis
                 </div>
             </div>
@@ -2498,12 +2498,12 @@ function copyMessage{message_id}() {{
             st.markdown("""
             <div style="
                 background-color: #1a1a1a;
-                border: 1px solid #FFD700;
+                border: 1px solid #F4D03F;
                 border-radius: 10px;
                 padding: 15px;
                 min-height: 350px;
             ">
-                <p style="color: #FFD700; font-weight: bold; font-size: 16px; margin-bottom: 15px;">🔭 TELOS Intervention</p>
+                <p style="color: #F4D03F; font-weight: bold; font-size: 16px; margin-bottom: 15px;">🔭 TELOS Intervention</p>
                 <div style="background-color: #2d2d2d; padding: 12px; border-radius: 5px; margin-bottom: 15px;">
                     <p style="color: #e0e0e0; font-size: 13px; line-height: 1.6; margin: 0;">
                         "Understanding your deeper preferences, here's a response that aligns with your
@@ -2512,14 +2512,14 @@ function copyMessage{message_id}() {{
                     </p>
                 </div>
                 <div style="margin-top: 15px;">
-                    <p style="color: #FFD700; font-size: 12px; font-weight: bold; margin-bottom: 10px;">Metrics:</p>
+                    <p style="color: #F4D03F; font-size: 12px; font-weight: bold; margin-bottom: 10px;">Metrics:</p>
                     <ul style="color: #e0e0e0; font-size: 12px; line-height: 1.8;">
                         <li>Alignment score: <span style="color: #4CAF50;">0.873</span></li>
                         <li>Semantic distance: <span style="color: #4CAF50;">0.127</span></li>
                         <li>Intent match: <span style="color: #4CAF50;">95%</span></li>
                     </ul>
                 </div>
-                <div style="margin-top: 15px; padding: 10px; background-color: #2d2d2d; border-radius: 5px; border-left: 1px solid #FFD700;">
+                <div style="margin-top: 15px; padding: 10px; background-color: #2d2d2d; border-radius: 5px; border-left: 1px solid #F4D03F;">
                     <p style="color: #4CAF50; font-size: 11px; margin: 0;">
                         <strong>Improvement: +34% alignment</strong>
                     </p>
@@ -2538,12 +2538,12 @@ function copyMessage{message_id}() {{
             st.markdown("""
             <div style="
                 background-color: #2d2d2d;
-                border: 1px solid #FFD700;
+                border: 1px solid #F4D03F;
                 border-radius: 10px;
                 padding: 19px;
                 margin-bottom: 15px;
             ">
-                <div style="color: #FFD700; font-size: 19px; font-weight: bold; text-align: center;">
+                <div style="color: #F4D03F; font-size: 19px; font-weight: bold; text-align: center;">
                     🎯 Primacy Attractor
                 </div>
             </div>
@@ -2583,13 +2583,13 @@ function copyMessage{message_id}() {{
             st.markdown("""
             <div style="
                 background-color: #1a1a1a;
-                border: 2px solid #FFD700;
+                border: 2px solid #F4D03F;
                 border-radius: 10px;
                 padding: 30px;
                 margin-top: 15px;
                 text-align: center;
             ">
-                <span style="color: #FFD700; font-weight: bold; font-size: 18px;">⏳ Calibrating...</span>
+                <span style="color: #F4D03F; font-weight: bold; font-size: 18px;">⏳ Calibrating...</span>
                 <p style="color: #e0e0e0; margin-top: 15px;">
                     TELOS is learning your intent from the conversation.<br>
                     Primacy Attractor will be established after ~10 turns.
@@ -2616,11 +2616,11 @@ function copyMessage{message_id}() {{
             st.markdown(f"""
             <div style="
                 background-color: #1a1a1a;
-                border: 1px solid #FFD700;
+                border: 1px solid #F4D03F;
                 border-radius: 10px;
                 padding: 15px;
             ">
-                <p style="color: #FFD700; font-weight: bold; font-size: 16px; margin-bottom: 15px;">📋 Purpose</p>
+                <p style="color: #F4D03F; font-weight: bold; font-size: 16px; margin-bottom: 15px;">📋 Purpose</p>
                 <div style="color: #e0e0e0; font-size: 13px; line-height: 1.6;">
                     {purpose_items}
                 </div>
@@ -2639,11 +2639,11 @@ function copyMessage{message_id}() {{
             st.markdown(f"""
             <div style="
                 background-color: #1a1a1a;
-                border: 1px solid #FFD700;
+                border: 1px solid #F4D03F;
                 border-radius: 10px;
                 padding: 15px;
             ">
-                <p style="color: #FFD700; font-weight: bold; font-size: 16px; margin-bottom: 15px;">🎯 Scope</p>
+                <p style="color: #F4D03F; font-weight: bold; font-size: 16px; margin-bottom: 15px;">🎯 Scope</p>
                 <div style="color: #e0e0e0; font-size: 13px; line-height: 1.6;">
                     {scope_items}
                 </div>
@@ -2662,11 +2662,11 @@ function copyMessage{message_id}() {{
             st.markdown(f"""
             <div style="
                 background-color: #1a1a1a;
-                border: 1px solid #FFD700;
+                border: 1px solid #F4D03F;
                 border-radius: 10px;
                 padding: 15px;
             ">
-                <p style="color: #FFD700; font-weight: bold; font-size: 16px; margin-bottom: 15px;">🚧 Boundaries</p>
+                <p style="color: #F4D03F; font-weight: bold; font-size: 16px; margin-bottom: 15px;">🚧 Boundaries</p>
                 <div style="color: #e0e0e0; font-size: 13px; line-height: 1.6;">
                     {boundary_items}
                 </div>
@@ -2803,7 +2803,7 @@ Current Turn Data:
             st.markdown("""
             <div style="
                 background-color: #1a1a1a;
-                border: 1px solid #FFD700;
+                border: 1px solid #F4D03F;
                 border-radius: 5px;
                 padding: 10px;
                 margin: 10px 0;
@@ -2812,7 +2812,7 @@ Current Turn Data:
             ">
             """, unsafe_allow_html=True)
             for msg in chat_history:
-                role_color = "#4CAF50" if msg['role'] == 'user' else "#FFD700"
+                role_color = "#4CAF50" if msg['role'] == 'user' else "#F4D03F"
                 role_label = "You" if msg['role'] == 'user' else "Steward"
                 st.markdown(f"""
                 <div style="margin: 5px 0;">
@@ -2822,7 +2822,7 @@ Current Turn Data:
                 """, unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
 
-    def _render_metric_card(self, title: str, value: str, icon: str, description: str, value_color: str = "#FFD700"):
+    def _render_metric_card(self, title: str, value: str, icon: str, description: str, value_color: str = "#F4D03F"):
         """Render a single metric card.
 
         Args:
@@ -2835,13 +2835,13 @@ Current Turn Data:
         st.markdown(f"""
         <div style="
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border: 1px solid #FFD700;
+            border: 1px solid #F4D03F;
             border-radius: 8px;
             padding: 10px;
             text-align: center;
         ">
             <div style="font-size: 19px; margin-bottom: 5px;">{icon}</div>
-            <div style="color: #FFD700; font-size: 10px; font-weight: bold; margin-bottom: 5px;">
+            <div style="color: #F4D03F; font-size: 10px; font-weight: bold; margin-bottom: 5px;">
                 {title}
             </div>
             <div style="
@@ -2892,7 +2892,7 @@ Current Turn Data:
             font-size: 19px !important;
             background-color: #2d2d2d !important;
             color: #ffffff !important;
-            border: 1px solid #FFD700 !important;
+            border: 1px solid #F4D03F !important;
         }
 
         div[data-testid="stForm"] button[kind="formSubmit"] {
@@ -2955,7 +2955,7 @@ Current Turn Data:
         <style>
         /* Beta mode chat input styling - matches Demo mode */
         div[data-testid="stForm"] {
-            border: 2px solid #FFD700 !important;
+            border: 2px solid #F4D03F !important;
             border-radius: 10px !important;
             padding: 15px !important;
             background-color: #2d2d2d !important;
@@ -3069,7 +3069,7 @@ Current Turn Data:
             st.markdown("""
             <div style="
                 background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
-                border: 1px solid #FFD700;
+                border: 1px solid #F4D03F;
                 border-radius: 15px;
                 padding: 25px;
                 margin: 19px 0;
@@ -3077,7 +3077,7 @@ Current Turn Data:
                 text-align: center;
             ">
                 <div style="font-size: 48px; margin-bottom: 15px;">🔒</div>
-                <div style="color: #FFD700; font-size: 24px; font-weight: bold; margin-bottom: 15px;">
+                <div style="color: #F4D03F; font-size: 24px; font-weight: bold; margin-bottom: 15px;">
                     Demo Limit Reached
                 </div>
                 <div style="color: #e0e0e0; font-size: 19px; line-height: 1.6; margin-bottom: 19px;">
@@ -3168,7 +3168,7 @@ Current Turn Data:
             st.markdown("""
             <div style="
                 background-color: #2d2d2d;
-                border: 1px solid #FFD700;
+                border: 1px solid #F4D03F;
                 border-radius: 10px;
                 padding: 15px;
                 min-height: 200px;
@@ -3182,14 +3182,14 @@ Current Turn Data:
             if title == "Math Breakdown":
                 st.markdown("""
                 <div style="color: #e0e0e0; padding: 10px;">
-                    <p style="color: #FFD700; font-weight: bold;">Fidelity Calculation:</p>
+                    <p style="color: #F4D03F; font-weight: bold;">Fidelity Calculation:</p>
                     <ul style="color: #e0e0e0;">
                         <li>Base alignment score: 0.85</li>
                         <li>Context adjustment: +0.05</li>
                         <li>Preference weight: 0.92</li>
-                        <li style="color: #FFD700;"><strong>Final Fidelity: 0.873</strong></li>
+                        <li style="color: #F4D03F;"><strong>Final Fidelity: 0.873</strong></li>
                     </ul>
-                    <p style="color: #FFD700; font-weight: bold; margin-top: 15px;">Distance Metrics:</p>
+                    <p style="color: #F4D03F; font-weight: bold; margin-top: 15px;">Distance Metrics:</p>
                     <ul style="color: #e0e0e0;">
                         <li>Semantic distance: 0.127</li>
                         <li>Intent deviation: 0.08</li>
@@ -3199,12 +3199,12 @@ Current Turn Data:
             elif title == "Counterfactual Analysis":
                 st.markdown("""
                 <div style="color: #e0e0e0; padding: 10px;">
-                    <p style="color: #FFD700; font-weight: bold;">Without TELOS Intervention:</p>
+                    <p style="color: #F4D03F; font-weight: bold;">Without TELOS Intervention:</p>
                     <ul style="color: #e0e0e0;">
                         <li>Expected response would focus on literal interpretation</li>
                         <li>Alignment score: 0.65 (lower)</li>
                     </ul>
-                    <p style="color: #FFD700; font-weight: bold; margin-top: 15px;">With TELOS Intervention:</p>
+                    <p style="color: #F4D03F; font-weight: bold; margin-top: 15px;">With TELOS Intervention:</p>
                     <ul style="color: #e0e0e0;">
                         <li>Response adapted to user's deeper preferences</li>
                         <li>Alignment score: 0.873 (higher)</li>
@@ -3238,7 +3238,7 @@ Current Turn Data:
         st.markdown("""
         <div style="
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border: 2px solid #FFD700;
+            border: 2px solid #F4D03F;
             border-radius: 12px;
             padding: 25px;
             margin: 20px 0;
@@ -3246,7 +3246,7 @@ Current Turn Data:
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
         ">
             <div style="font-size: 48px; margin-bottom: 10px;">🎯</div>
-            <h3 style="color: #FFD700; margin: 10px 0;">PA Established!</h3>
+            <h3 style="color: #F4D03F; margin: 10px 0;">PA Established!</h3>
             <p style="color: #e0e0e0; font-size: 18px; line-height: 1.6; margin: 10px 0;">
                 Your conversation purpose is now calibrated.<br>
                 Beta preference testing is active - please rate responses below.

@@ -2,7 +2,7 @@
 """
 Surgical Gold Color Replacement
 ================================
-ONLY replaces #FFD700 (old bright gold) with #F4D03F (refined gold)
+ONLY replaces #F4D03F (old bright gold) with #F4D03F (refined gold)
 Does NOT touch any other colors to preserve:
 - Green borders on observation deck
 - Color-coded fidelity values
@@ -14,7 +14,7 @@ import re
 from pathlib import Path
 
 # Define the ONLY change we're making
-OLD_GOLD = '#FFD700'
+OLD_GOLD = '#F4D03F'
 NEW_GOLD = '#F4D03F'
 
 # Files to update
@@ -50,9 +50,9 @@ def replace_gold_in_file(filepath: Path):
         print(f"✓ {filepath.name} - no changes needed")
         return
 
-    # Replace ONLY #FFD700 with #F4D03F (case-insensitive)
+    # Replace ONLY #F4D03F with #F4D03F (case-insensitive)
     new_content = re.sub(
-        r'#FFD700',
+        r'#F4D03F',
         NEW_GOLD,
         content,
         flags=re.IGNORECASE

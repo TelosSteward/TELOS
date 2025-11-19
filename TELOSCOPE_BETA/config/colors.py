@@ -8,7 +8,7 @@ Updated based on accessibility audit to reduce eye strain.
 
 # Primary Brand Colors
 GOLD = '#F4D03F'  # Refined gold - less "neon", better for eyes
-GOLD_BRIGHT = '#FFD700'  # Legacy bright gold (deprecated - do not use)
+GOLD_BRIGHT = '#F4D03F'  # Legacy bright gold (deprecated - do not use)
 
 # Status Colors (Fidelity Indicators)
 STATUS_GOOD = '#4CAF50'     # Green - Good/Aligned (≥0.85)
@@ -45,7 +45,7 @@ GOLD_40 = with_opacity(GOLD, 0.4)        # Subtle hints
 
 # Legacy mappings (for backward compatibility during migration)
 COLOR_MAPPINGS = {
-    '#FFD700': GOLD,      # Map old bright gold to refined gold
+    '#F4D03F': GOLD,      # Map old bright gold to refined gold
     '#FF4444': STATUS_SEVERE,  # Map old red to improved red
     '#FFA500': STATUS_MODERATE,  # Map old orange to refined orange
 }

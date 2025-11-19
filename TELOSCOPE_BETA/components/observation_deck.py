@@ -121,7 +121,7 @@ class ObservationDeck:
         st.markdown("""
         <div style="
             background-color: #1a1a1a;
-            border: 3px solid #FFD700;
+            border: 3px solid #F4D03F;
             border-radius: 10px;
             padding: 20px;
             margin: 20px auto;
@@ -138,7 +138,7 @@ class ObservationDeck:
         </div>
         """, unsafe_allow_html=True)
 
-        st.markdown('<div style="color: #FFD700; text-align: center; font-size: 22px; font-weight: bold; margin-bottom: 20px;">Dual Primacy Attractors</div>', unsafe_allow_html=True)
+        st.markdown('<div style="color: #F4D03F; text-align: center; font-size: 22px; font-weight: bold; margin-bottom: 20px;">Dual Primacy Attractors</div>', unsafe_allow_html=True)
 
         # Fidelity Metrics using table layout
         st.markdown("""
@@ -151,16 +151,16 @@ class ObservationDeck:
                 </div>
             </td>
             <td style="width: 34%; text-align: center; padding: 0 10px;">
-                <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #FFD700; border-radius: 8px; padding: 10px 20px; display: inline-block;">
-                    <div style="color: #FFD700; font-size: 12px; margin-bottom: 5px;">🎯 Primacy State</div>
-                    <div style="color: #FFD700; font-size: 24px; font-weight: bold;">1.000</div>
+                <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #F4D03F; border-radius: 8px; padding: 10px 20px; display: inline-block;">
+                    <div style="color: #F4D03F; font-size: 12px; margin-bottom: 5px;">🎯 Primacy State</div>
+                    <div style="color: #F4D03F; font-size: 24px; font-weight: bold;">1.000</div>
                     <div style="color: #888; font-size: 10px; margin-top: 5px;">Perfect Equilibrium</div>
                 </div>
             </td>
             <td style="width: 33%; text-align: center;">
-                <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #FFD700; border-radius: 8px; padding: 10px; display: inline-block;">
-                    <div style="color: #FFD700; font-size: 12px; margin-bottom: 5px;">🤖 AI Fidelity</div>
-                    <div style="color: #FFD700; font-size: 24px; font-weight: bold;">1.000</div>
+                <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #F4D03F; border-radius: 8px; padding: 10px; display: inline-block;">
+                    <div style="color: #F4D03F; font-size: 12px; margin-bottom: 5px;">🤖 AI Fidelity</div>
+                    <div style="color: #F4D03F; font-size: 24px; font-weight: bold;">1.000</div>
                 </div>
             </td>
         </tr>
@@ -190,13 +190,13 @@ class ObservationDeck:
 
             <td style="width: 50%; vertical-align: top; padding: 0;">
                 <!-- RIGHT COLUMN: AI PA -->
-                <div style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #1a1a1a; padding: 8px; border-radius: 8px 8px 0 0; font-weight: bold; text-align: center; font-size: 16px;">
+                <div style="background: linear-gradient(135deg, #F4D03F 0%, #FFA500 100%); color: #1a1a1a; padding: 8px; border-radius: 8px 8px 0 0; font-weight: bold; text-align: center; font-size: 16px;">
                     🤖 AI Primacy Attractor
                 </div>
 
                 <!-- AI Purpose -->
-                <div style="background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 0 0 8px 8px; padding: 12px; margin-bottom: 10px;">
-                    <div style="color: #FFD700; font-weight: bold; margin-bottom: 8px; font-size: 14px;">Purpose</div>
+                <div style="background-color: #2d2d2d; border: 2px solid #F4D03F; border-radius: 0 0 8px 8px; padding: 12px; margin-bottom: 10px;">
+                    <div style="color: #F4D03F; font-weight: bold; margin-bottom: 8px; font-size: 14px;">Purpose</div>
                     <div style="color: #e0e0e0; line-height: 1.5; font-size: 13px;">
                         • Help you understand TELOS naturally<br>
                         • Stay aligned with your learning goals<br>
@@ -205,8 +205,8 @@ class ObservationDeck:
                 </div>
 
                 <!-- AI Scope -->
-                <div style="background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 12px; margin-bottom: 10px;">
-                    <div style="color: #FFD700; font-weight: bold; margin-bottom: 8px; font-size: 14px;">Scope</div>
+                <div style="background-color: #2d2d2d; border: 2px solid #F4D03F; border-radius: 8px; padding: 12px; margin-bottom: 10px;">
+                    <div style="color: #F4D03F; font-weight: bold; margin-bottom: 8px; font-size: 14px;">Scope</div>
                     <div style="color: #e0e0e0; line-height: 1.5; font-size: 13px;">
                         • TELOS dual attractor system<br>
                         • Perfect equilibrium & primacy basin<br>
@@ -216,8 +216,8 @@ class ObservationDeck:
                 </div>
 
                 <!-- AI Boundaries -->
-                <div style="background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 12px;">
-                    <div style="color: #FFD700; font-weight: bold; margin-bottom: 8px; font-size: 14px;">Boundaries</div>
+                <div style="background-color: #2d2d2d; border: 2px solid #F4D03F; border-radius: 8px; padding: 12px;">
+                    <div style="color: #F4D03F; font-weight: bold; margin-bottom: 8px; font-size: 14px;">Boundaries</div>
                     <div style="color: #e0e0e0; line-height: 1.5; font-size: 13px;">
                         • Answer what you asked<br>
                         • Stay conversational<br>
@@ -236,7 +236,7 @@ class ObservationDeck:
         # Close centered container
         st.markdown('</div>', unsafe_allow_html=True)
 
-    def _render_metric_window(self, title, value, icon, description, value_color="#FFD700"):
+    def _render_metric_window(self, title, value, icon, description, value_color="#F4D03F"):
         """Render a compact gold-themed metric window.
 
         Args:
@@ -249,7 +249,7 @@ class ObservationDeck:
         st.markdown(f"""
         <div style="
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border: 1px solid #FFD700;
+            border: 1px solid #F4D03F;
             border-radius: 8px;
             padding: 6px 8px;
             margin-bottom: 6px;
@@ -257,7 +257,7 @@ class ObservationDeck:
         ">
             <div style="display: flex; align-items: center; margin-bottom: 3px;">
                 <span style="font-size: 16px; margin-right: 6px;">{icon}</span>
-                <span style="color: #FFD700; font-size: 10px; font-weight: bold;">
+                <span style="color: #F4D03F; font-size: 10px; font-weight: bold;">
                     {title}
                 </span>
             </div>
@@ -287,7 +287,7 @@ class ObservationDeck:
             if user_fidelity >= 0.85:
                 user_color = "#4CAF50"  # Green
             elif user_fidelity >= 0.70:
-                user_color = "#FFD700"  # Yellow
+                user_color = "#F4D03F"  # Yellow
             elif user_fidelity >= 0.50:
                 user_color = "#FFA500"  # Orange
             else:
@@ -306,7 +306,7 @@ class ObservationDeck:
             if ai_fidelity >= 0.85:
                 ai_color = "#4CAF50"  # Green
             elif ai_fidelity >= 0.70:
-                ai_color = "#FFD700"  # Yellow
+                ai_color = "#F4D03F"  # Yellow
             elif ai_fidelity >= 0.50:
                 ai_color = "#FFA500"  # Orange
             else:
@@ -331,7 +331,7 @@ class ObservationDeck:
             if primacy_state >= 0.85:
                 ps_color = "#4CAF50"  # Green
             elif primacy_state >= 0.70:
-                ps_color = "#FFD700"  # Yellow
+                ps_color = "#F4D03F"  # Yellow
             elif primacy_state >= 0.50:
                 ps_color = "#FFA500"  # Orange
             else:
@@ -346,7 +346,7 @@ class ObservationDeck:
 
         with col4:
             intervention = "ACTIVE" if turn_data.get('intervention_applied', False) else "STANDBY"
-            intervention_color = "#FFD700" if intervention == "ACTIVE" else "#4CAF50"
+            intervention_color = "#F4D03F" if intervention == "ACTIVE" else "#4CAF50"
             self._render_metric_card(
                 "Intervention Status",
                 intervention,
@@ -355,18 +355,18 @@ class ObservationDeck:
                 value_color=intervention_color
             )
 
-    def _render_metric_card(self, title, value, icon, description, value_color="#FFD700"):
+    def _render_metric_card(self, title, value, icon, description, value_color="#F4D03F"):
         """Render a single metric card."""
         st.markdown(f"""
         <div style="
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border: 1px solid #FFD700;
+            border: 1px solid #F4D03F;
             border-radius: 8px;
             padding: 10px;
             text-align: center;
         ">
             <div style="font-size: 20px; margin-bottom: 5px;">{icon}</div>
-            <div style="color: #FFD700; font-size: 10px; font-weight: bold; margin-bottom: 5px;">
+            <div style="color: #F4D03F; font-size: 10px; font-weight: bold; margin-bottom: 5px;">
                 {title}
             </div>
             <div style="

@@ -179,7 +179,7 @@ Users must answer 4 questions to establish their Primacy Attractor before conver
    - **Required:** No (skippable)
 
 ### Visual Design
-- Yellow border (#FFD700, 3px) around all sections
+- Yellow border (#F4D03F, 3px) around all sections
 - 32px header font
 - 22px question font
 - 20px user input font

@@ -37,13 +37,13 @@ class TELOSCOPEControls:
         st.markdown("""
         <div style="
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-            border: 1px solid #FFD700;
+            border: 1px solid #F4D03F;
             border-radius: 10px;
             padding: 15px;
             margin-top: 20px;
         ">
             <div style="text-align: center; margin-bottom: 15px;">
-                <h3 style="color: #FFD700; margin: 0; font-size: 28px;">
+                <h3 style="color: #F4D03F; margin: 0; font-size: 28px;">
                     TELOSCOPE Controls
                 </h3>
                 <p style="color: #888; font-size: 14px; margin: 5px 0 0 0;">
@@ -69,13 +69,13 @@ class TELOSCOPEControls:
             st.markdown(f"""
             <div style="
                 background-color: #1a1a1a;
-                border: 1px solid #FFD700;
+                border: 1px solid #F4D03F;
                 border-radius: 5px;
                 padding: 8px;
                 text-align: center;
             ">
                 <div style="color: #888; font-size: 10px;">TURN</div>
-                <div style="color: #FFD700; font-size: 16px; font-weight: bold;">
+                <div style="color: #F4D03F; font-size: 16px; font-weight: bold;">
                     {session_info.get('current_turn', 0) + 1} / {session_info.get('total_turns', 0)}
                 </div>
             </div>
@@ -85,13 +85,13 @@ class TELOSCOPEControls:
             st.markdown(f"""
             <div style="
                 background-color: #1a1a1a;
-                border: 1px solid #FFD700;
+                border: 1px solid #F4D03F;
                 border-radius: 5px;
                 padding: 8px;
                 text-align: center;
             ">
                 <div style="color: #888; font-size: 10px;">AVG FIDELITY</div>
-                <div style="color: #FFD700; font-size: 16px; font-weight: bold;">
+                <div style="color: #F4D03F; font-size: 16px; font-weight: bold;">
                     {session_info.get('avg_fidelity', 0.0):.3f}
                 </div>
             </div>
@@ -101,13 +101,13 @@ class TELOSCOPEControls:
             st.markdown(f"""
             <div style="
                 background-color: #1a1a1a;
-                border: 1px solid #FFD700;
+                border: 1px solid #F4D03F;
                 border-radius: 5px;
                 padding: 8px;
                 text-align: center;
             ">
                 <div style="color: #888; font-size: 10px;">INTERVENTIONS</div>
-                <div style="color: #FFD700; font-size: 16px; font-weight: bold;">
+                <div style="color: #F4D03F; font-size: 16px; font-weight: bold;">
                     {session_info.get('total_interventions', 0)}
                 </div>
             </div>
@@ -148,7 +148,7 @@ class TELOSCOPEControls:
                 background-color: #2d2d2d;
                 border-radius: 5px;
             ">
-                <span style="color: #FFD700; font-size: 14px;">
+                <span style="color: #F4D03F; font-size: 14px;">
                     {current_turn + 1} / {total_turns}
                 </span>
             </div>
@@ -189,7 +189,7 @@ class TELOSCOPEControls:
             col1, col2 = st.columns([3, 1])
             with col1:
                 st.markdown(f"""
-                <div style="color: #FFD700; font-size: 11px; text-align: center;">
+                <div style="color: #F4D03F; font-size: 11px; text-align: center;">
                     Intervention {selected_idx + 1}/{len(intervention_turns)} (Turn {intervention_turns[selected_idx] + 1})
                 </div>
                 """, unsafe_allow_html=True)
@@ -201,7 +201,7 @@ class TELOSCOPEControls:
         elif len(intervention_turns) == 1:
             # Single intervention - just show info and jump button
             st.markdown(f"""
-            <div style="color: #FFD700; font-size: 11px; text-align: center; margin-bottom: 10px;">
+            <div style="color: #F4D03F; font-size: 11px; text-align: center; margin-bottom: 10px;">
                 1 intervention at Turn {intervention_turns[0] + 1}
             </div>
             """, unsafe_allow_html=True)

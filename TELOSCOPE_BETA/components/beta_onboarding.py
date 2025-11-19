@@ -71,7 +71,7 @@ class BetaOnboarding:
             # Show onboarding screen
             st.markdown("""
             <div style="text-align: center; padding: 20px 0;">
-                <h1 style="color: #FFD700; font-size: 48px; margin: 0;">Welcome to TELOS Beta</h1>
+                <h1 style="color: #F4D03F; font-size: 48px; margin: 0;">Welcome to TELOS Beta</h1>
                 <p style="color: #e0e0e0; font-size: 18px; margin-top: 10px;">Help us build the future of AI governance</p>
             </div>
             """, unsafe_allow_html=True)
@@ -80,8 +80,8 @@ class BetaOnboarding:
 
             # What is Beta?
             st.markdown("""
-            <div class="message-container" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #FFD700; border-radius: 8px; padding: 20px; margin: 20px 0;">
-                <h3 style="color: #FFD700; margin-top: 0;">What is Beta Testing?</h3>
+            <div class="message-container" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #F4D03F; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                <h3 style="color: #F4D03F; margin-top: 0;">What is Beta Testing?</h3>
                 <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
                     You're getting early access to TELOS Observatory features before they're publicly released.
                     Your feedback helps us refine the system and improve AI governance for everyone.
@@ -91,24 +91,24 @@ class BetaOnboarding:
 
             # How We Handle Your Data
             st.markdown("""
-            <div class="message-container" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #FFD700; border-radius: 8px; padding: 20px; margin: 20px 0;">
-                <h3 style="color: #FFD700; margin-top: 0;">How We Handle Your Data</h3>
+            <div class="message-container" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #F4D03F; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                <h3 style="color: #F4D03F; margin-top: 0;">How We Handle Your Data</h3>
                 <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
-                    <strong style="color: #FFD700;">Ephemeral Sessions:</strong> Your conversation exists only during your active session in your browser. When you close the browser or end your session, the conversation is gone. We cannot retrieve past conversations.
+                    <strong style="color: #F4D03F;">Ephemeral Sessions:</strong> Your conversation exists only during your active session in your browser. When you close the browser or end your session, the conversation is gone. We cannot retrieve past conversations.
                 </p>
                 <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
-                    <strong style="color: #FFD700;">What We Collect:</strong> As you converse, governance deltas (mathematical measurements like fidelity scores and intervention patterns) are transmitted to our research database. Your actual conversations are never sent to our servers. Only the numerical measurements are collected.
+                    <strong style="color: #F4D03F;">What We Collect:</strong> As you converse, governance deltas (mathematical measurements like fidelity scores and intervention patterns) are transmitted to our research database. Your actual conversations are never sent to our servers. Only the numerical measurements are collected.
                 </p>
                 <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
-                    <strong style="color: #FFD700;">Best Practice:</strong> Complete sessions of 15-20 turns provide the most useful governance data for improving TELOS.
+                    <strong style="color: #F4D03F;">Best Practice:</strong> Complete sessions of 15-20 turns provide the most useful governance data for improving TELOS.
                 </p>
             </div>
             """, unsafe_allow_html=True)
 
             # What We Use Deltas For
             st.markdown("""
-            <div class="message-container" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #FFD700; border-radius: 8px; padding: 20px; margin: 20px 0;">
-                <h3 style="color: #FFD700; margin-top: 0;">What We Use Deltas For</h3>
+            <div class="message-container" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #F4D03F; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                <h3 style="color: #F4D03F; margin-top: 0;">What We Use Deltas For</h3>
                 <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
                     Your governance deltas help us:
                 </p>
@@ -127,8 +127,8 @@ class BetaOnboarding:
 
             # Consent checkbox
             st.markdown("""
-            <div class="message-container" style="background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); border: 2px solid #FFD700; border-radius: 8px; padding: 25px; margin: 20px 0;">
-                <h3 style="color: #FFD700; margin-top: 0; text-align: center;">Beta Consent</h3>
+            <div class="message-container" style="background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); border: 2px solid #F4D03F; border-radius: 8px; padding: 25px; margin: 20px 0;">
+                <h3 style="color: #F4D03F; margin-top: 0; text-align: center;">Beta Consent</h3>
             </div>
             """, unsafe_allow_html=True)
 
