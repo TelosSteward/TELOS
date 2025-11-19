@@ -1066,6 +1066,34 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
                     return
                 # If we get here, PA was just established - continue to conversation
 
+            # Show BETA welcome message if PA just established and no turns yet
+            if st.session_state.get('pa_established', False) and st.session_state.get('beta_current_turn', 1) == 1:
+                if 'conversation_turns' not in st.session_state or len(st.session_state.conversation_turns) == 0:
+                    st.markdown(f"""
+                    <div style="
+                        background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+                        border: 2px solid {GOLD};
+                        border-radius: 10px;
+                        padding: 20px;
+                        margin: 20px 0;
+                    ">
+                        <div style="color: {GOLD}; font-size: 24px; font-weight: bold; margin-bottom: 15px;">
+                            Welcome to BETA Testing!
+                        </div>
+                        <div style="color: #e0e0e0; font-size: 18px; line-height: 1.6;">
+                            Your Primacy Attractor has been established. You're now ready to begin the 15-turn conversation experience.
+                            <br><br>
+                            <strong>What to expect:</strong><br>
+                            • You'll have 15 conversation turns<br>
+                            • Some turns will show one response, others will show two responses side-by-side<br>
+                            • Your conversation will be guided by the purpose you just defined<br>
+                            • Use the "Observation Deck" button below to view metrics at any time<br>
+                            <br>
+                            <strong>Start by asking a question or making a request below.</strong>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
         # Main conversation display (all modes)
         conversation_display.render()
 
@@ -1083,10 +1111,8 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
 
         elif mode == "BETA":
             # In BETA mode, only show buttons after PA is established
-            # Check if PA is established (current turn >= convergence turn)
-            current_turn = state_manager.state.current_turn
-            convergence_turn = state_manager.state.metadata.get('convergence_turn', 7)
-            pa_established = current_turn >= convergence_turn
+            # Use the explicit PA established flag from questionnaire
+            pa_established = st.session_state.get('pa_established', False)
 
             if pa_established:
                 st.markdown("<div style='margin: 30px 0;'></div>", unsafe_allow_html=True)
