@@ -195,7 +195,7 @@ class PAOnboarding:
                                 # Initialize BETA sequence for 15-turn A/B testing
                                 from services.beta_sequence_generator import BetaSequenceGenerator
                                 generator = BetaSequenceGenerator()
-                                st.session_state.beta_sequence = generator.generate_sequence()
+                                st.session_state.beta_sequence = generator.generate_session_sequence()
                                 st.session_state.beta_current_turn = 1  # Start at turn 1
 
                                 st.success("✅ Your Primacy Attractor has been established!")
