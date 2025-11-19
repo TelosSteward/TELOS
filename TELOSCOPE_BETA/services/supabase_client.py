@@ -370,6 +370,193 @@ class SupabaseService:
             error_message=error_message
         )
 
+    def insert_beta_session(self, session_data: Dict[str, Any]) -> bool:
+        """
+        Create a new BETA session record.
+
+        Args:
+            session_data: Session data including user_pa_config, ai_pa_config, etc.
+
+        Returns:
+            bool: True if successful
+        """
+        if not self.enabled:
+            return False
+
+        try:
+            result = self.client.table('beta_sessions').insert(session_data).execute()
+
+            if result.data:
+                print(f"✓ BETA session created: {session_data['session_id']}")
+                return True
+            else:
+                print(f"❌ BETA session creation failed")
+                return False
+
+        except Exception as e:
+            print(f"❌ Error creating BETA session: {e}")
+            return False
+
+    def insert_beta_turn(self, turn_data: Dict[str, Any]) -> bool:
+        """
+        Create a new BETA turn record.
+
+        Args:
+            turn_data: Turn data including session_id, turn_number, metrics, etc.
+
+        Returns:
+            bool: True if successful
+        """
+        if not self.enabled:
+            return False
+
+        try:
+            result = self.client.table('beta_turns').insert(turn_data).execute()
+
+            if result.data:
+                print(f"✓ BETA turn logged: Session {turn_data['session_id']}, Turn {turn_data['turn_number']}")
+                return True
+            else:
+                print(f"❌ BETA turn logging failed")
+                return False
+
+        except Exception as e:
+            print(f"❌ Error logging BETA turn: {e}")
+            return False
+
+    def update_beta_turn(self, session_id: str, turn_number: int,
+                        update_data: Dict[str, Any]) -> bool:
+        """
+        Update an existing BETA turn record.
+
+        Args:
+            session_id: Session UUID
+            turn_number: Turn number
+            update_data: Fields to update (e.g., steward_interpretation, user_action)
+
+        Returns:
+            bool: True if successful
+        """
+        if not self.enabled:
+            return False
+
+        try:
+            result = self.client.table('beta_turns')\
+                .update(update_data)\
+                .eq('session_id', session_id)\
+                .eq('turn_number', turn_number)\
+                .execute()
+
+            if result.data:
+                print(f"✓ BETA turn updated: Session {session_id}, Turn {turn_number}")
+                return True
+            else:
+                print(f"❌ BETA turn update failed")
+                return False
+
+        except Exception as e:
+            print(f"❌ Error updating BETA turn: {e}")
+            return False
+
+    def get_beta_session(self, session_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Retrieve BETA session data.
+
+        Args:
+            session_id: Session UUID
+
+        Returns:
+            Session data dictionary or None if not found
+        """
+        if not self.enabled:
+            return None
+
+        try:
+            result = self.client.table('beta_sessions')\
+                .select('*')\
+                .eq('session_id', session_id)\
+                .single()\
+                .execute()
+
+            if result.data:
+                print(f"✓ Retrieved BETA session: {session_id}")
+                return result.data
+            else:
+                print(f"❌ BETA session not found: {session_id}")
+                return None
+
+        except Exception as e:
+            print(f"❌ Error retrieving BETA session: {e}")
+            return None
+
+    def get_beta_turns(self, session_id: str) -> list:
+        """
+        Retrieve all turns for a BETA session.
+
+        Args:
+            session_id: Session UUID
+
+        Returns:
+            List of turn data dictionaries (ordered by turn_number)
+        """
+        if not self.enabled:
+            return []
+
+        try:
+            result = self.client.table('beta_turns')\
+                .select('*')\
+                .eq('session_id', session_id)\
+                .order('turn_number')\
+                .execute()
+
+            if result.data:
+                print(f"✓ Retrieved {len(result.data)} BETA turns for session {session_id}")
+                return result.data
+            else:
+                print(f"⚠ No BETA turns found for session {session_id}")
+                return []
+
+        except Exception as e:
+            print(f"❌ Error retrieving BETA turns: {e}")
+            return []
+
+    def complete_beta_session(self, session_id: str, total_turns: int) -> bool:
+        """
+        Mark BETA session as completed.
+
+        Args:
+            session_id: Session UUID
+            total_turns: Final turn count
+
+        Returns:
+            bool: True if successful
+        """
+        if not self.enabled:
+            return False
+
+        try:
+            update_data = {
+                'completed_at': datetime.now().isoformat(),
+                'total_turns': total_turns,
+                'phase_1_complete': True  # At minimum, phase 1 is complete
+            }
+
+            result = self.client.table('beta_sessions')\
+                .update(update_data)\
+                .eq('session_id', session_id)\
+                .execute()
+
+            if result.data:
+                print(f"✓ BETA session completed: {session_id}")
+                return True
+            else:
+                print(f"❌ BETA session completion failed")
+                return False
+
+        except Exception as e:
+            print(f"❌ Error completing BETA session: {e}")
+            return False
+
     def test_connection(self) -> bool:
         """
         Test Supabase connection.

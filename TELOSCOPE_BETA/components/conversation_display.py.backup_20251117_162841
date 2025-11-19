@@ -179,7 +179,7 @@ class ConversationDisplay:
             elif demo_mode:
                 # DEMO MODE: Run the slideshow - don't show input during demo
                 demo_slide_index = st.session_state.get('demo_slide_index', 0)
-                if demo_slide_index <= 12:  # Slides 0-12: 0=welcome, 1=intro, 2=PA setup, 3-11=Q&A, 12=completion
+                if demo_slide_index <= 13:  # Slides 0-13: 0=welcome, 1=intro, 2=PA setup, 3-12=Q&A, 13=completion
                     self._render_demo_welcome()
                     return  # Completion slide has its own chat interface
                 else:
@@ -341,35 +341,27 @@ class ConversationDisplay:
         if current_idx == 0:
 
             st.markdown(f"""
-<div class="compact-container" key="slide-0">
-    <div data-slide="0" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+<div class="compact-container">
+    <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
                 border: 2px solid #FFD700;
                 border-radius: 15px;
                 padding: 30px;
                 margin: 20px auto;
                 text-align: center;
-                box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
-                opacity: 0;
-                animation: slideContentFadeIn 1.0s ease-out forwards;
-                animation-fill-mode: forwards;">
+                box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);">
         <h1 style="color: #FFD700; font-size: 32px; margin-bottom: 20px;">Welcome to TELOS Demo Mode! 🔭</h1>
         <p style="color: #e0e0e0; font-size: 20px; line-height: 1.6;">
             Click "Start Demo" below to begin your guided tour.
         </p>
     </div>
 </div>
-<style>
-@keyframes slideContentFadeIn {{
-    from {{ opacity: 0; transform: translateY(10px); }}
-    to {{ opacity: 1; transform: translateY(0); }}
-}}
-</style>
 """, unsafe_allow_html=True)
 
-            # Center the button too
+            # Center the button with proper spacing to prevent text wrapping
             col_left, col_center, col_right = st.columns([1, 1, 1])
             with col_center:
-                if st.button("▶️ Start Demo", key="start_demo_btn", use_container_width=True):
+                start_demo = st.button("▶️ Start Demo", key="start_demo_btn")
+                if start_demo:
                     st.session_state.demo_slide_index = 1
                     st.rerun()
             return
@@ -377,8 +369,8 @@ class ConversationDisplay:
         # Slide 1: Original Steward intro - appears instantly, centered and compact
         if current_idx == 1:
             intro_html = """
-<div class="compact-container" key="slide-1">
-    <div data-slide="1" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
+<div class="compact-container">
+    <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
                 border: 2px solid #FFD700;
                 border-radius: 10px;
                 padding: 20px 25px;
@@ -387,10 +379,7 @@ class ConversationDisplay:
                 line-height: 1.7;
                 color: #e0e0e0;
                 text-align: center;
-                box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
-                opacity: 0;
-                animation: slideContentFadeIn 1.0s ease-out forwards;
-                animation-fill-mode: forwards;">
+                box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);">
         <div style="color: #FFD700; font-size: 23px; font-weight: bold; margin-bottom: 15px;">
             Hello! I'm Steward, your guide to understanding TELOS.
         </div>
@@ -405,12 +394,6 @@ class ConversationDisplay:
         </div>
     </div>
 </div>
-<style>
-@keyframes slideContentFadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-</style>
 """
             st.markdown(intro_html, unsafe_allow_html=True)
 
@@ -421,12 +404,12 @@ class ConversationDisplay:
                 col_prev, col_next = st.columns(2)
 
                 with col_prev:
-                    if st.button(f"⬅️ Previous", key=f"prev_intro_btn", use_container_width=True):
+                    if st.button(f"⬅️ Previous", key=f"prev_intro_btn"):
                         st.session_state.demo_slide_index = 0
                         st.rerun()
 
                 with col_next:
-                    if st.button("➡️ Next", key="continue_demo_btn", use_container_width=True):
+                    if st.button("➡️ Next", key="continue_demo_btn"):
                         st.session_state.demo_slide_index = 2
                         st.rerun()
             return
@@ -434,8 +417,8 @@ class ConversationDisplay:
         # Slide 2: NEW - How TELOS establishes PA
         if current_idx == 2:
             pa_setup_html = """
-<div class="compact-container" key="slide-2">
-    <div data-slide="2" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
+<div class="compact-container">
+    <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
                 border: 2px solid #FFD700;
                 border-radius: 10px;
                 padding: 20px 25px;
@@ -444,10 +427,7 @@ class ConversationDisplay:
                 line-height: 1.7;
                 color: #e0e0e0;
                 text-align: center;
-                box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
-                opacity: 0;
-                animation: slideContentFadeIn 1.0s ease-out forwards;
-                animation-fill-mode: forwards;">
+                box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);">
         <div style="color: #FFD700; font-size: 23px; font-weight: bold; margin-bottom: 15px;">
             How TELOS Establishes Your Governance
         </div>
@@ -462,12 +442,6 @@ class ConversationDisplay:
         </div>
     </div>
 </div>
-<style>
-@keyframes slideContentFadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-</style>
 """
             st.markdown(pa_setup_html, unsafe_allow_html=True)
 
@@ -478,23 +452,23 @@ class ConversationDisplay:
                 col_prev, col_next = st.columns(2)
 
                 with col_prev:
-                    if st.button(f"⬅️ Previous", key=f"prev_pa_setup_btn", use_container_width=True):
+                    if st.button(f"⬅️ Previous", key=f"prev_pa_setup_btn"):
                         st.session_state.demo_slide_index = 1
                         st.rerun()
 
                 with col_next:
-                    if st.button("➡️ Next", key="continue_to_qa_btn", use_container_width=True):
+                    if st.button("➡️ Next", key="continue_to_qa_btn"):
                         st.session_state.demo_slide_index = 3
                         st.rerun()
             return
 
-        # Slides 3-11: Q&A pairs (slides[0] through slides[8]) - 9 Q&A slides (after consolidation)
-        if 3 <= current_idx <= 11:
-            slide_idx = current_idx - 3  # slides[0] through slides[8]
+        # Slides 3-12: Q&A pairs (slides[0] through slides[9]) - 10 Q&A slides
+        if 3 <= current_idx <= 12:
+            slide_idx = current_idx - 3  # slides[0] through slides[9]
             user_question, steward_response = slides[slide_idx]
 
             # Turn numbers start at 11 (PA already established in turns 1-10)
-            turn_num = slide_idx + 11  # Turn 11-19
+            turn_num = slide_idx + 11  # Turn 11-20
 
             # Render demo slide
             self._render_demo_slide_with_typewriter(
@@ -505,8 +479,8 @@ class ConversationDisplay:
             )
             return
 
-        # Slide 12: Demo completion with Steward's final message and BETA unlock
-        if current_idx == 12:
+        # Slide 13: Demo completion with Steward's final message and BETA unlock
+        if current_idx == 13:
             # Enable BETA tab unlock
             st.session_state.demo_completed = True
 
@@ -560,8 +534,8 @@ class ConversationDisplay:
             col_spacer_left, col_buttons, col_spacer_right = st.columns([1, 2, 1])
 
             with col_buttons:
-                if st.button("Previous", key="completion_prev", use_container_width=True):
-                    st.session_state.demo_slide_index = 11  # Go back to regulatory compliance slide
+                if st.button("Previous", key="completion_prev"):
+                    st.session_state.demo_slide_index = 12  # Go back to regulatory compliance slide
                     st.rerun()
 
             return
@@ -570,60 +544,64 @@ class ConversationDisplay:
         """Render a single demo slide - both question and response appear immediately."""
         import re
 
-        # Slide 6: Drift Event - Progressive Alignment Lens (quantum physics drift)
+        # Slide 7: Drift Event - Progressive Alignment Lens (quantum physics drift)
         # Handle this BEFORE rendering standard Q&A
-        if current_idx == 6:
-            # Reset drift visibility when first entering slide 6 (unless explicitly set by button)
-            # Check if this is a fresh entry to slide 6 by seeing if we just came from slide 5 or 7
-            if 'last_demo_slide' not in st.session_state or st.session_state.last_demo_slide != 6:
-                # Fresh entry to slide 6 - reset the drift visibility
+        if current_idx == 7:
+            # Reset drift visibility when first entering slide 7 (unless explicitly set by button)
+            # Check if this is a fresh entry to slide 7 by seeing if we just came from slide 6 or 8
+            if 'last_demo_slide' not in st.session_state or st.session_state.last_demo_slide != 7:
+                # Fresh entry to slide 7 - reset the drift visibility
                 st.session_state.slide_7_drift_visible = False
                 st.session_state.show_observatory_lens = False
                 st.session_state.steward_panel_open = False
-            st.session_state.last_demo_slide = 6
+            st.session_state.last_demo_slide = 7
             self._render_slide_7_drift_detection(turn_num)
             return
 
         # Calculate dual fidelities based on slide content
-        # Only show fidelities starting from slide 4 (when user asks about them)
-        # Slide 3: PA setup - perfect alignment at start (consolidated slide)
-        # Slide 4: "Why are both our fidelities at 1.000?" - fidelities START showing
-        # Slide 5: "How does TELOS detect drift" - still aligned
-        # Slide 6: Quantum physics - USER drifts (absorbed "Why did MY fidelity drop" content)
-        # Slide 7: "How does TELOS track both" (combined) - both return to high
+        # Only show fidelities starting from slide 5 (when user asks about them)
+        # Slide 3: PA setup - perfect alignment at start
+        # Slide 4: "How can I see PA?" - PA Established only
+        # Slide 5: "Why are both our fidelities at 1.000?" - fidelities START showing
+        # Slide 6: "How does TELOS detect drift" - still aligned
+        # Slide 7: Quantum physics - USER drifts (absorbed "Why did MY fidelity drop" content)
+        # Slide 8: "How does TELOS track both" (combined) - both return to high
 
-        show_fidelities = current_idx >= 4  # Start showing from slide 4
+        show_fidelities = current_idx >= 5  # Start showing from slide 5
 
-        if current_idx == 3:  # First Q&A - PA just established (consolidated slide, don't show yet)
+        if current_idx == 3:  # First Q&A - PA just established (don't show yet)
             user_fidelity = 1.000
             ai_fidelity = 1.000
-        elif current_idx == 4:  # "Why are both our fidelities at 1.000?" - NOW we show them at 1.000
+        elif current_idx == 4:  # "How can I see PA?" - still no fidelities shown
             user_fidelity = 1.000
             ai_fidelity = 1.000
-        elif current_idx == 5:  # "How does TELOS detect drift" - still aligned
+        elif current_idx == 5:  # "Why are both our fidelities at 1.000?" - NOW we show them at 1.000
+            user_fidelity = 1.000
+            ai_fidelity = 1.000
+        elif current_idx == 6:  # "How does TELOS detect drift" - still aligned
             user_fidelity = 0.95
             ai_fidelity = 0.96
-        elif current_idx == 6:  # Quantum physics - USER drifts (with absorbed "Why did MY fidelity drop" content)
+        elif current_idx == 7:  # Quantum physics - USER drifts (with absorbed "Why did MY fidelity drop" content)
             user_fidelity = 0.65  # User drifted off topic
             ai_fidelity = 0.89   # AI stays aligned (redirects)
-        elif current_idx == 7:  # "How does TELOS track both" (combined dual tracking + primacy state)
+        elif current_idx == 8:  # "How does TELOS track both" (combined dual tracking + primacy state)
             user_fidelity = 0.88  # Both return to high after course correction
             ai_fidelity = 0.90
-        elif current_idx == 8:  # "What's the math" - user asks for technical details (contradicts "without overwhelm")
+        elif current_idx == 9:  # "What's the math" - user asks for technical details (contradicts "without overwhelm")
             user_fidelity = 0.78  # Dips because asking for math contradicts their PA
             ai_fidelity = 0.91  # AI stays aligned by acknowledging drift but still serving
-        elif current_idx == 9:  # "What are the intervention strategies?" - back on track
+        elif current_idx == 10:  # "What are the intervention strategies?" - back on track
             user_fidelity = 0.89
             ai_fidelity = 0.90
-        elif current_idx == 10:  # "Is there anything else about TELOS..." - constitutional governance
+        elif current_idx == 11:  # "Is there anything else about TELOS..." - constitutional governance
             user_fidelity = 0.95  # On topic, asking good follow-up about TELOS
             ai_fidelity = 0.96   # Explaining TELOS governance architecture
-        elif current_idx == 11:  # "What does this mean for regulatory compliance..." - regulatory compliance
+        elif current_idx == 12:  # "What does this mean for regulatory compliance..." - regulatory compliance
             user_fidelity = 0.94  # On topic, asking about practical TELOS applications
             ai_fidelity = 0.95   # Explaining TELOS regulatory compliance value
-        else:  # Final slides (12+) - shouldn't reach here in demo
-            user_fidelity = 0.91 + (current_idx - 12) * 0.01
-            ai_fidelity = 0.92 + (current_idx - 12) * 0.01
+        else:  # Final slides (13+) - shouldn't reach here in demo
+            user_fidelity = 0.91 + (current_idx - 13) * 0.01
+            ai_fidelity = 0.92 + (current_idx - 13) * 0.01
 
         # Calculate Primacy State using actual TELOS formula
         # PS = ρ_PA · (2·F_user·F_AI)/(F_user + F_AI)
@@ -659,7 +637,7 @@ class ConversationDisplay:
             # Show full fidelity metrics after user asks about them
             st.markdown(f"""
 <div style="text-align: center; margin: 20px 0;">
-    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 10px; padding: 15px 40px; opacity: 0; animation: slideContentFadeIn 1.0s ease-out forwards;">
+    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 10px; padding: 15px 40px;">
         <div style="display: flex; gap: 30px; align-items: center; justify-content: center; margin-bottom: 10px;">
             <div>
                 <span style="color: #888; font-size: 14px;">User Fidelity: </span>
@@ -682,7 +660,7 @@ class ConversationDisplay:
             # Only show PA Established status before user asks about fidelities
             st.markdown(f"""
 <div style="text-align: center; margin: 20px 0;">
-    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 10px; padding: 10px 30px; opacity: 0; animation: slideContentFadeIn 1.0s ease-out forwards;">
+    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 10px; padding: 10px 30px;">
         <span style="color: {status_color}; font-size: 16px; font-style: italic;">{status_msg}</span>
     </div>
 </div>
@@ -701,10 +679,42 @@ class ConversationDisplay:
 
         cleaned_response = clean_markdown(steward_response)
 
-        # USER QUESTION - Wrapped in compact container with fade-in
-        st.markdown(f"""
-<div class="compact-container" key="slide-{current_idx}">
-    <div data-slide="{current_idx}" style="
+        # USER QUESTION - With turn number badge
+        col_turn_user, col_content_user = st.columns([0.5, 9.5])
+
+        with col_turn_user:
+            st.markdown(f"""
+<style>
+.turn-badge {{
+    background-color: #2d2d2d;
+    color: #FFD700;
+    border: 1px solid #FFD700;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 24px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    cursor: default;
+    transition: all 0.3s ease;
+}}
+
+.turn-badge:hover {{
+    box-shadow: 0 0 6px #FFD700;
+}}
+</style>
+<div style="display: flex; align-items: flex-start; height: 100%; padding-bottom: 20px;">
+    <span class="turn-badge">{turn_num}</span>
+</div>
+""", unsafe_allow_html=True)
+
+        with col_content_user:
+            st.markdown(f"""
+<div class="compact-container">
+    <div style="
         background-color: #2d2d2d;
         border: 2px solid #666;
         border-radius: 10px;
@@ -712,20 +722,17 @@ class ConversationDisplay:
         margin: 15px auto;
         font-size: 19px;
         color: #e0e0e0;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        opacity: 0;
-        animation: slideContentFadeIn 1.0s ease-out forwards;
-        animation-fill-mode: forwards;">
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">
         <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">User:</div>
         <div>{user_question}</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-        # STEWARD RESPONSE - Appears instantly, wrapped in compact container with fade-in
+        # STEWARD RESPONSE - Appears instantly, wrapped in compact container
         st.markdown(f"""
-<div class="compact-container" key="response-{current_idx}">
-    <div data-slide="{current_idx}" style="
+<div class="compact-container">
+    <div style="
         background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
         border: 2px solid #FFD700;
         border-radius: 10px;
@@ -734,10 +741,7 @@ class ConversationDisplay:
         font-size: 19px;
         color: #e0e0e0;
         line-height: 1.7;
-        box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
-        opacity: 0;
-        animation: slideContentFadeIn 1.0s ease-out 0.3s forwards;
-        animation-fill-mode: forwards;">
+        box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);">
         <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">Steward:</div>
         <div>{cleaned_response.replace(chr(10), '<br>')}</div>
     </div>
@@ -757,17 +761,12 @@ class ConversationDisplay:
     0%, 100% {{ transform: scale(0.8); opacity: 0.5; }}
     50% {{ transform: scale(1.1); opacity: 1; }}
 }}
-
-@keyframes slideContentFadeIn {{
-    from {{ opacity: 0; transform: translateY(10px); }}
-    to {{ opacity: 1; transform: translateY(0); }}
-}}
 </style>
 """, unsafe_allow_html=True)
 
-        # Slide 3: Show Observation Deck after Q&A content (consolidated slide)
-        if current_idx == 3:
-            st.session_state.last_demo_slide = 3
+        # Slide 4: Show Observation Deck after Q&A content
+        if current_idx == 4:
+            st.session_state.last_demo_slide = 4
             self._render_demo_observation_deck(turn_num)
             return
 
@@ -786,20 +785,20 @@ class ConversationDisplay:
             col_prev, col_next = st.columns(2)
 
             with col_prev:
-                if st.button("⬅️ Previous", key=f"prev_slide_{current_idx}", use_container_width=True):
+                if st.button("⬅️ Previous", key=f"prev_slide_{current_idx}"):
                     st.session_state.demo_slide_index -= 1
                     st.rerun()
 
             with col_next:
-                if st.button("Next ➡️", key=f"next_slide_{current_idx}", use_container_width=True):
+                if st.button("Next ➡️", key=f"next_slide_{current_idx}"):
                     st.session_state.demo_slide_index += 1
-                    # If moving from slide 12 to slide 13 (completion), unlock BETA
-                    if current_idx == 12:
+                    # If moving from slide 13 to slide 14 (completion), unlock BETA
+                    if current_idx == 13:
                         st.session_state.demo_completed = True
                     st.rerun()
 
     def _render_slide_7_drift_detection(self, turn_num: int):
-        """Render slide 6 with drift detection and progressive Alignment Lens (quantum physics drift)."""
+        """Render slide 7 with drift detection and progressive Alignment Lens (quantum physics drift)."""
 
         # Initialize session state for drift event visibility
         if 'slide_7_drift_visible' not in st.session_state:
@@ -808,7 +807,7 @@ class ConversationDisplay:
         # Show fidelity metrics with drift values
         st.markdown("""
 <div style="text-align: center; margin: 20px 0;">
-    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 10px; padding: 15px 40px; opacity: 0; animation: slideContentFadeIn 1.0s ease-out forwards;">
+    <div style="display: inline-block; background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 10px; padding: 15px 40px;">
         <div style="display: flex; gap: 30px; align-items: center; justify-content: center; margin-bottom: 10px;">
             <div>
                 <span style="color: #888; font-size: 14px;">User Fidelity: </span>
@@ -826,18 +825,12 @@ class ConversationDisplay:
         <span style="color: #00FF00; font-size: 14px; font-style: italic;">PA Established</span>
     </div>
 </div>
-<style>
-@keyframes slideContentFadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-</style>
 """, unsafe_allow_html=True)
 
         # Drift event - User question with ORANGE border (moderate drift F=0.65)
         st.markdown("""
         <div style='max-width: 700px; margin: 30px auto;'>
-            <div style='background-color: #2d2d2d; border: 3px solid #FFA500; border-radius: 10px; padding: 20px 25px; box-shadow: 0 0 15px rgba(255, 165, 0, 0.3); opacity: 0; animation: slideContentFadeIn 1.0s ease-out forwards;'>
+            <div style='background-color: #2d2d2d; border: 3px solid #FFA500; border-radius: 10px; padding: 20px 25px; box-shadow: 0 0 15px rgba(255, 165, 0, 0.3);'>
                 <div style='color: #e0e0e0; font-size: 19px; line-height: 1.6;'>
                     <strong>User:</strong> Can you explain quantum physics instead?
                 </div>
@@ -848,7 +841,7 @@ class ConversationDisplay:
         # Steward response with YELLOW border (standard aligned state)
         st.markdown("""
         <div style='max-width: 700px; margin: 20px auto;'>
-            <div style='background-color: rgba(255, 215, 0, 0.05); border: 3px solid #FFD700; border-radius: 10px; padding: 20px 25px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); opacity: 0; animation: slideContentFadeIn 1.0s ease-out 0.3s forwards;'>
+            <div style='background-color: rgba(255, 215, 0, 0.05); border: 3px solid #FFD700; border-radius: 10px; padding: 20px 25px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);'>
                 <div style='color: #FFD700; font-size: 19px; line-height: 1.6; margin-bottom: 15px;'>
                     <strong>Steward:</strong> That's an intriguing topic, but it falls outside your stated purpose of understanding TELOS. Your goal here is to understand TELOS without technical overwhelm, so let me keep us focused on that. Instead, let me show you what this moment reveals about how TELOS works.
                 </div>
@@ -856,7 +849,7 @@ class ConversationDisplay:
                     Notice what just happened: your User Fidelity dropped to <strong style='color: #FFA500;'>0.65 (orange zone - moderate drift)</strong> when your question moved away from your goal. Meanwhile, my AI Fidelity stayed high at <strong style='color: #4CAF50;'>0.89</strong> by gently bringing us back on track. I am governed by your purpose—your <em>telos</em>. In Greek, τέλος means your end goal, your ultimate purpose. It's the center of a gravitational field that continuously pulls my responses back into alignment with your telos. This is dual measurement in action!
                 </div>
             </div>
-            <div style='text-align: center; margin-top: 15px; opacity: 0; animation: slideContentFadeIn 1.0s ease-out 0.6s forwards;'>
+            <div style='text-align: center; margin-top: 15px;'>
                 <p style='color: #FFD700; font-size: 14px; font-weight: bold;'>
                     👇 Click below to see this moment visualized in the Alignment Lens
                 </p>
@@ -873,23 +866,21 @@ class ConversationDisplay:
             col_prev, col_toggle, col_next = st.columns(3)
 
             with col_prev:
-                if st.button("⬅️ Previous", key="slide_7_prev", use_container_width=True):
+                if st.button("⬅️ Previous", key="slide_7_prev"):
                     # Reset drift visibility when going back
                     st.session_state.slide_7_drift_visible = False
                     st.session_state.show_observatory_lens = False
                     st.session_state.steward_panel_open = False
-                    st.session_state.demo_slide_index = 5  # Go back to "How does TELOS detect drift"
+                    st.session_state.demo_slide_index = 6
                     st.rerun()
 
             with col_toggle:
                 # Alignment Lens toggle button
                 lens_active = st.session_state.slide_7_drift_visible
-                button_text = "Hide Alignment Lens" if lens_active else "Show Alignment Lens"
 
                 if st.button(
-                    button_text,
+                    "Toggle Alignment Lens",
                     key="slide_7_observatory_toggle",
-                    use_container_width=True,
                     type="primary",
                     help="View real-time visualization of the drift event"
                 ):
@@ -899,32 +890,18 @@ class ConversationDisplay:
                     st.rerun()
 
             with col_next:
-                if st.button("Next ➡️", key="slide_7_next", use_container_width=True):
-                    st.session_state.demo_slide_index = 7  # Go to "How does TELOS track both"
+                if st.button("Next ➡️", key="slide_7_next"):
+                    st.session_state.demo_slide_index = 8
                     st.rerun()
 
         # Render Alignment Lens if visible (below the buttons)
         if st.session_state.slide_7_drift_visible:
             st.markdown("<div style='margin: 20px 0;'></div>", unsafe_allow_html=True)
-            # Anchor point for scrolling - scrolls to lens content
-            st.markdown('<div id="alignment-lens-anchor"></div>', unsafe_allow_html=True)
             self._render_demo_observatory_lens_slide_7()
-            # Auto-scroll to alignment lens content
-            st.components.v1.html("""
-                <script>
-                    // Scroll to alignment lens - user scrolls down slightly to reach Hide button
-                    setTimeout(function() {
-                        window.parent.document.getElementById('alignment-lens-anchor').scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }, 100);
-                </script>
-            """, height=0)
 
     def _render_demo_observatory_lens_slide_7(self):
         """Render simplified Alignment Lens for slide 7 drift demonstration."""
-        # Alignment Lens Header with fade-in animation
+        # Alignment Lens Header
         st.markdown("""
         <div style="
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
@@ -932,27 +909,19 @@ class ConversationDisplay:
             border-radius: 10px;
             padding: 20px;
             margin: 20px 0;
-            opacity: 0;
-            animation: fadeIn 1.0s ease-in-out forwards;
         ">
-        <style>
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(20px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-        </style>
             <div style="text-align: center; margin-bottom: 20px;">
-                <h1 style="color: #FFD700; margin: 0; font-weight: bold; letter-spacing: 3px; font-size: 48px;">
+                <h1 style="color: #FFD700; margin: 0; font-weight: bold; letter-spacing: 3px; font-size: 36px;">
                     🔭 TELOSCOPE
                 </h1>
                 <div style="margin: 8px 0;">
-                    <span style="color: #e0e0e0; font-size: 22px; letter-spacing: 1px;">Alignment Lens</span>
-                    <span style="color: #4CAF50; font-size: 16px; margin-left: 10px; font-style: italic;">✓ Active</span>
+                    <span style="color: #e0e0e0; font-size: 18px; letter-spacing: 1px;">Alignment Lens</span>
+                    <span style="color: #4CAF50; font-size: 14px; margin-left: 10px; font-style: italic;">✓ Active</span>
                 </div>
-                <p style="color: #ddd; font-size: 18px; margin: 12px 0 0 0;">
+                <p style="color: #888; font-size: 16px; margin: 12px 0 0 0;">
                     Live Governance Metrics
                 </p>
-                <p style="color: #ddd; font-size: 16px; margin: 5px 0 0 0;">
+                <p style="color: #888; font-size: 14px; margin: 5px 0 0 0;">
                     Real-Time Drift Detection - Turn 8
                 </p>
             </div>
@@ -965,34 +934,28 @@ class ConversationDisplay:
 
         with col1:
             st.markdown("""
-            <div style='text-align: center;'>
-                <div style='background-color: #2d2d2d; border: 2px solid #FFA500; border-radius: 8px; padding: 15px; text-align: center; display: inline-block; width: 200px; max-width: 100%;'>
-                    <div style='color: #FFA500; font-size: 14px; font-weight: bold; margin-bottom: 10px;'>USER FIDELITY</div>
-                    <div style='color: #FFA500; font-size: 48px; font-weight: bold;'>0.65</div>
-                    <div style='color: #FFA500; font-size: 12px; margin-top: 5px;'>DRIFT DETECTED</div>
-                </div>
+            <div style='background-color: #2d2d2d; border: 2px solid #FFA500; border-radius: 8px; padding: 15px; text-align: center;'>
+                <div style='color: #FFA500; font-size: 14px; font-weight: bold; margin-bottom: 10px;'>USER FIDELITY</div>
+                <div style='color: #FFA500; font-size: 48px; font-weight: bold;'>0.65</div>
+                <div style='color: #FFA500; font-size: 12px; margin-top: 5px;'>⚠️ DRIFT DETECTED</div>
             </div>
             """, unsafe_allow_html=True)
 
         with col2:
             st.markdown("""
-            <div style='text-align: center;'>
-                <div style='background-color: #2d2d2d; border: 2px solid #4CAF50; border-radius: 8px; padding: 15px; text-align: center; display: inline-block; width: 200px; max-width: 100%;'>
-                    <div style='color: #4CAF50; font-size: 14px; font-weight: bold; margin-bottom: 10px;'>AI FIDELITY</div>
-                    <div style='color: #4CAF50; font-size: 48px; font-weight: bold;'>0.89</div>
-                    <div style='color: #4CAF50; font-size: 12px; margin-top: 5px;'>✓ ALIGNED</div>
-                </div>
+            <div style='background-color: #2d2d2d; border: 2px solid #4CAF50; border-radius: 8px; padding: 15px; text-align: center;'>
+                <div style='color: #4CAF50; font-size: 14px; font-weight: bold; margin-bottom: 10px;'>AI FIDELITY</div>
+                <div style='color: #4CAF50; font-size: 48px; font-weight: bold;'>0.89</div>
+                <div style='color: #4CAF50; font-size: 12px; margin-top: 5px;'>✓ ALIGNED</div>
             </div>
             """, unsafe_allow_html=True)
 
         with col3:
             st.markdown("""
-            <div style='text-align: center;'>
-                <div style='background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 15px; text-align: center; display: inline-block; width: 200px; max-width: 100%;'>
-                    <div style='color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 10px;'>PRIMACY STATE</div>
-                    <div style='color: #FFD700; font-size: 48px; font-weight: bold;'>0.75</div>
-                    <div style='color: #FFD700; font-size: 12px; margin-top: 5px;'>Harmonic Mean</div>
-                </div>
+            <div style='background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 15px; text-align: center;'>
+                <div style='color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 10px;'>PRIMACY STATE</div>
+                <div style='color: #FFD700; font-size: 48px; font-weight: bold;'>0.75</div>
+                <div style='color: #888; font-size: 12px; margin-top: 5px;'>Harmonic Mean</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -1003,11 +966,11 @@ class ConversationDisplay:
 
         with col4:
             st.markdown("""
-            <div style='background-color: #2d2d2d; border: 2px solid #FFA500; border-radius: 8px; padding: 15px;'>
-                <div style='color: #FFA500; font-size: 14px; font-weight: bold; margin-bottom: 15px; text-align: center;'>INTERVENTION STATUS</div>
+            <div style='background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 15px;'>
+                <div style='color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 15px; text-align: center;'>INTERVENTION STATUS</div>
                 <div style='text-align: center; margin: 20px 0;'>
-                    <div style='color: #FFA500; font-size: 16px; font-weight: bold; margin-bottom: 10px;'>Reserved for AI Interventions</div>
-                    <div style='color: #FFA500; font-size: 13px; line-height: 1.6;'>
+                    <div style='color: #FFD700; font-size: 16px; font-weight: bold; margin-bottom: 10px;'>Reserved for AI Interventions</div>
+                    <div style='color: #e0e0e0; font-size: 13px; line-height: 1.6;'>
                         User responses are measured but not intervened. Interventions only apply to AI drift.
                     </div>
                 </div>
@@ -1016,19 +979,19 @@ class ConversationDisplay:
 
         with col5:
             st.markdown("""
-            <div style='background-color: #2d2d2d; border: 2px solid #4CAF50; border-radius: 8px; padding: 15px;'>
-                <div style='color: #4CAF50; font-size: 14px; font-weight: bold; margin-bottom: 10px; text-align: center;'>EVENT LOG</div>
-                <div style='margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-left: 3px solid #FFA500; border-radius: 3px;'>
-                    <div style='color: #FFA500; font-size: 11px; font-weight: bold;'>USER DRIFT</div>
-                    <div style='color: #ddd; font-size: 10px;'>Turn 8: Off-topic query (quantum physics)</div>
+            <div style='background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 15px;'>
+                <div style='color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 10px; text-align: center;'>EVENT LOG</div>
+                <div style='margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-left: 3px solid #FF4444; border-radius: 3px;'>
+                    <div style='color: #FF4444; font-size: 11px; font-weight: bold;'>⚠️ USER DRIFT</div>
+                    <div style='color: #888; font-size: 10px;'>Turn 8: Off-topic query (quantum physics)</div>
                 </div>
                 <div style='margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-left: 3px solid #4CAF50; border-radius: 3px;'>
-                    <div style='color: #4CAF50; font-size: 11px; font-weight: bold;'>AI REDIRECT</div>
-                    <div style='color: #ddd; font-size: 10px;'>AI responded with gentle redirect to TELOS topic</div>
+                    <div style='color: #4CAF50; font-size: 11px; font-weight: bold;'>✓ AI REDIRECT</div>
+                    <div style='color: #888; font-size: 10px;'>AI responded with gentle redirect to TELOS topic</div>
                 </div>
-                <div style='margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-left: 3px solid #FFD700; border-radius: 3px;'>
-                    <div style='color: #FFD700; font-size: 11px; font-weight: bold;'>OBSERVATION</div>
-                    <div style='color: #ddd; font-size: 10px;'>TELOS tracks both fidelities but only intervenes on AI</div>
+                <div style='margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-left: 3px solid #888; border-radius: 3px;'>
+                    <div style='color: #888; font-size: 11px; font-weight: bold;'>ℹ️ OBSERVATION</div>
+                    <div style='color: #666; font-size: 10px;'>TELOS tracks both fidelities but only intervenes on AI</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -1037,27 +1000,27 @@ class ConversationDisplay:
             st.markdown("""
             <div style='background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 15px; text-align: center;'>
                 <div style='color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 15px;'>DRIFT VISUALIZATION</div>
-                <div style='position: relative; width: 150px; height: 150px; margin: 0 auto;'>
-                    <!-- Red outer ring (75-100%) -->
-                    <div style='position: absolute; top: 0; left: 0; width: 150px; height: 150px; background-color: #FF4444; border-radius: 50%; border: 2px solid #FFD700;'></div>
-                    <!-- Orange ring (50-75%) -->
-                    <div style='position: absolute; top: 12.5%; left: 12.5%; width: 112px; height: 112px; background-color: #FFA500; border-radius: 50%;'></div>
-                    <!-- Yellow ring (25-50%) -->
-                    <div style='position: absolute; top: 25%; left: 25%; width: 75px; height: 75px; background-color: #FFD700; border-radius: 50%;'></div>
-                    <!-- Green center (0-25%) -->
-                    <div style='position: absolute; top: 37.5%; left: 37.5%; width: 37px; height: 37px; background-color: #4CAF50; border-radius: 50%;'></div>
-                    <!-- AI dot (slightly off-center in green) -->
-                    <div style='position: absolute; top: 45%; left: 47%; width: 10px; height: 10px; background-color: #4CAF50; border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%); z-index: 10;'></div>
-                    <!-- User dot (in orange zone) -->
-                    <div style='position: absolute; top: 73%; left: 73%; width: 12px; height: 12px; background-color: #FFA500; border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%); animation: pulse 2s infinite; z-index: 10;'></div>
+                <div style='position: relative; width: 150px; height: 150px; margin: 0 auto; border-radius: 50%; border: 3px solid #FFD700;'>
+                    <div style='position: absolute; width: 100%; height: 100%; border-radius: 50%; background-color: #FF4444;'></div>
+                    <div style='position: absolute; width: 75%; height: 75%; top: 12.5%; left: 12.5%; border-radius: 50%; background-color: #FFA500;'></div>
+                    <div style='position: absolute; width: 50%; height: 50%; top: 25%; left: 25%; border-radius: 50%; background-color: #FFD700;'></div>
+                    <div style='position: absolute; width: 25%; height: 25%; top: 37.5%; left: 37.5%; border-radius: 50%; background-color: #4CAF50;'></div>
+                    <div style='position: absolute; top: 54%; left: 54%; width: 10px; height: 10px; background-color: #4CAF50; border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%); z-index: 10;'></div>
+                    <div style='position: absolute; top: 70%; left: 70%; width: 12px; height: 12px; background-color: white; border: 2px solid #FFA500; border-radius: 50%; transform: translate(-50%, -50%); animation: pulse 2s infinite; z-index: 10;'></div>
                 </div>
                 <div style='margin-top: 15px;'>
                     <div style='color: #4CAF50; font-size: 10px;'>● Good Alignment (F ≥ 0.85)</div>
                     <div style='color: #FFD700; font-size: 10px;'>● Mild Drift (0.70-0.85)</div>
-                    <div style='color: #FFA500; font-size: 10px;'>● Moderate Drift - User drift (0.50-0.70, F = 0.65)</div>
+                    <div style='color: #FFA500; font-size: 10px;'>● Moderate Drift - Your Position (0.50-0.70, F = 0.65)</div>
                     <div style='color: #FF4444; font-size: 10px;'>● Severe Drift (F < 0.50)</div>
                 </div>
             </div>
+            <style>
+            @keyframes pulse {
+                0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.7; }
+            }
+            </style>
             """, unsafe_allow_html=True)
 
         # Duplicate navigation at bottom when Alignment Lens is shown
@@ -1069,11 +1032,11 @@ class ConversationDisplay:
             col_prev_bottom, col_toggle_bottom, col_next_bottom = st.columns(3)
 
             with col_prev_bottom:
-                if st.button("⬅️ Previous", key="slide_7_prev_bottom", use_container_width=True):
+                if st.button("⬅️ Previous", key="slide_7_prev_bottom"):
                     st.session_state.slide_7_drift_visible = False
                     st.session_state.show_observatory_lens = False
                     st.session_state.steward_panel_open = False
-                    st.session_state.demo_slide_index = 5  # Go back to "How does TELOS detect drift"
+                    st.session_state.demo_slide_index = 6
                     st.rerun()
 
             with col_toggle_bottom:
@@ -1088,8 +1051,8 @@ class ConversationDisplay:
                     st.rerun()
 
             with col_next_bottom:
-                if st.button("Next ➡️", key="slide_7_next_bottom", use_container_width=True):
-                    st.session_state.demo_slide_index = 7  # Go to "How does TELOS track both"
+                if st.button("Next ➡️", key="slide_7_next_bottom"):
+                    st.session_state.demo_slide_index = 8
                     st.rerun()
 
     def _render_demo_observation_deck(self, turn_num: int):
@@ -1113,19 +1076,15 @@ class ConversationDisplay:
             with col_prev:
                 if st.button(
                     "⬅️ Previous",
-                    key="obs_deck_prev_3",
-                    use_container_width=True
+                    key="obs_deck_prev_4"
                 ):
-                    st.session_state.demo_obs_deck_visible = False  # Reset when navigating away
-                    st.session_state.demo_slide_index = 2  # Go back to PA setup
+                    st.session_state.demo_slide_index = 3
                     st.rerun()
 
             with col_toggle:
-                button_text = "Hide Observation Deck" if st.session_state.demo_obs_deck_visible else "Show Observation Deck"
                 if st.button(
-                    button_text,
+                    "Toggle Observation Deck",
                     key="toggle_demo_obs_deck",
-                    use_container_width=True,
                     type="primary"
                 ):
                     st.session_state.demo_obs_deck_visible = not st.session_state.demo_obs_deck_visible
@@ -1134,11 +1093,9 @@ class ConversationDisplay:
             with col_next:
                 if st.button(
                     "Next ➡️",
-                    key="obs_deck_next_3",
-                    use_container_width=True
+                    key="obs_deck_next_4"
                 ):
-                    st.session_state.demo_obs_deck_visible = False  # Reset when navigating away
-                    st.session_state.demo_slide_index = 4  # Go to "Why are both our fidelities at 1.000?"
+                    st.session_state.demo_slide_index = 5
                     st.rerun()
 
         st.markdown("</div>", unsafe_allow_html=True)
@@ -1147,18 +1104,12 @@ class ConversationDisplay:
         if st.session_state.demo_obs_deck_visible:
             # Wrap everything in a container with max-width to prevent expansion
             st.markdown("""
-<style>
-    @keyframes obsDeckFadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-</style>
-<div style="max-width: 900px; margin: 0 auto; opacity: 0; animation: obsDeckFadeIn 1.0s ease-in-out forwards;">
+<div style="max-width: 900px; margin: 0 auto;">
     <div class="compact-container">
     <div style="background-color: #1a1a1a; border: 3px solid #FFD700; border-radius: 10px; padding: 20px; margin: 20px auto; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);">
         <h3 style="color: #FFD700; text-align: center; margin-bottom: 20px; font-size: 26px;">🔭 Observation Deck</h3>
         <div style="text-align: center; margin-bottom: 15px;">
-            <span style="background-color: #2d2d2d; border: 1px solid #4CAF50; border-radius: 20px; padding: 8px 20px; color: #4CAF50; font-weight: bold; font-size: 16px;">✓ Dual PAs Established - Primacy State Achieved</span>
+            <span style="background-color: #2d2d2d; border: 1px solid #4CAF50; border-radius: 20px; padding: 8px 20px; color: #4CAF50; font-weight: bold; font-size: 16px;">✓ Dual PAs Established - Primacy Basin Achieved</span>
         </div>
         <div style="color: #FFD700; text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 20px;">Dual Primacy Attractors</div>
     </div>
@@ -1180,30 +1131,39 @@ class ConversationDisplay:
 <div class="observation-deck-content">
 """, unsafe_allow_html=True)
 
-                # Fidelity metrics row - use flexbox to align User/AI with their PAs below
-                st.markdown("""
-<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 10px;">
-    <div style="flex: 1; text-align: center;">
-        <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #4CAF50; border-radius: 8px; padding: 10px; display: inline-block;">
-            <div style="color: #4CAF50; font-size: 12px; margin-bottom: 5px;">User Fidelity</div>
-            <div style="color: #4CAF50; font-size: 24px; font-weight: bold;">1.000</div>
-        </div>
+                # Fidelity metrics row using Streamlit columns
+                col1, col2, col3 = st.columns([1, 1, 1])
+
+                with col1:
+                    st.markdown("""
+<div style="text-align: center;">
+    <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #4CAF50; border-radius: 8px; padding: 10px; display: inline-block;">
+        <div style="color: #4CAF50; font-size: 12px; margin-bottom: 5px;">User Fidelity</div>
+        <div style="color: #4CAF50; font-size: 24px; font-weight: bold;">1.000</div>
     </div>
-    <div style="flex: 0 0 auto; text-align: center;">
-        <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #4CAF50; border-radius: 8px; padding: 10px 20px; display: inline-block;">
-            <div style="color: #4CAF50; font-size: 12px; margin-bottom: 5px;">Primacy State</div>
-            <div style="color: #4CAF50; font-size: 24px; font-weight: bold;">1.000</div>
-            <div style="color: #ddd; font-size: 10px; margin-top: 5px;">Perfect Equilibrium</div>
-        </div>
     </div>
-    <div style="flex: 1; text-align: center;">
-        <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #4CAF50; border-radius: 8px; padding: 10px; display: inline-block;">
-            <div style="color: #4CAF50; font-size: 12px; margin-bottom: 5px;">AI Fidelity</div>
-            <div style="color: #4CAF50; font-size: 24px; font-weight: bold;">1.000</div>
-        </div>
+</div>""", unsafe_allow_html=True)
+
+                with col2:
+                    st.markdown("""
+<div style="text-align: center;">
+    <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #FFD700; border-radius: 8px; padding: 10px 20px; display: inline-block;">
+        <div style="color: #FFD700; font-size: 12px; margin-bottom: 5px;">Primacy State</div>
+        <div style="color: #FFD700; font-size: 24px; font-weight: bold;">1.000</div>
+        <div style="color: #888; font-size: 10px; margin-top: 5px;">Perfect Equilibrium</div>
     </div>
-</div>
-""", unsafe_allow_html=True)
+    </div>
+</div>""", unsafe_allow_html=True)
+
+                with col3:
+                    st.markdown("""
+<div style="text-align: center;">
+    <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #FFD700; border-radius: 8px; padding: 10px; display: inline-block;">
+        <div style="color: #FFD700; font-size: 12px; margin-bottom: 5px;">AI Fidelity</div>
+        <div style="color: #FFD700; font-size: 24px; font-weight: bold;">1.000</div>
+    </div>
+    </div>
+</div>""", unsafe_allow_html=True)
 
                 # Two PA columns using Streamlit columns - use full width
                 st.markdown("<div style='margin: 15px 0;'></div>", unsafe_allow_html=True)
@@ -1232,19 +1192,19 @@ class ConversationDisplay:
                     # AI PA - centered with larger font
                     st.markdown("""
 <div style="text-align: center; padding: 0 5px;">
-    <div style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: #1a1a1a; padding: 12px; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 19px;">
+    <div style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #1a1a1a; padding: 12px; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 19px;">
         AI Primacy Attractor
     </div>
-    <div style="background-color: #2d2d2d; border: 2px solid #4CAF50; border-radius: 0 0 8px 8px; padding: 18px; margin-bottom: 12px; text-align: center;">
-        <div style="color: #4CAF50; font-weight: bold; margin-bottom: 12px; font-size: 17px;">Purpose</div>
+    <div style="background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 0 0 8px 8px; padding: 18px; margin-bottom: 12px; text-align: center;">
+        <div style="color: #FFD700; font-weight: bold; margin-bottom: 12px; font-size: 17px;">Purpose</div>
         <div style="color: #e0e0e0; line-height: 1.9; font-size: 16px;">
             • Help you understand TELOS naturally<br/>
             • Stay aligned with your learning goals<br/>
             • Embody human dignity through action
         </div>
     </div>
-    <div style="background-color: #2d2d2d; border: 2px solid #4CAF50; border-radius: 8px; padding: 18px; margin-bottom: 12px; text-align: center;">
-        <div style="color: #4CAF50; font-weight: bold; margin-bottom: 12px; font-size: 17px;">Scope</div>
+    <div style="background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 18px; margin-bottom: 12px; text-align: center;">
+        <div style="color: #FFD700; font-weight: bold; margin-bottom: 12px; font-size: 17px;">Scope</div>
         <div style="color: #e0e0e0; line-height: 1.9; font-size: 16px;">
             • TELOS dual attractor system<br/>
             • Perfect equilibrium &amp; primacy basin<br/>
@@ -1252,8 +1212,8 @@ class ConversationDisplay:
             • Trust through transparency
         </div>
     </div>
-    <div style="background-color: #2d2d2d; border: 2px solid #4CAF50; border-radius: 8px; padding: 18px; text-align: center;">
-        <div style="color: #4CAF50; font-weight: bold; margin-bottom: 12px; font-size: 17px;">Boundaries</div>
+    <div style="background-color: #2d2d2d; border: 2px solid #FFD700; border-radius: 8px; padding: 18px; text-align: center;">
+        <div style="color: #FFD700; font-weight: bold; margin-bottom: 12px; font-size: 17px;">Boundaries</div>
         <div style="color: #e0e0e0; line-height: 1.9; font-size: 16px;">
             • Answer what you asked<br/>
             • Stay conversational<br/>
@@ -1265,9 +1225,6 @@ class ConversationDisplay:
 
                 # Close the observation deck content container
                 st.markdown("</div>", unsafe_allow_html=True)
-
-            # Anchor point for scrolling - positioned here to bring bottom nav into view
-            st.markdown('<div id="observation-deck-anchor"></div>', unsafe_allow_html=True)
 
             # Add duplicate navigation at bottom when Observation Deck is shown
             st.markdown("<div style='margin: 20px 0; padding: 10px;'>", unsafe_allow_html=True)
@@ -1281,18 +1238,15 @@ class ConversationDisplay:
                 with col_prev_bottom:
                     if st.button(
                         "⬅️ Previous",
-                        key="obs_deck_prev_3_bottom",
-                        use_container_width=True
+                        key="obs_deck_prev_4_bottom"
                     ):
-                        st.session_state.demo_obs_deck_visible = False  # Reset when navigating away
-                        st.session_state.demo_slide_index = 2  # Go back to PA setup
+                        st.session_state.demo_slide_index = 3
                         st.rerun()
 
                 with col_toggle_bottom:
                     if st.button(
-                        "Hide Observation Deck",
+                        "Toggle Observation Deck",
                         key="toggle_demo_obs_deck_bottom",
-                        use_container_width=True,
                         type="primary"
                     ):
                         st.session_state.demo_obs_deck_visible = False
@@ -1301,26 +1255,12 @@ class ConversationDisplay:
                 with col_next_bottom:
                     if st.button(
                         "Next ➡️",
-                        key="obs_deck_next_3_bottom",
-                        use_container_width=True
+                        key="obs_deck_next_4_bottom"
                     ):
-                        st.session_state.demo_obs_deck_visible = False  # Reset when navigating away
-                        st.session_state.demo_slide_index = 4  # Go to "Why are both our fidelities at 1.000?"
+                        st.session_state.demo_slide_index = 5
                         st.rerun()
 
             st.markdown("</div>", unsafe_allow_html=True)
-
-            # Auto-scroll to bottom nav - anchor positioned before buttons, 'start' brings them into view
-            st.components.v1.html("""
-                <script>
-                    setTimeout(function() {
-                        window.parent.document.getElementById('observation-deck-anchor').scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }, 100);
-                </script>
-            """, height=0)
 
     def _render_beta_intro(self):
         """Render beta introduction slides explaining the beta experience."""
@@ -1407,7 +1347,7 @@ class ConversationDisplay:
 </div>
 """, unsafe_allow_html=True)
 
-            if st.button("Continue", key="beta_intro_0", use_container_width=True):
+            if st.button("Continue", key="beta_intro_0"):
                 st.session_state.beta_intro_slide = 1
                 st.rerun()
             return
@@ -1435,11 +1375,11 @@ class ConversationDisplay:
 
             col_prev, col_next = st.columns(2)
             with col_prev:
-                if st.button("Previous", key="beta_intro_1_prev", use_container_width=True):
+                if st.button("Previous", key="beta_intro_1_prev"):
                     st.session_state.beta_intro_slide = 0
                     st.rerun()
             with col_next:
-                if st.button("Next", key="beta_intro_1_next", use_container_width=True):
+                if st.button("Next", key="beta_intro_1_next"):
                     st.session_state.beta_intro_slide = 2
                     st.rerun()
             return
@@ -1459,11 +1399,11 @@ class ConversationDisplay:
 
             col_prev, col_next = st.columns(2)
             with col_prev:
-                if st.button("Previous", key="beta_intro_2_prev", use_container_width=True):
+                if st.button("Previous", key="beta_intro_2_prev"):
                     st.session_state.beta_intro_slide = 1
                     st.rerun()
             with col_next:
-                if st.button("Next", key="beta_intro_2_next", use_container_width=True):
+                if st.button("Next", key="beta_intro_2_next"):
                     st.session_state.beta_intro_slide = 3
                     st.rerun()
             return
@@ -1490,11 +1430,11 @@ class ConversationDisplay:
 
             col_prev, col_next = st.columns(2)
             with col_prev:
-                if st.button("Previous", key="beta_intro_3_prev", use_container_width=True):
+                if st.button("Previous", key="beta_intro_3_prev"):
                     st.session_state.beta_intro_slide = 2
                     st.rerun()
             with col_next:
-                if st.button("Start Beta Testing", key="beta_intro_complete_btn", use_container_width=True):
+                if st.button("Start Beta Testing", key="beta_intro_complete_btn"):
                     st.session_state.beta_intro_complete = True
                     st.session_state.beta_start_time = datetime.now().isoformat()
                     # Ensure demo_mode is OFF when entering beta conversation
@@ -1544,7 +1484,7 @@ class ConversationDisplay:
 
             with col_dismiss:
                 # Dismiss button in same position as scroll button
-                if st.button("✕", key="dismiss_intro", use_container_width=True, help="Dismiss example"):
+                if st.button("✕", key="dismiss_intro", help="Dismiss example"):
                     st.session_state.show_intro = False
                     st.rerun()
 
@@ -1647,9 +1587,8 @@ class ConversationDisplay:
         for idx in range(current_turn_idx + 1):
             turn_data = all_turns[idx]
 
-            # In Demo Mode: pass None for turn_number (no turn badges, no metrics, no scroll buttons in history)
-            # In Open Mode: pass turn_number (show turn badges and metrics in history)
-            turn_number = None if demo_mode else (idx + 1)
+            # Always show turn numbers so users become familiar with them
+            turn_number = idx + 1
 
             # Render messages with history key prefix to avoid duplicates
             self._render_user_message(turn_data.get('user_input', ''), turn_number, turn_data, key_prefix="history_")
@@ -1730,12 +1669,51 @@ class ConversationDisplay:
         beta_mode = active_tab == "BETA"
 
         if demo_mode:
-            # Demo Mode: Clean, simple layout - NO scroll buttons (scrollable history disabled in Demo Mode)
-            # Create unique ID for copy button
-            import hashlib
-            user_msg_id = f"{key_prefix}user_{hashlib.md5(safe_message.encode()).hexdigest()[:8]}"
+            # Demo Mode: Show turn numbers so users become familiar with them
+            # Create columns for turn badge + message content
+            if turn_number is not None:
+                col_turn, col_content = st.columns([0.5, 9.5])
 
-            st.markdown(f"""
+                # Turn badge on the left
+                with col_turn:
+                    st.markdown(f"""
+<style>
+.turn-badge {{
+    background-color: #2d2d2d;
+    color: #FFD700;
+    border: 1px solid #FFD700;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 24px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    cursor: default;
+    transition: all 0.3s ease;
+}}
+
+.turn-badge:hover {{
+    box-shadow: 0 0 6px #FFD700;
+}}
+</style>
+<div style="display: flex; align-items: flex-start; height: 100%; padding-bottom: 20px;">
+    <span class="turn-badge">{turn_number}</span>
+</div>
+""", unsafe_allow_html=True)
+            else:
+                # No turn number - use single column
+                col_content = st.container()
+
+            # Message content
+            with col_content:
+                # Create unique ID for copy button
+                import hashlib
+                user_msg_id = f"{key_prefix}user_{hashlib.md5(safe_message.encode()).hexdigest()[:8]}"
+
+                st.markdown(f"""
 <style>
 .demo-user-message-{user_msg_id} {{
     position: relative;
@@ -3011,7 +2989,7 @@ Current Turn Data:
         if beta_mode:
             # BETA mode: Center the input form to match conversation layout
             # Use same centering as messages: [1.5, 0.5, 6.0, 1.0, 1.0] = spacers 3.0, content 7.0
-            col_spacer_left, col_form = st.columns([3.0, 7.0])
+            col_spacer_left, col_form, col_spacer_right = st.columns([3.0, 7.0, 0.0])
 
             with col_form:
                 # Use a form to enable Enter key submission

@@ -22,7 +22,6 @@ from components.observation_deck import ObservationDeck
 from components.beta_completion import BetaCompletion
 from components.teloscope_controls import TELOSCOPEControls
 from components.beta_onboarding import BetaOnboarding
-from components.pa_onboarding import PAOnboarding
 from components.steward_panel import StewardPanel
 from components.observatory_lens import ObservatoryLens
 from services.ab_test_manager import get_ab_test_manager
@@ -66,24 +65,17 @@ def initialize_session():
 
 
 def check_demo_completion():
-    """Check if demo mode is complete (10 turns OR reached final slide 12) and unlock BETA."""
+    """Check if demo mode is complete (10 turns) and unlock BETA."""
     if st.session_state.get('demo_completed', False):
         return True
 
-    # Check if user is in demo mode and has completed demo
+    # Check if user is in demo mode and has completed 10 turns
     demo_mode = st.session_state.get('telos_demo_mode', False)
     if demo_mode:
-        # Check completion via either method:
-        # 1. Interactive Q&A: 10 conversation turns
-        # 2. Progressive slides: reached slide 12 (completion slide)
         state_manager = st.session_state.get('state_manager')
-        demo_slide_index = st.session_state.get('demo_slide_index', 0)
-
-        completed_via_turns = state_manager and state_manager.state.total_turns >= 10
-        completed_via_slides = demo_slide_index >= 12
-
-        if completed_via_turns or completed_via_slides:
+        if state_manager and state_manager.state.total_turns >= 10:
             st.session_state.demo_completed = True
+            st.balloons()
             st.success("""
             🎉 **Demo Complete!**
 
@@ -135,6 +127,7 @@ def check_beta_completion():
             except Exception as e:
                 print(f"Failed to export A/B test metrics: {e}")
 
+        st.balloons()
         st.success("""
         🎉 **Beta Testing Complete!**
 
@@ -741,7 +734,6 @@ def main():
     observation_deck = ObservationDeck(state_manager)
     teloscope_controls = TELOSCOPEControls(state_manager)
     beta_onboarding = BetaOnboarding(state_manager)
-    pa_onboarding = PAOnboarding()
     observatory_lens = ObservatoryLens(state_manager)
 
     # Check if user has given beta consent
@@ -785,13 +777,13 @@ def main():
         render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
                                 conversation_display, observation_deck,
                                 teloscope_controls, steward_panel, beta_onboarding,
-                                pa_onboarding, observatory_lens)
+                                observatory_lens)
 
 
 def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
                             conversation_display, observation_deck,
                             teloscope_controls, steward_panel, beta_onboarding,
-                            pa_onboarding, observatory_lens):
+                            observatory_lens):
     """Render tabs and main content area."""
     # Check if we're in TELOS or DEVOPS mode (which have sidebar access)
     active_tab = st.session_state.get('active_tab', 'DEMO')
@@ -939,9 +931,6 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
     # Get current active tab
     active_tab = st.session_state.active_tab
 
-    # Check demo completion BEFORE reading the state
-    check_demo_completion()
-
     # Progressive unlock system
     demo_complete = st.session_state.get('demo_completed', False)
     beta_complete = st.session_state.get('beta_completed', False)
@@ -956,54 +945,28 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
     query_params = st.query_params
     is_admin = query_params.get("admin") == "true"
 
-    # Check if user has entered BETA (either completed DEMO or accepted BETA consent)
-    beta_entered = st.session_state.get('beta_consent_given', False) or st.session_state.get('pa_established', False)
+    # BETA mode only has 2 tabs (DEMO and BETA)
+    col_demo, col_beta = st.columns(2)
 
-    if beta_entered:
-        # BETA mode: 2 tabs (BETA and TELOS)
-        col_beta, col_telos = st.columns(2)
+    with col_demo:
+        demo_active = active_tab == "DEMO"
+        # DEMO is always available - starting point for everyone
+        if st.button("DEMO", key="tab_demo", use_container_width=True,
+                    type="primary" if demo_active else "secondary"):
+            st.session_state.active_tab = "DEMO"
+            st.rerun()
 
-        with col_beta:
-            beta_active = active_tab == "BETA"
-            if st.button("BETA", key="tab_beta", use_container_width=True,
-                        type="primary" if beta_active else "secondary"):
+    with col_beta:
+        beta_active = active_tab == "BETA"
+        # BETA unlocks after completing demo (10 turns) OR in admin mode
+        beta_locked = not demo_complete and not is_admin  # Bypass lock in admin mode
+        if st.button("BETA", key="tab_beta", use_container_width=True,
+                    type="primary" if beta_active else "secondary",
+                    disabled=beta_locked,
+                    help="Complete DEMO mode to unlock BETA" if beta_locked else None):
+            if not beta_locked:
                 st.session_state.active_tab = "BETA"
                 st.rerun()
-
-        with col_telos:
-            telos_active = active_tab == "TELOS"
-            # TELOS unlocks after completing BETA (15 turns) OR in admin mode
-            telos_locked = not beta_complete and not is_admin
-            if st.button("TELOS", key="tab_telos", use_container_width=True,
-                        type="primary" if telos_active else "secondary",
-                        disabled=telos_locked,
-                        help="Complete BETA mode to unlock TELOS" if telos_locked else None):
-                if not telos_locked:
-                    st.session_state.active_tab = "TELOS"
-                    st.rerun()
-    else:
-        # DEMO mode: 2 tabs (DEMO and BETA)
-        col_demo, col_beta = st.columns(2)
-
-        with col_demo:
-            demo_active = active_tab == "DEMO"
-            # DEMO is always available - starting point for everyone
-            if st.button("DEMO", key="tab_demo", use_container_width=True,
-                        type="primary" if demo_active else "secondary"):
-                st.session_state.active_tab = "DEMO"
-                st.rerun()
-
-        with col_beta:
-            beta_active = active_tab == "BETA"
-            # BETA unlocks after completing demo (10 turns) OR in admin mode
-            beta_locked = not demo_complete and not is_admin  # Bypass lock in admin mode
-            if st.button("BETA", key="tab_beta", use_container_width=True,
-                        type="primary" if beta_active else "secondary",
-                        disabled=beta_locked,
-                        help="Complete DEMO mode to unlock BETA" if beta_locked else None):
-                if not beta_locked:
-                    st.session_state.active_tab = "BETA"
-                    st.rerun()
 
     if is_admin:
         st.markdown("<div style='margin: 10px 0;'></div>", unsafe_allow_html=True)
@@ -1054,17 +1017,6 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
         if show_devops_header:
             st.markdown("### 🔧 DEVOPS Mode - Full System Access")
             st.markdown("**All restrictions removed. Beta mode with full PA extraction and interventions enabled.**")
-
-        # BETA mode: Show PA questionnaire first if not established
-        if mode == "BETA":
-            # Check if PA is already established
-            if not st.session_state.get('pa_established', False):
-                # Show PA questionnaire and block conversation until complete
-                pa_answers = pa_onboarding.render_questionnaire()
-                if pa_answers is None:
-                    # PA not established yet, stop rendering (questionnaire is showing)
-                    return
-                # If we get here, PA was just established - continue to conversation
 
         # Main conversation display (all modes)
         conversation_display.render()

@@ -82,12 +82,13 @@ class PrimacyAttractorMath:
             center_unnormalized / center_norm if center_norm > 0 else center_unnormalized
         )
 
-        # Basin radius using inverse formula from Foundations: r = 2/ρ
-        # Floor rigidity at 0.25 to prevent excessive basin at high tolerance
-        # At τ=0.9 (permissive), ρ=0.25 gives r=8.0 (manageable)
-        # At τ=0.0 (strict), ρ=1.0 gives r=2.0 (tight)
+        # Basin radius using inverse formula from Foundations: r = 1.0/ρ
+        # CALIBRATION: Testing 1.0 as middle ground between 2.0 (too loose) and 0.5 (too tight)
+        # This makes basins 2x smaller than original, enabling meaningful governance
+        # At τ=0.9 (permissive), ρ=0.25 gives r=4.0 (manageable)
+        # At τ=0.05 (strict), ρ=0.95 gives r=1.053 (should catch real drift, allow on-topic)
         rigidity_floored = max(self.constraint_rigidity, 0.25)
-        self.basin_radius = 2.0 / rigidity_floored
+        self.basin_radius = 1.0 / rigidity_floored
 
         # Lyapunov coefficient scales with rigidity (not used in V(x) directly,
         # but kept for compatibility if referenced elsewhere)
