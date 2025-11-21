@@ -27,6 +27,7 @@ from telos_observatory.mock_data import generate_mock_session
 from telos_observatory.observation_deck.deck_interface import render_observation_deck
 from telos_observatory.observation_deck.sidebar_deck import render_observation_deck_sidebar
 from telos_observatory.teloscope.teloscope_controller import render_teloscope, snap_to_center, snap_to_dock
+from telos_observatory.observation_deck.observatory_lens import render_observatory_lens
 
 
 # ============================================================================
@@ -80,6 +81,9 @@ def init_session_state():
         # TELOSCOPE state
         st.session_state.teloscope_docked = True
         st.session_state.teloscope_position = {'x': 0, 'y': 0}
+
+        # Observatory Lens state
+        st.session_state.show_observatory_lens = False
 
         # Handle URL parameters for Deep Research links
         handle_url_parameters()
@@ -197,6 +201,14 @@ def main():
         render_observation_deck()
     except Exception as e:
         st.error(f"❌ Observation Deck Error: {str(e)}")
+        import traceback
+        st.code(traceback.format_exc())
+
+    # Observatory Lens (if enabled)
+    try:
+        render_observatory_lens()
+    except Exception as e:
+        st.error(f"❌ Observatory Lens Error: {str(e)}")
         import traceback
         st.code(traceback.format_exc())
 

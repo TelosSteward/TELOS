@@ -1,0 +1,11 @@
+CREATE INDEX idx_session_id ON governance_deltas(session_id);
+CREATE INDEX idx_created_at ON governance_deltas(created_at);
+CREATE INDEX idx_fidelity_score ON governance_deltas(fidelity_score);
+CREATE INDEX idx_intervention ON governance_deltas(intervention_triggered);
+CREATE INDEX idx_session_mode ON session_summaries(mode);
+CREATE INDEX idx_session_created ON session_summaries(created_at);
+CREATE INDEX idx_avg_fidelity ON session_summaries(avg_fidelity_score);
+CREATE INDEX idx_beta_consent ON session_summaries(beta_consent_given);
+CREATE INDEX idx_consent_timestamp ON beta_consent_log(consent_timestamp);
+CREATE INDEX idx_consent_version ON beta_consent_log(consent_version);
+CREATE INDEX idx_pa_session ON primacy_attractor_configs(session_id);

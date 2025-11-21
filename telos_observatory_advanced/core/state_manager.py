@@ -37,6 +37,7 @@ class ObservatoryState:
     show_math_breakdown: bool = False
     show_counterfactual: bool = False
     show_steward: bool = False
+    show_observatory_lens: bool = False  # Observatory Lens dashboard visibility
 
     # Metrics
     avg_fidelity: float = 0.0
@@ -174,6 +175,10 @@ class StateManager:
     def toggle_teloscope(self):
         """Toggle TELOSCOPE Controls visibility."""
         self.state.teloscope_expanded = not self.state.teloscope_expanded
+
+    def toggle_observatory_lens(self):
+        """Toggle Observatory Lens visibility."""
+        self.state.show_observatory_lens = not self.state.show_observatory_lens
 
     def is_teloscope_expanded(self) -> bool:
         """Check if TELOSCOPE Controls are expanded."""

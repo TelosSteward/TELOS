@@ -49,7 +49,7 @@ class PrimacyAttractorMath:
         purpose_vector: np.ndarray,
         scope_vector: np.ndarray,
         privacy_level: float = 0.8,
-        constraint_tolerance: float = 0.2,
+        constraint_tolerance: float = 0.05,
         task_priority: float = 0.7
     ):
         """
@@ -59,6 +59,7 @@ class PrimacyAttractorMath:
             privacy_level: Privacy enforcement strength [0,1]
             constraint_tolerance: Boundary flexibility [0,1]
                 0.0 = zero tolerance (strict enforcement, small basin)
+                0.05 = tested optimal (Goldilocks value for drift detection)
                 1.0 = maximum tolerance (permissive enforcement, large basin)
             task_priority: Task focus weight [0,1]
         """
@@ -82,12 +83,14 @@ class PrimacyAttractorMath:
             center_unnormalized / center_norm if center_norm > 0 else center_unnormalized
         )
 
-        # Basin radius using inverse formula from Foundations: r = 2/ρ
+        # Basin radius using inverse formula from Foundations: r = basin_constant/ρ
+        # Basin constant = 1.0 (proven "Goldilocks" value from testing)
+        # Previous value of 2.0 was too loose, 0.5 was too strict
         # Floor rigidity at 0.25 to prevent excessive basin at high tolerance
-        # At τ=0.9 (permissive), ρ=0.25 gives r=8.0 (manageable)
-        # At τ=0.0 (strict), ρ=1.0 gives r=2.0 (tight)
+        # At τ=0.05 (strict), ρ=0.95 gives r≈1.053 (optimal drift detection)
+        # At τ=0.9 (permissive), ρ=0.25 gives r=4.0 (manageable)
         rigidity_floored = max(self.constraint_rigidity, 0.25)
-        self.basin_radius = 2.0 / rigidity_floored
+        self.basin_radius = 1.0 / rigidity_floored
 
         # Lyapunov coefficient scales with rigidity (not used in V(x) directly,
         # but kept for compatibility if referenced elsewhere)

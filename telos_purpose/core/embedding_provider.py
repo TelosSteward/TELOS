@@ -71,9 +71,16 @@ class SentenceTransformerProvider:
             model_name: HuggingFace model identifier
         """
         from sentence_transformers import SentenceTransformer
+        import torch
 
         self.model_name = model_name
-        self.model = SentenceTransformer(model_name)
+
+        # Fix for PyTorch 2.x "Cannot copy out of meta tensor" error
+        # Explicitly set device to CPU to avoid tensor transfer issues
+        device = 'cpu'  # Always use CPU for embedding model
+
+        # Load model with explicit device specification
+        self.model = SentenceTransformer(model_name, device=device)
         self.dimension = self.model.get_sentence_embedding_dimension()
 
     def encode(self, text: str) -> np.ndarray:

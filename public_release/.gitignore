@@ -1,0 +1,27 @@
+# Runtime Governance session files
+.runtime_governance_session.json
+.runtime_governance_checkpoint_*.json
+.telos_current_turn.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Exports
+session_export_*.json
+dashboard_export/
+governance_report_*.md

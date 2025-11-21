@@ -183,6 +183,15 @@ def render_observation_deck_sidebar():
         st.session_state.steward_active = not st.session_state.get('steward_active', False)
         st.rerun()
 
+    st.markdown("<div style='height: 0.5rem;'></div>", unsafe_allow_html=True)
+
+    # Observatory Lens toggle button
+    lens_active = st.session_state.get('show_observatory_lens', False)
+    lens_label = "✕ Close Observatory Lens" if lens_active else "🔭 Observatory Lens"
+    if st.button(lens_label, key="deck_lens_toggle", use_container_width=True):
+        st.session_state.show_observatory_lens = not st.session_state.get('show_observatory_lens', False)
+        st.rerun()
+
     # Section 4: Steward Interface (if active)
     if st.session_state.get('steward_active', False):
         st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)

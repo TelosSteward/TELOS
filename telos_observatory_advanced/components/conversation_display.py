@@ -349,8 +349,13 @@ class ConversationDisplay:
         Args:
             window_type: Type of window ('math_breakdown', 'counterfactual', 'steward')
         """
-        # Hardcoded Mistral API key - can be toggled from backend settings
-        MISTRAL_API_KEY = "NxFBck0mkmGhM9vn0bvJzHf1scagv44f"
+        # Get Mistral API key from Streamlit secrets or environment
+        import os
+        MISTRAL_API_KEY = st.secrets.get("MISTRAL_API_KEY", os.getenv("MISTRAL_API_KEY"))
+
+        if not MISTRAL_API_KEY:
+            st.error("⚠️ Mistral API key not configured. Please add to Streamlit secrets or .env")
+            return
 
         st.markdown("---")
 
