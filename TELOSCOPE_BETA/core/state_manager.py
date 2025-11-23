@@ -18,6 +18,10 @@ from pathlib import Path
 # Configure logging
 logger = logging.getLogger(__name__)
 
+# AUDIT: Module load verification
+logger.warning("🔍🔍🔍 STATE_MANAGER.PY MODULE LOADED WITH AUDIT LOGGING 🔍🔍🔍")
+print("🔍🔍🔍 STATE_MANAGER.PY MODULE LOADED WITH AUDIT LOGGING 🔍🔍🔍", flush=True)
+
 # Add parent directory for beta imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
@@ -878,10 +882,13 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                 # =====================================================================
             # =====================================================================
 
-            fidelity = result.get("telic_fidelity", 0.85)
-            distance = result.get("error_signal", 0.15)
+            fidelity = result.get("telic_fidelity", 0.0)  # Real value from TELOS
+            distance = result.get("error_signal", 0.0)
             in_basin = result.get("in_basin", True)
             intervention_applied = result.get("intervention_applied", False)
+
+            if fidelity == 0.0:
+                logger.warning(f"Turn {turn_idx}: No fidelity value from TELOS process_turn - investigation needed")
 
             # Calculate Primacy State if available
             ps_metrics = None
@@ -965,10 +972,11 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             else:
                 response_text = f"I'm designed to help explain TELOS governance and purpose alignment. Could you rephrase your question about TELOS? (Running in fallback mode due to {fallback_reason})"
 
-            fidelity = 0.85
-            distance = 0.15
+            fidelity = 0.0  # Fallback - no real governance running
+            distance = 0.0
             in_basin = True
             intervention_applied = False
+            logger.warning(f"Turn {turn_idx}: Using fallback response - no real fidelity available")
             status_icon, status_text = "✓", "Good"
 
         # Update the placeholder turn with actual response
@@ -1057,8 +1065,41 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
         Yields:
             str: Response text chunks
         """
+        # AUDIT TRACE: Log entry to this method
+        logger.info("=" * 80)
+        logger.info(f"🔍 AUDIT: generate_response_stream() CALLED")
+        logger.info(f"   Turn: {turn_idx}")
+        logger.info(f"   Message: {message[:100]}")
+
+        # BETA MODE ROUTER: Check if we should use BetaResponseManager instead
+        active_tab = st.session_state.get('active_tab', 'DEMO')
+        pa_established = st.session_state.get('pa_established', False)
+
+        logger.info(f"🔍 AUDIT: Router check values:")
+        logger.info(f"   active_tab = '{active_tab}'")
+        logger.info(f"   pa_established = {pa_established}")
+        logger.info(f"   Condition (active_tab == 'BETA'): {active_tab == 'BETA'}")
+
+        if active_tab == 'BETA':
+            logger.info(f"🔍 AUDIT: BETA tab detected, checking PA...")
+            if pa_established:
+                logger.info(f"🔀 BETA MODE DETECTED - Routing to BetaResponseManager for turn {turn_idx}")
+                logger.info(f"🔍 AUDIT: Calling _generate_beta_stream()...")
+                # Route to BETA-specific response generation
+                yield from self._generate_beta_stream(message, turn_idx)
+                logger.info(f"🔍 AUDIT: Returned from _generate_beta_stream() - EXITING")
+                return
+            else:
+                logger.warning(f"🔍 AUDIT: BETA tab active but PA not established - falling back to standard flow")
+        else:
+            logger.info(f"🔍 AUDIT: Not BETA mode - using standard flow")
+
         # Initialize TELOS if not already done
         if not hasattr(self, '_telos_steward'):
+            logger.info("🔄 STEWARD RE-INITIALIZATION TRIGGERED")
+            logger.info(f"  - Session has PA: {st.session_state.get('primacy_attractor') is not None}")
+            logger.info(f"  - PA Established: {st.session_state.get('pa_established', False)}")
+
             from telos_observatory_v3.utils.telos_demo_data import generate_telos_demo_session
             from telos_purpose.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
             from telos_purpose.core.embedding_provider import SentenceTransformerProvider
@@ -1082,24 +1123,54 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                     num_chunks = self._corpus_loader.load_corpus()
                     logger.info(f"✓ Corpus loaded: {num_chunks} chunks")
                 else:
-                    # Beta/Open mode: Minimal attractor for general conversation
-                    attractor = PrimacyAttractor(
-                        purpose=[
-                            "Engage in helpful, informative conversation",
-                            "Respond to user questions and requests",
-                            "Maintain conversational coherence"
-                        ],
-                        scope=[
-                            "General knowledge and assistance",
-                            "User's topics of interest",
-                            "Any subject the user wishes to discuss"
-                        ],
-                        boundaries=[
-                            "Maintain respectful dialogue",
-                            "Provide accurate information",
-                            "Stay within ethical guidelines"
-                        ]
-                    )
+                    # Beta/Open mode: Use established PA from session state
+                    pa_data = st.session_state.get('primacy_attractor', None)
+                    pa_established = st.session_state.get('pa_established', False)
+
+                    logger.info(f"🔍 PA Loading Debug:")
+                    logger.info(f"  - pa_data exists: {pa_data is not None}")
+                    logger.info(f"  - pa_established: {pa_established}")
+                    if pa_data:
+                        logger.info(f"  - PA Purpose: {pa_data.get('purpose', 'N/A')}")
+                        logger.info(f"  - PA Scope: {pa_data.get('scope', 'N/A')}")
+
+                    if pa_data and pa_established:
+                        # Use the PA established during onboarding
+                        # Convert strings to lists as PrimacyAttractor expects List[str]
+                        purpose_str = pa_data.get('purpose', 'General assistance')
+                        scope_str = pa_data.get('scope', 'Open discussion')
+
+                        attractor = PrimacyAttractor(
+                            purpose=[purpose_str] if isinstance(purpose_str, str) else purpose_str,
+                            scope=[scope_str] if isinstance(scope_str, str) else scope_str,
+                            boundaries=pa_data.get('boundaries', [
+                                "Maintain respectful dialogue",
+                                "Provide accurate information",
+                                "Stay within ethical guidelines"
+                            ])
+                        )
+                        logger.info(f"✅ Using established PA - Purpose: {purpose_str[:80]}")
+                        logger.info(f"✅ Using established PA - Scope: {scope_str[:80]}")
+                    else:
+                        # Fallback: Minimal attractor for general conversation (should rarely happen)
+                        attractor = PrimacyAttractor(
+                            purpose=[
+                                "Engage in helpful, informative conversation",
+                                "Respond to user questions and requests",
+                                "Maintain conversational coherence"
+                            ],
+                            scope=[
+                                "General knowledge and assistance",
+                                "User's topics of interest",
+                                "Any subject the user wishes to discuss"
+                            ],
+                            boundaries=[
+                                "Maintain respectful dialogue",
+                                "Provide accurate information",
+                                "Stay within ethical guidelines"
+                            ]
+                        )
+                        logger.warning("⚠️ No established PA found - using generic fallback")
                     self._corpus_loader = None
 
                 # Get API key from Streamlit secrets or environment
@@ -1134,6 +1205,12 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                     enable_interventions=False
                 )
                 self._telos_steward.start_session(session_id=self.state.session_id)
+
+                # Mark PA as converged if already established in BETA mode
+                if not demo_mode and st.session_state.get('pa_established', False):
+                    self.state.pa_converged = True
+                    logger.info("PA marked as converged (established via BETA questionnaire)")
+
                 logger.info("TELOS engine initialized successfully")
             except Exception as init_error:
                 logger.error(f"Failed to initialize TELOS engine: {init_error}")
@@ -1205,10 +1282,13 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                 model_response=full_response
             )
 
-            fidelity = result.get("telic_fidelity", 0.85)
-            distance = result.get("error_signal", 0.15)
+            fidelity = result.get("telic_fidelity", 0.0)  # Real value from TELOS
+            distance = result.get("error_signal", 0.0)
             in_basin = result.get("in_basin", True)
             intervention_applied = result.get("intervention_applied", False)
+
+            if fidelity == 0.0:
+                logger.warning(f"Turn {turn_idx}: No fidelity value from TELOS process_turn - investigation needed")
 
             # Calculate Primacy State for streaming response
             ps_metrics = None
@@ -1246,10 +1326,11 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                 status_icon, status_text = "⚠", "Drift"
         except Exception as telos_error:
             logger.error(f"TELOS processing error: {telos_error}")
-            fidelity = 0.85
-            distance = 0.15
+            fidelity = 0.0  # Error fallback - no real metrics available
+            distance = 0.0
             in_basin = True
             intervention_applied = False
+            logger.warning(f"Turn {turn_idx}: TELOS error - no real fidelity available")
             status_icon, status_text = "✓", "Good"
 
         # Update turn with final response and metrics
@@ -1284,3 +1365,115 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
         self.state.avg_fidelity = sum(fidelities) / len(fidelities) if fidelities else 0.0
         self.state.total_interventions = sum(1 for t in self.state.turns if t.get('intervention_applied', False))
         self.state.drift_warnings = sum(1 for t in self.state.turns if t.get('drift_detected', False))
+
+    def _generate_beta_stream(self, message: str, turn_idx: int):
+        """
+        Generate response for BETA mode using BetaResponseManager.
+
+        This method routes BETA mode requests to the BetaResponseManager which:
+        1. Generates BOTH TELOS and Native responses
+        2. Uses active governance via generate_governed_response()
+        3. Stores complete data for Observatory review
+        4. Returns ONE response based on A/B test sequence
+
+        Args:
+            message: User's input message
+            turn_idx: Index of the turn to update
+
+        Yields:
+            str: The response to display (either TELOS or Native based on A/B sequence)
+        """
+        logger.info("=" * 80)
+        logger.info(f"🔍 AUDIT: _generate_beta_stream() ENTERED")
+        logger.info(f"   Turn index: {turn_idx}")
+        logger.info(f"   Message: {message[:100]}")
+
+        try:
+            # Initialize BetaResponseManager if needed
+            if 'beta_response_manager' not in st.session_state:
+                logger.info("🔍 AUDIT: BetaResponseManager not in session - initializing...")
+                logger.info("📦 Initializing BetaResponseManager")
+                from services.beta_response_manager import BetaResponseManager
+                st.session_state.beta_response_manager = BetaResponseManager(self)
+                logger.info("🔍 AUDIT: BetaResponseManager initialized successfully")
+            else:
+                logger.info("🔍 AUDIT: BetaResponseManager already exists in session")
+
+            # Get beta sequence and current turn number
+            beta_sequence = st.session_state.get('beta_sequence', {})
+            turn_number = st.session_state.get('beta_current_turn', 1)
+
+            logger.info(f"🔍 AUDIT: Beta session state:")
+            logger.info(f"   beta_current_turn = {turn_number}")
+            logger.info(f"   beta_sequence exists = {beta_sequence is not None}")
+
+            logger.info(f"🎯 BETA Turn {turn_number}: Generating dual responses (TELOS + Native)")
+            logger.info(f"🔍 AUDIT: Calling BetaResponseManager.generate_turn_responses()...")
+
+            # Generate BOTH responses via BetaResponseManager
+            response_data = st.session_state.beta_response_manager.generate_turn_responses(
+                user_input=message,
+                turn_number=turn_number,
+                sequence=beta_sequence
+            )
+
+            logger.info(f"🔍 AUDIT: Returned from BetaResponseManager.generate_turn_responses()")
+            logger.info(f"   response_data keys: {list(response_data.keys())}")
+
+            # Extract which response to show and metrics
+            shown_response = response_data.get('shown_response', '')
+            shown_source = response_data.get('shown_source', 'unknown')
+            telos_analysis = response_data.get('telos_analysis', {})
+
+            logger.info(f"🔍 AUDIT: Response extraction:")
+            logger.info(f"   shown_source = '{shown_source}'")
+            logger.info(f"   shown_response length = {len(shown_response)}")
+            logger.info(f"   telos_analysis keys = {list(telos_analysis.keys())}")
+
+            logger.info(f"📤 Displaying: {shown_source} response")
+            logger.info(f"📊 TELOS Fidelity: {telos_analysis.get('fidelity_score', 'N/A')}")
+
+            # Yield the displayed response
+            yield shown_response
+
+            # Update turn with REAL metrics from TELOS analysis
+            turn = self.state.turns[turn_idx]
+            turn['response'] = shown_response
+            turn['fidelity'] = telos_analysis.get('fidelity_score', 0.0)
+            turn['distance'] = telos_analysis.get('distance_from_pa', 0.0)
+            turn['intervention_applied'] = telos_analysis.get('intervention_triggered', False)
+            turn['drift_detected'] = telos_analysis.get('drift_detected', False)
+            turn['in_basin'] = telos_analysis.get('in_basin', True)
+            turn['is_streaming'] = False
+            turn['is_loading'] = False
+
+            # Store BETA-specific metadata
+            turn['beta_shown_source'] = shown_source
+            turn['beta_test_type'] = response_data.get('test_type', 'unknown')
+
+            # Log metrics for verification
+            if turn['fidelity'] < 0.3:
+                logger.warning(f"⚠️ Low fidelity detected: {turn['fidelity']:.3f} - Drift alert!")
+
+            # Increment beta turn counter
+            st.session_state.beta_current_turn = turn_number + 1
+
+            logger.info(f"✅ BETA Turn {turn_number} complete - Next turn: {turn_number + 1}")
+
+        except Exception as e:
+            logger.error(f"❌ BETA stream generation failed: {e}")
+            logger.error(f"   Exception type: {type(e).__name__}")
+            import traceback
+            logger.error(f"   Traceback: {traceback.format_exc()}")
+
+            # Fallback to simple response
+            fallback_response = "I apologize, but I encountered an error in BETA mode. Please try again."
+            yield fallback_response
+
+            # Update turn with minimal data
+            turn = self.state.turns[turn_idx]
+            turn['response'] = fallback_response
+            turn['fidelity'] = 0.0
+            turn['is_streaming'] = False
+            turn['is_loading'] = False
+            turn['error'] = str(e)

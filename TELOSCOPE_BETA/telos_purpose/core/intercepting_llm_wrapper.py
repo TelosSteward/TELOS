@@ -150,6 +150,39 @@ class InterceptingLLMWrapper:
         else:
             salience_after = salience_before
 
+        # Step 1.5: PRE-GENERATION USER INPUT DRIFT CHECK
+        # Measure if user input is severely off-topic BEFORE generating expensive response
+        user_input_fidelity = self._measure_coupling(user_input)
+
+        # DEBUG: Log user input fidelity
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning(f"🔍 PRE-GENERATION CHECK: User input fidelity = {user_input_fidelity:.3f}")
+
+        if user_input_fidelity < 0.30:  # Severely low fidelity (< 30%)
+            # CRITICAL: User request is significantly off-topic
+            # Refuse immediately without generating expensive response
+            refusal_message = (
+                "I cannot assist with this request as it falls outside "
+                "the established session purpose and scope. Please ensure your request "
+                "aligns with the declared objectives of this conversation."
+            )
+
+            # Log pre-generation refusal
+            self.interventions.append(GovernanceIntervention(
+                turn_number=self.turn_count,
+                intervention_type="pre_generation_refusal",
+                original_response=None,
+                governed_response=refusal_message,
+                fidelity_original=None,
+                fidelity_governed=user_input_fidelity,
+                salience_before=salience_before,
+                salience_after=salience_after,
+                timestamp=time.time()
+            ))
+
+            return refusal_message
+
         # Step 2: Generate with governed context
         response = self._call_llm(conversation_context, user_input)
 
@@ -242,8 +275,8 @@ class InterceptingLLMWrapper:
         if not context_text.strip():
             return 0.5  # Neutral if empty
 
-        # Embed context
-        context_embedding = self.embeddings.encode([context_text])[0]
+        # Embed context (encode expects a string, not a list)
+        context_embedding = self.embeddings.encode(context_text)
 
         # Measure similarity to attractor
         attractor_center = self.steward.attractor_center
@@ -315,8 +348,8 @@ class InterceptingLLMWrapper:
         if not hasattr(self.steward, 'attractor_center') or self.steward.attractor_center is None:
             return 1.0  # Can't measure without attractor
 
-        # Embed response
-        response_embedding = self.embeddings.encode([response])[0]
+        # Embed response (encode expects a string, not a list)
+        response_embedding = self.embeddings.encode(response)
 
         # Calculate distance to attractor
         attractor_center = self.steward.attractor_center
@@ -338,47 +371,169 @@ class InterceptingLLMWrapper:
         """
         Regenerate response with entrainment enforcement.
 
-        When coupling check fails, regenerate with explicit governance prompt.
+        When coupling check fails, delegate to ProportionalController for
+        graduated intervention based on drift severity.
 
-        This CORRECTS drift by creating entrained alternative.
+        This ensures single source of truth for intervention logic.
         """
+        # Delegate to ProportionalController if available
+        # DEBUG: Log proportional_controller availability
+        has_pc = hasattr(self.steward, 'proportional_controller')
+        pc_value = getattr(self.steward, 'proportional_controller', None) if has_pc else None
+        print(f"🔍 DEBUG _regenerate_entrained:")
+        print(f"   has proportional_controller attribute: {has_pc}")
+        print(f"   proportional_controller value: {pc_value}")
+        print(f"   steward type: {type(self.steward)}")
+        print(f"   steward attributes: {[attr for attr in dir(self.steward) if 'controller' in attr.lower()]}")
+
+        if has_pc and pc_value:
+            print(f"✅ Delegating to ProportionalController")
+            return self._regenerate_via_proportional_controller(
+                user_input,
+                conversation_context,
+                drifted_response
+            )
+
+        # Fallback: Use basic regeneration if ProportionalController not available
+        print(f"⚠️ Using fallback regeneration (ProportionalController not available)")
+
+        # MATHEMATICALLY RIGOROUS FALLBACK: Apply strength-scaled prompts directly
+        # Measure fidelity to calculate intervention strength
+        fidelity = self._measure_coupling(drifted_response)
+        error_signal = 1.0 - fidelity
+
+        # Calculate strength using proportional control law: F = K·e_t
+        # Using same formula as ProportionalController
+        constraint_rigidity = 0.98  # For BETA with τ=0.02
+        K_attractor = 1.5  # Proportional gain
+        strength = min(constraint_rigidity * error_signal * K_attractor, 1.0)
+
         attractor = self.steward.attractor
 
-        # Build corrective prompt as enhanced user input
-        corrective_parts = [
-            "[Please answer the following question while staying within the session's governance boundaries]",
-            ""
-        ]
+        # Extract attractor text for prompts
+        purpose_text = ', '.join(attractor.purpose) if hasattr(attractor, 'purpose') and attractor.purpose else "the session's stated purpose"
+        scope_text = ', '.join(attractor.scope) if hasattr(attractor, 'scope') and attractor.scope else "the session's defined scope"
 
-        if hasattr(attractor, 'purpose') and attractor.purpose:
-            corrective_parts.append(f"Purpose: {', '.join(attractor.purpose)}")
+        # STRENGTH-SCALED PROMPTS (following proportional control law)
+        if strength >= 0.85:
+            # SEVERE DRIFT: Forceful intervention with MUST/DECLINE language
+            corrective_msg = {
+                "role": "system",
+                "content": (
+                    "GOVERNANCE INTERVENTION REQUIRED:\n\n"
+                    "The previous response has SEVERELY drifted from the session's stated purpose and scope. "
+                    "This constitutes a critical misalignment.\n\n"
+                    "You MUST:\n"
+                    "1. DECLINE to answer if the request is outside your stated purpose\n"
+                    "2. REDIRECT the conversation back to the established scope\n"
+                    "3. DO NOT engage with off-topic content\n"
+                    "4. DO NOT create elaborate metaphors or analogies for off-topic requests\n\n"
+                    f"Session Purpose: {purpose_text}\n"
+                    f"Session Scope: {scope_text}\n\n"
+                    "Generate a response that STRICTLY adheres to the session constraints or politely declines. "
+                    "Be direct and firm in maintaining boundaries."
+                )
+            }
+        elif strength >= 0.65:
+            # MODERATE DRIFT: Firm correction with redirection
+            corrective_msg = {
+                "role": "system",
+                "content": (
+                    "GOVERNANCE CORRECTION:\n\n"
+                    "The previous response drifted significantly from the session's purpose and scope.\n\n"
+                    f"Session Purpose: {purpose_text}\n"
+                    f"Session Scope: {scope_text}\n\n"
+                    "Regenerate a response that stays firmly within the established boundaries. "
+                    "If the user's request is off-topic, acknowledge it briefly but redirect to the session's focus. "
+                    "Do not spend time elaborating on off-topic content."
+                )
+            }
+        elif strength >= 0.40:
+            # MILD-MODERATE DRIFT: Clear guidance
+            corrective_msg = {
+                "role": "system",
+                "content": (
+                    f"The previous response drifted from the session purpose and scope. "
+                    f"Please regenerate to stay focused on: {purpose_text} within scope: {scope_text}"
+                )
+            }
+        else:
+            # VERY MILD DRIFT: Gentle reminder
+            corrective_msg = {
+                "role": "system",
+                "content": f"Please stay focused on the session's stated purpose ({purpose_text}) and scope ({scope_text})."
+            }
 
-        if hasattr(attractor, 'scope') and attractor.scope:
-            corrective_parts.append(f"Scope: {', '.join(attractor.scope)}")
+        # Build regeneration messages
+        regen_messages = conversation_context.copy()
+        regen_messages.append(corrective_msg)
 
-        if hasattr(attractor, 'boundaries') and attractor.boundaries:
-            corrective_parts.append(f"Boundaries: {'; '.join(attractor.boundaries)}")
-
-        corrective_parts.append(f"\nQuestion: {user_input}")
-
-        corrective_text = "\n".join(corrective_parts)
-
-        # Build regeneration messages with corrective guidance prepended
-        # Inject governance context at the beginning (safe position)
-        governance_msg = {
-            "role": "user",
-            "content": f"[Governance Context]\n{corrective_parts[2]}\n{corrective_parts[3]}\n{corrective_parts[4]}"
-        }
-
-        regen_messages = [governance_msg] + conversation_context.copy()
-
-        # Regenerate
+        # Regenerate with strength-scaled prompt
         try:
             regenerated = self._call_llm(regen_messages, user_input)
+            print(f"✅ Regeneration complete (strength={strength:.2f}, fidelity={fidelity:.3f})")
             return regenerated
         except Exception as e:
             # Fallback to original if regeneration fails
             print(f"⚠️ Regeneration failed: {e}")
+            return drifted_response
+
+    def _regenerate_via_proportional_controller(
+        self,
+        user_input: str,
+        conversation_context: List[Dict[str, str]],
+        drifted_response: str
+    ) -> str:
+        """
+        Bridge to ProportionalController for graduated interventions.
+
+        Converts fidelity-based coupling check into error_signal format
+        that ProportionalController expects, then uses its regeneration logic.
+        """
+        import numpy as np
+
+        # Measure fidelity (coupling)
+        fidelity = self._measure_coupling(drifted_response)
+
+        # Convert fidelity to error_signal (ProportionalController expects error, not fidelity)
+        # error_signal = 1 - fidelity (high error when low fidelity)
+        error_signal = 1.0 - fidelity
+
+        pc = self.steward.proportional_controller
+
+        # Use ProportionalController's graduated logic
+        # State 3 (INTERVENE): error >= epsilon_max → Strong regeneration
+        # State 2 (CORRECT): error >= epsilon_min → Context injection
+        # State 1 (MONITOR): error < epsilon_min → No intervention
+
+        if error_signal >= pc.epsilon_max:
+            # SEVERE DRIFT: Use ProportionalController's regeneration
+            print(f"🚨 SEVERE DRIFT detected (error={error_signal:.3f}, threshold={pc.epsilon_max:.3f})")
+            print(f"   Applying ProportionalController REGENERATION intervention")
+
+            # Call ProportionalController's regeneration method directly
+            intervention_record = pc._apply_regeneration(
+                response_text=drifted_response,
+                conversation_history=conversation_context,
+                error_signal=error_signal
+            )
+            return intervention_record.modified_response
+
+        elif error_signal >= pc.epsilon_min:
+            # MODERATE DRIFT: Use context injection (lighter intervention)
+            print(f"⚠️  MODERATE DRIFT detected (error={error_signal:.3f}, threshold={pc.epsilon_min:.3f})")
+            print(f"   Applying ProportionalController REMINDER intervention")
+
+            # Call ProportionalController's reminder method
+            intervention_record = pc._apply_reminder(
+                response_text=drifted_response,
+                error_signal=error_signal
+            )
+            return intervention_record.modified_response
+        else:
+            # MILD DRIFT: Fallback to basic regeneration
+            print(f"ℹ️  MILD DRIFT detected (error={error_signal:.3f}, below threshold={pc.epsilon_min:.3f})")
+            print(f"   Using fallback regeneration")
             return drifted_response
 
     def _call_llm(
@@ -420,11 +575,11 @@ class InterceptingLLMWrapper:
                 print(f"  Endpoint: {self.llm.client._client.base_url}")
 
             print(f"  Messages: {len(messages)} messages in context")
-            print(f"  Max Tokens: 500")
+            print(f"  Max Tokens: 16000")
             print(f"  Temperature: 0.7")
             print("="*60 + "\n")
 
-            response = self.llm.generate(messages=messages, max_tokens=500, temperature=0.7)
+            response = self.llm.generate(messages=messages, max_tokens=16000, temperature=0.7)
 
             # Log successful response
             print(f"✅ LLM Response Received ({len(response)} chars)\n")

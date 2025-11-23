@@ -1096,14 +1096,31 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
                 • Other turns will show <strong>two responses side-by-side</strong> (you'll choose your preference)
             </div>
             <div style="margin-bottom: 15px;">
-                <strong style="color: {GOLD};">Live Alignment Tracking</strong><br>
-                The Observation Deck (below) shows if the conversation is staying aligned with
-                your stated purpose. You'll see your fidelity score in real-time.
+                <strong style="color: {GOLD};">Monitor Your Alignment</strong><br>
+                Click the <strong>Observation Deck</strong> (below) at any time to view your Primacy Attractor
+                and fidelity score. Your fidelity indicates if the system believes you may be straying
+                off-topic from your stated purpose.
             </div>
             <div style="margin-bottom: 15px;">
                 <strong style="color: {GOLD};">After 15 Turns</strong><br>
-                You'll get access to the full Observatory to see detailed metrics, and the
-                TELOS tab will unlock for full governed conversations.
+                You'll unlock the <strong>TELOS tab</strong> for full governed conversations with progressive
+                Primacy Attractor mode (not onboarding mode like BETA). You can continue in the existing
+                interface or start a fresh TELOS chat.
+            </div>
+        </div>
+        <div style="background-color: #2d2d2d; padding: 20px; border-radius: 10px; margin: 20px 0; border: 2px solid {GOLD};">
+            <div style="color: {GOLD}; font-size: 20px; font-weight: bold; margin-bottom: 15px;">
+                🤝 IMPORTANT: Use Steward for TELOS Questions
+            </div>
+            <div style="color: #e0e0e0; margin-bottom: 15px;">
+                <strong style="color: {GOLD};">Steward (🤝 handshake icon)</strong> is your TELOS guide.
+                Click the handshake icon to ask questions about the system, get help navigating,
+                or understand what you're seeing.
+            </div>
+            <div style="color: #e0e0e0;">
+                <strong style="color: {GOLD};">Main chat window</strong> is a standard LLM with
+                <strong>zero context about TELOS</strong> the system. Use it for your normal tasks,
+                but direct all TELOS-related questions to Steward.
             </div>
         </div>
         <div style="text-align: center; margin-top: 25px; padding: 20px; background-color: #1a1a1a; border-radius: 10px;">
@@ -1111,7 +1128,10 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
                 Ready to Begin?
             </div>
             <div style="color: #e0e0e0; font-size: 16px;">
-                Start by asking a question or making a request in the chat below.
+                Start by asking a question or making a request in the chat below.<br>
+                <span style="color: #888; font-size: 14px; margin-top: 10px; display: block;">
+                    (Remember: Use 🤝 Steward for TELOS help, not the main chat)
+                </span>
             </div>
         </div>
     </div>

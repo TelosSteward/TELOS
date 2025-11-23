@@ -144,7 +144,7 @@ Be helpful, clear, and concise. Use analogies when helpful. Always prioritize us
             response = self.client.chat.complete(
                 model=self.model,
                 messages=messages,
-                max_tokens=2048
+                max_tokens=16000
             )
 
             return response.choices[0].message.content
@@ -196,7 +196,7 @@ Be helpful, clear, and concise. Use analogies when helpful. Always prioritize us
             stream = self.client.chat.stream(
                 model=self.model,
                 messages=messages,
-                max_tokens=2048
+                max_tokens=16000
             )
 
             for chunk in stream:

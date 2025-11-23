@@ -299,7 +299,15 @@ class UnifiedGovernanceSteward:
             scope=self.attractor_config.scope,
             boundaries=self.attractor_config.boundaries
         )
-        
+
+        # CRITICAL FIX: Compute attractor_center embedding for intervention system
+        # The InterceptingLLMWrapper needs this to detect drift
+        if self.attractor_center is None:
+            logger.info("Computing attractor center embedding from PA text...")
+            pa_text = " ".join(self.attractor_config.purpose + self.attractor_config.scope)
+            self.attractor_center = self.embedding_provider.encode(pa_text)
+            logger.info(f"Attractor center computed: {self.attractor_center.shape}")
+
         logger.info(f"Session started: {self.session_id}")
         
         if self.dev_commentary_mode == "verbose":

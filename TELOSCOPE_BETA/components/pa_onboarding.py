@@ -237,6 +237,16 @@ class PAOnboarding:
             st.session_state.state_manager.state.primacy_attractor = pa
             st.session_state.state_manager.state.user_pa_established = True
             st.session_state.state_manager.state.convergence_turn = 2
+            st.session_state.state_manager.state.pa_converged = True  # Mark as converged since PA is established
+
+            # Force TELOS steward to re-initialize with new PA
+            if hasattr(st.session_state.state_manager, '_telos_steward'):
+                delattr(st.session_state.state_manager, '_telos_steward')
+
+            # ALSO delete BETA response manager's telos_engine
+            if 'beta_response_manager' in st.session_state:
+                if hasattr(st.session_state.beta_response_manager, 'telos_engine'):
+                    st.session_state.beta_response_manager.telos_engine = None
 
         return pa
 

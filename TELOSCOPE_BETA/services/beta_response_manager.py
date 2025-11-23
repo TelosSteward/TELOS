@@ -70,13 +70,16 @@ class BetaResponseManager:
             if turn_config['response_source'] == 'telos':
                 response_data['shown_response'] = telos_data['response']
                 response_data['shown_source'] = 'telos'
+                logger.info(f"🎲 Turn {turn_number}: A/B test selected TELOS response (governed)")
             else:
                 response_data['shown_response'] = response_data.get('native_response')
                 response_data['shown_source'] = 'native'
+                logger.info(f"🎲 Turn {turn_number}: A/B test selected NATIVE response (ungoverned)")
         else:
             # Head-to-head: show both
             response_data['shown_response'] = 'both'
             response_data['shown_source'] = 'both'
+            logger.info(f"🎲 Turn {turn_number}: Head-to-head test - showing BOTH responses")
 
         # Generate Steward's interpretation
         response_data['steward_interpretation'] = self._generate_steward_interpretation(
@@ -92,7 +95,7 @@ class BetaResponseManager:
 
     def _generate_telos_response(self, user_input: str, turn_number: int) -> Dict:
         """
-        Generate TELOS response with full analysis.
+        Generate TELOS response with ACTIVE governance.
 
         Args:
             user_input: User's message
@@ -106,25 +109,33 @@ class BetaResponseManager:
             if not self.telos_engine:
                 self._initialize_telos_engine()
 
-            # Get PA from session
-            pa = st.session_state.get('primacy_attractor', {})
+            # Get conversation history
+            conversation_history = self._get_conversation_history()
 
-            # Generate response with TELOS governance
-            result = self.telos_engine.process_turn(
+            logger.info(f"🔍 Generating TELOS governed response for turn {turn_number}")
+            logger.info(f"   User input: {user_input[:100]}")
+
+            # Generate governed response (ACTIVE MODE - prevents drift before generation)
+            result = self.telos_engine.generate_governed_response(
                 user_input=user_input,
-                primacy_attractor=pa
+                conversation_context=conversation_history
             )
+
+            logger.info(f"📊 TELOS Result:")
+            logger.info(f"   Fidelity: {result.get('telic_fidelity', 'N/A')}")
+            logger.info(f"   Intervention: {result.get('intervention_applied', False)}")
+            logger.info(f"   Response preview: {result.get('governed_response', '')[:100]}")
 
             # Extract all metrics
             telos_data = {
-                'response': result.get('response', ''),
-                'fidelity_score': result.get('fidelity', 0.0),
-                'distance_from_pa': result.get('distance', 0.0),
-                'intervention_triggered': result.get('intervention_triggered', False),
+                'response': result.get('governed_response', ''),  # FIX: Use 'governed_response' not 'response'
+                'fidelity_score': result.get('telic_fidelity', 0.0),
+                'distance_from_pa': result.get('error_signal', 0.0),
+                'intervention_triggered': result.get('intervention_applied', False),
                 'intervention_type': result.get('intervention_type', None),
                 'intervention_reason': result.get('intervention_reason', ''),
-                'drift_detected': result.get('drift_detected', False),
-                'confidence': result.get('confidence', 0.0),
+                'drift_detected': result.get('telic_fidelity', 1.0) < 0.7,
+                'in_basin': result.get('in_basin', True),
                 'embeddings': {
                     'user': result.get('user_embedding'),
                     'response': result.get('response_embedding'),
@@ -134,12 +145,18 @@ class BetaResponseManager:
 
             # Log intervention if triggered
             if telos_data['intervention_triggered']:
-                logger.info(f"Turn {turn_number}: TELOS intervention - {telos_data['intervention_reason']}")
+                logger.warning(f"⚠️ Turn {turn_number}: TELOS INTERVENTION APPLIED!")
+                logger.warning(f"   Reason: {telos_data['intervention_reason']}")
+                logger.warning(f"   Type: {telos_data['intervention_type']}")
 
             return telos_data
 
         except Exception as e:
-            logger.error(f"Error generating TELOS response: {e}")
+            logger.error(f"❌ Error generating TELOS response: {e}")
+            logger.error(f"   Exception type: {type(e).__name__}")
+            import traceback
+            logger.error(f"   Traceback: {traceback.format_exc()}")
+
             # Return fallback
             return {
                 'response': self._generate_native_response(user_input),
@@ -167,7 +184,7 @@ class BetaResponseManager:
 
             response = client.generate(
                 messages=conversation,
-                max_tokens=512
+                max_tokens=16000  # BETA: Allow full responses (up to ~16k tokens)
             )
 
             return response
@@ -281,13 +298,76 @@ class BetaResponseManager:
     def _initialize_telos_engine(self):
         """Initialize TELOS engine for governance."""
         try:
-            from telos_purpose.core.unified_steward import UnifiedGovernanceSteward
-            from telos_purpose.core.embedding_provider import SentenceTransformerProvider
+            from telos_purpose.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
+            from telos_purpose.core.embedding_provider import MistralEmbeddingProvider
+            from telos_purpose.llm_clients.mistral_client import MistralClient
 
-            embedding_provider = SentenceTransformerProvider()
-            self.telos_engine = UnifiedGovernanceSteward(embedding_provider)
+            # Read PA from session state (established via questionnaire)
+            pa_data = st.session_state.get('primacy_attractor', None)
+            pa_established = st.session_state.get('pa_established', False)
 
-            logger.info("TELOS engine initialized for BETA testing")
+            logger.info(f"🔍 BETA TELOS Init - PA Status:")
+            logger.info(f"  - pa_data exists: {pa_data is not None}")
+            logger.info(f"  - pa_established: {pa_established}")
+
+            if pa_data and pa_established:
+                # Use established PA from questionnaire
+                purpose_str = pa_data.get('purpose', 'General assistance')
+                scope_str = pa_data.get('scope', 'Open discussion')
+
+                # Convert strings to lists as PrimacyAttractor expects List[str]
+                attractor = PrimacyAttractor(
+                    purpose=[purpose_str] if isinstance(purpose_str, str) else purpose_str,
+                    scope=[scope_str] if isinstance(scope_str, str) else scope_str,
+                    boundaries=pa_data.get('boundaries', [
+                        "Maintain respectful dialogue",
+                        "Provide accurate information",
+                        "Stay within ethical guidelines"
+                    ]),
+                    constraint_tolerance=0.02  # STRICT governance for BETA testing (basin_radius ≈ 1.02)
+                )
+                logger.info(f"✅ BETA: Using established PA")
+                logger.info(f"   Purpose: {purpose_str[:80]}")
+                logger.info(f"   Scope: {scope_str[:80]}")
+            else:
+                # Fallback PA (should rarely happen - PA questionnaire runs before BETA starts)
+                attractor = PrimacyAttractor(
+                    purpose=["Engage in helpful conversation"],
+                    scope=["General assistance"],
+                    boundaries=["Maintain respectful dialogue"],
+                    constraint_tolerance=0.02  # STRICT governance for BETA testing
+                )
+                logger.warning("⚠️ BETA: No established PA found - using fallback")
+
+            # Initialize LLM client and embedding provider
+            llm_client = MistralClient()
+            embedding_provider = MistralEmbeddingProvider()  # Using Mistral embeddings (1024 dims)
+
+            # Initialize steward with proper attractor
+            self.telos_engine = UnifiedGovernanceSteward(
+                attractor=attractor,
+                llm_client=llm_client,
+                embedding_provider=embedding_provider,
+                enable_interventions=True
+            )
+
+            # CRITICAL: Start session before using the steward
+            logger.info("🔧 Starting TELOS session...")
+            self.telos_engine.start_session()
+            logger.info("✅ TELOS session started successfully")
+
+            # Log basin configuration
+            if hasattr(self.telos_engine, 'attractor_math') and self.telos_engine.attractor_math:
+                basin_radius = self.telos_engine.attractor_math.basin_radius
+                tolerance = self.telos_engine.attractor_math.constraint_tolerance
+                embedding_dim = embedding_provider.dimension
+                logger.info(f"✅ TELOS engine initialized for BETA testing")
+                logger.info(f"   Embedding model: Mistral mistral-embed ({embedding_dim} dims)")
+                logger.info(f"   Constraint tolerance: {tolerance}")
+                logger.info(f"   Basin radius: {basin_radius:.3f}")
+                logger.info(f"   Expected fidelity for off-topic: < {(1 - 0.5/basin_radius):.3f}")
+            else:
+                logger.info("✅ TELOS engine initialized for BETA testing with correct PA")
 
         except Exception as e:
             logger.error(f"Failed to initialize TELOS engine: {e}")

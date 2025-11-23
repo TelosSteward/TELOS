@@ -36,14 +36,14 @@ class MistralClient:
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model: str = "mistral-small-latest"
+        model: str = "mistral-large-latest"
     ):
         """
         Initialize Mistral client.
 
         Args:
             api_key: Mistral API key (or set MISTRAL_API_KEY env var)
-            model: Model to use for generation
+            model: Model to use for generation (default: mistral-large-latest for best results)
 
         Raises:
             MissingAPIKeyError: If API key not found
@@ -71,7 +71,7 @@ class MistralClient:
         self,
         messages: List[Dict[str, str]],
         temperature: float = 0.7,
-        max_tokens: int = 500,
+        max_tokens: int = 16000,
         **kwargs
     ) -> str:
         """
@@ -80,7 +80,7 @@ class MistralClient:
         Args:
             messages: List of message dicts with 'role' and 'content'
             temperature: Sampling temperature (0.0-1.0)
-            max_tokens: Maximum tokens to generate
+            max_tokens: Maximum tokens to generate (default: 16000 for long-form responses)
             **kwargs: Additional arguments to pass to API
 
         Returns:
@@ -127,7 +127,7 @@ class MistralClient:
         self,
         messages: List[Dict[str, str]],
         temperature: float = 0.7,
-        max_tokens: int = 500,
+        max_tokens: int = 16000,
         **kwargs
     ) -> str:
         """
@@ -151,7 +151,7 @@ class MistralClient:
         self,
         messages: List[Dict[str, str]],
         temperature: float = 0.7,
-        max_tokens: int = 500,
+        max_tokens: int = 16000,
         **kwargs
     ):
         """

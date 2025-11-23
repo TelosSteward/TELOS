@@ -9,6 +9,7 @@ import html
 import logging
 import re
 from datetime import datetime
+from services.file_handler import get_file_handler
 
 logger = logging.getLogger(__name__)
 
@@ -1757,18 +1758,8 @@ class ConversationDisplay:
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {safe_message}
     </div>
-    <button class="demo-user-copy-btn-{user_msg_id}" onclick="copyDemoUserMessage{user_msg_id}()">📋 Copy</button>
+    <button class="demo-user-copy-btn-{user_msg_id}" onclick="(function(btn){{const t=document.getElementById('demo-user-msg-{user_msg_id}').innerText.replace('📋 Copy','').replace('User','').trim();const a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{{document.execCommand('copy');btn.textContent='✓ Copied!';setTimeout(()=>{{btn.textContent='📋 Copy'}},2000)}}catch(e){{btn.textContent='✗ Failed';setTimeout(()=>{{btn.textContent='📋 Copy'}},2000)}}document.body.removeChild(a)}})(this)">📋 Copy</button>
 </div>
-<script>
-function copyDemoUserMessage{user_msg_id}() {{
-    const text = document.getElementById('demo-user-msg-{user_msg_id}').innerText.replace('📋 Copy', '').replace('User', '').trim();
-    navigator.clipboard.writeText(text).then(() => {{
-        const btn = event.target;
-        btn.textContent = '✓ Copied!';
-        setTimeout(() => {{ btn.textContent = '📋 Copy'; }}, 2000);
-    }});
-}}
-</script>
 """, unsafe_allow_html=True)
         elif beta_mode:
             # BETA Mode: Centered Observatory layout with all features
@@ -1840,18 +1831,8 @@ function copyDemoUserMessage{user_msg_id}() {{
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {safe_message}
     </div>
-    <button class="user-copy-btn-{user_msg_id}" onclick="copyUserMessage{user_msg_id}()">📋 Copy</button>
+    <button class="user-copy-btn-{user_msg_id}" onclick="(function(btn){{const t=document.getElementById('user-msg-{user_msg_id}').innerText.replace('📋 Copy','').replace('User','').replace('Fidelity:','').replace('Primacy Attractor Status:','').replace('ΔF:','').trim();const a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{{document.execCommand('copy');btn.textContent='✓ Copied!';setTimeout(()=>{{btn.textContent='📋 Copy'}},2000)}}catch(e){{btn.textContent='✗ Failed';setTimeout(()=>{{btn.textContent='📋 Copy'}},2000)}}document.body.removeChild(a)}})(this)">📋 Copy</button>
 </div>
-<script>
-function copyUserMessage{user_msg_id}() {{
-    const text = document.getElementById('user-msg-{user_msg_id}').innerText.replace('📋 Copy', '').replace('User', '').replace('Fidelity:', '').replace('Primacy Attractor Status:', '').replace('ΔF:', '').trim();
-    navigator.clipboard.writeText(text).then(() => {{
-        const btn = event.target;
-        btn.textContent = '✓ Copied!';
-        setTimeout(() => {{ btn.textContent = '📋 Copy'; }}, 2000);
-    }});
-}}
-</script>
 """, unsafe_allow_html=True)
 
             # Buttons on the right (Steward + Scroll)
@@ -1948,18 +1929,8 @@ function copyUserMessage{user_msg_id}() {{
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {safe_message}
     </div>
-    <button class="user-copy-btn-{user_msg_id}" onclick="copyUserMessage{user_msg_id}()">📋 Copy</button>
+    <button class="user-copy-btn-{user_msg_id}" onclick="(function(btn){{const t=document.getElementById('user-msg-{user_msg_id}').innerText.replace('📋 Copy','').replace('User','').replace('Fidelity:','').replace('Primacy Attractor Status:','').replace('ΔF:','').trim();const a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{{document.execCommand('copy');btn.textContent='✓ Copied!';setTimeout(()=>{{btn.textContent='📋 Copy'}},2000)}}catch(e){{btn.textContent='✗ Failed';setTimeout(()=>{{btn.textContent='📋 Copy'}},2000)}}document.body.removeChild(a)}})(this)">📋 Copy</button>
 </div>
-<script>
-function copyUserMessage{user_msg_id}() {{
-    const text = document.getElementById('user-msg-{user_msg_id}').innerText.replace('📋 Copy', '').replace('User', '').replace('Fidelity:', '').replace('Primacy Attractor Status:', '').replace('ΔF:', '').trim();
-    navigator.clipboard.writeText(text).then(() => {{
-        const btn = event.target;
-        btn.textContent = '✓ Copied!';
-        setTimeout(() => {{ btn.textContent = '📋 Copy'; }}, 2000);
-    }});
-}}
-</script>
 """, unsafe_allow_html=True)
 
                 # Render Steward button above scroll button
@@ -2072,18 +2043,8 @@ function copyUserMessage{user_msg_id}() {{
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {html_message}
     </div>
-    <button class="demo-copy-btn-{message_id}" onclick="copyDemoMessage{message_id}()">📋 Copy</button>
+    <button class="demo-copy-btn-{message_id}" onclick="(function(btn){{const t=document.getElementById('demo-msg-{message_id}').innerText.replace('📋 Copy','').replace('TELOS','').trim();const a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{{document.execCommand('copy');btn.textContent='✓ Copied!';setTimeout(()=>{{btn.textContent='📋 Copy'}},2000)}}catch(e){{btn.textContent='✗ Failed';setTimeout(()=>{{btn.textContent='📋 Copy'}},2000)}}document.body.removeChild(a)}})(this)">📋 Copy</button>
 </div>
-<script>
-function copyDemoMessage{message_id}() {{
-    const text = document.getElementById('demo-msg-{message_id}').innerText.replace('📋 Copy', '').replace('TELOS', '').trim();
-    navigator.clipboard.writeText(text).then(() => {{
-        const btn = event.target;
-        btn.textContent = '✓ Copied!';
-        setTimeout(() => {{ btn.textContent = '📋 Copy'; }}, 2000);
-    }});
-}}
-</script>
 """, unsafe_allow_html=True)
         elif beta_mode:
             # BETA Mode: Centered Observatory layout with all features
@@ -2188,18 +2149,8 @@ function copyDemoMessage{message_id}() {{
 </style>
 <div class="steward-message-{message_id}" id="msg-{message_id}">
     {html_message}
-    <button class="copy-btn-{message_id}" onclick="copyMessage{message_id}()">📋 Copy</button>
+    <button class="copy-btn-{message_id}" onclick="(function(btn){{const t=document.getElementById('msg-{message_id}').innerText.replace('📋 Copy','').trim();const a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{{document.execCommand('copy');btn.textContent='✓ Copied!';setTimeout(()=>{{btn.textContent='📋 Copy'}},2000)}}catch(e){{btn.textContent='✗ Failed';setTimeout(()=>{{btn.textContent='📋 Copy'}},2000)}}document.body.removeChild(a)}})(this)">📋 Copy</button>
 </div>
-<script>
-function copyMessage{message_id}() {{
-    const text = document.getElementById('msg-{message_id}').innerText.replace('📋 Copy', '').trim();
-    navigator.clipboard.writeText(text).then(() => {{
-        const btn = event.target;
-        btn.textContent = '✓ Copied!';
-        setTimeout(() => {{ btn.textContent = '📋 Copy'; }}, 2000);
-    }});
-}}
-</script>
 """, unsafe_allow_html=True)
 
             # Empty column for buttons alignment (no buttons on assistant messages)
@@ -2312,18 +2263,8 @@ function copyMessage{message_id}() {{
 </style>
 <div class="steward-message-{message_id}" id="msg-{message_id}">
     {html_message}
-    <button class="copy-btn-{message_id}" onclick="copyMessage{message_id}()">📋 Copy</button>
+    <button class="copy-btn-{message_id}" onclick="(function(btn){{const t=document.getElementById('msg-{message_id}').innerText.replace('📋 Copy','').trim();const a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{{document.execCommand('copy');btn.textContent='✓ Copied!';setTimeout(()=>{{btn.textContent='📋 Copy'}},2000)}}catch(e){{btn.textContent='✗ Failed';setTimeout(()=>{{btn.textContent='📋 Copy'}},2000)}}document.body.removeChild(a)}})(this)">📋 Copy</button>
 </div>
-<script>
-function copyMessage{message_id}() {{
-    const text = document.getElementById('msg-{message_id}').innerText.replace('📋 Copy', '').trim();
-    navigator.clipboard.writeText(text).then(() => {{
-        const btn = event.target;
-        btn.textContent = '✓ Copied!';
-        setTimeout(() => {{ btn.textContent = '📋 Copy'; }}, 2000);
-    }});
-}}
-</script>
 """, unsafe_allow_html=True)
 
                 with col_empty:
@@ -3027,12 +2968,59 @@ Current Turn Data:
             # Demo/Open mode: Full-width input form
             # Use a form to enable Enter key submission
             with st.form(key="message_form", clear_on_submit=True):
+                # File upload section
+                file_handler = get_file_handler()
+
+                # Upload files
+                uploaded_files = st.file_uploader(
+                    "📎 Attach files (drag & drop or click)",
+                    type=None,  # Allow all types
+                    accept_multiple_files=True,
+                    key="file_upload_main",
+                    help="Upload PDFs, images, documents, code files, spreadsheets (max 10MB each)"
+                )
+
+                # Process uploaded files
+                processed_files = []
+                if uploaded_files:
+                    for uploaded_file in uploaded_files:
+                        file_info = file_handler.process_uploaded_file(uploaded_file)
+                        processed_files.append(file_info)
+
+                        # Show file status
+                        if file_info.get('success'):
+                            file_name = file_info['name']
+                            file_size = file_info['size']
+                            if file_size < 1024:
+                                size_str = f"{file_size}B"
+                            elif file_size < 1024 * 1024:
+                                size_str = f"{file_size / 1024:.1f}KB"
+                            else:
+                                size_str = f"{file_size / 1024 / 1024:.1f}MB"
+
+                            # File icon
+                            if file_info.get('is_image'):
+                                icon = "🖼️"
+                            elif file_info['type'] == 'application/pdf':
+                                icon = "📄"
+                            elif 'spreadsheet' in file_info['type'] or file_name.endswith(('.csv', '.xlsx')):
+                                icon = "📊"
+                            elif 'word' in file_info['type'] or file_name.endswith(('.doc', '.docx')):
+                                icon = "📝"
+                            else:
+                                icon = "📎"
+
+                            st.success(f"{icon} {file_name} ({size_str})")
+                        else:
+                            st.error(f"❌ {file_info.get('name', 'Unknown')}: {file_info.get('error')}")
+
+                # Text input and send button
                 col1, col2 = st.columns([8.5, 1.5])
 
                 with col1:
                     user_input = st.text_area(
                         "Message",
-                        placeholder="Tell TELOS",
+                        placeholder="Tell TELOS" + (" (files attached)" if processed_files else ""),
                         key="main_chat_input_clean",
                         label_visibility="collapsed",
                         height=100
@@ -3043,6 +3031,10 @@ Current Turn Data:
                         "Send",
                         use_container_width=True
                     )
+
+                # Store processed files in session state for submission
+                if processed_files:
+                    st.session_state.pending_files = processed_files
 
         # Check if Demo Mode and enforce 5-message limit
         demo_mode = st.session_state.get('telos_demo_mode', False)
@@ -3100,8 +3092,25 @@ Current Turn Data:
                 self.state_manager.clear_demo_data()
                 st.session_state.user_started_conversation = True
 
+            # Get any pending files from session state
+            pending_files = st.session_state.get('pending_files', [])
+
+            # Build message with file context if files attached
+            message_text = user_input.strip()
+            if pending_files:
+                file_handler = get_file_handler()
+                file_context = file_handler.format_file_context(pending_files)
+                message_text = message_text + file_context
+
+                # Store file metadata in message
+                st.session_state.last_message_files = pending_files
+
+            # Clear pending files
+            if 'pending_files' in st.session_state:
+                del st.session_state.pending_files
+
             # Add the user message and get turn index
-            turn_idx = self.state_manager.add_user_message_streaming(user_input.strip())
+            turn_idx = self.state_manager.add_user_message_streaming(message_text)
 
             # Show user message immediately
             st.rerun()

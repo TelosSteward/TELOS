@@ -209,17 +209,39 @@ class ProportionalController:
     def _apply_reminder(self, response_text: str, error_signal: float) -> InterventionRecord:
         """
         Apply State 2 (CORRECT) intervention: Context injection.
-        
+
         Per whitepaper Section 5.3: Lightweight reminder via context injection.
         Correction force F = K·e_t scales proportionally with error signal.
+
+        MATHEMATICALLY SCALED PROMPTS:
+        - strength >= 0.70: Strong reminder (approaching intervention threshold)
+        - strength >= 0.40: Moderate reminder (clear guidance)
+        - strength < 0.40: Mild reminder (gentle nudge)
         """
         rigidity = float(getattr(self.attractor, "constraint_rigidity", 1.0))
         strength = min(rigidity * error_signal * self.K_attractor, 1.0)
-        prefix = "[Note: Please stay focused on the session's stated purpose and scope.] "
+
+        # Scale prompt intensity based on calculated strength (F = K·e_t)
+        if strength >= 0.70:
+            # Strong reminder - approaching regeneration threshold
+            prefix = (
+                "[GOVERNANCE ALERT: This response is drifting significantly from your stated purpose. "
+                "You must refocus immediately on the session's core objectives.] "
+            )
+        elif strength >= 0.40:
+            # Moderate reminder - clear guidance needed
+            prefix = (
+                "[GOVERNANCE NOTICE: This response is departing from your purpose. "
+                "Please return to the session's stated scope and objectives.] "
+            )
+        else:
+            # Mild reminder - gentle nudge
+            prefix = "[Note: Please stay focused on the session's stated purpose and scope.] "
+
         return InterventionRecord(
             type="reminder",
             strength=strength,
-            reason=f"error={error_signal:.2f} exceeded ε_min and fell out of basin",
+            reason=f"error={error_signal:.2f} exceeded ε_min, strength={strength:.2f}",
             modified_response=prefix + response_text,
             timestamp=time.time()
         )
@@ -232,21 +254,63 @@ class ProportionalController:
     ) -> InterventionRecord:
         """
         Apply State 3 (INTERVENE) intervention: Regeneration.
-        
+
         Per whitepaper Section 5.3: Regenerate with explicit constraint restatement.
         Uses LLM to generate new response that adheres to declared purpose/scope/boundaries.
+
+        MATHEMATICALLY SCALED PROMPTS:
+        - strength >= 0.85: Severe drift (MUST/DECLINE language for off-topic requests)
+        - strength >= 0.65: Moderate drift (firm correction with context)
+        - strength < 0.65: Mild drift (focused regeneration guidance)
         """
         rigidity = float(getattr(self.attractor, "constraint_rigidity", 1.0))
         strength = min(rigidity * error_signal * self.K_attractor, 1.0)
 
-        # Build corrective system message
-        corrective = {
-            "role": "system",
-            "content": (
-                "The previous answer drifted from the session purpose/scope. "
-                "Regenerate a response that stays strictly on-purpose and within scope."
-            )
-        }
+        # Extract purpose and scope from attractor for context
+        # Note: PrimacyAttractorMath doesn't store text, but we can reconstruct
+        # from the parent steward's attractor_config if available
+        purpose_text = "the session's stated purpose"
+        scope_text = "the session's defined scope"
+
+        # Scale prompt intensity based on calculated strength (F = K·e_t)
+        if strength >= 0.85:
+            # SEVERE DRIFT: Forceful intervention with MUST/DECLINE language
+            corrective = {
+                "role": "system",
+                "content": (
+                    "GOVERNANCE INTERVENTION REQUIRED:\n\n"
+                    "The previous response has SEVERELY drifted from the session's stated purpose and scope. "
+                    "This constitutes a critical misalignment.\n\n"
+                    "You MUST:\n"
+                    "1. DECLINE to answer if the request is outside your stated purpose\n"
+                    "2. REDIRECT the conversation back to the established scope\n"
+                    "3. DO NOT engage with off-topic content\n"
+                    "4. DO NOT create elaborate metaphors or analogies for off-topic requests\n\n"
+                    "Generate a response that STRICTLY adheres to the session constraints or politely declines. "
+                    "Be direct and firm in maintaining boundaries."
+                )
+            }
+        elif strength >= 0.65:
+            # MODERATE DRIFT: Firm correction with explicit redirection
+            corrective = {
+                "role": "system",
+                "content": (
+                    "GOVERNANCE CORRECTION:\n\n"
+                    "The previous response drifted significantly from the session's purpose and scope.\n\n"
+                    "Regenerate a response that stays firmly within the established boundaries. "
+                    "If the user's request is off-topic, acknowledge it briefly but redirect to the session's focus. "
+                    "Do not spend time elaborating on off-topic content."
+                )
+            }
+        else:
+            # MILD-TO-MODERATE DRIFT: Focused regeneration guidance
+            corrective = {
+                "role": "system",
+                "content": (
+                    "The previous response drifted from the session purpose/scope. "
+                    "Regenerate a response that stays more focused on the established objectives."
+                )
+            }
 
         # Reconstruct messages for regeneration
         messages = conversation_history.copy()
@@ -257,7 +321,7 @@ class ProportionalController:
             regenerated_text = self.llm_client.chat_completion(
                 messages=messages,
                 temperature=0.7,
-                max_tokens=500
+                max_tokens=16000  # FIX: Increased from 500 to allow full responses
             )
         except Exception as e:
             # Fallback to reminder if regeneration fails
@@ -266,7 +330,7 @@ class ProportionalController:
         return InterventionRecord(
             type="regeneration",
             strength=strength,
-            reason=f"error={error_signal:.2f} ≥ ε_max, triggered regeneration",
+            reason=f"error={error_signal:.2f} ≥ ε_max, strength={strength:.2f}",
             modified_response=regenerated_text,
             timestamp=time.time()
         )
