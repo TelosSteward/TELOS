@@ -34,7 +34,8 @@ This plan details the integration of TELOS agentic AI governance capabilities in
 **Competitive Landscape:**
 - Prompt engineering: No measurement, no intervention
 - Constitutional AI: Model-level only, not session/agent-specific
-- Guardrails: Binary block/allow, no proportional control
+- NeMo Guardrails (NVIDIA): Rule-based pattern matching, requires explicit definition of constraints, can be bypassed with adversarial prompting
+- Generic Guardrails: Binary block/allow, no proportional control
 - Custom solutions: Ad-hoc, non-standardized, no industrial certification
 
 **TELOS Differentiation:**
@@ -256,6 +257,10 @@ This plan details the integration of TELOS agentic AI governance capabilities in
 - Wu, Q., et al. (2023). "AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation." arXiv:2308.08155.
 - Microsoft Research (2024). "Semantic Kernel: SDK for AI orchestration." GitHub.
 
+**Guardrails Frameworks:**
+- NVIDIA (2023). "NeMo Guardrails: A Toolkit for Controllable and Safe LLM Applications with Programmable Rails." https://github.com/NVIDIA/NeMo-Guardrails
+- Rebedea, T., et al. (2023). "NeMo Guardrails: Colang Modeling Language for Conversational Flow Control." NVIDIA Technical Report.
+
 ### 3.2 Enterprise AI Deployment Studies
 
 **Market Adoption:**
@@ -361,7 +366,10 @@ This plan details the integration of TELOS agentic AI governance capabilities in
 **vs Custom Solutions:**
 "Enterprise-developed agent governance solutions are ad-hoc, non-standardized, and lack industrial certification. TELOS provides ASQ Black Belt-certified methodology with Six Sigma rigor—enabling organizations to demonstrate quantitative governance evidence for regulatory compliance rather than narrative documentation."
 
-**vs Guardrails/Binary Controls:**
+**vs NeMo Guardrails (NVIDIA):**
+"NVIDIA's NeMo Guardrails uses Colang modeling language for rule-based conversation flow control and canonical forms for pattern matching. While effective for explicit content filtering, NeMo Guardrails operates at the prompt/response level—not the embedding space level. This creates three fundamental limitations: (1) adversarial prompts can bypass pattern matching through semantic obfuscation, (2) no quantitative measurement of drift over conversation history, and (3) no statistical process control for continuous governance. TELOS operates at the mathematical foundation—measuring semantic drift in embedding space with Statistical Process Control, making it resilient to prompt engineering attacks. NeMo Guardrails complements TELOS: use NeMo for explicit rule enforcement (e.g., 'never discuss competitors'), use TELOS for mathematical boundary enforcement that catches violations NeMo's patterns miss."
+
+**vs Generic Guardrails/Binary Controls:**
 "Binary allow/block guardrails cannot handle the nuanced decision-making of autonomous agents. TELOS implements proportional control: high-confidence decisions proceed, medium-confidence restricts tool availability, low-confidence escalates to human experts. This graduated response maintains agent autonomy while ensuring safety."
 
 ### 4.4 Flow and Narrative Arc
@@ -606,16 +614,18 @@ This plan details the integration of TELOS agentic AI governance capabilities in
 
 **Competitive Comparison Matrix:**
 
-| Capability | TELOS | LangChain | AutoGPT | Guardrails | Custom Solutions |
-|-----------|-------|-----------|---------|-----------|------------------|
-| Conversational AI Governance | ✅ (0% ASR) | ❌ | ❌ | ⚠️ (binary) | ⚠️ (ad-hoc) |
-| Agentic AI Governance | ✅ (SPC/DMAIC) | ❌ | ❌ | ⚠️ (binary) | ⚠️ (ad-hoc) |
-| Quantitative Measurement | ✅ (fidelity scores) | ❌ | ❌ | ❌ | ⚠️ (varies) |
-| Drift Detection | ✅ (control charts) | ❌ | ❌ | ❌ | ⚠️ (varies) |
-| Proportional Intervention | ✅ (three-tier) | ❌ | ❌ | ❌ (binary) | ⚠️ (varies) |
-| Industrial Certification | ✅ (ASQ Black Belt) | ❌ | ❌ | ❌ | ❌ |
-| Regulatory Compliance | ✅ (SB 53, EU AI Act) | ⚠️ (partial) | ⚠️ (partial) | ⚠️ (partial) | ⚠️ (varies) |
-| Audit Trail | ✅ (complete JSONL) | ⚠️ (logs) | ⚠️ (logs) | ⚠️ (logs) | ⚠️ (varies) |
+| Capability | TELOS | NeMo Guardrails | LangChain | AutoGPT | Generic Guardrails | Custom Solutions |
+|-----------|-------|-----------------|-----------|---------|-------------------|------------------|
+| Conversational AI Governance | ✅ (0% ASR) | ⚠️ (rule-based) | ❌ | ❌ | ⚠️ (binary) | ⚠️ (ad-hoc) |
+| Agentic AI Governance | ✅ (SPC/DMAIC) | ⚠️ (Colang flows) | ❌ | ❌ | ⚠️ (binary) | ⚠️ (ad-hoc) |
+| Quantitative Measurement | ✅ (fidelity scores) | ❌ (pattern match) | ❌ | ❌ | ❌ | ⚠️ (varies) |
+| Drift Detection | ✅ (control charts) | ❌ | ❌ | ❌ | ❌ | ⚠️ (varies) |
+| Proportional Intervention | ✅ (three-tier) | ❌ (binary) | ❌ | ❌ | ❌ (binary) | ⚠️ (varies) |
+| Embedding Space Operations | ✅ (PA dynamics) | ❌ (prompt-level) | ❌ | ❌ | ❌ | ⚠️ (varies) |
+| Adversarial Resilience | ✅ (0% ASR, 2000 tests) | ⚠️ (bypassable) | ❌ | ❌ | ⚠️ (bypassable) | ⚠️ (varies) |
+| Industrial Certification | ✅ (ASQ Black Belt) | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Regulatory Compliance | ✅ (SB 53, EU AI Act) | ⚠️ (partial) | ⚠️ (partial) | ⚠️ (partial) | ⚠️ (partial) | ⚠️ (varies) |
+| Audit Trail | ✅ (complete JSONL) | ⚠️ (logs) | ⚠️ (logs) | ⚠️ (logs) | ⚠️ (logs) | ⚠️ (varies) |
 
 ### 7.3 Revenue and Adoption Projections
 
