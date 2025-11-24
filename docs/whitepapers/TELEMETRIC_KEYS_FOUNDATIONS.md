@@ -377,7 +377,49 @@ The 2,000-attack validation with 0% success rate (99.9% CI: [0%, 0.37%]) demonst
 
 ## Complete Bibliography
 
-[The bibliography would continue with all 100+ references organized alphabetically. For brevity, I've included the key citations throughout the document.]
+### Cryptographic Foundations
+
+Bellare, M., Canetti, R., & Krawczyk, H. (1996). Keying hash functions for message authentication. CRYPTO'96, Lecture Notes in Computer Science, 1109, 1-15.
+
+Bertoni, G., Daemen, J., Peeters, M., & Van Assche, G. (2011). The Keccak SHA-3 submission. Submission to NIST.
+
+Grover, L. K. (1996). A fast quantum mechanical algorithm for database search. Proceedings 28th Annual ACM Symposium on Theory of Computing, 212-219.
+
+Krawczyk, H., & Eronen, P. (2010). HMAC-based Extract-and-Expand Key Derivation Function (HKDF). RFC 5869.
+
+Kaliski, B. (2000). PKCS #5: Password-Based Cryptography Specification Version 2.0. RFC 2898.
+
+Shor, P. W. (1994). Algorithms for quantum computation: Discrete logarithms and factoring. Proceedings 35th Annual Symposium on Foundations of Computer Science, 124-134.
+
+### Statistical Methods
+
+Cohen, J. (1988). Statistical Power Analysis for the Behavioral Sciences (2nd ed.). Routledge.
+
+Gelman, A., Carlin, J. B., Stern, H. S., & Rubin, D. B. (2013). Bayesian Data Analysis (3rd ed.). Chapman and Hall/CRC.
+
+Kass, R. E., & Raftery, A. E. (1995). Bayes factors. Journal of the American Statistical Association, 90(430), 773-795.
+
+Wilson, E. B. (1927). Probable inference, the law of succession, and statistical inference. Journal of the American Statistical Association, 22(158), 209-212.
+
+### Information Theory
+
+Cover, T. M., & Thomas, J. A. (2006). Elements of Information Theory (2nd ed.). Wiley.
+
+Kolmogorov, A. N. (1965). Three approaches to the quantitative definition of information. Problems of Information Transmission, 1(1), 1-7.
+
+Shannon, C. E. (1948). A mathematical theory of communication. The Bell System Technical Journal, 27(3), 379-423.
+
+### Control Theory
+
+Khalil, H. K. (2002). Nonlinear Systems (3rd ed.). Prentice Hall.
+
+Ogata, K. (2009). Modern Control Engineering (5th ed.). Prentice Hall.
+
+### NIST Standards
+
+NIST (2015). SHA-3 Standard: Permutation-Based Hash and Extendable-Output Functions. NIST FIPS 202.
+
+NIST (2009). Recommendation for Key Derivation Using Pseudorandom Functions. NIST SP 800-108.
 
 ---
 

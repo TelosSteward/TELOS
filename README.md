@@ -108,14 +108,25 @@ TELOS-Observatory/
 │   ├── components/         # UI components
 │   └── core/               # State management
 │
+├── TELOSCOPE_BETA/         # Enhanced observatory with BETA testing
+│   ├── main.py             # Enhanced Streamlit application
+│   └── components/         # Extended UI components (25+ modules)
+│
 ├── telos/                  # Core governance engine
-│   ├── core/               # Dual Attractor implementation
+│   ├── core/               # Dual Attractor & intervention logic
+│   │   ├── unified_steward.py          # Main governance orchestrator
+│   │   ├── dual_attractor.py           # Dual PA mathematics
+│   │   └── ...             # Additional core modules
 │   └── utils/              # Supporting utilities
+│
+├── strix/                  # Security testing framework
 │
 ├── docs/                   # Comprehensive documentation
 │   ├── whitepapers/        # Technical papers
 │   ├── guides/             # Implementation guides
 │   └── regulatory/         # Compliance documentation
+│
+├── security/               # Forensics & audit reports
 │
 └── examples/               # Integration examples
 ```
