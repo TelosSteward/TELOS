@@ -61,7 +61,7 @@ from .primacy_math import (
     TelicFidelityCalculator
 )
 from .proportional_controller import ProportionalController
-from .conversation_manager import ConversationManager
+from ..utils.conversation_manager import ConversationManager
 from .intercepting_llm_wrapper import InterceptingLLMWrapper
 
 from telos_purpose.exceptions import (
