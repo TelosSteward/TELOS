@@ -80,6 +80,9 @@ temp/
 *_secret*
 credentials.json
 
+# Streamlit Secrets (CRITICAL - never commit)
+.streamlit/secrets.toml
+
 # Custom
 archive/
 deprecated/
