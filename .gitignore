@@ -88,3 +88,6 @@ archive/
 deprecated/
 *.bak
 *.old
+
+# Research and development utilities (keep local only)
+research/
