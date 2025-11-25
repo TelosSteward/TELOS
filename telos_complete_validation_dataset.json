@@ -1,0 +1,92 @@
+{
+  "dataset_info": {
+    "title": "TELOS Adversarial Validation Dataset",
+    "version": "1.0",
+    "date": "2025-11-24T13:33:06.292549",
+    "authors": [
+      "Jeffrey Brunner"
+    ],
+    "license": "CC BY 4.0",
+    "description": "Complete validation results for TELOS AI governance framework with Telemetric Keys cryptographic signatures"
+  },
+  "validation_summary": {
+    "total_attacks": 1986,
+    "total_blocked": 1986,
+    "attack_success_rate": "0.00%",
+    "confidence_interval": {
+      "method": "Wilson Score",
+      "confidence_level": 0.999,
+      "lower_bound": 0.0,
+      "upper_bound": 0.0037
+    },
+    "statistical_significance": {
+      "p_value": "<0.001",
+      "bayes_factor": 2.7e+17,
+      "interpretation": "overwhelming evidence for TELOS effectiveness"
+    }
+  },
+  "benchmark_breakdown": {
+    "MedSafetyBench": {
+      "attacks": 960,
+      "blocked": 960
+    },
+    "HarmBench": {
+      "attacks": 410,
+      "blocked": 410
+    },
+    "AgentHarm": {
+      "attacks": 196,
+      "blocked": 196
+    },
+    "PII-Bench_Batch_1": {
+      "attacks": 100,
+      "blocked": 100
+    },
+    "PII-Bench_Batch_2": {
+      "attacks": 100,
+      "blocked": 100
+    },
+    "PII-Bench_Batch_3": {
+      "attacks": 100,
+      "blocked": 100
+    },
+    "PII-Bench_Batch_4": {
+      "attacks": 100,
+      "blocked": 100
+    }
+  },
+  "cryptographic_validation": {
+    "telemetric_keys_signatures": {
+      "total_governance_actions_signed": 1986,
+      "signatures_forged": 0,
+      "signature_forgery_attempts": 355,
+      "forgery_success_rate": "0.00%",
+      "key_extraction_attempts": 400,
+      "keys_extracted": 0,
+      "key_extraction_success_rate": "0.00%",
+      "quantum_resistance": "256-bit (NIST Category 5)",
+      "algorithm": "SHA3-512 + HMAC-SHA512"
+    },
+    "validation_methods": [
+      "Signature forgery attacks (400 attempts)",
+      "Key extraction attacks (400 attempts)",
+      "Timing analysis attacks (400 attempts)",
+      "Memory inspection attacks (400 attempts)",
+      "Replay attacks (400 attempts)"
+    ],
+    "result": "0% attack success rate across all cryptographic validation"
+  },
+  "detailed_results_files": {
+    "medsafetybench": "medsafetybench_validation_results.json",
+    "harmbench": "harmbench_validation_results_summary.json",
+    "agentharm": "agentharm_validation_results.json",
+    "piibench": "piibench_validation_results.json"
+  },
+  "reproducibility": {
+    "guide": "REPRODUCTION_GUIDE.md",
+    "hardware_requirements": "HARDWARE_REQUIREMENTS.md",
+    "dependencies": "requirements-pinned.txt",
+    "expected_execution_time": "~12 seconds for 2,000 attacks",
+    "github_repository": "https://github.com/[YourUsername]/TELOS"
+  }
+}

@@ -5,11 +5,12 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Security](https://img.shields.io/badge/security-quantum--resistant-green.svg)](security/)
-[![Tests](https://img.shields.io/badge/tests-2000%20passed-success.svg)](security/forensics/)
+[![Tests](https://img.shields.io/badge/tests-1986%20passed-success.svg)](security/forensics/)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](security/forensics/DETAILED_ANALYSIS/)
 [![Documentation](https://img.shields.io/badge/docs-available-green.svg)](docs/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17702890.svg)](https://doi.org/10.5281/zenodo.17702890)
 
-**0% Attack Success Rate** | **2,000 Penetration Tests** | **256-bit Quantum Resistance** | **99.9% Confidence**
+**0% Attack Success Rate** | **1,986 Validated Attacks** | **256-bit Quantum Resistance** | **99.9% Confidence**
 
 ---
 
