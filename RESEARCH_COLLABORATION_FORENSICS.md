@@ -2,7 +2,7 @@
 
 **Assessment Date:** November 24, 2025
 **Assessor Role:** Research Collaboration Director (15+ years multi-institutional partnerships)
-**Repository:** `/Users/brunnerjf/Desktop/Privacy_PreCommit/`
+**Repository:** `./`
 **Status:** Pre-Funding Phase → Multi-Institutional Research Network (3-5 year roadmap)
 
 ---

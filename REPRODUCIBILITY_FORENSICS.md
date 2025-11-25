@@ -1,7 +1,7 @@
 # TELOS Reproducibility Forensics Report
 
 **Framework:** TELOS - Runtime AI Governance System
-**Location:** `/Users/brunnerjf/Desktop/Privacy_PreCommit/`
+**Location:** `./`
 **Evaluation Date:** November 24, 2025
 **Evaluator:** Reproducibility Specialist (Open Science Standards)
 **Standards:** ACM Artifact Evaluation, Nature Reproducibility Guidelines, NSF Data Management, IEEE Access Review

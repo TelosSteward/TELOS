@@ -2,7 +2,7 @@
 
 **Principal Research Architect Review**
 **Date**: November 24, 2025
-**Repository**: `/Users/brunnerjf/Desktop/Privacy_PreCommit/`
+**Repository**: `./`
 **Assessment Type**: Research Proof-of-Concept → Institutional Deployment Pathway
 
 ---

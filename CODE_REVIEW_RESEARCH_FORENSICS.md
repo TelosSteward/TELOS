@@ -3,7 +3,7 @@
 **Review Date**: November 24, 2025
 **Reviewer**: Senior Research Software Engineer (15+ years experience)
 **Project Phase**: Research Proof-of-Concept → Grant Application Phase
-**Codebase Location**: `/Users/brunnerjf/Desktop/Privacy_PreCommit/`
+**Codebase Location**: `./`
 **Total Lines of Code**: ~89,297 (code + documentation)
 **Python Files**: 244 files
 **Documentation Files**: 13 markdown files in docs/
@@ -32,9 +32,9 @@ This project is **ready for peer review and grant submission** in its current st
 #### 1.1 Mathematical Foundation (`telos/core/`)
 
 **Files Reviewed**:
-- `/Users/brunnerjf/Desktop/Privacy_PreCommit/telos/core/primacy_math.py` (243 lines)
-- `/Users/brunnerjf/Desktop/Privacy_PreCommit/telos/core/dual_attractor.py` (455 lines)
-- `/Users/brunnerjf/Desktop/Privacy_PreCommit/telos/core/proportional_controller.py` (340 lines)
+- `./telos/core/primacy_math.py` (243 lines)
+- `./telos/core/dual_attractor.py` (455 lines)
+- `./telos/core/proportional_controller.py` (340 lines)
 
 **Strengths**:
 ```python
@@ -72,7 +72,7 @@ def compute_lyapunov_function(self, state: MathematicalState) -> float:
 
 #### 1.2 Governance Orchestrator (`unified_steward.py`)
 
-**File**: `/Users/brunnerjf/Desktop/Privacy_PreCommit/telos/core/unified_steward.py` (714 lines)
+**File**: `./telos/core/unified_steward.py` (714 lines)
 
 **Strengths**:
 ```python
@@ -110,7 +110,7 @@ class UnifiedGovernanceSteward:
 
 #### 1.3 Active Mitigation Layer (`intercepting_llm_wrapper.py`)
 
-**File**: `/Users/brunnerjf/Desktop/Privacy_PreCommit/telos/core/intercepting_llm_wrapper.py` (483 lines)
+**File**: `./telos/core/intercepting_llm_wrapper.py` (483 lines)
 
 **Innovation**:
 ```python
@@ -146,7 +146,7 @@ class GovernanceIntervention:
 
 #### 1.4 Dual Attractor System (`dual_attractor.py`)
 
-**File**: `/Users/brunnerjf/Desktop/Privacy_PreCommit/telos/core/dual_attractor.py` (455 lines)
+**File**: `./telos/core/dual_attractor.py` (455 lines)
 
 **Experimental Status**: Clearly marked as "Status: Experimental (v1.2-dual-attractor)"
 
@@ -171,7 +171,7 @@ async def detect_user_intent(user_pa: Dict[str, Any], client: Any) -> str:
 
 #### 2.1 Observatory Interface (TELOSCOPE_BETA)
 
-**Main File**: `/Users/brunnerjf/Desktop/Privacy_PreCommit/TELOSCOPE_BETA/main.py`
+**Main File**: `./TELOSCOPE_BETA/main.py`
 
 ✅ **Streamlit-based interface** enables researchers to:
 - Run demo sessions (progressive slideshow)
@@ -198,7 +198,7 @@ def check_demo_completion():
 
 #### 2.2 Validation Framework (Strix Integration)
 
-**Files**: `/Users/brunnerjf/Desktop/Privacy_PreCommit/strix/` (Third-party security testing framework)
+**Files**: `./strix/` (Third-party security testing framework)
 
 ✅ **2,000 penetration tests documented**:
 - Attack categories clearly defined
@@ -224,8 +224,8 @@ class ForensicRecord:
 #### 2.3 Documentation for Peer Review
 
 **Files Reviewed**:
-- `/Users/brunnerjf/Desktop/Privacy_PreCommit/README.md`
-- `/Users/brunnerjf/Desktop/Privacy_PreCommit/docs/whitepapers/TELOS_Whitepaper.md`
+- `./README.md`
+- `./docs/whitepapers/TELOS_Whitepaper.md`
 - Various technical documentation
 
 ✅ **Comprehensive documentation**:
@@ -335,7 +335,7 @@ except Exception as e:
 
 #### 3.4 Dependencies and Requirements
 
-**File**: `/Users/brunnerjf/Desktop/Privacy_PreCommit/requirements.txt`
+**File**: `./requirements.txt`
 
 ✅ **Dependencies are reasonable**:
 ```
@@ -1034,28 +1034,28 @@ The identified "issues" are not deficiencies but rather **natural transition nee
 
 ```
 Core Mathematics:
-- /Users/brunnerjf/Desktop/Privacy_PreCommit/telos/core/primacy_math.py
-- /Users/brunnerjf/Desktop/Privacy_PreCommit/telos/core/dual_attractor.py
-- /Users/brunnerjf/Desktop/Privacy_PreCommit/telos/core/proportional_controller.py
+- ./telos/core/primacy_math.py
+- ./telos/core/dual_attractor.py
+- ./telos/core/proportional_controller.py
 
 Governance Orchestration:
-- /Users/brunnerjf/Desktop/Privacy_PreCommit/telos/core/unified_steward.py
-- /Users/brunnerjf/Desktop/Privacy_PreCommit/telos/core/intercepting_llm_wrapper.py
+- ./telos/core/unified_steward.py
+- ./telos/core/intercepting_llm_wrapper.py
 
 Observatory:
-- /Users/brunnerjf/Desktop/Privacy_PreCommit/TELOSCOPE_BETA/main.py
+- ./TELOSCOPE_BETA/main.py
 
 Validation:
-- /Users/brunnerjf/Desktop/Privacy_PreCommit/forensic_validator.py
-- /Users/brunnerjf/Desktop/Privacy_PreCommit/strix/ (security testing)
+- ./forensic_validator.py
+- ./strix/ (security testing)
 
 Documentation:
-- /Users/brunnerjf/Desktop/Privacy_PreCommit/README.md
-- /Users/brunnerjf/Desktop/Privacy_PreCommit/docs/whitepapers/TELOS_Whitepaper.md
-- /Users/brunnerjf/Desktop/Privacy_PreCommit/docs/whitepapers/TELOS_Academic_Paper.md
+- ./README.md
+- ./docs/whitepapers/TELOS_Whitepaper.md
+- ./docs/whitepapers/TELOS_Academic_Paper.md
 
 Examples:
-- /Users/brunnerjf/Desktop/Privacy_PreCommit/examples/runtime_governance_start.py
+- ./examples/runtime_governance_start.py
 ```
 
 ### Metrics Summary

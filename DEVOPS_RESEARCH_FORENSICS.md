@@ -6,7 +6,7 @@
 **Audit Date:** November 24, 2025
 **Auditor Role:** Senior DevOps Engineer (12+ years research systems)
 **Project:** TELOS AI Governance System
-**Repository:** `/Users/brunnerjf/Desktop/Privacy_PreCommit/`
+**Repository:** `./`
 **Deployment Target:** Research demonstrations, beta testing, institutional deployment
 
 ---
