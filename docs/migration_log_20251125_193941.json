@@ -1,0 +1,275 @@
+[
+  {
+    "timestamp": "2025-11-25T19:39:41.908971",
+    "action": "CREATE_DIR",
+    "source": "docs/getting-started",
+    "destination": null,
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.909501",
+    "action": "CREATE_DIR",
+    "source": "docs/implementation/beta-testing",
+    "destination": null,
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.909858",
+    "action": "CREATE_DIR",
+    "source": "docs/implementation/features",
+    "destination": null,
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.910154",
+    "action": "CREATE_DIR",
+    "source": "docs/validation",
+    "destination": null,
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.910404",
+    "action": "CREATE_DIR",
+    "source": "docs/architecture",
+    "destination": null,
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.910900",
+    "action": "CREATE_DIR",
+    "source": "docs/archived/session-notes",
+    "destination": null,
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.911168",
+    "action": "CREATE_DIR",
+    "source": "docs/archived/planning",
+    "destination": null,
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.911416",
+    "action": "CREATE_DIR",
+    "source": "docs/archived/test-results",
+    "destination": null,
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.911767",
+    "action": "CREATE_README",
+    "source": "docs//README.md",
+    "destination": null,
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.912085",
+    "action": "CREATE_README",
+    "source": "docs/getting-started//README.md",
+    "destination": null,
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.912439",
+    "action": "CREATE_README",
+    "source": "docs/implementation//README.md",
+    "destination": null,
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.912848",
+    "action": "CREATE_README",
+    "source": "docs/implementation/beta-testing//README.md",
+    "destination": null,
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.913179",
+    "action": "CREATE_README",
+    "source": "docs/implementation/features//README.md",
+    "destination": null,
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.913476",
+    "action": "CREATE_README",
+    "source": "docs/validation//README.md",
+    "destination": null,
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.913763",
+    "action": "CREATE_README",
+    "source": "docs/archived//README.md",
+    "destination": null,
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.914095",
+    "action": "CREATE_README",
+    "source": "docs/archived/session-notes//README.md",
+    "destination": null,
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.914383",
+    "action": "CREATE_README",
+    "source": "docs/archived/planning//README.md",
+    "destination": null,
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.919934",
+    "action": "MOVE_FILE",
+    "source": "NEXT_SESSION_HANDOFF.md",
+    "destination": "docs/archived/session-notes/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.922888",
+    "action": "MOVE_FILE",
+    "source": "NEXT_SESSION_START_HERE.md",
+    "destination": "docs/archived/session-notes/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.925864",
+    "action": "MOVE_FILE",
+    "source": "SESSION_SUMMARY_2025-11-08.md",
+    "destination": "docs/archived/session-notes/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.928847",
+    "action": "MOVE_FILE",
+    "source": "QUICK_START_NEXT_SESSION.md",
+    "destination": "docs/archived/session-notes/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.932082",
+    "action": "MOVE_FILE",
+    "source": "BETA_TESTING_DECISION_LOG.md",
+    "destination": "docs/archived/planning/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.935224",
+    "action": "MOVE_FILE",
+    "source": "BUTTON_HOVER_EXPANSION_NOTE.md",
+    "destination": "docs/archived/planning/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.938290",
+    "action": "MOVE_FILE",
+    "source": "SEQUENTIAL_ANALYSIS_ENHANCED_OPTION_B+.md",
+    "destination": "docs/archived/planning/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.941187",
+    "action": "MOVE_FILE",
+    "source": "PLAYWRIGHT_MCP_SETUP_AND_TESTING.md",
+    "destination": "docs/archived/planning/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.944264",
+    "action": "MOVE_FILE",
+    "source": "SETUP_NOTES.md",
+    "destination": "docs/archived/planning/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.947533",
+    "action": "MOVE_FILE",
+    "source": "BUILD_TAG_v0.1.0-beta-testing.md",
+    "destination": "docs/archived/planning/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.950361",
+    "action": "MOVE_FILE",
+    "source": "STEWARD_UNIFIED_README.md",
+    "destination": "docs/archived/planning/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.953327",
+    "action": "MOVE_FILE",
+    "source": "BETA_IMPLEMENTATION_PLAN.md",
+    "destination": "docs/implementation/beta-testing/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.956302",
+    "action": "MOVE_FILE",
+    "source": "BETA_TESTING_AUTOMATION_REPORT.md",
+    "destination": "docs/implementation/beta-testing/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.959246",
+    "action": "MOVE_FILE",
+    "source": "BETA_TESTING_IMPLEMENTATION_COMPLETE.md",
+    "destination": "docs/implementation/beta-testing/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.962306",
+    "action": "MOVE_FILE",
+    "source": "DEMO_MODE_DESIGN_PLAN.md",
+    "destination": "docs/implementation/features/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.965253",
+    "action": "MOVE_FILE",
+    "source": "DEMO_MODE_STATUS.md",
+    "destination": "docs/implementation/features/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.968372",
+    "action": "MOVE_FILE",
+    "source": "VALIDATION_AUDIT_REPORT.md",
+    "destination": "docs/validation/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.971244",
+    "action": "MOVE_FILE",
+    "source": "VALIDATION_STATUS_REPORT.md",
+    "destination": "docs/validation/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.974018",
+    "action": "MOVE_FILE",
+    "source": "QUICK_START_GUIDE.md",
+    "destination": "docs/getting-started/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.976914",
+    "action": "MOVE_FILE",
+    "source": "DEPLOYMENT_GUIDE.md",
+    "destination": "docs/getting-started/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.980005",
+    "action": "MOVE_FILE",
+    "source": "EXECUTIVE_SUMMARY.md",
+    "destination": "docs/",
+    "status": "success"
+  },
+  {
+    "timestamp": "2025-11-25T19:39:41.983330",
+    "action": "MOVE_FILE",
+    "source": "NEXT_VERSION_PLAN.md",
+    "destination": "docs/archived/planning/",
+    "status": "success"
+  }
+]
