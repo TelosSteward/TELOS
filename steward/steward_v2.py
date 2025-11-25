@@ -298,7 +298,7 @@ class StewardPM2:
         """Detect if we're in public (purpose) or private repo"""
         cwd = Path.cwd()
 
-        if 'telos_purpose' in str(cwd):
+        if 'telos' in str(cwd).lower() or 'TELOS' in str(cwd):
             return 'public'
         elif 'telos_privacy' in str(cwd):
             return 'private'

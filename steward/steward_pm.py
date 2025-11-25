@@ -104,7 +104,7 @@ def display_repo_strategy():
     print("📦 REPOSITORY STRATEGY")
     print("="*70 + "\n")
 
-    print("🌐 PUBLIC: telos_purpose")
+    print("🌐 PUBLIC: TELOS")
     print("   Purpose: Research community, developer adoption")
     print("   Contains:")
     print("   • Single PA mathematics (9/30/2024 baseline)")

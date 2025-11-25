@@ -25,7 +25,7 @@ import traceback
 
 # Check for Mistral API (same as TELOS core)
 try:
-    from telos_purpose.llm_clients.mistral_client import MistralClient
+    from telos.llm.mistral_client import MistralClient
     HAS_MISTRAL = True
 except ImportError:
     HAS_MISTRAL = False

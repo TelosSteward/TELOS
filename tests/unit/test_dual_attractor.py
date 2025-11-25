@@ -9,7 +9,7 @@ import numpy as np
 from unittest.mock import Mock, AsyncMock, patch
 import asyncio
 
-from telos_purpose.core.dual_attractor import (
+from telos.core.dual_attractor import (
     DualPrimacyAttractor,
     DualFidelityResult,
     INTENT_TO_ROLE_MAP,

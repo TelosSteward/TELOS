@@ -11,7 +11,7 @@ the core dual_attractor code.
 """
 
 from typing import List, Dict, Any
-from telos_purpose.llm_clients.mistral_client import MistralClient
+from telos.llm.mistral_client import MistralClient
 
 
 class MessageResponse:

@@ -21,9 +21,9 @@ import time
 
 # Import TELOS engine components
 try:
-    from telos_purpose.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
-    from telos_purpose.core.embedding_provider import SentenceTransformerEmbeddingProvider
-    from telos_purpose.llm_clients.openai_client import OpenAIClient
+    from telos.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
+    from telos.core.embedding_provider import SentenceTransformerEmbeddingProvider
+    from telos.llm.openai_client import OpenAIClient
     TELOS_AVAILABLE = True
 except ImportError as e:
     print(f"Warning: TELOS engine not available: {e}")

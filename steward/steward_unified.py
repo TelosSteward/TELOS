@@ -359,7 +359,7 @@ class StewardUnified:
         """Detect if we're in public (purpose) or private repo"""
         cwd = Path.cwd()
 
-        if 'telos_purpose' in str(cwd).lower():
+        if 'telos' in str(cwd).lower():
             return 'public'
         elif 'telos_privacy' in str(cwd).lower() or 'telos_observatory' in str(cwd).lower():
             return 'private'
@@ -489,7 +489,7 @@ class StewardUnified:
         print("📦 REPOSITORY STRATEGY")
         print("="*70 + "\n")
 
-        print("🌐 PUBLIC: telos_purpose")
+        print("🌐 PUBLIC: TELOS")
         print("   Purpose: Research community, developer adoption")
         print("   Contains:")
         print("   • Single PA mathematics (9/30/2024 baseline)")

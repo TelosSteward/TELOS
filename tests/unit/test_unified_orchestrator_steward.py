@@ -9,9 +9,9 @@ import asyncio
 from unittest.mock import Mock, AsyncMock, patch, MagicMock
 import numpy as np
 
-from telos_purpose.core.unified_orchestrator_steward import UnifiedOrchestratorSteward
-from telos_purpose.core.governance_config import GovernanceConfig, GovernanceMode
-from telos_purpose.core.dual_attractor import DualPrimacyAttractor
+from telos.core.unified_orchestrator_steward import UnifiedOrchestratorSteward
+from telos.core.governance_config import GovernanceConfig, GovernanceMode
+from telos.core.dual_attractor import DualPrimacyAttractor
 
 
 @pytest.fixture
@@ -119,7 +119,7 @@ class TestUnifiedOrchestratorSteward:
             embedding_provider=mock_embedding_provider
         )
 
-        with patch('telos_purpose.core.unified_orchestrator_steward.create_dual_pa') as mock_create:
+        with patch('telos.core.unified_orchestrator_steward.create_dual_pa') as mock_create:
             # Mock successful dual PA creation
             mock_dual_pa = DualPrimacyAttractor(
                 user_pa=sample_user_pa,
@@ -155,7 +155,7 @@ class TestUnifiedOrchestratorSteward:
             embedding_provider=mock_embedding_provider
         )
 
-        with patch('telos_purpose.core.unified_orchestrator_steward.create_dual_pa') as mock_create:
+        with patch('telos.core.unified_orchestrator_steward.create_dual_pa') as mock_create:
             # Mock timeout
             async def timeout_mock(*args, **kwargs):
                 await asyncio.sleep(100)  # Will timeout
@@ -185,7 +185,7 @@ class TestUnifiedOrchestratorSteward:
             embedding_provider=mock_embedding_provider
         )
 
-        with patch('telos_purpose.core.unified_orchestrator_steward.create_dual_pa') as mock_create:
+        with patch('telos.core.unified_orchestrator_steward.create_dual_pa') as mock_create:
             # Mock error
             mock_create.side_effect = Exception("PA derivation failed")
 
@@ -213,7 +213,7 @@ class TestUnifiedOrchestratorSteward:
             embedding_provider=mock_embedding_provider
         )
 
-        with patch('telos_purpose.core.unified_orchestrator_steward.create_dual_pa') as mock_create:
+        with patch('telos.core.unified_orchestrator_steward.create_dual_pa') as mock_create:
             # Mock error
             mock_create.side_effect = Exception("PA derivation failed")
 
@@ -239,7 +239,7 @@ class TestUnifiedOrchestratorSteward:
             embedding_provider=mock_embedding_provider
         )
 
-        with patch('telos_purpose.core.unified_orchestrator_steward.create_dual_pa') as mock_create:
+        with patch('telos.core.unified_orchestrator_steward.create_dual_pa') as mock_create:
             # Mock dual PA with low correlation
             mock_dual_pa = DualPrimacyAttractor(
                 user_pa=sample_user_pa,
