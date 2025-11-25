@@ -46,8 +46,7 @@ TELOS (Telemetric Localization of Semantic Intent) is a privacy-preserving AI go
 - **Primacy Attractor (PA)**: A mathematical representation of an AI's intended purpose that creates a gravitational field in semantic space
 - **Fidelity**: Measures how well AI responses align with the Primacy Attractor (0.0-1.0 scale)
 - **Governance Deltas**: Mathematical measurements of AI alignment, NOT conversation content
-- **Privacy Attractor**: Protects user privacy through telemetric encryption
-- **Telemetric Keys**: Cryptographic keys derived from governance measurements that exist only during sessions
+- **Privacy-First Design**: Only metrics are stored, never conversation content
 
 ## Key Principles
 

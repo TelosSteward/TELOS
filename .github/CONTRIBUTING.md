@@ -1,6 +1,6 @@
 # Contributing to TELOS
 
-Thank you for your interest in contributing to TELOS! This project aims to advance AI governance through Statistical Process Control and quantum-resistant cryptography.
+Thank you for your interest in contributing to TELOS! This project aims to advance AI governance through Statistical Process Control and mathematical enforcement.
 
 ## How to Contribute
 
@@ -27,7 +27,6 @@ Thank you for your interest in contributing to TELOS! This project aims to advan
 1. Use the feature request template
 2. Explain how it improves:
    - SPC calibration
-   - Telemetric Keys security
    - System observability
    - Performance metrics
 
@@ -115,14 +114,6 @@ When modifying SPC parameters:
 3. Validate with 1000+ test cases
 4. Update control charts
 5. Verify Cpk > 1.33
-
-### Telemetric Keys
-
-Cryptographic changes require:
-1. Security analysis document
-2. Quantum resistance verification
-3. Performance benchmarks
-4. Backward compatibility plan
 
 ### Architecture Principles
 

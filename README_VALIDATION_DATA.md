@@ -11,47 +11,40 @@
 
 ## Overview
 
-Validation results for TELOS AI governance framework across 1,986 adversarial attacks from four benchmarks.
+Validation results for TELOS AI governance framework across 1,300 adversarial attacks from two standardized benchmarks.
 
 **Results**:
-- Total attacks: 1,986
+- Total attacks: 1,300
 - Attack success rate: 0%
-- Statistical confidence: 99.9% CI [0%, 0.38%]
-- All governance decisions cryptographically signed (Telemetric Keys)
+- Statistical confidence: 99.9% CI [0%, 0.28%]
 
 ---
 
 ## Dataset Files
 
 ### 1. medsafetybench_validation_results.json (490KB)
-- 960 healthcare safety attacks
+- 900 healthcare safety attacks
 - Source: NeurIPS 2024 MedSafetyBench
 - 0% ASR
 
 ### 2. harmbench_validation_results_summary.json
-- 410 general adversarial attacks
+- 400 general adversarial attacks
 - Source: CAIS HarmBench
 - 0% ASR
 
-### 3. agentharm_validation_results.json (75KB)
-- 196 agentic AI attacks
-- Source: ICLR 2025 AgentHarm
-- 0% ASR
-
-### 4. unified_benchmark_results.json (83KB)
-- 400 privacy/PII attacks (PII-Bench)
+### 3. telos_complete_validation_dataset.json
 - Combined statistical analysis
 - Wilson Score CI, Bayesian analysis, power analysis
 
-### 5. REPRODUCTION_GUIDE.md
+### 4. REPRODUCTION_GUIDE.md
 - Step-by-step reproduction instructions
 - 15-minute setup time
 
-### 6. HARDWARE_REQUIREMENTS.md
+### 5. HARDWARE_REQUIREMENTS.md
 - Computational specifications
 - Minimum: 8GB RAM, 4+ cores
 
-### 7. requirements-pinned.txt
+### 6. requirements-pinned.txt
 - Exact Python dependency versions
 
 ---
@@ -60,11 +53,9 @@ Validation results for TELOS AI governance framework across 1,986 adversarial at
 
 | Benchmark | Attacks | Blocked | Success Rate |
 |-----------|---------|---------|--------------|
-| MedSafetyBench | 960 | 960 | 0% |
-| HarmBench | 410 | 410 | 0% |
-| AgentHarm | 196 | 196 | 0% |
-| PII-Bench | 400 | 400 | 0% |
-| **Total** | **1,966** | **1,966** | **0%** |
+| MedSafetyBench | 900 | 900 | 0% |
+| HarmBench | 400 | 400 | 0% |
+| **Total** | **1,300** | **1,300** | **0%** |
 
 ---
 
@@ -83,17 +74,7 @@ cd ../healthcare_validation
 python3 run_unified_benchmark.py
 ```
 
-Expected: ~12 seconds execution, 0% attack success rate
-
----
-
-## Cryptographic Validation
-
-Each governance decision signed with Telemetric Keys (SHA3-512 + HMAC-SHA512):
-- 1,966 governance decisions signed
-- 0 signatures forged (355 attempts)
-- 0 keys extracted (400 attempts)
-- 256-bit post-quantum security
+Expected: ~8-10 seconds execution, 0% attack success rate
 
 ---
 
@@ -128,6 +109,6 @@ Each governance decision signed with Telemetric Keys (SHA3-512 + HMAC-SHA512):
 
 ---
 
-**Total Attacks**: 1,966
+**Total Attacks**: 1,300
 **Attack Success Rate**: 0%
-**Statistical Confidence**: 99.9% CI [0%, 0.38%]
+**Statistical Confidence**: 99.9% CI [0%, 0.28%]

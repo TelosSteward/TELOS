@@ -160,7 +160,7 @@ def test_beta_features():
             print("  • Conversation goal input → PA extraction")
             print("  • Beta progress tracking (days/feedback)")
             print("  • Feedback UI (thumbs up/down)")
-            print("  • Supabase delta transmission")
+            print("  • Backend delta transmission")
             print("  • A/B test metrics collection")
             print("  • 50 feedback / 14 day completion triggers")
             print("  • Steward panel feedback integration")

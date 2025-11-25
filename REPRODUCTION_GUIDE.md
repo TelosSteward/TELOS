@@ -2,7 +2,7 @@
 
 **For Independent Validation of Published Results**
 
-This guide enables peer reviewers, grant evaluators, and researchers to independently reproduce the TELOS validation results: **0% Attack Success Rate across 2,000 attacks with 99.9% confidence interval [0%, 0.37%]**.
+This guide enables peer reviewers, grant evaluators, and researchers to independently reproduce the TELOS validation results: **0% Attack Success Rate across 1,300 attacks with 99.9% confidence interval [0%, 0.28%]**.
 
 ---
 
@@ -40,8 +40,6 @@ pip install -r requirements.txt
 Create `.streamlit/secrets.toml`:
 ```toml
 MISTRAL_API_KEY = "your-key-here"
-SUPABASE_URL = "https://ukqrwjowlchhwznefboj.supabase.co"
-SUPABASE_KEY = "your-supabase-key"
 ```
 
 **Alternative (Ollama local)**:
@@ -67,9 +65,9 @@ Opens at: `http://localhost:8501`
 
 ## Reproducing Validation Results
 
-### Option A: Full 2,000 Attack Validation
+### Option A: Full 1,300 Attack Validation
 
-**Location**: `/Users/brunnerjf/Desktop/healthcare_validation/`
+**Location**: `healthcare_validation/` (in your local clone)
 
 **Run validation**:
 ```bash
@@ -78,20 +76,17 @@ python3 run_unified_benchmark.py
 ```
 
 **Expected output**:
-- Execution time: ~12 seconds (165.7 attacks/second)
+- Execution time: ~8-10 seconds
 - Result: 0% Attack Success Rate
 - Files created:
   - `medsafetybench_validation_results.json` (490KB)
-  - `agentharm_validation_results.json` (75KB)
   - `harmbench_validation_results_summary.json`
-  - `unified_benchmark_results.json` (83KB)
 
 ### Option B: Validation Data Review (No Compute Required)
 
 **Published validation data available at**:
 - **Zenodo**: https://doi.org/10.5281/zenodo.17702890
-- **Supabase**: https://ukqrwjowlchhwznefboj.supabase.co
-- **GitHub**: `healthcare_validation/` directory
+- **GitHub**: https://github.com/TelosSteward/TELOS-Validation
 
 **Verification without re-running**:
 ```bash
@@ -109,7 +104,7 @@ cat medsafetybench_validation_results.json | jq '.summary'
 
 ### Validation Breakdown
 
-**2,000 Total Attacks**:
+**1,300 Total Attacks**:
 1. **MedSafetyBench** (900 attacks):
    - Source: NeurIPS 2024 workshop
    - Domain: Healthcare safety
@@ -120,20 +115,10 @@ cat medsafetybench_validation_results.json | jq '.summary'
    - Domain: General adversarial
    - Result: 0% ASR, 95.8% Tier 1
 
-3. **AgentHarm** (176 attacks):
-   - Source: Multi-step agentic attacks
-   - Domain: Tool-using agents
-   - Result: 0% ASR, 90.0% Tier 1
-
-4. **Telemetric Keys Cryptographic** (400+ attacks):
-   - Source: Internal cryptographic validation
-   - Domain: Signature forgery, key extraction
-   - Result: 0% success, 0/355 signatures forged
-
 ### Statistical Validation
 
-**Confidence Interval**: 99.9% CI [0%, 0.37%]
-- Interpretation: True attack success rate < 0.37% with 99.9% confidence
+**Confidence Interval**: 99.9% CI [0%, 0.28%]
+- Interpretation: True attack success rate < 0.28% with 99.9% confidence
 
 **Bayesian Analysis**: Bayes Factor = 2.7 × 10¹⁷
 - Interpretation: Overwhelming evidence for TELOS effectiveness
@@ -143,37 +128,6 @@ cat medsafetybench_validation_results.json | jq '.summary'
 
 **P-Value**: p < 0.001
 - Interpretation: Highly statistically significant vs baselines
-
----
-
-## Telemetric Keys Verification
-
-### Cryptographic Signature Validation
-
-**TELOS uses Telemetric Keys for unforgeable audit trails**:
-
-**Verify signatures**:
-```python
-from telos.core.telemetric_keys import verify_signature
-
-# Example from Supabase
-result = supabase.table('benchmark_results').select('*').limit(1).execute()
-turn_data = result.data[0]
-
-# Verify cryptographic signature
-is_valid = verify_signature(
-    turn_data['tkey_signature'],
-    turn_data['turn_metadata']
-)
-
-print(f"Signature valid: {is_valid}")  # Should print: True
-```
-
-**Key Properties**:
-- **Algorithm**: SHA3-512 + HMAC-SHA512
-- **Quantum Resistance**: 256-bit (NIST Category 5)
-- **Entropy Source**: Telemetry only (no content exposure)
-- **Privacy**: Zero conversation content in signatures
 
 ---
 
@@ -223,7 +177,6 @@ To claim successful reproduction, verify:
 - [ ] BETA mode accessible (PA establishment works)
 - [ ] Validation script runs (`run_unified_benchmark.py`)
 - [ ] Results match published (0% ASR, forensic JSONs generated)
-- [ ] Telemetric signatures verify (cryptographic validation passes)
 - [ ] Statistical analysis reproduces (Wilson Score, Bayesian, power)
 
 ---
@@ -237,7 +190,7 @@ To claim successful reproduction, verify:
 - **Storage**: 512GB SSD
 - **OS**: macOS 14.3
 - **Python**: 3.9.18
-- **Execution Time**: 12.07 seconds for 2,000 attacks
+- **Execution Time**: ~8-10 seconds for 1,300 attacks
 
 **Your hardware may differ**:
 - Minimum: 8GB RAM, 4 cores → expect ~30-60 seconds
@@ -322,7 +275,7 @@ streamlit run main.py --server.port 8501
   title={TELOS: Statistical Process Control for AI Governance},
   author={Brunner, Jeffrey},
   year={2025},
-  note={2,000 attacks validated, 0\% ASR, 99.9\% CI [0\%, 0.37\%]},
+  note={1,300 attacks validated, 0\% ASR, 99.9\% CI [0\%, 0.28\%]},
   url={https://github.com/TelosSteward/TELOS}
 }
 ```

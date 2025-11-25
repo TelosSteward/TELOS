@@ -10,7 +10,7 @@ Key features:
 - Dual drift calculation (TELOS always calculates, even if Native is served)
 - User feedback collection (thumbs up/down, regenerate)
 - Async Steward interpretation
-- Full logging to Supabase
+- Full logging to backend storage
 """
 
 import streamlit as st
@@ -19,7 +19,7 @@ import logging
 from datetime import datetime
 from typing import Dict, Any, Optional, Tuple
 
-from services.supabase_client import SupabaseService
+from services.backend_client import BackendService
 from services.steward_llm import StewardLLM
 from telos_purpose.llm_clients.mistral_client import MistralClient
 
@@ -37,7 +37,7 @@ class BetaABTesting:
     def __init__(
         self,
         state_manager,
-        supabase_client: Optional[SupabaseService] = None,
+        backend_client: Optional[BackendService] = None,
         required_turns: int = 10
     ):
         """
@@ -45,11 +45,11 @@ class BetaABTesting:
 
         Args:
             state_manager: StateManager instance
-            supabase_client: Optional SupabaseService for logging
+            backend_client: Optional BackendService for logging
             required_turns: Number of turns required for AB phase (default: 10)
         """
         self.state_manager = state_manager
-        self.supabase = supabase_client
+        self.backend = backend_client
         self.required_turns = required_turns
 
         # Initialize Mistral client for Native responses
@@ -278,7 +278,7 @@ class BetaABTesting:
         """
         Generate Steward interpretation asynchronously.
 
-        This runs in the background and updates Supabase when complete.
+        This runs in the background and updates backend storage when complete.
 
         Args:
             session_id: Session UUID
@@ -288,7 +288,7 @@ class BetaABTesting:
             user_pa: User's PA
         """
         try:
-            if not self.steward or not self.supabase:
+            if not self.steward or not self.backend:
                 return
 
             # Generate interpretation
@@ -298,8 +298,8 @@ class BetaABTesting:
                 metrics=metrics
             )
 
-            # Update Supabase
-            self.supabase.update_beta_turn(
+            # Update backend storage
+            self.backend.update_beta_turn(
                 session_id=session_id,
                 turn_number=turn_number,
                 update_data={'steward_interpretation': interpretation}
@@ -310,8 +310,8 @@ class BetaABTesting:
         except Exception as e:
             logger.error(f"Steward interpretation failed: {e}")
             # Log error marker
-            if self.supabase:
-                self.supabase.update_beta_turn(
+            if self.backend:
+                self.backend.update_beta_turn(
                     session_id=session_id,
                     turn_number=turn_number,
                     update_data={'steward_interpretation': '[Interpretation unavailable]'}
@@ -388,9 +388,9 @@ class BetaABTesting:
                 'created_at': datetime.now().isoformat()
             }
 
-            # Log to Supabase
-            if self.supabase:
-                self.supabase.insert_beta_turn(turn_data)
+            # Log to backend storage
+            if self.backend:
+                self.backend.insert_beta_turn(turn_data)
 
                 # Generate Steward interpretation async
                 # (This would be truly async in production - for now, skip async complexity)
@@ -429,8 +429,8 @@ class BetaABTesting:
         try:
             session_id = st.session_state.get('session_id', self.state_manager.state.session_id)
 
-            if self.supabase:
-                self.supabase.update_beta_turn(
+            if self.backend:
+                self.backend.update_beta_turn(
                     session_id=session_id,
                     turn_number=turn_number,
                     update_data={'user_action': feedback_type}
@@ -465,11 +465,11 @@ class BetaABTesting:
             new_system = 'native' if current_system == 'telos' else 'telos'
             new_response = native_response if new_system == 'native' else telos_response
 
-            # Update Supabase
+            # Update backend storage
             session_id = st.session_state.get('session_id', self.state_manager.state.session_id)
 
-            if self.supabase:
-                self.supabase.update_beta_turn(
+            if self.backend:
+                self.backend.update_beta_turn(
                     session_id=session_id,
                     turn_number=turn_number,
                     update_data={

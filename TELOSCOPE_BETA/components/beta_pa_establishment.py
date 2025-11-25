@@ -9,7 +9,7 @@ Flow:
 2. Extract PA components using LLM
 3. Show for confirmation/refinement (Turn 2)
 4. Derive AI PA (hidden during session)
-5. Save to session state and Supabase
+5. Save to session state and backend storage
 """
 
 import streamlit as st
@@ -18,7 +18,7 @@ from datetime import datetime
 from typing import Optional, Dict, Any
 
 from services.pa_extractor import PAExtractor
-from services.supabase_client import SupabaseService
+from services.backend_client import BackendService
 
 logger = logging.getLogger(__name__)
 
@@ -30,16 +30,16 @@ class BetaPAEstablishment:
     Creates user and AI Primacy Attractors in 1-2 turns instead of 5-10.
     """
 
-    def __init__(self, state_manager, supabase_client: Optional[SupabaseService] = None):
+    def __init__(self, state_manager, backend_client: Optional[BackendService] = None):
         """
         Initialize PA establishment component.
 
         Args:
             state_manager: StateManager instance
-            supabase_client: Optional SupabaseClient for logging
+            backend_client: Optional BackendService for logging
         """
         self.state_manager = state_manager
-        self.supabase = supabase_client
+        self.backend = backend_client
         self.extractor = PAExtractor()
 
     def render(self) -> bool:
@@ -270,8 +270,8 @@ class BetaPAEstablishment:
                 st.session_state.ai_pa = ai_pa
                 st.session_state.beta_pa_established = True
 
-                # Create BETA session in Supabase
-                if self.supabase:
+                # Create BETA session in backend storage
+                if self.backend:
                     try:
                         session_id = st.session_state.get('session_id', self.state_manager.state.session_id)
 
@@ -285,12 +285,12 @@ class BetaPAEstablishment:
                             'total_turns': 0
                         }
 
-                        self.supabase.insert_beta_session(session_data)
+                        self.backend.insert_beta_session(session_data)
                         logger.info(f"Created BETA session: {session_id}")
 
                     except Exception as e:
-                        logger.error(f"Failed to create Supabase session: {e}")
-                        # Don't block - session can work without Supabase logging
+                        logger.error(f"Failed to create backend session: {e}")
+                        # Don't block - session can work without backend logging
 
                 # Add to state manager metadata
                 if hasattr(self.state_manager.state, 'metadata'):

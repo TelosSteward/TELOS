@@ -79,9 +79,19 @@ temp/
 *_api_key*
 *_secret*
 credentials.json
+config.json
+
+# Certificates and Private Keys (CRITICAL - never commit)
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
 
 # Streamlit Secrets (CRITICAL - never commit)
 .streamlit/secrets.toml
+secrets.toml
 
 # Custom
 archive/

@@ -7,8 +7,10 @@ for comprehensive platform testing.
 """
 
 from .generate_test_sessions import (
+    set_seed,
     generate_test_session,
     generate_test_suite,
+    generate_session_by_type,
     generate_normal_session,
     generate_high_drift_session,
     generate_excellent_session,
@@ -17,12 +19,22 @@ from .generate_test_sessions import (
     generate_critical_drift_session,
     generate_stable_session,
     generate_oscillating_session,
-    export_sessions
+    export_sessions,
+    SESSION_CONFIGS
+)
+
+from .edge_case_tests import (
+    generate_all_edge_cases,
+    export_edge_cases
 )
 
 __all__ = [
+    # Reproducibility
+    'set_seed',
+    # Session generation
     'generate_test_session',
     'generate_test_suite',
+    'generate_session_by_type',
     'generate_normal_session',
     'generate_high_drift_session',
     'generate_excellent_session',
@@ -31,5 +43,9 @@ __all__ = [
     'generate_critical_drift_session',
     'generate_stable_session',
     'generate_oscillating_session',
-    'export_sessions'
+    'export_sessions',
+    'SESSION_CONFIGS',
+    # Edge cases
+    'generate_all_edge_cases',
+    'export_edge_cases'
 ]

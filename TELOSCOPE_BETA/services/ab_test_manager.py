@@ -183,9 +183,9 @@ class ABTestManager:
             'session_metrics': st.session_state.ab_test_metrics
         }
 
-    def export_metrics_for_supabase(self) -> Dict[str, Any]:
+    def export_metrics_for_backend(self) -> Dict[str, Any]:
         """
-        Export metrics in format suitable for Supabase storage.
+        Export metrics in format suitable for backend storage.
 
         Returns:
             Dictionary ready for database insertion

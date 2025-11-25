@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Quick test to verify TELOSCOPE_BETA app functionality.
-Tests A/B testing, Supabase connection, and core features.
+Tests A/B testing, backend connection, and core features.
 """
 
 import sys
@@ -17,17 +17,17 @@ print(f"  - Observatory Lens experiment: {ab_manager.get_variant('observatory_le
 print(f"  - Intervention style: {ab_manager.get_variant('intervention_style')}")
 print(f"  - Onboarding style: {ab_manager.get_variant('onboarding_style')}")
 
-# Test Supabase Service
-print("\nTesting Supabase Service...")
-from services.supabase_client import get_supabase_service
-supabase = get_supabase_service()
-if supabase.enabled:
-    if supabase.test_connection():
-        print("  ✓ Supabase connection successful")
+# Test Backend Service
+print("\nTesting Backend Service...")
+from services.backend_client import get_backend_service
+backend = get_backend_service()
+if backend.enabled:
+    if backend.test_connection():
+        print("  ✓ Backend connection successful")
     else:
-        print("  ✗ Supabase connection failed")
+        print("  ✗ Backend connection failed")
 else:
-    print("  ✓ Supabase disabled (expected for local testing)")
+    print("  ✓ Backend disabled (expected for local testing)")
 
 # Test Demo Mode Configuration
 print("\nTesting Demo Mode Configuration...")

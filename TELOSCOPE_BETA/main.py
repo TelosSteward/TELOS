@@ -27,7 +27,7 @@ from components.pa_onboarding import PAOnboarding
 from components.steward_panel import StewardPanel
 from components.observatory_lens import ObservatoryLens
 from services.ab_test_manager import get_ab_test_manager
-from services.supabase_client import get_supabase_service
+from services.backend_client import get_backend_service
 from config.colors import GOLD
 
 
@@ -62,9 +62,9 @@ def initialize_session():
         ab_manager.apply_experiment_configs()
         st.session_state.ab_manager = ab_manager
 
-        # Initialize Supabase service
-        supabase = get_supabase_service()
-        st.session_state.supabase = supabase
+        # Initialize backend service for delta storage
+        backend = get_backend_service()
+        st.session_state.backend = backend
 
 
 def check_demo_completion():
@@ -121,12 +121,12 @@ def check_beta_completion():
     if two_weeks_elapsed or fifty_feedbacks:
         st.session_state.beta_completed = True
 
-        # Export A/B test metrics to Supabase before completion
-        if 'ab_manager' in st.session_state and 'supabase' in st.session_state:
+        # Export A/B test metrics to backend before completion
+        if 'ab_manager' in st.session_state and 'backend' in st.session_state:
             try:
-                ab_metrics = st.session_state.ab_manager.export_metrics_for_supabase()
+                ab_metrics = st.session_state.ab_manager.export_metrics_for_backend()
                 # Store A/B test results
-                st.session_state.supabase.transmit_delta({
+                st.session_state.backend.transmit_delta({
                     'session_id': ab_metrics['session_id'],
                     'turn_number': 999,  # Special marker for A/B test results
                     'fidelity_score': 1.0,

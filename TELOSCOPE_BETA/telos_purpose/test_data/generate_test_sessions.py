@@ -7,6 +7,7 @@ for comprehensive platform testing.
 
 Usage:
     python -m telos_purpose.test_data.generate_test_sessions --output test_sessions/
+    python -m telos_purpose.test_data.generate_test_sessions --seed 42  # Reproducible
 """
 
 import json
@@ -14,14 +15,32 @@ import random
 import argparse
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
+
+
+# Global random instance for reproducibility
+_rng = random.Random()
+
+
+def set_seed(seed: Optional[int] = None) -> None:
+    """
+    Set random seed for reproducible test generation.
+
+    Args:
+        seed: Random seed value. If None, uses system entropy.
+    """
+    global _rng
+    if seed is not None:
+        _rng = random.Random(seed)
+    else:
+        _rng = random.Random()
 
 
 def generate_test_turn(
     turn_num: int,
     current_fidelity: float,
     base_timestamp: datetime,
-    intervention: str = None
+    intervention: Optional[str] = None
 ) -> Dict[str, Any]:
     """Generate a single test turn with realistic data."""
 
@@ -54,23 +73,26 @@ def generate_test_turn(
         "Fidelity measurement uses cosine similarity between response embeddings and the attractor center...",
     ]
 
+    user_msg = _rng.choice(user_messages) + f" (Turn {turn_num})"
+    native_resp = _rng.choice(native_responses)
+    telos_resp = _rng.choice(telos_responses) if current_fidelity > 0.65 else native_resp
+
     turn_data = {
         'turn_number': turn_num,
-        'user_input': random.choice(user_messages) + f" (Turn {turn_num})",
-        'user_message': random.choice(user_messages) + f" (Turn {turn_num})",
-        'native_response': random.choice(native_responses),
-        'telos_response': random.choice(telos_responses) if current_fidelity > 0.65 else random.choice(native_responses),
-        'assistant_response': random.choice(telos_responses) if current_fidelity > 0.65 else random.choice(native_responses),
+        'user_message': user_msg,  # Primary field
+        'native_response': native_resp,
+        'telos_response': telos_resp,
+        'assistant_response': telos_resp,  # What was actually delivered
         'fidelity': round(current_fidelity, 3),
         'intervention_applied': intervention is not None,
         'basin_membership': current_fidelity >= 0.80,
         'timestamp': (base_timestamp + timedelta(seconds=turn_num * 30)).isoformat(),
         'governance_metadata': {
             'intervention_type': intervention,
-            'fidelity_original': round(max(0.3, current_fidelity - random.uniform(0.1, 0.2)), 3) if intervention else None,
+            'fidelity_original': round(max(0.3, current_fidelity - _rng.uniform(0.1, 0.2)), 3) if intervention else None,
             'fidelity_governed': round(current_fidelity, 3) if intervention else None,
-            'salience_before': round(random.uniform(0.5, 0.7), 3) if intervention else None,
-            'salience_after': round(random.uniform(0.85, 0.95), 3) if intervention else None,
+            'salience_before': round(_rng.uniform(0.5, 0.7), 3) if intervention else None,
+            'salience_after': round(_rng.uniform(0.85, 0.95), 3) if intervention else None,
             'intervention_applied': intervention is not None
         }
     }
@@ -80,10 +102,11 @@ def generate_test_turn(
 
 def generate_test_session(
     num_turns: int = 10,
-    session_id: str = None,
+    session_id: Optional[str] = None,
     base_fidelity: float = 0.85,
     drift_rate: float = 0.10,
-    intervention_threshold: float = 0.70
+    intervention_threshold: float = 0.70,
+    seed: Optional[int] = None
 ) -> Dict[str, Any]:
     """
     Generate a test session with realistic fidelity patterns.
@@ -94,10 +117,14 @@ def generate_test_session(
         base_fidelity: Starting fidelity score
         drift_rate: Rate of fidelity drift per turn (0.0-1.0)
         intervention_threshold: Threshold for triggering interventions
+        seed: Random seed for reproducibility (optional)
 
     Returns:
         Complete session data dictionary
     """
+    # Set seed if provided for this session
+    if seed is not None:
+        set_seed(seed)
 
     if session_id is None:
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -110,18 +137,18 @@ def generate_test_session(
 
     for turn_num in range(1, num_turns + 1):
         # Simulate natural drift
-        drift = random.uniform(-drift_rate * 0.5, -drift_rate * 1.5)
+        drift = _rng.uniform(-drift_rate * 0.5, -drift_rate * 1.5)
         current_fidelity = max(0.3, current_fidelity + drift)
 
         # Check if intervention needed
         intervention = None
         if current_fidelity < intervention_threshold:
             intervention_types = ['salience_check', 'coupling_check', 'regeneration']
-            intervention = random.choice(intervention_types)
+            intervention = _rng.choice(intervention_types)
             intervention_count += 1
 
             # Intervention boosts fidelity
-            boost = random.uniform(0.15, 0.25)
+            boost = _rng.uniform(0.15, 0.25)
             current_fidelity = min(0.95, current_fidelity + boost)
 
         turn_data = generate_test_turn(
@@ -160,86 +187,119 @@ def generate_test_session(
     return session_data
 
 
-def generate_normal_session() -> Dict[str, Any]:
+# Session type configurations for cleaner code
+SESSION_CONFIGS = {
+    'normal': {
+        'num_turns': 15,
+        'session_id': 'normal_session_001',
+        'base_fidelity': 0.85,
+        'drift_rate': 0.10,
+        'intervention_threshold': 0.70
+    },
+    'high_drift': {
+        'num_turns': 20,
+        'session_id': 'high_drift_session_001',
+        'base_fidelity': 0.70,
+        'drift_rate': 0.20,
+        'intervention_threshold': 0.65
+    },
+    'excellent': {
+        'num_turns': 12,
+        'session_id': 'excellent_session_001',
+        'base_fidelity': 0.92,
+        'drift_rate': 0.05,
+        'intervention_threshold': 0.80
+    },
+    'long': {
+        'num_turns': 50,
+        'session_id': 'long_session_001',
+        'base_fidelity': 0.88,
+        'drift_rate': 0.08,
+        'intervention_threshold': 0.72
+    },
+    'short': {
+        'num_turns': 3,
+        'session_id': 'short_session_001',
+        'base_fidelity': 0.90,
+        'drift_rate': 0.12,
+        'intervention_threshold': 0.70
+    },
+    'critical_drift': {
+        'num_turns': 18,
+        'session_id': 'critical_drift_session_001',
+        'base_fidelity': 0.65,
+        'drift_rate': 0.25,
+        'intervention_threshold': 0.60
+    },
+    'stable': {
+        'num_turns': 25,
+        'session_id': 'stable_session_001',
+        'base_fidelity': 0.95,
+        'drift_rate': 0.03,
+        'intervention_threshold': 0.85
+    }
+}
+
+
+def generate_session_by_type(session_type: str, seed: Optional[int] = None) -> Dict[str, Any]:
+    """
+    Generate a session by type name.
+
+    Args:
+        session_type: One of 'normal', 'high_drift', 'excellent', 'long', 'short', 'critical_drift', 'stable'
+        seed: Random seed for reproducibility
+
+    Returns:
+        Session data dictionary
+    """
+    if session_type not in SESSION_CONFIGS:
+        raise ValueError(f"Unknown session type: {session_type}. Valid types: {list(SESSION_CONFIGS.keys())}")
+
+    config = SESSION_CONFIGS[session_type].copy()
+    config['seed'] = seed
+    return generate_test_session(**config)
+
+
+def generate_normal_session(seed: Optional[int] = None) -> Dict[str, Any]:
     """Generate a typical session with moderate drift and interventions."""
-    return generate_test_session(
-        num_turns=15,
-        session_id='normal_session_001',
-        base_fidelity=0.85,
-        drift_rate=0.10,
-        intervention_threshold=0.70
-    )
+    return generate_session_by_type('normal', seed)
 
 
-def generate_high_drift_session() -> Dict[str, Any]:
+def generate_high_drift_session(seed: Optional[int] = None) -> Dict[str, Any]:
     """Generate a session with high drift requiring frequent interventions."""
-    return generate_test_session(
-        num_turns=20,
-        session_id='high_drift_session_001',
-        base_fidelity=0.70,
-        drift_rate=0.20,
-        intervention_threshold=0.65
-    )
+    return generate_session_by_type('high_drift', seed)
 
 
-def generate_excellent_session() -> Dict[str, Any]:
+def generate_excellent_session(seed: Optional[int] = None) -> Dict[str, Any]:
     """Generate a session with minimal drift and high fidelity."""
-    return generate_test_session(
-        num_turns=12,
-        session_id='excellent_session_001',
-        base_fidelity=0.92,
-        drift_rate=0.05,
-        intervention_threshold=0.80
-    )
+    return generate_session_by_type('excellent', seed)
 
 
-def generate_long_session() -> Dict[str, Any]:
+def generate_long_session(seed: Optional[int] = None) -> Dict[str, Any]:
     """Generate a long conversation session."""
-    return generate_test_session(
-        num_turns=50,
-        session_id='long_session_001',
-        base_fidelity=0.88,
-        drift_rate=0.08,
-        intervention_threshold=0.72
-    )
+    return generate_session_by_type('long', seed)
 
 
-def generate_short_session() -> Dict[str, Any]:
+def generate_short_session(seed: Optional[int] = None) -> Dict[str, Any]:
     """Generate a short conversation session."""
-    return generate_test_session(
-        num_turns=3,
-        session_id='short_session_001',
-        base_fidelity=0.90,
-        drift_rate=0.12,
-        intervention_threshold=0.70
-    )
+    return generate_session_by_type('short', seed)
 
 
-def generate_critical_drift_session() -> Dict[str, Any]:
+def generate_critical_drift_session(seed: Optional[int] = None) -> Dict[str, Any]:
     """Generate a session with critical drift requiring immediate intervention."""
-    return generate_test_session(
-        num_turns=18,
-        session_id='critical_drift_session_001',
-        base_fidelity=0.65,
-        drift_rate=0.25,
-        intervention_threshold=0.60
-    )
+    return generate_session_by_type('critical_drift', seed)
 
 
-def generate_stable_session() -> Dict[str, Any]:
+def generate_stable_session(seed: Optional[int] = None) -> Dict[str, Any]:
     """Generate a highly stable session with minimal interventions."""
-    return generate_test_session(
-        num_turns=25,
-        session_id='stable_session_001',
-        base_fidelity=0.95,
-        drift_rate=0.03,
-        intervention_threshold=0.85
-    )
+    return generate_session_by_type('stable', seed)
 
 
-def generate_oscillating_session() -> Dict[str, Any]:
+def generate_oscillating_session(seed: Optional[int] = None) -> Dict[str, Any]:
     """Generate a session with oscillating fidelity (drift and recovery cycles)."""
-    # Custom logic for oscillating pattern
+    if seed is not None:
+        set_seed(seed)
+
     session_id = 'oscillating_session_001'
     base_timestamp = datetime.now()
     turns = []
@@ -289,21 +349,33 @@ def generate_oscillating_session() -> Dict[str, Any]:
     }
 
 
-def generate_test_suite() -> List[Dict[str, Any]]:
-    """Generate a comprehensive suite of diverse test sessions."""
+def generate_test_suite(seed: Optional[int] = None) -> List[Dict[str, Any]]:
+    """
+    Generate a comprehensive suite of diverse test sessions.
 
+    Args:
+        seed: Base random seed for reproducibility. Each session gets seed+index.
+
+    Returns:
+        List of session data dictionaries
+    """
     print("Generating test session suite...")
 
-    test_sessions = [
-        generate_normal_session(),
-        generate_high_drift_session(),
-        generate_excellent_session(),
-        generate_long_session(),
-        generate_short_session(),
-        generate_critical_drift_session(),
-        generate_stable_session(),
-        generate_oscillating_session(),
+    generators = [
+        generate_normal_session,
+        generate_high_drift_session,
+        generate_excellent_session,
+        generate_long_session,
+        generate_short_session,
+        generate_critical_drift_session,
+        generate_stable_session,
+        generate_oscillating_session,
     ]
+
+    test_sessions = []
+    for i, generator in enumerate(generators):
+        session_seed = (seed + i) if seed is not None else None
+        test_sessions.append(generator(seed=session_seed))
 
     print(f"Generated {len(test_sessions)} test sessions")
 
@@ -369,22 +441,35 @@ def main():
         default=None,
         help='Generate N random sessions (in addition to standard suite)'
     )
+    parser.add_argument(
+        '--seed',
+        type=int,
+        default=None,
+        help='Random seed for reproducibility'
+    )
 
     args = parser.parse_args()
 
+    # Set global seed if provided
+    if args.seed is not None:
+        set_seed(args.seed)
+        print(f"Using random seed: {args.seed} (reproducible)")
+
     # Generate standard test suite
-    sessions = generate_test_suite()
+    sessions = generate_test_suite(seed=args.seed)
 
     # Generate additional random sessions if requested
     if args.count:
         print(f"\nGenerating {args.count} additional random sessions...")
         for i in range(args.count):
+            session_seed = (args.seed + 100 + i) if args.seed is not None else None
             session = generate_test_session(
-                num_turns=random.randint(5, 30),
+                num_turns=_rng.randint(5, 30),
                 session_id=f'random_session_{i+1:03d}',
-                base_fidelity=random.uniform(0.70, 0.95),
-                drift_rate=random.uniform(0.05, 0.20),
-                intervention_threshold=random.uniform(0.65, 0.80)
+                base_fidelity=_rng.uniform(0.70, 0.95),
+                drift_rate=_rng.uniform(0.05, 0.20),
+                intervention_threshold=_rng.uniform(0.65, 0.80),
+                seed=session_seed
             )
             sessions.append(session)
 
@@ -393,6 +478,8 @@ def main():
 
     print(f"\n✓ Test data generation complete!")
     print(f"  Generated {len(sessions)} sessions in {args.output}/")
+    if args.seed is not None:
+        print(f"  Reproducible with --seed {args.seed}")
 
 
 if __name__ == '__main__':

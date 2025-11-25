@@ -1,47 +1,76 @@
 """
-Supabase Client Service for TELOS Observatory V3.
+Backend Client Service for TELOS Observatory V3.
 Handles delta-only transmission to research database.
 NO conversation content is ever transmitted.
+
+This module provides an abstract interface for backend data storage.
+Configure your own backend service via environment variables or secrets.
 """
 
 import streamlit as st
-from supabase import create_client, Client
 from typing import Dict, Any, Optional
 from datetime import datetime
 import uuid
+import os
 
 
-class SupabaseService:
-    """Service for transmitting governance deltas to Supabase (privacy-preserving)."""
+class BackendService:
+    """
+    Service for transmitting governance deltas to backend storage (privacy-preserving).
+
+    This is an abstract interface that can connect to any backend service.
+    The default implementation uses Supabase, but can be adapted to any
+    database or API service that supports the required operations.
+
+    Privacy Guarantee: Only governance METRICS are transmitted, never conversation content.
+    """
 
     def __init__(self):
-        """Initialize Supabase client from Streamlit secrets."""
-        self.client: Optional[Client] = None
+        """Initialize backend client from Streamlit secrets or environment."""
+        self.client: Optional[Any] = None
         self.enabled = False
         self._initialize_client()
 
     def _initialize_client(self):
-        """Initialize Supabase client if credentials are available."""
+        """Initialize backend client if credentials are available."""
         try:
-            # Check if Supabase credentials exist in secrets
-            if hasattr(st, 'secrets') and 'SUPABASE_URL' in st.secrets and 'SUPABASE_KEY' in st.secrets:
-                url = st.secrets['SUPABASE_URL']
-                key = st.secrets['SUPABASE_KEY']
+            # Check for backend credentials in secrets or environment
+            backend_url = None
+            backend_key = None
 
-                self.client = create_client(url, key)
-                self.enabled = True
-                print("✓ Supabase client initialized successfully")
+            # Try Streamlit secrets first
+            if hasattr(st, 'secrets'):
+                backend_url = st.secrets.get('BACKEND_URL') or st.secrets.get('SUPABASE_URL')
+                backend_key = st.secrets.get('BACKEND_KEY') or st.secrets.get('SUPABASE_KEY')
+
+            # Fall back to environment variables
+            if not backend_url:
+                backend_url = os.getenv('BACKEND_URL') or os.getenv('SUPABASE_URL')
+            if not backend_key:
+                backend_key = os.getenv('BACKEND_KEY') or os.getenv('SUPABASE_KEY')
+
+            if backend_url and backend_key:
+                # Initialize the backend client
+                # Using Supabase as default implementation
+                try:
+                    from supabase import create_client, Client
+                    self.client = create_client(backend_url, backend_key)
+                    self.enabled = True
+                    print("✓ Backend client initialized successfully")
+                except ImportError:
+                    print("⚠ Supabase package not installed - delta transmission disabled")
+                    self.enabled = False
             else:
-                print("⚠ Supabase credentials not found - delta transmission disabled")
+                print("⚠ Backend credentials not found - delta transmission disabled")
                 self.enabled = False
 
         except Exception as e:
-            print(f"⚠ Failed to initialize Supabase client: {e}")
+            print(f"⚠ Failed to initialize backend client: {e}")
             self.enabled = False
 
     def transmit_delta(self, delta_data: Dict[str, Any]) -> bool:
         """
-        Transmit a single governance delta to Supabase.
+        Transmit a single governance delta to backend storage.
 
         Args:
             delta_data: Dictionary containing governance metrics (NO content)
@@ -129,15 +158,6 @@ class SupabaseService:
         Args:
             session_id: Session UUID
             summary_data: Dictionary containing session-level aggregated metrics
-                Optional fields:
-                - mode: String ('demo', 'beta', 'open')
-                - total_turns: Integer
-                - avg_fidelity_score: Float
-                - min_fidelity_score: Float
-                - max_fidelity_score: Float
-                - total_interventions: Integer
-                - beta_consent_given: Boolean
-                - beta_consent_timestamp: ISO timestamp string
 
         Returns:
             bool: True if successful, False otherwise
@@ -146,14 +166,12 @@ class SupabaseService:
             return False
 
         try:
-            # Prepare data for upsert
             upsert_data = {
                 'session_id': str(session_id),
                 **summary_data,
                 'updated_at': datetime.now().isoformat()
             }
 
-            # Upsert (insert or update)
             result = self.client.table('session_summaries').upsert(upsert_data).execute()
 
             if result.data:
@@ -227,7 +245,6 @@ class SupabaseService:
             return False
 
         try:
-            # Build lifecycle update
             update_data = {
                 'session_id': str(session_id),
                 'turn_number': turn_number,
@@ -239,11 +256,9 @@ class SupabaseService:
             if error_message:
                 update_data['error_message'] = error_message
 
-            # Merge in any governance metrics if provided
             if delta_data:
                 update_data.update(delta_data)
 
-            # Use upsert to create or update based on session_id + turn_number
             result = self.client.table('governance_deltas')\
                 .upsert(update_data, on_conflict='session_id,turn_number')\
                 .execute()
@@ -260,17 +275,7 @@ class SupabaseService:
             return False
 
     def initiate_turn(self, session_id: uuid.UUID, turn_number: int, mode: str) -> bool:
-        """
-        Mark turn as initiated - first lifecycle event.
-
-        Args:
-            session_id: Session UUID
-            turn_number: Turn number
-            mode: Operating mode ('demo', 'beta', 'open')
-
-        Returns:
-            bool: True if successful
-        """
+        """Mark turn as initiated - first lifecycle event."""
         return self.update_turn_lifecycle(
             session_id=session_id,
             turn_number=turn_number,
@@ -278,68 +283,40 @@ class SupabaseService:
             stage='Turn initiated - awaiting user input',
             delta_data={
                 'mode': mode,
-                'fidelity_score': 1.0,  # Initial perfect fidelity
-                'distance_from_pa': 0.0  # Initial zero distance
+                'fidelity_score': 1.0,
+                'distance_from_pa': 0.0
             }
         )
 
     def mark_calculating_pa(self, session_id: uuid.UUID, turn_number: int) -> bool:
-        """
-        Mark turn as calculating Primacy Attractor distance.
-
-        Args:
-            session_id: Session UUID
-            turn_number: Turn number
-
-        Returns:
-            bool: True if successful
-        """
+        """Mark turn as calculating Primacy Attractor distance."""
         return self.update_turn_lifecycle(
             session_id=session_id,
             turn_number=turn_number,
             status='calculating_pa',
             stage='Computing distance from Primacy Attractor',
             delta_data={
-                'fidelity_score': 1.0,  # Placeholder until calculated
-                'distance_from_pa': 0.0  # Placeholder until calculated
+                'fidelity_score': 1.0,
+                'distance_from_pa': 0.0
             }
         )
 
     def mark_evaluating(self, session_id: uuid.UUID, turn_number: int) -> bool:
-        """
-        Mark turn as evaluating governance metrics.
-
-        Args:
-            session_id: Session UUID
-            turn_number: Turn number
-
-        Returns:
-            bool: True if successful
-        """
+        """Mark turn as evaluating governance metrics."""
         return self.update_turn_lifecycle(
             session_id=session_id,
             turn_number=turn_number,
             status='evaluating',
             stage='Running governance evaluation',
             delta_data={
-                'fidelity_score': 1.0,  # Placeholder until evaluated
-                'distance_from_pa': 0.0  # Placeholder until evaluated
+                'fidelity_score': 1.0,
+                'distance_from_pa': 0.0
             }
         )
 
     def complete_turn(self, session_id: uuid.UUID, turn_number: int,
                      final_delta: Dict[str, Any]) -> bool:
-        """
-        Mark turn as completed with final governance metrics.
-
-        Args:
-            session_id: Session UUID
-            turn_number: Turn number
-            final_delta: Final governance metrics
-
-        Returns:
-            bool: True if successful
-        """
+        """Mark turn as completed with final governance metrics."""
         return self.update_turn_lifecycle(
             session_id=session_id,
             turn_number=turn_number,
@@ -350,18 +327,7 @@ class SupabaseService:
 
     def fail_turn(self, session_id: uuid.UUID, turn_number: int,
                  error_message: str, stage: str) -> bool:
-        """
-        Mark turn as failed with error details.
-
-        Args:
-            session_id: Session UUID
-            turn_number: Turn number
-            error_message: Error description
-            stage: Stage where failure occurred
-
-        Returns:
-            bool: True if successful
-        """
+        """Mark turn as failed with error details."""
         return self.update_turn_lifecycle(
             session_id=session_id,
             turn_number=turn_number,
@@ -371,15 +337,7 @@ class SupabaseService:
         )
 
     def insert_beta_session(self, session_data: Dict[str, Any]) -> bool:
-        """
-        Create a new BETA session record.
-
-        Args:
-            session_data: Session data including user_pa_config, ai_pa_config, etc.
-
-        Returns:
-            bool: True if successful
-        """
+        """Create a new BETA session record."""
         if not self.enabled:
             return False
 
@@ -398,15 +356,7 @@ class SupabaseService:
             return False
 
     def insert_beta_turn(self, turn_data: Dict[str, Any]) -> bool:
-        """
-        Create a new BETA turn record.
-
-        Args:
-            turn_data: Turn data including session_id, turn_number, metrics, etc.
-
-        Returns:
-            bool: True if successful
-        """
+        """Create a new BETA turn record."""
         if not self.enabled:
             return False
 
@@ -426,17 +376,7 @@ class SupabaseService:
 
     def update_beta_turn(self, session_id: str, turn_number: int,
                         update_data: Dict[str, Any]) -> bool:
-        """
-        Update an existing BETA turn record.
-
-        Args:
-            session_id: Session UUID
-            turn_number: Turn number
-            update_data: Fields to update (e.g., steward_interpretation, user_action)
-
-        Returns:
-            bool: True if successful
-        """
+        """Update an existing BETA turn record."""
         if not self.enabled:
             return False
 
@@ -459,15 +399,7 @@ class SupabaseService:
             return False
 
     def get_beta_session(self, session_id: str) -> Optional[Dict[str, Any]]:
-        """
-        Retrieve BETA session data.
-
-        Args:
-            session_id: Session UUID
-
-        Returns:
-            Session data dictionary or None if not found
-        """
+        """Retrieve BETA session data."""
         if not self.enabled:
             return None
 
@@ -490,15 +422,7 @@ class SupabaseService:
             return None
 
     def get_beta_turns(self, session_id: str) -> list:
-        """
-        Retrieve all turns for a BETA session.
-
-        Args:
-            session_id: Session UUID
-
-        Returns:
-            List of turn data dictionaries (ordered by turn_number)
-        """
+        """Retrieve all turns for a BETA session."""
         if not self.enabled:
             return []
 
@@ -521,16 +445,7 @@ class SupabaseService:
             return []
 
     def complete_beta_session(self, session_id: str, total_turns: int) -> bool:
-        """
-        Mark BETA session as completed.
-
-        Args:
-            session_id: Session UUID
-            total_turns: Final turn count
-
-        Returns:
-            bool: True if successful
-        """
+        """Mark BETA session as completed."""
         if not self.enabled:
             return False
 
@@ -538,7 +453,7 @@ class SupabaseService:
             update_data = {
                 'completed_at': datetime.now().isoformat(),
                 'total_turns': total_turns,
-                'phase_1_complete': True  # At minimum, phase 1 is complete
+                'phase_1_complete': True
             }
 
             result = self.client.table('beta_sessions')\
@@ -558,33 +473,33 @@ class SupabaseService:
             return False
 
     def test_connection(self) -> bool:
-        """
-        Test Supabase connection.
-
-        Returns:
-            bool: True if connection working, False otherwise
-        """
+        """Test backend connection."""
         if not self.enabled:
-            print("❌ Supabase not enabled")
+            print("❌ Backend not enabled")
             return False
 
         try:
-            # Try to query session_summaries table (should be empty initially)
             result = self.client.table('session_summaries').select('session_id').limit(1).execute()
-            print("✓ Supabase connection test successful")
+            print("✓ Backend connection test successful")
             return True
 
         except Exception as e:
-            print(f"❌ Supabase connection test failed: {e}")
+            print(f"❌ Backend connection test failed: {e}")
             return False
 
 
 # Singleton instance
-_supabase_service = None
+_backend_service = None
 
-def get_supabase_service() -> SupabaseService:
-    """Get or create singleton Supabase service instance."""
-    global _supabase_service
-    if _supabase_service is None:
-        _supabase_service = SupabaseService()
-    return _supabase_service
+
+def get_backend_service() -> BackendService:
+    """Get or create singleton backend service instance."""
+    global _backend_service
+    if _backend_service is None:
+        _backend_service = BackendService()
+    return _backend_service
+
+
+# Backwards compatibility aliases
+SupabaseService = BackendService
+get_supabase_service = get_backend_service

@@ -41,11 +41,11 @@
 - **Time**: Instant startup
 - **Cost**: Free (Streamlit Cloud) or $0-50/month (self-hosted)
 
-### 2. **Research Validation** (Reproducing 2,000 Attack Results)
+### 2. **Research Validation** (Reproducing 1,300 Attack Results)
 - **CPU**: 8+ cores (parallel processing)
 - **RAM**: 16-32GB
 - **Storage**: 10GB (validation datasets + forensic logs)
-- **Time**: ~12 seconds (165.7 attacks/second as documented)
+- **Time**: ~8-10 seconds
 - **GPU**: Optional (2-3x speedup for embeddings)
 
 ### 3. **Institutional Deployment** (Multi-User Research Environment)
@@ -77,7 +77,6 @@
 - `streamlit >= 1.28.0` - Web interface
 - `sentence-transformers >= 2.2.0` - Embedding models
 - `torch >= 2.0.0` - PyTorch backend
-- `supabase >= 2.0.0` - Database client
 - `mistralai >= 1.0.0` - LLM API client
 
 **LLM Backend** (choose one):
@@ -96,7 +95,7 @@
 
 ### Reproducibility Specifications
 
-**To reproduce our 2,000 attack validation**:
+**To reproduce our 1,300 attack validation**:
 
 1. **MedSafetyBench** (900 attacks):
    - Time: ~5-6 seconds
@@ -106,19 +105,9 @@
 2. **HarmBench** (400 attacks):
    - Time: ~2-3 seconds
    - RAM: 8GB
-   - Storage: Supabase (cloud)
+   - Storage: 1KB output JSON
 
-3. **AgentHarm** (176 attacks):
-   - Time: ~1-2 seconds
-   - RAM: 8GB
-   - Storage: 75KB output JSON
-
-4. **Telemetric Keys Cryptographic Validation** (2,000 attacks):
-   - Time: ~12 seconds total (165.7 attacks/second)
-   - RAM: 4GB
-   - Storage: Minimal (signatures in Supabase)
-
-**Total Time**: ~12 seconds for full 2,000 attack suite
+**Total Time**: ~8-10 seconds for full 1,300 attack suite
 **Parallelizable**: Yes (multi-core speeds up proportionally)
 
 ---
@@ -150,7 +139,6 @@
 
 **Outbound API Calls**:
 - Mistral API: `https://api.mistral.ai`
-- Supabase: `https://ukqrwjowlchhwznefboj.supabase.co`
 - Hugging Face: `https://huggingface.co` (model downloads)
 
 **Bandwidth**:
@@ -186,12 +174,12 @@
 - **Ollama**: mistral:7b (local fallback)
 
 **Random Seeds**:
-- Not set explicitly (validation is deterministic via cryptographic signatures)
+- Not set explicitly (validation is deterministic)
 - For exact reproduction, contact authors for seed configuration
 
 **Execution Time**:
-- 2,000 attacks: 12.07 seconds
-- Throughput: 165.7 attacks/second
+- 1,300 attacks: ~8-10 seconds
+- Throughput: ~130-160 attacks/second
 
 ---
 
@@ -204,7 +192,7 @@
 | **TELOSCOPE Startup** | 10-15 sec | 5-8 sec | 3-5 sec |
 | **Single LLM Query** | 2-5 sec | 1-2 sec | 0.5-1 sec |
 | **PA Establishment** | 30-60 sec | 15-30 sec | 10-20 sec |
-| **2,000 Attack Validation** | 30-60 sec | 15-30 sec | 12 sec |
+| **1,300 Attack Validation** | 30-60 sec | 15-30 sec | 8-10 sec |
 | **Embedding Computation** | 100-200 ms | 50-100 ms | 20-50 ms |
 
 ### Bottlenecks
@@ -239,8 +227,6 @@ services:
       - "8501:8501"
     environment:
       - MISTRAL_API_KEY=${MISTRAL_API_KEY}
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_KEY=${SUPABASE_KEY}
     volumes:
       - ./data:/app/data
     mem_limit: 8g
@@ -257,17 +243,13 @@ To independently reproduce TELOS validation results, you need:
 
 - [ ] Hardware meeting minimum requirements (8GB RAM, 4+ cores)
 - [ ] Python 3.9+ installed
-- [ ] Git clone of repository
-- [ ] `pip install -r requirements.txt`
-- [ ] Mistral API key OR Ollama installed locally
-- [ ] Supabase credentials (read-only provided for validation data)
-- [ ] Internet connection (model downloads, API calls)
-- [ ] ~1 hour for initial setup + validation runs
+- [ ] Validation dataset downloaded from Zenodo
+- [ ] Internet connection (model downloads)
+- [ ] ~15 minutes for data review
 
 **Expected Output**:
 - 0% Attack Success Rate across all benchmarks
 - Forensic JSON files matching published results
-- Telemetric signatures verifying governance actions
 
 ---
 

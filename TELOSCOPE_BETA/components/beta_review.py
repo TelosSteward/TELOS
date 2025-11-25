@@ -3,7 +3,7 @@ Beta Review Component
 =====================
 
 Post-session review interface for BETA testing.
-Loads BETA data from Supabase and displays it using existing Observatory components.
+Loads BETA data from backend storage and displays it using existing Observatory components.
 
 Key features:
 - Loads completed BETA session data
@@ -17,7 +17,7 @@ import streamlit as st
 import logging
 from typing import Dict, Any, Optional, List
 
-from services.supabase_client import SupabaseService
+from services.backend_client import BackendService
 from components.observation_deck import ObservationDeck
 from components.observatory_lens import ObservatoryLens
 
@@ -31,18 +31,20 @@ class BetaReview:
     Uses existing Observatory components to display BETA session data.
     """
 
-    def __init__(self, supabase_client: Optional[SupabaseService] = None):
+    def __init__(self, backend_client: Optional[BackendService] = None, state_manager=None):
         """
         Initialize BETA review component.
 
         Args:
-            supabase_client: SupabaseService instance for data retrieval
+            backend_client: BackendService instance for data retrieval
+            state_manager: StateManager instance for Observatory components
         """
-        self.supabase = supabase_client
+        self.backend = backend_client
+        self.state_manager = state_manager
 
     def load_beta_session(self, session_id: str) -> Optional[Dict[str, Any]]:
         """
-        Load BETA session data from Supabase.
+        Load BETA session data from backend storage.
 
         Args:
             session_id: Session UUID
@@ -50,19 +52,19 @@ class BetaReview:
         Returns:
             Session data formatted for Observatory, or None if not found
         """
-        if not self.supabase:
-            logger.error("Supabase client not available")
+        if not self.backend:
+            logger.error("Backend client not available")
             return None
 
         try:
             # Fetch session metadata
-            session_data = self.supabase.get_beta_session(session_id)
+            session_data = self.backend.get_beta_session(session_id)
             if not session_data:
                 logger.error(f"Session not found: {session_id}")
                 return None
 
             # Fetch all turns
-            turns_data = self.supabase.get_beta_turns(session_id)
+            turns_data = self.backend.get_beta_turns(session_id)
             if not turns_data:
                 logger.warning(f"No turns found for session {session_id}")
 

@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an enhancement for TELOS or Telemetric Keys
+about: Suggest an enhancement for TELOS governance framework
 title: '[FEATURE] '
 labels: enhancement
 assignees: ''
@@ -17,7 +17,6 @@ A clear and concise description of what you want to happen.
 - [ ] Security enhancement
 - [ ] Performance improvement
 - [ ] SPC calibration refinement
-- [ ] Telemetric Keys enhancement
 - [ ] Observability improvement
 - [ ] Other:
 

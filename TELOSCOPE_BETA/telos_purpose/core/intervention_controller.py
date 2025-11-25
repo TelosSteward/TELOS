@@ -1,6 +1,3 @@
-## Intervention_Controller.py
-
-```python
 """
 Mathematical intervention controller for TELOS.
 
@@ -327,13 +324,3 @@ class MathematicalInterventionController:
                 "constraint_tolerance": self.attractor.constraint_tolerance
             }
         }
-
-## Key Changes
-
-1. **Thresholds now scale with tolerance**: `epsilon_min = 0.1 + (tolerance × 0.3)`, `epsilon_max = 0.5 + (tolerance × 0.4)`
-1. **Intervention strength uses rigidity**: `rigidity = 1.0 - tolerance`, then `strength = rigidity × error × gain`
-1. **Meta-detection updated**: Added "primacy attractor" and "constraint tolerance" to meta indicators
-1. **Statistics include tolerance**: Added threshold values and tolerance to telemetry output
-1. **Documentation updated**: All comments reflect tolerance semantics
-
-The controller now correctly interprets low tolerance as stricter enforcement with earlier interventions.

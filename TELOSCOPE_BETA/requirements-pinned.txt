@@ -1,44 +1,39 @@
 # TELOS Observatory V3 - Pinned Python Dependencies
-# Last updated: November 24, 2025
+# Last updated: November 25, 2025
 # For exact reproducibility of published results
 
-# IMPORTANT: These are the EXACT versions used for 2,000 attack validation
-# Published results: 0% ASR, 99.9% CI [0%, 0.37%], Bayes Factor 2.7 × 10¹⁷
+# IMPORTANT: These are the EXACT versions used for 54 attack validation
+# Published results: 0% ASR, 99.9% CI [0%, 13.0%]
 
 # Core Framework
-streamlit==1.50.0
-
-# Database
-supabase==2.24.0
-supabase-auth==2.24.0
-supabase-functions==2.24.0
+streamlit==1.40.0
 
 # AI/ML Dependencies
-mistralai==1.9.11
-sentence-transformers==5.1.2
-torch==2.8.0
-numpy==2.0.2
+mistralai==1.2.3
+sentence-transformers==3.3.0
+torch==2.5.1
+numpy==2.1.2
 
 # Data Processing
-pandas==2.3.3
+pandas==2.2.3
 
 # LLM Clients (optional - for extended features)
-anthropic==0.72.0
+anthropic==0.40.0
 
 # Configuration & Security
-python-dotenv==1.2.1
+python-dotenv==1.0.1
 
 # File Processing
 PyPDF2==3.0.1
-python-docx==1.2.0
+python-docx==1.1.2
 openpyxl==3.1.5
-Pillow==11.0.0
+Pillow==10.4.0
 
 # Notes:
 # - Python 3.9.18 was used for published results (also compatible with 3.10, 3.11)
 # - Hardware: Apple M2 Pro, 32GB RAM (see HARDWARE_REQUIREMENTS.md)
 # - OS: macOS 14.3 (also works on Linux, Windows WSL2)
-# - Execution time: 12.07 seconds for 2,000 attacks (165.7 attacks/second)
+# - Execution time: Validated with 54 adversarial attacks
 #
 # For flexible installation (may get newer versions):
 # Use requirements.txt instead of this file

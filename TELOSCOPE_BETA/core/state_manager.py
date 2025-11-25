@@ -550,12 +550,11 @@ class StateManager:
                         except (KeyError, FileNotFoundError):
                             pass
 
-                    # Debug logging
-                    if mistral_api_key:
-                        logger.info(f"Found MISTRAL_API_KEY: {mistral_api_key[:10]}... (length: {len(mistral_api_key)})")
-                    else:
+                    if not mistral_api_key:
                         logger.error("MISTRAL_API_KEY not found in environment or secrets")
                         raise ValueError("MISTRAL_API_KEY not found in secrets or environment")
+
+                    logger.info("MISTRAL_API_KEY found and validated")
 
                     # TODO: Future PIP feature - API key will become user identity/auth
 
@@ -830,12 +829,12 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                             except Exception as e:
                                 logger.debug(f"PS calculation failed in beta: {e}")
 
-                        # Transmit deltas to Supabase (privacy-preserving)
+                        # Transmit deltas to backend (privacy-preserving)
                         try:
-                            from telos_observatory_v3.services.supabase_client import get_supabase_service
-                            supabase = get_supabase_service()
+                            from services.backend_client import get_backend_service
+                            backend = get_backend_service()
 
-                            if supabase.enabled:
+                            if backend.enabled:
                                 session_id = st.session_state.get('session_id')
                                 delta_data = {
                                     'session_id': str(session_id),
@@ -851,9 +850,9 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                                     # Add PS metrics if available
                                     **ps_metrics_for_delta
                                 }
-                                supabase.transmit_delta(delta_data)
+                                backend.transmit_delta(delta_data)
                         except Exception as e:
-                            logger.warning(f"Failed to transmit delta to Supabase: {e}")
+                            logger.warning(f"Failed to transmit delta to backend: {e}")
                         logger.info("✓ Beta data stored in turn metadata")
                     else:
                         # Beta dual-response failed, fall back to standard flow
@@ -1186,12 +1185,11 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                     except (KeyError, FileNotFoundError):
                         pass
 
-                # Debug logging
-                if mistral_api_key:
-                    logger.info(f"Found MISTRAL_API_KEY: {mistral_api_key[:10]}... (length: {len(mistral_api_key)})")
-                else:
+                if not mistral_api_key:
                     logger.error("MISTRAL_API_KEY not found in environment or secrets")
                     raise ValueError("MISTRAL_API_KEY not found in secrets or environment")
+
+                logger.info("MISTRAL_API_KEY found and validated")
 
                 mistral_client = MistralClient(
                     api_key=mistral_api_key,

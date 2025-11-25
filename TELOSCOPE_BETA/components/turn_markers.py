@@ -25,13 +25,13 @@ def render_turn_marker(turn_number: int, mode: str = "beta") -> str:
     """
     # Different colors based on mode
     color_scheme = {
-        "demo": "{GOLD}",  # Gold for demo
+        "demo": GOLD,  # Gold for demo
         "beta": "#4CAF50",  # Green for beta
         "telos": "#00BFFF",  # Blue for full TELOS
         "devops": "#FF6B6B"  # Red for devops
     }
 
-    marker_color = color_scheme.get(mode, "{GOLD}")
+    marker_color = color_scheme.get(mode, GOLD)
 
     # Return carefully styled turn marker
     # Using position:relative and high z-index to stay above content
@@ -69,13 +69,13 @@ def render_turn_marker_inline(turn_number: int, mode: str = "beta") -> str:
         HTML string for inline turn marker
     """
     color_scheme = {
-        "demo": "{GOLD}",
+        "demo": GOLD,
         "beta": "#4CAF50",
         "telos": "#00BFFF",
         "devops": "#FF6B6B"
     }
 
-    marker_color = color_scheme.get(mode, "{GOLD}")
+    marker_color = color_scheme.get(mode, GOLD)
 
     # More subtle inline version
     return f"""

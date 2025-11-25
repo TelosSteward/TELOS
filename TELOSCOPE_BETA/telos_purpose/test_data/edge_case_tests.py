@@ -60,7 +60,6 @@ def generate_single_turn_session() -> Dict[str, Any]:
         'avg_fidelity': 0.85,
         'turns': [{
             'turn_number': 1,
-            'user_input': 'Single message test',
             'user_message': 'Single message test',
             'native_response': 'Single native response',
             'telos_response': 'Single TELOS response',
@@ -98,7 +97,6 @@ def generate_very_long_session() -> Dict[str, Any]:
 
         turns.append({
             'turn_number': i,
-            'user_input': f'Long session message {i}',
             'user_message': f'Long session message {i}',
             'native_response': f'Native response {i}',
             'telos_response': f'TELOS response {i}',
@@ -139,7 +137,6 @@ def generate_missing_fidelity_session() -> Dict[str, Any]:
         'avg_fidelity': None,
         'turns': [{
             'turn_number': i,
-            'user_input': f'Message {i}',
             'user_message': f'Message {i}',
             'native_response': f'Native response {i}',
             'telos_response': f'TELOS response {i}',
@@ -172,7 +169,7 @@ def generate_extreme_fidelity_session() -> Dict[str, Any]:
             'fidelity': 0.0,
             'intervention_applied': True,
             'basin_membership': False,
-            'user_input': 'Complete failure case',
+            'user_message': 'Complete failure case',
             'native_response': 'Completely off-topic response',
             'telos_response': 'Regenerated on-topic response',
             'timestamp': datetime.now().isoformat()
@@ -182,7 +179,7 @@ def generate_extreme_fidelity_session() -> Dict[str, Any]:
             'fidelity': 1.0,
             'intervention_applied': False,
             'basin_membership': True,
-            'user_input': 'Perfect alignment case',
+            'user_message': 'Perfect alignment case',
             'native_response': 'Perfectly aligned response',
             'telos_response': 'Perfectly aligned response',
             'timestamp': datetime.now().isoformat()
@@ -192,7 +189,7 @@ def generate_extreme_fidelity_session() -> Dict[str, Any]:
             'fidelity': 0.5,
             'intervention_applied': True,
             'basin_membership': False,
-            'user_input': 'Middle case',
+            'user_message': 'Middle case',
             'native_response': 'Mediocre response',
             'telos_response': 'Improved response',
             'timestamp': datetime.now().isoformat()
@@ -202,7 +199,7 @@ def generate_extreme_fidelity_session() -> Dict[str, Any]:
             'fidelity': 0.999,
             'intervention_applied': False,
             'basin_membership': True,
-            'user_input': 'Near-perfect case',
+            'user_message': 'Near-perfect case',
             'native_response': 'Almost perfect response',
             'telos_response': 'Almost perfect response',
             'timestamp': datetime.now().isoformat()
@@ -212,7 +209,7 @@ def generate_extreme_fidelity_session() -> Dict[str, Any]:
             'fidelity': 0.001,
             'intervention_applied': True,
             'basin_membership': False,
-            'user_input': 'Near-zero case',
+            'user_message': 'Near-zero case',
             'native_response': 'Terrible response',
             'telos_response': 'Heavily corrected response',
             'timestamp': datetime.now().isoformat()
@@ -221,7 +218,6 @@ def generate_extreme_fidelity_session() -> Dict[str, Any]:
 
     # Add required fields to all turns
     for turn in turns:
-        turn['user_message'] = turn['user_input']
         turn['assistant_response'] = turn['telos_response']
 
     return {
@@ -286,7 +282,6 @@ def generate_all_interventions_session() -> Dict[str, Any]:
     for i in range(1, 11):
         turns.append({
             'turn_number': i,
-            'user_input': f'Message requiring intervention {i}',
             'user_message': f'Message requiring intervention {i}',
             'native_response': f'Problematic native response {i}',
             'telos_response': f'Corrected TELOS response {i}',
@@ -332,7 +327,6 @@ def generate_no_interventions_session() -> Dict[str, Any]:
     for i in range(1, 16):
         turns.append({
             'turn_number': i,
-            'user_input': f'Well-aligned message {i}',
             'user_message': f'Well-aligned message {i}',
             'native_response': f'Already good response {i}',
             'telos_response': f'Already good response {i}',
@@ -379,7 +373,6 @@ def generate_alternating_fidelity_session() -> Dict[str, Any]:
 
         turns.append({
             'turn_number': i,
-            'user_input': f'Oscillating message {i}',
             'user_message': f'Oscillating message {i}',
             'native_response': f'Response {i}',
             'telos_response': f'Response {i}',
@@ -415,7 +408,6 @@ def generate_unicode_special_chars_session() -> Dict[str, Any]:
     """
     turns = [{
         'turn_number': 1,
-        'user_input': 'Test with émojis 🎉 and spëcial çhars: <>&"\'',
         'user_message': 'Test with émojis 🎉 and spëcial çhars: <>&"\'',
         'native_response': 'Response with 中文字符 and مرحبا',
         'telos_response': 'Response with 中文字符 and مرحبا',
