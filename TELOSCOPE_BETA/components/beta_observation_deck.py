@@ -5,6 +5,7 @@ Shows PA + current fidelity score only (no complex metrics)
 
 import streamlit as st
 from config.colors import GOLD
+import html
 
 class BetaObservationDeck:
     """Simplified Observation Deck for BETA mode showing PA and fidelity."""
@@ -30,6 +31,12 @@ class BetaObservationDeck:
         """Render the user's Primacy Attractor."""
         pa = st.session_state.get('primacy_attractor', {})
 
+        # HTML-escape all PA values to prevent HTML injection and rendering issues
+        purpose = html.escape(pa.get('purpose', 'Not set'))
+        scope = html.escape(pa.get('scope', 'Not set'))
+        success_criteria = html.escape(pa.get('success_criteria', 'Not set'))
+        style = html.escape(pa.get('style', 'Not set')) if pa.get('style') else None
+
         st.markdown(f"""
 <div style="
     background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
@@ -44,20 +51,20 @@ class BetaObservationDeck:
     <div style="color: #e0e0e0; font-size: 16px; line-height: 1.8;">
         <div style="margin-bottom: 12px;">
             <strong style="color: {GOLD};">Purpose:</strong><br>
-            {pa.get('purpose', 'Not set')}
+            {purpose}
         </div>
         <div style="margin-bottom: 12px;">
             <strong style="color: {GOLD};">Scope:</strong><br>
-            {pa.get('scope', 'Not set')}
+            {scope}
         </div>
         <div style="margin-bottom: 12px;">
             <strong style="color: {GOLD};">Success Criteria:</strong><br>
-            {pa.get('success_criteria', 'Not set')}
+            {success_criteria}
         </div>
         {f'''<div style="margin-bottom: 12px;">
             <strong style="color: {GOLD};">Style:</strong><br>
-            {pa.get('style', 'Not set')}
-        </div>''' if pa.get('style') else ''}
+            {style}
+        </div>''' if style else ''}
     </div>
 </div>
 """, unsafe_allow_html=True)

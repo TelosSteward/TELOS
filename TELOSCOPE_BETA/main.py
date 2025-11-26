@@ -764,23 +764,33 @@ def main():
 
     # Initialize active tab if not set - default to DEMO for public users
     if 'active_tab' not in st.session_state:
-        # Check for admin mode
+        # Check for admin mode or beta direct access
         query_params = st.query_params
         is_admin = query_params.get("admin") == "true"
-        st.session_state.active_tab = "DEVOPS" if is_admin else "DEMO"
+        beta_direct = query_params.get("beta") == "true"
+
+        if is_admin:
+            st.session_state.active_tab = "DEVOPS"
+        elif beta_direct:
+            # Auto-grant consent for direct beta access (for grant demos)
+            st.session_state.beta_consent_given = True
+            st.session_state.active_tab = "BETA"
+        else:
+            st.session_state.active_tab = "DEMO"
 
     # DEMO tab is always accessible (no consent required)
     # BETA and TELOS tabs require consent
     # DEVOPS bypasses all restrictions for testing
     active_tab = st.session_state.active_tab
 
-    # Check for admin mode
+    # Check for admin mode or beta direct access
     query_params = st.query_params
     is_admin = query_params.get("admin") == "true"
+    beta_direct = query_params.get("beta") == "true"
 
     # If user is trying to access BETA or TELOS without consent, show consent screen
-    # DEVOPS mode and admin mode bypass consent requirement
-    if (active_tab in ["BETA", "TELOS"]) and not has_beta_consent and not is_admin:
+    # DEVOPS mode, admin mode, and beta direct mode bypass consent requirement
+    if (active_tab in ["BETA", "TELOS"]) and not has_beta_consent and not is_admin and not beta_direct:
         # Show consent screen for BETA/TELOS access
         beta_onboarding.render()
     else:
