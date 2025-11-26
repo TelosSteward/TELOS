@@ -302,9 +302,10 @@ class BetaResponseManager:
             from telos_purpose.core.embedding_provider import MistralEmbeddingProvider
             from telos_purpose.llm_clients.mistral_client import MistralClient
 
-            # Read PA from session state (established via questionnaire)
-            pa_data = st.session_state.get('primacy_attractor', None)
-            pa_established = st.session_state.get('pa_established', False)
+            # Read PA from session state (established via BETA questionnaire)
+            # BETA uses 'user_pa' and 'beta_pa_established' keys
+            pa_data = st.session_state.get('user_pa', None)
+            pa_established = st.session_state.get('beta_pa_established', False)
 
             logger.info(f"🔍 BETA TELOS Init - PA Status:")
             logger.info(f"  - pa_data exists: {pa_data is not None}")
