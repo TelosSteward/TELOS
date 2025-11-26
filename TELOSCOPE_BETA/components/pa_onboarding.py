@@ -261,6 +261,14 @@ class PAOnboarding:
                 avoid_text = parts[1].split(".")[0]
                 boundaries = [b.strip() for b in avoid_text.split(",")]
 
+        # If no boundaries extracted, provide sensible defaults
+        if not boundaries:
+            boundaries = [
+                "Stay focused on stated purpose",
+                "Avoid unrelated tangents",
+                "Maintain productive dialogue"
+            ]
+
         return boundaries
 
     def render_pa_summary(self):

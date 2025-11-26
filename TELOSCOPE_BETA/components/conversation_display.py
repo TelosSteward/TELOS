@@ -3257,8 +3257,9 @@ Current Turn Data:
         st.session_state.beta_phase_transition_shown = True
 
     def _render_beta_feedback(self, turn_number: int):
-        """Render simple beta feedback UI (thumbs up/down/sideways) for turns 11+."""
-        if turn_number < 11:
+        """Render simple beta feedback UI (thumbs up/down/sideways) for all turns."""
+        # Show feedback immediately - PA is established before turn 1
+        if turn_number < 1:
             return
 
         if not st.session_state.get('beta_consent_given', False):

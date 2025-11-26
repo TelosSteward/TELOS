@@ -29,6 +29,7 @@ class BetaObservationDeck:
 
     def _render_pa_summary(self):
         """Render the user's Primacy Attractor."""
+        # PAOnboarding saves to 'primacy_attractor' key
         pa = st.session_state.get('primacy_attractor', {})
 
         # HTML-escape all PA values to prevent HTML injection and rendering issues
@@ -72,9 +73,15 @@ class BetaObservationDeck:
     def _render_fidelity(self):
         """Render current fidelity/alignment status."""
 
-        # TODO: Get actual fidelity from BETA response manager
-        # For now, placeholder
-        fidelity = 0.92  # Placeholder - will be computed from actual response
+        # Get actual fidelity from latest turn data
+        turns = st.session_state.get('conversation_turns', [])
+        if turns and len(turns) > 0:
+            latest_turn = turns[-1]
+            # Try to get fidelity from TELOS response data
+            telos_data = latest_turn.get('telos_analysis', {})
+            fidelity = telos_data.get('fidelity_score', 0.5)
+        else:
+            fidelity = 0.5  # Default if no turns yet
 
         # Determine status and color
         if fidelity >= 0.85:

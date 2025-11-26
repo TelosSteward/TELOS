@@ -23,6 +23,10 @@ class BetaSequenceGenerator:
         """
         Generate a complete test sequence for a 15-turn BETA session.
 
+        NEW PATTERN: Alternating single-blind and head-to-head starting at turn 1
+        - Odd turns (1,3,5,7,9,11,13,15): Single-blind (8 turns - 5 TELOS, 3 native)
+        - Even turns (2,4,6,8,10,12,14): Head-to-head both (7 turns)
+
         Returns:
             Dict with turn assignments and metadata
         """
@@ -38,57 +42,41 @@ class BetaSequenceGenerator:
             }
         }
 
-        # Phase 1: Turns 1-5 (Single-blind only)
-        # Create balanced pool: 3 TELOS, 2 native (or vice versa for balance)
-        phase1_pool = ['telos'] * 3 + ['native'] * 2
-        random.shuffle(phase1_pool)
-
-        for turn in range(1, 6):
-            response_type = phase1_pool[turn - 1]
-            sequence['turns'][turn] = {
-                'test_type': 'single_blind',
-                'response_source': response_type,
-                'phase': 1
-            }
-            sequence['statistics']['total_' + response_type] += 1
-            sequence['statistics']['single_blind_' + response_type] += 1
-
-        # Phase 2: Turns 6-15 (Mixed testing)
-        # For single-blind turns (odd: 7,9,11,13,15) = 5 turns
-        # Create another balanced pool
-        phase2_single_pool = ['telos'] * 3 + ['native'] * 2
-        random.shuffle(phase2_single_pool)
+        # Create balanced pool for single-blind turns (8 total odd turns)
+        # 5 TELOS (62.5%), 3 native (37.5%) for slight TELOS bias
+        single_blind_pool = ['telos'] * 5 + ['native'] * 3
+        random.shuffle(single_blind_pool)
         single_index = 0
 
-        for turn in range(6, 16):
+        for turn in range(1, 16):
             if turn % 2 == 0:
                 # Even turns: Head-to-head (always show both)
                 sequence['turns'][turn] = {
                     'test_type': 'head_to_head',
-                    'response_source': 'both',  # Always generate both
-                    'phase': 2
+                    'response_source': 'both',
+                    'phase': 1
                 }
                 # Count both as shown
                 sequence['statistics']['total_telos'] += 1
                 sequence['statistics']['total_native'] += 1
             else:
                 # Odd turns: Single-blind
-                response_type = phase2_single_pool[single_index]
+                response_type = single_blind_pool[single_index]
                 single_index += 1
                 sequence['turns'][turn] = {
                     'test_type': 'single_blind',
                     'response_source': response_type,
-                    'phase': 2
+                    'phase': 1
                 }
                 sequence['statistics']['total_' + response_type] += 1
                 sequence['statistics']['single_blind_' + response_type] += 1
 
         # Final statistics
         sequence['statistics']['guaranteed_distribution'] = {
-            'single_blind_total': 10,
-            'single_blind_telos': 6,  # Guaranteed 60% TELOS in single-blind
-            'single_blind_native': 4,  # Guaranteed 40% native in single-blind
-            'head_to_head_total': 5,
+            'single_blind_total': 8,  # Odd turns: 1,3,5,7,9,11,13,15
+            'single_blind_telos': 5,  # 62.5% TELOS in single-blind
+            'single_blind_native': 3,  # 37.5% native in single-blind
+            'head_to_head_total': 7,  # Even turns: 2,4,6,8,10,12,14
             'total_turns': 15
         }
 

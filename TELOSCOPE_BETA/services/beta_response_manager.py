@@ -17,15 +17,17 @@ logger = logging.getLogger(__name__)
 class BetaResponseManager:
     """Manages response generation and storage for BETA testing."""
 
-    def __init__(self, state_manager):
+    def __init__(self, state_manager, backend_client=None):
         """
         Initialize with reference to state manager.
 
         Args:
             state_manager: Reference to the main StateManager
+            backend_client: Optional BackendService for delta transmission
         """
         self.state_manager = state_manager
         self.telos_engine = None
+        self.backend = backend_client
 
     def generate_turn_responses(self,
                                user_input: str,
@@ -260,7 +262,7 @@ class BetaResponseManager:
         return interpretation
 
     def _store_turn_data(self, turn_number: int, data: Dict):
-        """Store turn data for Observatory review."""
+        """Store turn data for Observatory review and transmit to Supabase."""
         storage_key = f'beta_turn_{turn_number}_data'
         st.session_state[storage_key] = data
 
@@ -285,6 +287,31 @@ class BetaResponseManager:
         stats['fidelity_scores'].append(fidelity)
         stats['avg_fidelity'] = sum(stats['fidelity_scores']) / len(stats['fidelity_scores'])
 
+        # Transmit delta to Supabase (privacy-preserving - metrics only, no content)
+        if self.backend and self.backend.enabled:
+            try:
+                session_id = st.session_state.get('session_id',
+                    self.state_manager.state.session_id if hasattr(self.state_manager.state, 'session_id') else 'unknown')
+
+                delta_data = {
+                    'session_id': str(session_id),
+                    'turn_number': turn_number,
+                    'fidelity_score': fidelity,
+                    'distance_from_pa': telos_data.get('distance_from_pa', 0.0),
+                    'intervention_triggered': telos_data.get('intervention_triggered', False),
+                    'intervention_type': telos_data.get('intervention_type'),
+                    'intervention_reason': telos_data.get('intervention_reason', '')[:200] if telos_data.get('intervention_reason') else None,  # Truncate reason
+                    'drift_detected': telos_data.get('drift_detected', False),
+                    'test_type': data.get('test_type'),
+                    'response_source': data.get('shown_source'),
+                    'mode': 'beta'
+                }
+
+                self.backend.transmit_delta(delta_data)
+                logger.info(f"✓ Transmitted BETA turn {turn_number} delta to backend")
+            except Exception as e:
+                logger.error(f"❌ Failed to transmit delta for turn {turn_number}: {e}")
+
     def _get_conversation_history(self) -> list:
         """Get conversation history for context."""
         history = []
@@ -303,28 +330,39 @@ class BetaResponseManager:
             from telos_purpose.llm_clients.mistral_client import MistralClient
 
             # Read PA from session state (established via BETA questionnaire)
-            # BETA uses 'user_pa' and 'beta_pa_established' keys
-            pa_data = st.session_state.get('user_pa', None)
-            pa_established = st.session_state.get('beta_pa_established', False)
+            # PAOnboarding component saves to 'primacy_attractor' and 'pa_established'
+            pa_data = st.session_state.get('primacy_attractor', None)
+            pa_established = st.session_state.get('pa_established', False)
 
-            logger.info(f"🔍 BETA TELOS Init - PA Status:")
-            logger.info(f"  - pa_data exists: {pa_data is not None}")
-            logger.info(f"  - pa_established: {pa_established}")
+            logger.warning(f"🔍 BETA TELOS Init - PA Status:")
+            logger.warning(f"  - pa_data exists: {pa_data is not None}")
+            logger.warning(f"  - pa_established: {pa_established}")
+            logger.warning(f"  - ALL session_state keys: {list(st.session_state.keys())}")
+            if pa_data:
+                logger.warning(f"  - PA purpose: {pa_data.get('purpose', 'N/A')}")
+                logger.warning(f"  - PA scope: {pa_data.get('scope', 'N/A')}")
+                logger.warning(f"  - PA boundaries: {pa_data.get('boundaries', 'N/A')}")
 
             if pa_data and pa_established:
                 # Use established PA from questionnaire
                 purpose_str = pa_data.get('purpose', 'General assistance')
                 scope_str = pa_data.get('scope', 'Open discussion')
 
+                # Get boundaries with fallback for empty lists
+                boundaries = pa_data.get('boundaries', [])
+                if not boundaries:  # Handle empty boundaries from older sessions
+                    boundaries = [
+                        "Stay focused on stated purpose",
+                        "Avoid unrelated tangents",
+                        "Maintain productive dialogue"
+                    ]
+                    logger.warning(f"  - PA had empty boundaries, using defaults: {boundaries}")
+
                 # Convert strings to lists as PrimacyAttractor expects List[str]
                 attractor = PrimacyAttractor(
                     purpose=[purpose_str] if isinstance(purpose_str, str) else purpose_str,
                     scope=[scope_str] if isinstance(scope_str, str) else scope_str,
-                    boundaries=pa_data.get('boundaries', [
-                        "Maintain respectful dialogue",
-                        "Provide accurate information",
-                        "Stay within ethical guidelines"
-                    ]),
+                    boundaries=boundaries,
                     constraint_tolerance=0.02  # STRICT governance for BETA testing (basin_radius ≈ 1.02)
                 )
                 logger.info(f"✅ BETA: Using established PA")

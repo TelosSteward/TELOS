@@ -159,13 +159,13 @@ class InterceptingLLMWrapper:
         logger = logging.getLogger(__name__)
         logger.warning(f"🔍 PRE-GENERATION CHECK: User input fidelity = {user_input_fidelity:.3f}")
 
-        if user_input_fidelity < 0.30:  # Severely low fidelity (< 30%)
-            # CRITICAL: User request is significantly off-topic
-            # Refuse immediately without generating expensive response
+        if user_input_fidelity < 0.70:  # Low fidelity - drifting from purpose
+            # INTERVENTION: User request is drifting from established purpose
+            # Redirect instead of generating off-topic response
             refusal_message = (
-                "I cannot assist with this request as it falls outside "
-                "the established session purpose and scope. Please ensure your request "
-                "aligns with the declared objectives of this conversation."
+                f"Your question appears to be drifting from your stated purpose. "
+                f"Your session is focused on: {', '.join(self.steward.attractor.purpose)}. "
+                f"How can I help you with that instead?"
             )
 
             # Log pre-generation refusal

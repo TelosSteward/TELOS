@@ -1392,7 +1392,9 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                 logger.info("🔍 AUDIT: BetaResponseManager not in session - initializing...")
                 logger.info("📦 Initializing BetaResponseManager")
                 from services.beta_response_manager import BetaResponseManager
-                st.session_state.beta_response_manager = BetaResponseManager(self)
+                # Pass backend client for delta transmission
+                backend = st.session_state.get('backend')
+                st.session_state.beta_response_manager = BetaResponseManager(self, backend)
                 logger.info("🔍 AUDIT: BetaResponseManager initialized successfully")
             else:
                 logger.info("🔍 AUDIT: BetaResponseManager already exists in session")
