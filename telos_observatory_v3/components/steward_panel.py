@@ -5,7 +5,7 @@ Provides a helpful AI guide accessible via handshake emoji button.
 
 import streamlit as st
 from datetime import datetime
-from telos_observatory_v3.services.steward_llm import StewardLLM
+from services.steward_llm import StewardLLM
 import html
 
 
@@ -39,10 +39,26 @@ class StewardPanel:
         """Render the Steward chat panel in a column."""
         # Initialize chat history if not exists
         if 'steward_chat_history' not in st.session_state:
+            # Check if this is a drift event context (slide 8)
+            drift_context = st.session_state.get('slide_7_steward_context') == 'drift_event'
+
+            if drift_context:
+                # Drift event walkthrough message for slide 8
+                initial_message = """**Notice what just happened:**
+
+YOUR User Fidelity dropped significantly when you asked about quantum physics - you drifted from your own stated goal of understanding TELOS. Meanwhile, my AI Fidelity would drop if I answered about physics instead of redirecting you back.
+
+TELOS tracks both our alignments but only intervenes on mine. This dual measurement helps you see when you're veering from your goals while keeping me focused on serving them.
+
+**Click the Alignment Lens button below to see how our fidelity scores interact in real-time.**"""
+            else:
+                # Default greeting for normal Steward access
+                initial_message = 'Hello! I am Steward, your TELOS guide. I\'m here to help you understand the TELOS framework, navigate the Observatory interface, and answer any questions about what you\'re seeing on your screen. Feel free to ask me anything!'
+
             st.session_state.steward_chat_history = [
                 {
                     'role': 'assistant',
-                    'content': 'Hello! I am Steward, your TELOS guide. I\'m here to help you understand the TELOS framework, navigate the Observatory interface, and answer any questions about what you\'re seeing on your screen. Feel free to ask me anything!',
+                    'content': initial_message,
                     'timestamp': datetime.now().isoformat()
                 }
             ]
@@ -52,15 +68,20 @@ class StewardPanel:
         with col_close:
             if st.button("✕", key="close_steward", help="Close Steward", use_container_width=True):
                 st.session_state.steward_panel_open = False
+                # Clear drift context and chat history so next open is fresh
+                if 'slide_7_steward_context' in st.session_state:
+                    del st.session_state.slide_7_steward_context
+                if 'steward_chat_history' in st.session_state:
+                    del st.session_state.steward_chat_history
                 st.rerun()
 
         # Chat history - direct display without heavy container
         for message in st.session_state.steward_chat_history:
             if message['role'] == 'assistant':
                 st.markdown(f"""
-                <div class="message-container" style="background-color: rgba(255, 215, 0, 0.1); border: 1px solid #FFD700; border-radius: 8px; padding: 12px; margin-bottom: 15px;">
-                    <strong style="color: #FFD700; font-size: 18px;">Steward:</strong><br>
-                    <span style="color: #FFD700; font-size: 16px; line-height: 1.6;">{message['content']}</span>
+                <div class="message-container" style="background-color: rgba(255, 215, 0, 0.1); border: 1px solid #F4D03F; border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+                    <strong style="color: #F4D03F; font-size: 18px;">Steward:</strong><br>
+                    <span style="color: #F4D03F; font-size: 16px; line-height: 1.6;">{message['content']}</span>
                 </div>
                 """, unsafe_allow_html=True)
             else:

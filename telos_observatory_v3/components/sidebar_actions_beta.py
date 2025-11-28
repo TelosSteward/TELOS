@@ -26,16 +26,16 @@ class SidebarActionsBeta:
             st.markdown("""
             <div style="text-align: center; margin-bottom: 20px;">
                 <span style="font-size: 48px;">🔭</span>
-                <h2 style="color: #FFD700; margin-top: 10px;">TELOS</h2>
+                <h2 style="color: #F4D03F; margin-top: 10px;">TELOS</h2>
             </div>
             """, unsafe_allow_html=True)
 
             # Beta testing notice
             st.markdown("""
             <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-                        border: 1px solid #FFD700; border-radius: 8px;
+                        border: 1px solid #F4D03F; border-radius: 8px;
                         padding: 10px; margin-bottom: 20px;">
-                <div style="color: #FFD700; font-size: 14px; text-align: center;">
+                <div style="color: #F4D03F; font-size: 14px; text-align: center;">
                     🧪 BETA Testing Mode
                 </div>
             </div>

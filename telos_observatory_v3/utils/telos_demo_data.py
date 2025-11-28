@@ -22,7 +22,7 @@ import time
 # Import TELOS engine components
 try:
     from telos_purpose.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
-    from telos_purpose.core.embedding_provider import SentenceTransformerEmbeddingProvider
+    from telos_purpose.core.embedding_provider import SentenceTransformerProvider
     from telos_purpose.llm_clients.openai_client import OpenAIClient
     TELOS_AVAILABLE = True
 except ImportError as e:
@@ -138,8 +138,8 @@ def generate_telos_demo_session(num_turns: int = 10) -> Dict[str, Any]:
             ],
             scope=[
                 "TELOS architecture and components",
-                "How purpose alignment works",
-                "Intervention strategies and guidance levels",
+                "Primacy attractor mathematics",
+                "Intervention strategies and thresholds",
                 "Purpose alignment examples"
             ],
             boundaries=[

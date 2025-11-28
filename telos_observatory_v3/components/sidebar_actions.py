@@ -25,7 +25,7 @@ class SidebarActions:
             # TELOS Branding with telescope icon
             st.markdown("""
             <div style="text-align: center; padding: 10px 0 10px 0;">
-                <h1 style="color: #FFD700; font-size: 52px; margin: 0; font-weight: bold; letter-spacing: 3px; display: inline-flex; align-items: center; justify-content: center; gap: 15px;">
+                <h1 style="color: #F4D03F; font-size: 52px; margin: 0; font-weight: bold; letter-spacing: 3px; display: inline-flex; align-items: center; justify-content: center; gap: 15px;">
                     TELOS <span style="font-size: 64px;">🔭</span>
                 </h1>
             </div>
@@ -51,7 +51,7 @@ class SidebarActions:
                         with col1:
                             st.markdown(f"""
                             <div style="background-color: #1a1a1a; padding: 6px; border-radius: 5px; margin-bottom: 4px;">
-                                <div style="color: #FFD700; font-size: 11px;">{session['name']}</div>
+                                <div style="color: #F4D03F; font-size: 11px;">{session['name']}</div>
                                 <div style="color: #888; font-size: 9px;">{session['date']}</div>
                             </div>
                             """, unsafe_allow_html=True)
@@ -120,13 +120,6 @@ class SidebarActions:
                 </script>
                 """, unsafe_allow_html=True)
                 st.info("Opening GitHub repository in new tab...")
-
-            # Observatory Lens - Toggle
-            st.markdown("---")
-            lens_label = "✕ Close Observatory Lens" if self.state_manager.state.show_observatory_lens else "🔭 Observatory Lens"
-            if st.button(lens_label, use_container_width=True, key="toggle_observatory_lens"):
-                self.state_manager.toggle_component('observatory_lens')
-                st.rerun()
 
             # Settings - Toggle
             st.markdown("---")
@@ -352,17 +345,17 @@ class SidebarActions:
 
     def _show_keyboard_controls(self):
         """Show keyboard shortcuts information."""
-        st.markdown("""<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #FFD700; border-radius: 8px; padding: 15px; margin: 10px 0;"><div style="color: #FFD700; font-size: 18px; font-weight: bold; margin-bottom: 10px;">⌨️ Keyboard Shortcuts</div><div style="color: #e0e0e0; font-size: 14px; margin-top: 10px;"><div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-radius: 4px;"><span style="color: #FFD700; font-weight: bold;">Shift + O</span><span>Toggle Observation Deck</span></div><div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-radius: 4px;"><span style="color: #FFD700; font-weight: bold;">Shift + T</span><span>Toggle TELOSCOPE Controls</span></div><div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-radius: 4px;"><span style="color: #FFD700; font-weight: bold;">ESC</span><span>Collapse All Panels</span></div><div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-radius: 4px;"><span style="color: #FFD700; font-weight: bold;">Enter</span><span>Send Message</span></div><div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-radius: 4px;"><span style="color: #FFD700; font-weight: bold;">Shift + Enter</span><span>New Line in Message</span></div></div></div>""", unsafe_allow_html=True)
+        st.markdown("""<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #F4D03F; border-radius: 8px; padding: 15px; margin: 10px 0;"><div style="color: #F4D03F; font-size: 18px; font-weight: bold; margin-bottom: 10px;">⌨️ Keyboard Shortcuts</div><div style="color: #e0e0e0; font-size: 14px; margin-top: 10px;"><div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-radius: 4px;"><span style="color: #F4D03F; font-weight: bold;">Shift + O</span><span>Toggle Observation Deck</span></div><div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-radius: 4px;"><span style="color: #F4D03F; font-weight: bold;">Shift + T</span><span>Toggle TELOSCOPE Controls</span></div><div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-radius: 4px;"><span style="color: #F4D03F; font-weight: bold;">ESC</span><span>Collapse All Panels</span></div><div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-radius: 4px;"><span style="color: #F4D03F; font-weight: bold;">Enter</span><span>Send Message</span></div><div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px; background-color: #1a1a1a; border-radius: 4px;"><span style="color: #F4D03F; font-weight: bold;">Shift + Enter</span><span>New Line in Message</span></div></div></div>""", unsafe_allow_html=True)
 
     def _show_help(self):
         """Show help information."""
-        st.markdown("""<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #FFD700; border-radius: 8px; padding: 15px; margin: 10px 0;"><div style="color: #FFD700; font-size: 18px; font-weight: bold; margin-bottom: 10px;">TELOS Observatory V3</div><div style="color: #FFD700; font-size: 14px; font-weight: bold; margin-top: 10px;">Navigation:</div><div style="color: #e0e0e0; font-size: 13px; margin-left: 10px;">• Main chat window displays the conversation<br>• Click "Observation Deck" to view metrics and analysis toggles<br>• Click "TELOSCOPE Controls" for playback and turn navigation</div><div style="color: #FFD700; font-size: 14px; font-weight: bold; margin-top: 10px;">Observation Deck (🔭):</div><div style="color: #e0e0e0; font-size: 13px; margin-left: 10px;">• View turn metrics (Fidelity, Distance, Status, Interventions)<br>• Toggle analysis windows (Math Breakdown, Counterfactual, Steward Details)<br>• Access Deep Dive mode</div><div style="color: #FFD700; font-size: 14px; font-weight: bold; margin-top: 10px;">TELOSCOPE Controls:</div><div style="color: #e0e0e0; font-size: 13px; margin-left: 10px;">• Navigate turns with slider or Prev/Next buttons<br>• Jump between interventions<br>• Play/Pause automatic playback<br>• Adjust playback speed</div><div style="color: #FFD700; font-size: 14px; font-weight: bold; margin-top: 10px;">Sidebar Actions:</div><div style="color: #e0e0e0; font-size: 13px; margin-left: 10px;">• Save Current: Export session state<br>• Reset Session: Jump back to turn 1<br>• Export Evidence: Generate governance package</div></div>""", unsafe_allow_html=True)
+        st.markdown("""<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #F4D03F; border-radius: 8px; padding: 15px; margin: 10px 0;"><div style="color: #F4D03F; font-size: 18px; font-weight: bold; margin-bottom: 10px;">TELOS Observatory V3</div><div style="color: #F4D03F; font-size: 14px; font-weight: bold; margin-top: 10px;">Navigation:</div><div style="color: #e0e0e0; font-size: 13px; margin-left: 10px;">• Main chat window displays the conversation<br>• Click "Observation Deck" to view metrics and analysis toggles<br>• Click "TELOSCOPE Controls" for playback and turn navigation</div><div style="color: #F4D03F; font-size: 14px; font-weight: bold; margin-top: 10px;">Observation Deck (🔭):</div><div style="color: #e0e0e0; font-size: 13px; margin-left: 10px;">• View turn metrics (Fidelity, Distance, Status, Interventions)<br>• Toggle analysis windows (Math Breakdown, Counterfactual, Steward Details)<br>• Access Deep Dive mode</div><div style="color: #F4D03F; font-size: 14px; font-weight: bold; margin-top: 10px;">TELOSCOPE Controls:</div><div style="color: #e0e0e0; font-size: 13px; margin-left: 10px;">• Navigate turns with slider or Prev/Next buttons<br>• Jump between interventions<br>• Play/Pause automatic playback<br>• Adjust playback speed</div><div style="color: #F4D03F; font-size: 14px; font-weight: bold; margin-top: 10px;">Sidebar Actions:</div><div style="color: #e0e0e0; font-size: 13px; margin-left: 10px;">• Save Current: Export session state<br>• Reset Session: Jump back to turn 1<br>• Export Evidence: Generate governance package</div></div>""", unsafe_allow_html=True)
 
     def _show_settings(self):
         """Show settings panel."""
         st.markdown("""
-<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #FFD700; border-radius: 8px; padding: 15px; margin: 10px 0;">
-    <div style="color: #FFD700; font-size: 18px; font-weight: bold; margin-bottom: 10px;">⚙️ Settings</div>
+<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #F4D03F; border-radius: 8px; padding: 15px; margin: 10px 0;">
+    <div style="color: #F4D03F; font-size: 18px; font-weight: bold; margin-bottom: 10px;">⚙️ Settings</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -497,7 +490,7 @@ class SidebarActions:
         """Show documentation links."""
         from pathlib import Path
 
-        st.markdown("""<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #FFD700; border-radius: 8px; padding: 15px; margin: 10px 0;"><div style="color: #FFD700; font-size: 18px; font-weight: bold; margin-bottom: 10px;">📚 Documentation</div></div>""", unsafe_allow_html=True)
+        st.markdown("""<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #F4D03F; border-radius: 8px; padding: 15px; margin: 10px 0;"><div style="color: #F4D03F; font-size: 18px; font-weight: bold; margin-bottom: 10px;">📚 Documentation</div></div>""", unsafe_allow_html=True)
 
         # Check if whitepaper exists
         whitepaper_path = Path(__file__).parent.parent.parent / 'public' / 'TELOSCOPE_Prototype_Whitepaper.md'

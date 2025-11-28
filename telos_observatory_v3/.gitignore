@@ -1,0 +1,95 @@
+# TELOS Observatory .gitignore
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+*.env
+.streamlit/secrets.toml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# Testing
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.hypothesis/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Screenshots (development artifacts)
+*.png
+!demo_mode/corpus/*.png
+
+# MCP memory
+.mcp_memory_context.json
+
+# Playwright
+.playwright-mcp/
+
+# Model caches
+.cache/
+models/
+sentence-transformers/
+
+# Validation output (can be large)
+validation_results/
+test_sessions/

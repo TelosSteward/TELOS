@@ -30,7 +30,7 @@ class BetaCompletion:
         # Main congratulations header
         st.markdown("""
         <div style="text-align: center; padding: 40px 0;">
-            <h1 style="color: #FFD700; font-size: 48px; margin: 0;">
+            <h1 style="color: #F4D03F; font-size: 48px; margin: 0;">
                 🎉 Congratulations! 🎉
             </h1>
             <p style="color: #e0e0e0; font-size: 24px; margin-top: 20px;">
@@ -42,8 +42,8 @@ class BetaCompletion:
         # Thank you message
         st.markdown("""
         <div class="message-container" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-                    border: 2px solid #FFD700; border-radius: 12px; padding: 30px; margin: 20px 0;">
-            <h2 style="color: #FFD700; text-align: center;">Thank You for Your Contribution!</h2>
+                    border: 2px solid #F4D03F; border-radius: 12px; padding: 30px; margin: 20px 0;">
+            <h2 style="color: #F4D03F; text-align: center;">Thank You for Your Contribution!</h2>
             <p style="color: #e0e0e0; font-size: 18px; line-height: 1.6; text-align: center;">
                 Your feedback and governance deltas are invaluable in helping us build
                 safer, more aligned AI systems. You've directly contributed to advancing
@@ -60,8 +60,8 @@ class BetaCompletion:
                 if session:
                     st.markdown("""
                     <div class="message-container" style="background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
-                                border: 1px solid #FFD700; border-radius: 8px; padding: 20px; margin: 20px 0;">
-                        <h3 style="color: #FFD700;">Your Beta Testing Stats</h3>
+                                border: 1px solid #F4D03F; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                        <h3 style="color: #F4D03F;">Your Beta Testing Stats</h3>
                     </div>
                     """, unsafe_allow_html=True)
 
@@ -78,8 +78,8 @@ class BetaCompletion:
         # Community invitation
         st.markdown("""
         <div class="message-container" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-                    border: 2px solid #FFD700; border-radius: 12px; padding: 30px; margin: 30px 0;">
-            <h2 style="color: #FFD700; text-align: center;">
+                    border: 2px solid #F4D03F; border-radius: 12px; padding: 30px; margin: 30px 0;">
+            <h2 style="color: #F4D03F; text-align: center;">
                 🚀 Ready for the Full TELOS Experience?
             </h2>
             <p style="color: #e0e0e0; font-size: 18px; line-height: 1.6; text-align: center; margin: 20px 0;">
@@ -141,8 +141,8 @@ class BetaCompletion:
         # Feedback form option
         st.markdown("""
         <div class="message-container" style="background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
-                    border: 1px solid #FFD700; border-radius: 8px; padding: 20px; margin: 20px 0;">
-            <h3 style="color: #FFD700; text-align: center;">📝 Optional: Share Detailed Feedback</h3>
+                    border: 1px solid #F4D03F; border-radius: 8px; padding: 20px; margin: 20px 0;">
+            <h3 style="color: #F4D03F; text-align: center;">📝 Optional: Share Detailed Feedback</h3>
             <p style="color: #e0e0e0; text-align: center;">
                 Have thoughts about your beta testing experience?
                 We'd love to hear your detailed feedback!
@@ -170,7 +170,7 @@ class BetaCompletion:
             </p>
             <p>
                 <a href="https://github.com/TelosSteward/TelosLabs" target="_blank"
-                   style="color: #FFD700; text-decoration: none;">
+                   style="color: #F4D03F; text-decoration: none;">
                     🔬 GitHub: TelosSteward/TelosLabs
                 </a>
             </p>

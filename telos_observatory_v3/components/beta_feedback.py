@@ -41,7 +41,7 @@ class BetaFeedbackUI:
         st.markdown("""
         <div style="
             background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
-            border: 2px solid #FFD700;
+            border: 2px solid #F4D03F;
             border-radius: 15px;
             padding: 25px;
             margin: 19px 0;
@@ -49,7 +49,7 @@ class BetaFeedbackUI:
         ">
             <div style="text-align: center; margin-bottom: 15px;">
                 <div style="font-size: 36px;">🎯</div>
-                <div style="color: #FFD700; font-size: 22px; font-weight: bold;">
+                <div style="color: #F4D03F; font-size: 22px; font-weight: bold;">
                     Welcome to TELOS Beta Testing
                 </div>
             </div>
@@ -73,7 +73,7 @@ class BetaFeedbackUI:
 
             if submit_goal and goal_text.strip():
                 # Store conversation goal
-                from telos_observatory_v3.beta_testing import ConversationGoal
+                from observatory.beta_testing import ConversationGoal
 
                 goal = ConversationGoal(
                     goal_text=goal_text.strip(),
@@ -116,12 +116,12 @@ class BetaFeedbackUI:
         st.markdown("""
         <div style="
             background-color: #1a1a1a;
-            border: 1px solid #FFD700;
+            border: 1px solid #F4D03F;
             border-radius: 10px;
             padding: 15px;
             margin: 10px 0;
         ">
-            <div style="color: #FFD700; font-size: 16px; font-weight: bold; margin-bottom: 10px;">
+            <div style="color: #F4D03F; font-size: 16px; font-weight: bold; margin-bottom: 10px;">
                 How would you rate this response?
             </div>
         </div>
@@ -185,13 +185,13 @@ class BetaFeedbackUI:
         st.markdown("""
         <div style="
             background-color: #1a1a1a;
-            border: 1px solid #FFD700;
+            border: 1px solid #F4D03F;
             border-radius: 10px;
             padding: 15px;
             margin: 10px 0;
             text-align: center;
         ">
-            <div style="color: #FFD700; font-size: 18px; font-weight: bold; margin-bottom: 5px;">
+            <div style="color: #F4D03F; font-size: 18px; font-weight: bold; margin-bottom: 5px;">
                 Which response do you prefer?
             </div>
             <div style="color: #888; font-size: 14px;">
@@ -224,8 +224,8 @@ class BetaFeedbackUI:
 
         with col_a:
             st.markdown(f"""
-<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700; min-height: 200px;">
-    <div style="color: #FFD700; font-size: 16px; margin-bottom: 10px; font-weight: bold; text-align: center;">
+<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #F4D03F; min-height: 200px;">
+    <div style="color: #F4D03F; font-size: 16px; margin-bottom: 10px; font-weight: bold; text-align: center;">
         Response A
     </div>
     <div style="color: #fff; font-size: 16px; white-space: pre-wrap;">
@@ -251,8 +251,8 @@ class BetaFeedbackUI:
 
         with col_b:
             st.markdown(f"""
-<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #FFD700; min-height: 200px;">
-    <div style="color: #FFD700; font-size: 16px; margin-bottom: 10px; font-weight: bold; text-align: center;">
+<div style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #F4D03F; min-height: 200px;">
+    <div style="color: #F4D03F; font-size: 16px; margin-bottom: 10px; font-weight: bold; text-align: center;">
         Response B
     </div>
     <div style="color: #fff; font-size: 16px; white-space: pre-wrap;">
@@ -301,7 +301,7 @@ class BetaFeedbackUI:
         st.markdown("""
         <div style="
             background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
-            border: 2px solid #FFD700;
+            border: 2px solid #F4D03F;
             border-radius: 15px;
             padding: 25px;
             margin: 19px 0;
@@ -309,7 +309,7 @@ class BetaFeedbackUI:
         ">
             <div style="text-align: center; margin-bottom: 15px;">
                 <div style="font-size: 36px;">🎯</div>
-                <div style="color: #FFD700; font-size: 20px; font-weight: bold;">
+                <div style="color: #F4D03F; font-size: 20px; font-weight: bold;">
                     Did you accomplish your goal?
                 </div>
             </div>
@@ -354,7 +354,7 @@ class BetaFeedbackUI:
         response_data: Dict[str, Any]
     ):
         """Record single-blind feedback."""
-        from telos_observatory_v3.beta_testing import FeedbackData
+        from observatory.beta_testing import FeedbackData
 
         session = st.session_state.get('beta_session')
         if not session:
@@ -399,7 +399,7 @@ class BetaFeedbackUI:
         response_data: Dict[str, Any]
     ):
         """Record head-to-head feedback."""
-        from telos_observatory_v3.beta_testing import FeedbackData
+        from observatory.beta_testing import FeedbackData
 
         session = st.session_state.get('beta_session')
         if not session:
@@ -442,12 +442,12 @@ class BetaFeedbackUI:
         st.markdown("""
         <div style="
             background-color: #2d2d2d;
-            border: 2px solid #FFD700;
+            border: 2px solid #F4D03F;
             border-radius: 10px;
             padding: 19px;
             margin-bottom: 15px;
         ">
-            <div style="color: #FFD700; font-size: 22px; font-weight: bold; text-align: center;">
+            <div style="color: #F4D03F; font-size: 22px; font-weight: bold; text-align: center;">
                 📊 Beta Testing Dashboard
             </div>
         </div>
@@ -461,16 +461,16 @@ class BetaFeedbackUI:
 
         with col1:
             st.markdown(f"""
-<div style="background-color: #1a1a1a; border: 1px solid #FFD700; border-radius: 8px; padding: 15px; text-align: center;">
-    <div style="font-size: 28px; font-weight: bold; color: #FFD700;">{stats['total_sessions']}</div>
+<div style="background-color: #1a1a1a; border: 1px solid #F4D03F; border-radius: 8px; padding: 15px; text-align: center;">
+    <div style="font-size: 28px; font-weight: bold; color: #F4D03F;">{stats['total_sessions']}</div>
     <div style="color: #e0e0e0; font-size: 14px;">Total Sessions</div>
 </div>
 """, unsafe_allow_html=True)
 
         with col2:
             st.markdown(f"""
-<div style="background-color: #1a1a1a; border: 1px solid #FFD700; border-radius: 8px; padding: 15px; text-align: center;">
-    <div style="font-size: 28px; font-weight: bold; color: #FFD700;">{stats['total_feedback_items']}</div>
+<div style="background-color: #1a1a1a; border: 1px solid #F4D03F; border-radius: 8px; padding: 15px; text-align: center;">
+    <div style="font-size: 28px; font-weight: bold; color: #F4D03F;">{stats['total_feedback_items']}</div>
     <div style="color: #e0e0e0; font-size: 14px;">Feedback Items</div>
 </div>
 """, unsafe_allow_html=True)
@@ -482,7 +482,7 @@ class BetaFeedbackUI:
             approval_rate = (thumbs_up / total_thumbs * 100) if total_thumbs > 0 else 0
 
             st.markdown(f"""
-<div style="background-color: #1a1a1a; border: 1px solid #FFD700; border-radius: 8px; padding: 15px; text-align: center;">
+<div style="background-color: #1a1a1a; border: 1px solid #F4D03F; border-radius: 8px; padding: 15px; text-align: center;">
     <div style="font-size: 28px; font-weight: bold; color: #4CAF50;">{approval_rate:.1f}%</div>
     <div style="color: #e0e0e0; font-size: 14px;">Approval Rate</div>
 </div>
@@ -495,8 +495,8 @@ class BetaFeedbackUI:
             telos_win_rate = (telos_pref / total_h2h * 100) if total_h2h > 0 else 0
 
             st.markdown(f"""
-<div style="background-color: #1a1a1a; border: 1px solid #FFD700; border-radius: 8px; padding: 15px; text-align: center;">
-    <div style="font-size: 28px; font-weight: bold; color: #FFD700;">{telos_win_rate:.1f}%</div>
+<div style="background-color: #1a1a1a; border: 1px solid #F4D03F; border-radius: 8px; padding: 15px; text-align: center;">
+    <div style="font-size: 28px; font-weight: bold; color: #F4D03F;">{telos_win_rate:.1f}%</div>
     <div style="color: #e0e0e0; font-size: 14px;">TELOS Preference</div>
 </div>
 """, unsafe_allow_html=True)

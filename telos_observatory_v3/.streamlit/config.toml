@@ -1,34 +1,11 @@
 [theme]
-primaryColor = "#FFD700"
-backgroundColor = "#0E1117"
+primaryColor = "#F4D03F"
+# backgroundColor removed to allow CSS gradient glassmorphism
 secondaryBackgroundColor = "#262730"
-textColor = "#B0B0B0"  # Softer grey for body text (Supabase-inspired)
+textColor = "#FAFAFA"
 font = "sans serif"
 base = "dark"
 
 [server]
 headless = true
 runOnSave = false
-
-[client]
-showErrorDetails = false
-toolbarMode = "minimal"
-
-[browser]
-gatherUsageStats = false
-
-[ui]
-hideTopBar = false
-hideSidebarNav = false
-
-# HIDE DEPLOY BUTTON AND DEBUG FOOTER
-[runner]
-magicEnabled = false
-
-[logger]
-level = "error"
-
-# Hide deployment UI elements
-[deprecation]
-showfileUploaderEncoding = false
-showPyplotGlobalUse = false

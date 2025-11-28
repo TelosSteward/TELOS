@@ -8,7 +8,7 @@ from typing import Optional, Dict, Any, List
 from datetime import datetime
 import time
 
-from services.supabase_client import get_supabase_service
+from services.backend_client import get_backend_service
 
 
 class TurnTracker:
@@ -42,7 +42,7 @@ class TurnTracker:
         self.turn_number = turn_number
         self.mode = mode
         self.start_time = time.time()
-        self.supabase = get_supabase_service()
+        self.backend = get_backend_service()
 
         # PRIVACY GUARD: Only track if all conditions met
         self.should_track = (
@@ -53,7 +53,7 @@ class TurnTracker:
 
         # Initialize turn in database ONLY if tracking enabled
         if self.should_track:
-            self.supabase.initiate_turn(
+            self.backend.initiate_turn(
                 session_id=session_id,
                 turn_number=turn_number,
                 mode=mode
@@ -64,7 +64,7 @@ class TurnTracker:
         if not self.should_track:
             return  # Privacy guard: no tracking
 
-        self.supabase.mark_calculating_pa(
+        self.backend.mark_calculating_pa(
             session_id=self.session_id,
             turn_number=self.turn_number
         )
@@ -74,7 +74,7 @@ class TurnTracker:
         if not self.should_track:
             return  # Privacy guard: no tracking
 
-        self.supabase.mark_evaluating(
+        self.backend.mark_evaluating(
             session_id=self.session_id,
             turn_number=self.turn_number
         )
@@ -120,8 +120,8 @@ class TurnTracker:
         if semantic_context:
             final_delta.update(semantic_context)
 
-        # Transmit to Supabase
-        self.supabase.complete_turn(
+        # Transmit to backend storage
+        self.backend.complete_turn(
             session_id=self.session_id,
             turn_number=self.turn_number,
             final_delta=final_delta
@@ -138,7 +138,7 @@ class TurnTracker:
         if not self.should_track:
             return  # Privacy guard: no tracking
 
-        self.supabase.fail_turn(
+        self.backend.fail_turn(
             session_id=self.session_id,
             turn_number=self.turn_number,
             error_message=error_message,

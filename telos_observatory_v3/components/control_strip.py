@@ -32,13 +32,16 @@ class ControlStrip:
         fidelity = turn_data.get('fidelity', 0.0)
         status = turn_data.get('status_text', 'Calibrating...')
 
-        # Color coding for fidelity
-        if fidelity >= 0.8:
-            fidelity_color = "#4CAF50"
-        elif fidelity >= 0.6:
-            fidelity_color = "#FFA500"
+        # Color coding for fidelity (4-tier system)
+        # Green (≥0.85) | Yellow (0.70-0.85) | Orange (0.50-0.70) | Red (<0.50)
+        if fidelity >= 0.85:
+            fidelity_color = "#4CAF50"  # Green
+        elif fidelity >= 0.70:
+            fidelity_color = "#F4D03F"  # Yellow
+        elif fidelity >= 0.50:
+            fidelity_color = "#FFA500"  # Orange
         else:
-            fidelity_color = "#FF5252"
+            fidelity_color = "#FF4444"  # Red
 
         # Create clean strip display
         col1, col2 = st.columns([4, 1])
@@ -48,14 +51,14 @@ class ControlStrip:
             st.markdown(f"""
             <div style="
                 background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
-                border: 1px solid #FFD700;
+                border: 1px solid #F4D03F;
                 border-radius: 8px;
                 padding: 10px 15px;
                 text-align: center;
                 cursor: pointer;
             ">
                 <div style="font-size: 24px; margin-bottom: 5px;">🔭</div>
-                <div style="color: #FFD700; font-size: 11px; font-weight: bold;">
+                <div style="color: #F4D03F; font-size: 11px; font-weight: bold;">
                     Turn {turn_num}/{total_turns}
                 </div>
                 <div style="color: {fidelity_color}; font-size: 13px; font-weight: bold; margin: 3px 0;">

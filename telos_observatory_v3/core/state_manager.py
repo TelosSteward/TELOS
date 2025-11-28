@@ -18,6 +18,10 @@ from pathlib import Path
 # Configure logging
 logger = logging.getLogger(__name__)
 
+# AUDIT: Module load verification
+logger.warning("🔍🔍🔍 STATE_MANAGER.PY MODULE LOADED WITH AUDIT LOGGING 🔍🔍🔍")
+print("🔍🔍🔍 STATE_MANAGER.PY MODULE LOADED WITH AUDIT LOGGING 🔍🔍🔍", flush=True)
+
 # Add parent directory for beta imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
@@ -64,12 +68,6 @@ class ObservatoryState:
     total_interventions: int = 0
     drift_warnings: int = 0
 
-    # Primacy State Metrics (NEW)
-    enable_primacy_state: bool = False  # Feature flag
-    ps_parallel_mode: bool = True  # Run PS alongside fidelity for comparison
-    current_ps_metrics: Optional[Dict[str, Any]] = None  # Current PS calculation
-    ps_history: List[Dict[str, Any]] = field(default_factory=list)  # PS over time
-
 
 class StateManager:
     """
@@ -88,7 +86,7 @@ class StateManager:
         self.state = ObservatoryState()
         self._initialized = False
         self._beta_session_manager = None  # Lazy initialization for beta testing
-        self._ps_calculator = None  # Lazy initialization for Primacy State
+        self._ps_calculator = None  # Primacy State calculator
 
     def initialize(self, session_data: Dict[str, Any]):
         """
@@ -552,12 +550,11 @@ class StateManager:
                         except (KeyError, FileNotFoundError):
                             pass
 
-                    # Debug logging
-                    if mistral_api_key:
-                        logger.info(f"Found MISTRAL_API_KEY: {mistral_api_key[:10]}... (length: {len(mistral_api_key)})")
-                    else:
+                    if not mistral_api_key:
                         logger.error("MISTRAL_API_KEY not found in environment or secrets")
                         raise ValueError("MISTRAL_API_KEY not found in secrets or environment")
+
+                    logger.info("MISTRAL_API_KEY found and validated")
 
                     # TODO: Future PIP feature - API key will become user identity/auth
 
@@ -793,12 +790,51 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                             'response_length_telos': len(beta_result["telos_response"])
                         }
 
-                        # Transmit deltas to Supabase (privacy-preserving)
-                        try:
-                            from telos_observatory_v3.services.supabase_client import get_supabase_service
-                            supabase = get_supabase_service()
+                        # Calculate PS metrics for the shown response
+                        ps_metrics_for_delta = {}
+                        if self._ps_calculator is None:
+                            try:
+                                from telos_purpose.core.primacy_state import PrimacyStateCalculator
+                                self._ps_calculator = PrimacyStateCalculator(track_energy=True)
+                                logger.info("PS calculator initialized for beta")
+                            except ImportError as e:
+                                logger.debug(f"PS module not available: {e}")
 
-                            if supabase.enabled:
+                        if self._ps_calculator and hasattr(self._telos_steward, 'embedding_provider'):
+                            try:
+                                # Get the response that was shown to user
+                                shown_response = beta_result["baseline_response"] if test_condition == 'single_blind_baseline' else beta_result["telos_response"]
+
+                                # Get embeddings
+                                embedding_provider = self._telos_steward.embedding_provider
+                                response_embedding = embedding_provider.get_embedding(shown_response)
+
+                                # Get PA embeddings from steward's attractor
+                                attractor = self._telos_steward.attractor
+                                user_pa_text = " ".join(attractor.purpose)
+                                ai_pa_text = " ".join(attractor.boundaries) if attractor.boundaries else user_pa_text
+
+                                user_pa_embedding = embedding_provider.get_embedding(user_pa_text)
+                                ai_pa_embedding = embedding_provider.get_embedding(ai_pa_text)
+
+                                # Compute PS
+                                ps_result = self._ps_calculator.compute_primacy_state(
+                                    response_embedding=response_embedding,
+                                    user_pa_embedding=user_pa_embedding,
+                                    ai_pa_embedding=ai_pa_embedding
+                                )
+
+                                ps_metrics_for_delta = ps_result.to_dict()
+                                logger.info(f"PS for beta: {ps_metrics_for_delta.get('primacy_state_score', 0):.3f}")
+                            except Exception as e:
+                                logger.debug(f"PS calculation failed in beta: {e}")
+
+                        # Transmit deltas to backend (privacy-preserving)
+                        try:
+                            from services.backend_client import get_backend_service
+                            backend = get_backend_service()
+
+                            if backend.enabled:
                                 session_id = st.session_state.get('session_id')
                                 delta_data = {
                                     'session_id': str(session_id),
@@ -810,11 +846,13 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                                     'intervention_triggered': beta_result.get("intervention_applied", False),
                                     'mode': 'beta',
                                     'test_condition': test_condition,
-                                    'shown_response_source': 'baseline' if test_condition == 'single_blind_baseline' else 'telos'
+                                    'shown_response_source': 'baseline' if test_condition == 'single_blind_baseline' else 'telos',
+                                    # Add PS metrics if available
+                                    **ps_metrics_for_delta
                                 }
-                                supabase.transmit_delta(delta_data)
+                                backend.transmit_delta(delta_data)
                         except Exception as e:
-                            logger.warning(f"Failed to transmit delta to Supabase: {e}")
+                            logger.warning(f"Failed to transmit delta to backend: {e}")
                         logger.info("✓ Beta data stored in turn metadata")
                     else:
                         # Beta dual-response failed, fall back to standard flow
@@ -843,10 +881,52 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                 # =====================================================================
             # =====================================================================
 
-            fidelity = result.get("telic_fidelity", 0.85)
-            distance = result.get("error_signal", 0.15)
+            fidelity = result.get("telic_fidelity", 0.0)  # Real value from TELOS
+            distance = result.get("error_signal", 0.0)
             in_basin = result.get("in_basin", True)
             intervention_applied = result.get("intervention_applied", False)
+
+            if fidelity == 0.0:
+                logger.warning(f"Turn {turn_idx}: No fidelity value from TELOS process_turn - investigation needed")
+
+            # Calculate Primacy State if available
+            ps_metrics = None
+            if self._ps_calculator is None:
+                try:
+                    from telos_purpose.core.primacy_state import PrimacyStateCalculator
+                    self._ps_calculator = PrimacyStateCalculator(track_energy=True)
+                    logger.info("PS calculator initialized")
+                except ImportError as e:
+                    logger.debug(f"PS module not available: {e}")
+
+            if self._ps_calculator and hasattr(self._telos_steward, 'embedding_provider'):
+                try:
+                    # Get embeddings
+                    embedding_provider = self._telos_steward.embedding_provider
+                    response_embedding = embedding_provider.get_embedding(response_text)
+
+                    # Get PA embeddings from steward's attractor
+                    attractor = self._telos_steward.attractor
+                    user_pa_text = " ".join(attractor.purpose)
+                    ai_pa_text = " ".join(attractor.boundaries) if attractor.boundaries else user_pa_text
+
+                    user_pa_embedding = embedding_provider.get_embedding(user_pa_text)
+                    ai_pa_embedding = embedding_provider.get_embedding(ai_pa_text)
+
+                    # Compute PS
+                    from telos_purpose.core.primacy_state import PrimacyStateMetrics
+                    ps_result = self._ps_calculator.compute_primacy_state(
+                        response_embedding=response_embedding,
+                        user_pa_embedding=user_pa_embedding,
+                        ai_pa_embedding=ai_pa_embedding
+                    )
+
+                    ps_metrics = ps_result.to_dict()
+                    logger.info(f"PS computed: {ps_metrics.get('ps_score', 0):.3f} "
+                              f"(F_user={ps_metrics.get('f_user', 0):.2f}, "
+                              f"F_AI={ps_metrics.get('f_ai', 0):.2f})")
+                except Exception as e:
+                    logger.debug(f"PS calculation failed: {e}")
 
             # Determine status
             if fidelity >= 0.9:
@@ -891,17 +971,19 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             else:
                 response_text = f"I'm designed to help explain TELOS governance and purpose alignment. Could you rephrase your question about TELOS? (Running in fallback mode due to {fallback_reason})"
 
-            fidelity = 0.85
-            distance = 0.15
+            fidelity = 0.0  # Fallback - no real governance running
+            distance = 0.0
             in_basin = True
             intervention_applied = False
+            logger.warning(f"Turn {turn_idx}: Using fallback response - no real fidelity available")
             status_icon, status_text = "✓", "Good"
 
         # Update the placeholder turn with actual response
         # current_turn_idx was set earlier (either in already_processing or when adding placeholder)
         if not already_processing:
             current_turn_idx = len(self.state.turns) - 1
-        self.state.turns[current_turn_idx].update({
+
+        turn_update = {
             'response': response_text,
             'fidelity': fidelity,
             'distance': distance,
@@ -911,7 +993,21 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             'status_text': status_text,
             'in_basin': in_basin,
             'is_loading': False  # Response is ready
-        })
+        }
+
+        # Add PS metrics if available
+        if ps_metrics:
+            turn_update['ps_metrics'] = ps_metrics
+            turn_update['primacy_state_score'] = ps_metrics.get('ps_score')
+            turn_update['primacy_state_condition'] = ps_metrics.get('condition')
+            turn_update['user_pa_fidelity'] = ps_metrics.get('f_user')
+            turn_update['ai_pa_fidelity'] = ps_metrics.get('f_ai')
+            turn_update['pa_correlation'] = ps_metrics.get('rho_pa')
+            turn_update['v_dual_energy'] = ps_metrics.get('v_dual')
+            turn_update['delta_v_dual'] = ps_metrics.get('delta_v')
+            turn_update['primacy_converging'] = ps_metrics.get('converging')
+
+        self.state.turns[current_turn_idx].update(turn_update)
 
         # Current turn is already set (done when we added placeholder)
 
@@ -968,8 +1064,41 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
         Yields:
             str: Response text chunks
         """
+        # AUDIT TRACE: Log entry to this method
+        logger.info("=" * 80)
+        logger.info(f"🔍 AUDIT: generate_response_stream() CALLED")
+        logger.info(f"   Turn: {turn_idx}")
+        logger.info(f"   Message: {message[:100]}")
+
+        # BETA MODE ROUTER: Check if we should use BetaResponseManager instead
+        active_tab = st.session_state.get('active_tab', 'DEMO')
+        pa_established = st.session_state.get('pa_established', False)
+
+        logger.info(f"🔍 AUDIT: Router check values:")
+        logger.info(f"   active_tab = '{active_tab}'")
+        logger.info(f"   pa_established = {pa_established}")
+        logger.info(f"   Condition (active_tab == 'BETA'): {active_tab == 'BETA'}")
+
+        if active_tab == 'BETA':
+            logger.info(f"🔍 AUDIT: BETA tab detected, checking PA...")
+            if pa_established:
+                logger.info(f"🔀 BETA MODE DETECTED - Routing to BetaResponseManager for turn {turn_idx}")
+                logger.info(f"🔍 AUDIT: Calling _generate_beta_stream()...")
+                # Route to BETA-specific response generation
+                yield from self._generate_beta_stream(message, turn_idx)
+                logger.info(f"🔍 AUDIT: Returned from _generate_beta_stream() - EXITING")
+                return
+            else:
+                logger.warning(f"🔍 AUDIT: BETA tab active but PA not established - falling back to standard flow")
+        else:
+            logger.info(f"🔍 AUDIT: Not BETA mode - using standard flow")
+
         # Initialize TELOS if not already done
         if not hasattr(self, '_telos_steward'):
+            logger.info("🔄 STEWARD RE-INITIALIZATION TRIGGERED")
+            logger.info(f"  - Session has PA: {st.session_state.get('primacy_attractor') is not None}")
+            logger.info(f"  - PA Established: {st.session_state.get('pa_established', False)}")
+
             from telos_observatory_v3.utils.telos_demo_data import generate_telos_demo_session
             from telos_purpose.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
             from telos_purpose.core.embedding_provider import SentenceTransformerProvider
@@ -993,24 +1122,54 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                     num_chunks = self._corpus_loader.load_corpus()
                     logger.info(f"✓ Corpus loaded: {num_chunks} chunks")
                 else:
-                    # Beta/Open mode: Minimal attractor for general conversation
-                    attractor = PrimacyAttractor(
-                        purpose=[
-                            "Engage in helpful, informative conversation",
-                            "Respond to user questions and requests",
-                            "Maintain conversational coherence"
-                        ],
-                        scope=[
-                            "General knowledge and assistance",
-                            "User's topics of interest",
-                            "Any subject the user wishes to discuss"
-                        ],
-                        boundaries=[
-                            "Maintain respectful dialogue",
-                            "Provide accurate information",
-                            "Stay within ethical guidelines"
-                        ]
-                    )
+                    # Beta/Open mode: Use established PA from session state
+                    pa_data = st.session_state.get('primacy_attractor', None)
+                    pa_established = st.session_state.get('pa_established', False)
+
+                    logger.info(f"🔍 PA Loading Debug:")
+                    logger.info(f"  - pa_data exists: {pa_data is not None}")
+                    logger.info(f"  - pa_established: {pa_established}")
+                    if pa_data:
+                        logger.info(f"  - PA Purpose: {pa_data.get('purpose', 'N/A')}")
+                        logger.info(f"  - PA Scope: {pa_data.get('scope', 'N/A')}")
+
+                    if pa_data and pa_established:
+                        # Use the PA established during onboarding
+                        # Convert strings to lists as PrimacyAttractor expects List[str]
+                        purpose_str = pa_data.get('purpose', 'General assistance')
+                        scope_str = pa_data.get('scope', 'Open discussion')
+
+                        attractor = PrimacyAttractor(
+                            purpose=[purpose_str] if isinstance(purpose_str, str) else purpose_str,
+                            scope=[scope_str] if isinstance(scope_str, str) else scope_str,
+                            boundaries=pa_data.get('boundaries', [
+                                "Maintain respectful dialogue",
+                                "Provide accurate information",
+                                "Stay within ethical guidelines"
+                            ])
+                        )
+                        logger.info(f"✅ Using established PA - Purpose: {purpose_str[:80]}")
+                        logger.info(f"✅ Using established PA - Scope: {scope_str[:80]}")
+                    else:
+                        # Fallback: Minimal attractor for general conversation (should rarely happen)
+                        attractor = PrimacyAttractor(
+                            purpose=[
+                                "Engage in helpful, informative conversation",
+                                "Respond to user questions and requests",
+                                "Maintain conversational coherence"
+                            ],
+                            scope=[
+                                "General knowledge and assistance",
+                                "User's topics of interest",
+                                "Any subject the user wishes to discuss"
+                            ],
+                            boundaries=[
+                                "Maintain respectful dialogue",
+                                "Provide accurate information",
+                                "Stay within ethical guidelines"
+                            ]
+                        )
+                        logger.warning("⚠️ No established PA found - using generic fallback")
                     self._corpus_loader = None
 
                 # Get API key from Streamlit secrets or environment
@@ -1026,12 +1185,11 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                     except (KeyError, FileNotFoundError):
                         pass
 
-                # Debug logging
-                if mistral_api_key:
-                    logger.info(f"Found MISTRAL_API_KEY: {mistral_api_key[:10]}... (length: {len(mistral_api_key)})")
-                else:
+                if not mistral_api_key:
                     logger.error("MISTRAL_API_KEY not found in environment or secrets")
                     raise ValueError("MISTRAL_API_KEY not found in secrets or environment")
+
+                logger.info("MISTRAL_API_KEY found and validated")
 
                 mistral_client = MistralClient(
                     api_key=mistral_api_key,
@@ -1045,6 +1203,12 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                     enable_interventions=False
                 )
                 self._telos_steward.start_session(session_id=self.state.session_id)
+
+                # Mark PA as converged if already established in BETA mode
+                if not demo_mode and st.session_state.get('pa_established', False):
+                    self.state.pa_converged = True
+                    logger.info("PA marked as converged (established via BETA questionnaire)")
+
                 logger.info("TELOS engine initialized successfully")
             except Exception as init_error:
                 logger.error(f"Failed to initialize TELOS engine: {init_error}")
@@ -1116,10 +1280,39 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                 model_response=full_response
             )
 
-            fidelity = result.get("telic_fidelity", 0.85)
-            distance = result.get("error_signal", 0.15)
+            fidelity = result.get("telic_fidelity", 0.0)  # Real value from TELOS
+            distance = result.get("error_signal", 0.0)
             in_basin = result.get("in_basin", True)
             intervention_applied = result.get("intervention_applied", False)
+
+            if fidelity == 0.0:
+                logger.warning(f"Turn {turn_idx}: No fidelity value from TELOS process_turn - investigation needed")
+
+            # Calculate Primacy State for streaming response
+            ps_metrics = None
+            if self._ps_calculator and hasattr(self._telos_steward, 'embedding_provider'):
+                try:
+                    embedding_provider = self._telos_steward.embedding_provider
+                    response_embedding = embedding_provider.get_embedding(full_response)
+
+                    attractor = self._telos_steward.attractor
+                    user_pa_text = " ".join(attractor.purpose)
+                    ai_pa_text = " ".join(attractor.boundaries) if attractor.boundaries else user_pa_text
+
+                    user_pa_embedding = embedding_provider.get_embedding(user_pa_text)
+                    ai_pa_embedding = embedding_provider.get_embedding(ai_pa_text)
+
+                    from telos_purpose.core.primacy_state import PrimacyStateMetrics
+                    ps_result = self._ps_calculator.compute_primacy_state(
+                        response_embedding=response_embedding,
+                        user_pa_embedding=user_pa_embedding,
+                        ai_pa_embedding=ai_pa_embedding
+                    )
+
+                    ps_metrics = ps_result.to_dict()
+                    logger.info(f"PS (streaming): {ps_metrics.get('ps_score', 0):.3f}")
+                except Exception as e:
+                    logger.debug(f"PS calculation failed (streaming): {e}")
 
             if fidelity >= 0.9:
                 status_icon, status_text = "✓", "Excellent"
@@ -1131,14 +1324,15 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                 status_icon, status_text = "⚠", "Drift"
         except Exception as telos_error:
             logger.error(f"TELOS processing error: {telos_error}")
-            fidelity = 0.85
-            distance = 0.15
+            fidelity = 0.0  # Error fallback - no real metrics available
+            distance = 0.0
             in_basin = True
             intervention_applied = False
+            logger.warning(f"Turn {turn_idx}: TELOS error - no real fidelity available")
             status_icon, status_text = "✓", "Good"
 
         # Update turn with final response and metrics
-        self.state.turns[turn_idx].update({
+        turn_update = {
             'response': full_response,
             'fidelity': fidelity,
             'distance': distance,
@@ -1148,7 +1342,21 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             'status_text': status_text,
             'in_basin': in_basin,
             'is_streaming': False  # Streaming complete
-        })
+        }
+
+        # Add PS metrics if available
+        if ps_metrics:
+            turn_update['ps_metrics'] = ps_metrics
+            turn_update['primacy_state_score'] = ps_metrics.get('ps_score')
+            turn_update['primacy_state_condition'] = ps_metrics.get('condition')
+            turn_update['user_pa_fidelity'] = ps_metrics.get('f_user')
+            turn_update['ai_pa_fidelity'] = ps_metrics.get('f_ai')
+            turn_update['pa_correlation'] = ps_metrics.get('rho_pa')
+            turn_update['v_dual_energy'] = ps_metrics.get('v_dual')
+            turn_update['delta_v_dual'] = ps_metrics.get('delta_v')
+            turn_update['primacy_converging'] = ps_metrics.get('converging')
+
+        self.state.turns[turn_idx].update(turn_update)
 
         # Update statistics
         fidelities = [t['fidelity'] for t in self.state.turns if t.get('fidelity') is not None]
@@ -1156,128 +1364,131 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
         self.state.total_interventions = sum(1 for t in self.state.turns if t.get('intervention_applied', False))
         self.state.drift_warnings = sum(1 for t in self.state.turns if t.get('drift_detected', False))
 
-        # Compute Primacy State if enabled (NEW)
-        if self.state.enable_primacy_state:
-            try:
-                ps_metrics = self.compute_primacy_state_for_turn(turn_idx)
-                if ps_metrics:
-                    # Store in turn data
-                    self.state.turns[turn_idx]['ps_metrics'] = ps_metrics
-                    # Update current metrics
-                    self.state.current_ps_metrics = ps_metrics
-                    # Add to history
-                    self.state.ps_history.append({
-                        'turn': turn_idx,
-                        'metrics': ps_metrics,
-                        'timestamp': self.state.turns[turn_idx].get('timestamp')
-                    })
-                    logger.info(f"PS computed: {ps_metrics.get('ps_score', 0):.3f} "
-                              f"(F_user={ps_metrics.get('f_user', 0):.2f}, "
-                              f"F_AI={ps_metrics.get('f_ai', 0):.2f})")
-            except Exception as e:
-                logger.warning(f"PS computation failed: {e}")
-
-    # =========================================================================
-    # Primacy State Methods (NEW)
-    # =========================================================================
-
-    def initialize_primacy_state(self, enable: bool = False, parallel_mode: bool = True):
+    def _generate_beta_stream(self, message: str, turn_idx: int):
         """
-        Initialize Primacy State calculation.
+        Generate response for BETA mode using BetaResponseManager.
+
+        This method routes BETA mode requests to the BetaResponseManager which:
+        1. Generates BOTH TELOS and Native responses
+        2. Uses active governance via generate_governed_response()
+        3. Stores complete data for Observatory review
+        4. Returns ONE response based on A/B test sequence
 
         Args:
-            enable: Whether to enable PS calculation
-            parallel_mode: Whether to run in parallel with fidelity for comparison
+            message: User's input message
+            turn_idx: Index of the turn to update
+
+        Yields:
+            str: The response to display (either TELOS or Native based on A/B sequence)
         """
-        self.state.enable_primacy_state = enable
-        self.state.ps_parallel_mode = parallel_mode
-
-        if enable and self._ps_calculator is None:
-            try:
-                from telos_purpose.core.primacy_state import PrimacyStateCalculator
-                self._ps_calculator = PrimacyStateCalculator(track_energy=True)
-                logger.info("Primacy State calculator initialized")
-            except ImportError as e:
-                logger.error(f"Failed to import PS calculator: {e}")
-                self.state.enable_primacy_state = False
-
-    def compute_primacy_state_for_turn(self, turn_idx: int) -> Optional[Dict[str, Any]]:
-        """
-        Compute Primacy State for a specific turn.
-
-        Args:
-            turn_idx: Index of the turn to compute PS for
-
-        Returns:
-            PS metrics dictionary or None if computation fails
-        """
-        if not self.state.enable_primacy_state or self._ps_calculator is None:
-            return None
+        logger.info("=" * 80)
+        logger.info(f"🔍 AUDIT: _generate_beta_stream() ENTERED")
+        logger.info(f"   Turn index: {turn_idx}")
+        logger.info(f"   Message: {message[:100]}")
 
         try:
-            # Get turn data
-            if turn_idx >= len(self.state.turns):
-                return None
+            # Initialize BetaResponseManager if needed
+            if 'beta_response_manager' not in st.session_state:
+                logger.info("🔍 AUDIT: BetaResponseManager not in session - initializing...")
+                logger.info("📦 Initializing BetaResponseManager")
+                from services.beta_response_manager import BetaResponseManager
+                # Pass backend client for delta transmission
+                backend = st.session_state.get('backend')
+                st.session_state.beta_response_manager = BetaResponseManager(self, backend)
+                logger.info("🔍 AUDIT: BetaResponseManager initialized successfully")
+            else:
+                logger.info("🔍 AUDIT: BetaResponseManager already exists in session")
 
-            turn = self.state.turns[turn_idx]
+            # Get beta sequence and current turn number
+            beta_sequence = st.session_state.get('beta_sequence', {})
+            turn_number = st.session_state.get('beta_current_turn', 1)
 
-            # Need embeddings to compute PS
-            # In a real implementation, these would come from the embedding service
-            # For now, we'll check if they're available in the turn data
-            response_embedding = turn.get('response_embedding')
-            user_pa_embedding = turn.get('user_pa_embedding')
-            ai_pa_embedding = turn.get('ai_pa_embedding')
+            logger.info(f"🔍 AUDIT: Beta session state:")
+            logger.info(f"   beta_current_turn = {turn_number}")
+            logger.info(f"   beta_sequence exists = {beta_sequence is not None}")
 
-            if response_embedding is None or user_pa_embedding is None or ai_pa_embedding is None:
-                logger.debug(f"Embeddings not available for turn {turn_idx}, skipping PS calculation")
-                return None
+            logger.info(f"🎯 BETA Turn {turn_number}: Generating dual responses (TELOS + Native)")
+            logger.info(f"🔍 AUDIT: Calling BetaResponseManager.generate_turn_responses()...")
 
-            # Compute PS
-            from telos_purpose.core.primacy_state import PrimacyStateMetrics
-            ps_metrics = self._ps_calculator.compute_primacy_state(
-                response_embedding=response_embedding,
-                user_pa_embedding=user_pa_embedding,
-                ai_pa_embedding=ai_pa_embedding
+            # Generate BOTH responses via BetaResponseManager
+            response_data = st.session_state.beta_response_manager.generate_turn_responses(
+                user_input=message,
+                turn_number=turn_number,
+                sequence=beta_sequence
             )
 
-            # Convert to dict for storage
-            return ps_metrics.to_dict()
+            logger.info(f"🔍 AUDIT: Returned from BetaResponseManager.generate_turn_responses()")
+            logger.info(f"   response_data keys: {list(response_data.keys())}")
+
+            # Extract which response to show and metrics
+            shown_response = response_data.get('shown_response', '')
+            shown_source = response_data.get('shown_source', 'unknown')
+            telos_analysis = response_data.get('telos_analysis', {})
+
+            logger.info(f"🔍 AUDIT: Response extraction:")
+            logger.info(f"   shown_source = '{shown_source}'")
+            logger.info(f"   shown_response length = {len(shown_response)}")
+            logger.info(f"   telos_analysis keys = {list(telos_analysis.keys())}")
+
+            logger.info(f"📤 Displaying: {shown_source} response")
+            logger.info(f"📊 TELOS Fidelity: {telos_analysis.get('fidelity_score', 'N/A')}")
+
+            # Yield the displayed response
+            yield shown_response
+
+            # Update turn with REAL metrics from TELOS analysis
+            turn = self.state.turns[turn_idx]
+            turn['response'] = shown_response
+            turn['fidelity'] = telos_analysis.get('fidelity_score', 0.0)
+            turn['distance'] = telos_analysis.get('distance_from_pa', 0.0)
+            turn['intervention_applied'] = telos_analysis.get('intervention_triggered', False)
+            turn['drift_detected'] = telos_analysis.get('drift_detected', False)
+            turn['in_basin'] = telos_analysis.get('in_basin', True)
+            turn['is_streaming'] = False
+            turn['is_loading'] = False
+
+            # Store BETA-specific metadata
+            turn['beta_shown_source'] = shown_source
+            turn['beta_test_type'] = response_data.get('test_type', 'unknown')
+
+            # Store comparison data for head-to-head turns
+            if response_data.get('comparison_mode', False):
+                turn['comparison_mode'] = True
+                turn['response_a'] = response_data.get('response_a', '')  # TELOS
+                turn['response_b'] = response_data.get('response_b', '')  # Native
+                turn['beta_data'] = {
+                    'telos_fidelity': telos_analysis.get('fidelity_score', 0.0),
+                    'comparison_mode': True
+                }
+            else:
+                turn['beta_data'] = {
+                    'telos_fidelity': telos_analysis.get('fidelity_score', 0.0),
+                    'shown_response_source': shown_source
+                }
+
+            # Log metrics for verification
+            if turn['fidelity'] < 0.3:
+                logger.warning(f"⚠️ Low fidelity detected: {turn['fidelity']:.3f} - Drift alert!")
+
+            # Increment beta turn counter
+            st.session_state.beta_current_turn = turn_number + 1
+
+            logger.info(f"✅ BETA Turn {turn_number} complete - Next turn: {turn_number + 1}")
 
         except Exception as e:
-            logger.error(f"Error computing PS for turn {turn_idx}: {e}")
-            return None
+            logger.error(f"❌ BETA stream generation failed: {e}")
+            logger.error(f"   Exception type: {type(e).__name__}")
+            import traceback
+            logger.error(f"   Traceback: {traceback.format_exc()}")
 
-    def get_primacy_state_summary(self) -> Dict[str, Any]:
-        """
-        Get summary of Primacy State across session.
+            # Fallback to simple response
+            fallback_response = "I apologize, but I encountered an error in BETA mode. Please try again."
+            yield fallback_response
 
-        Returns:
-            Summary statistics of PS metrics
-        """
-        if not self.state.ps_history:
-            return {
-                'enabled': self.state.enable_primacy_state,
-                'turns_computed': 0,
-                'avg_ps': 0.0,
-                'current_ps': None
-            }
-
-        ps_scores = [h['metrics']['primacy_state_score'] for h in self.state.ps_history]
-        f_user_scores = [h['metrics']['user_pa_fidelity'] for h in self.state.ps_history]
-        f_ai_scores = [h['metrics']['ai_pa_fidelity'] for h in self.state.ps_history]
-
-        return {
-            'enabled': self.state.enable_primacy_state,
-            'turns_computed': len(self.state.ps_history),
-            'avg_ps': sum(ps_scores) / len(ps_scores) if ps_scores else 0.0,
-            'avg_f_user': sum(f_user_scores) / len(f_user_scores) if f_user_scores else 0.0,
-            'avg_f_ai': sum(f_ai_scores) / len(f_ai_scores) if f_ai_scores else 0.0,
-            'current_ps': self.state.current_ps_metrics,
-            'parallel_mode': self.state.ps_parallel_mode
-        }
-
-    def toggle_primacy_state(self):
-        """Toggle Primacy State calculation on/off."""
-        new_state = not self.state.enable_primacy_state
-        self.initialize_primacy_state(enable=new_state)
-        logger.info(f"Primacy State {'enabled' if new_state else 'disabled'}")
+            # Update turn with minimal data
+            turn = self.state.turns[turn_idx]
+            turn['response'] = fallback_response
+            turn['fidelity'] = 0.0
+            turn['is_streaming'] = False
+            turn['is_loading'] = False
+            turn['error'] = str(e)

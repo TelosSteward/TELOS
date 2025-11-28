@@ -19,38 +19,220 @@ class ObservationDeck:
 
     def render(self):
         """Render the observation deck panel."""
+        # Don't render anything if we're in demo mode on the observation deck slide (index 4)
+        # (that slide has its own embedded observation deck)
+        mode = st.session_state.get('active_tab', 'DEMO')
+        demo_slide_index = st.session_state.get('demo_slide_index', 0)
+        if mode == 'DEMO' and demo_slide_index == 4:
+            return
+
         turn_data = self.state_manager.get_current_turn_data()
 
+        # Always show expanded content when rendered
+        # (visibility is controlled by the button in main.py)
+
+        st.markdown("---")
+
+        # Show demo PA if no turn data yet (for demo slides)
         if not turn_data:
-            # No turns yet - don't show anything (clean state)
-            return
+            self._render_demo_pa()
+        else:
+            # Metrics readout section
+            self._render_metrics(turn_data)
 
-        # Check if deck is expanded
-        is_expanded = self.state_manager.is_deck_expanded()
+        # Only show View Options in BETA mode or higher (not in DEMO)
+        mode = st.session_state.get('active_tab', 'DEMO')
+        if mode != 'DEMO':
+            st.markdown("---")
+            # View Options Toggles
+            self._render_view_options()
 
-        if not is_expanded:
-            # Collapsed state - thin gold bar
-            if st.button("Observation Deck - Click to expand", key="deck_toggle_collapsed", use_container_width=True):
-                self.state_manager.toggle_deck()
+        # Add navigation and Hide button at bottom of expanded Observation Deck
+        st.markdown("---")
+
+        # ALWAYS show 3-button navigation layout (Previous/Hide/Next)
+        # Mode detection happens in parent, we just render the controls
+        demo_slide_index = st.session_state.get('demo_slide_index', 0)
+
+        # Render navigation row without background
+        st.markdown("<div style='margin: 20px 0; padding: 10px;'>", unsafe_allow_html=True)
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            # Always show button, enable/disable based on slide position
+            is_disabled = (demo_slide_index <= 0)
+            if st.button(
+                "⬅️ Previous",
+                key="obs_deck_prev",
+                use_container_width=True,
+                disabled=is_disabled,
+                help="Go to previous slide" if not is_disabled else "Already at first slide",
+                type="secondary"
+            ):
+                if demo_slide_index > 0:
+                    st.session_state.demo_slide_index = max(0, demo_slide_index - 1)
+                    st.rerun()
+
+        with col2:
+            if st.button(
+                "Hide Observation Deck",
+                key="hide_obs_deck_bottom",
+                use_container_width=True,
+                help="Close the Observation Deck",
+                type="primary"
+            ):
+                st.session_state.show_observation_deck = False
                 st.rerun()
-            return
 
-        # Expanded state - show all content
-        if st.button("▼ Collapse Observation Deck", key="deck_toggle_expanded", use_container_width=True):
-            self.state_manager.toggle_deck()
-            st.rerun()
+        with col3:
+            max_slide = 15  # 0=welcome, 1=intro, 2=PA setup, 3-14=Q&A (12 slides), 15=completion
+            is_disabled = (demo_slide_index >= max_slide)
+            if st.button(
+                "Next ➡️",
+                key="obs_deck_next",
+                use_container_width=True,
+                disabled=is_disabled,
+                help="Go to next slide" if not is_disabled else "Already at last slide",
+                type="secondary"
+            ):
+                if demo_slide_index < max_slide:
+                    st.session_state.demo_slide_index = min(max_slide, demo_slide_index + 1)
+                    st.rerun()
 
-        st.markdown("---")
+        st.markdown("</div>", unsafe_allow_html=True)
 
-        # Metrics readout section
-        self._render_metrics(turn_data)
+    def _render_demo_pa(self):
+        """Render demo Primacy Attractors (both User PA and AI PA) side-by-side with fidelity metrics."""
+        # Centered container matching chat window style
+        st.markdown("""
+        <style>
+        .pa-main-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 0 10px;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
-        st.markdown("---")
+        # Wrap everything in centered container
+        st.markdown('<div class="pa-main-container">', unsafe_allow_html=True)
 
-        # View Options Toggles
-        self._render_view_options()
+        # Main container with gold border
+        st.markdown("""
+        <div style="
+            background-color: #1a1a1a;
+            border: 3px solid #F4D03F;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px auto;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        ">
+        """, unsafe_allow_html=True)
 
-    def _render_metric_window(self, title, value, icon, description, value_color="#FFD700"):
+        # PA Established indicator
+        st.markdown("""
+        <div style="text-align: center; margin-bottom: 15px;">
+            <span style="background-color: #2d2d2d; border: 1px solid #4CAF50; border-radius: 20px; padding: 5px 15px; color: #4CAF50; font-weight: bold; font-size: 14px;">
+                ✓ Dual PAs Established - Primacy Basin Achieved
+            </span>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown('<div style="color: #F4D03F; text-align: center; font-size: 22px; font-weight: bold; margin-bottom: 20px;">Dual Primacy Attractors</div>', unsafe_allow_html=True)
+
+        # Fidelity Metrics using table layout
+        st.markdown("""
+        <table style="width: 100%; margin-bottom: 15px;">
+        <tr>
+            <td style="width: 33%; text-align: center;">
+                <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #4CAF50; border-radius: 8px; padding: 10px; display: inline-block;">
+                    <div style="color: #4CAF50; font-size: 12px; margin-bottom: 5px;">👤 User Fidelity</div>
+                    <div style="color: #4CAF50; font-size: 24px; font-weight: bold;">1.000</div>
+                </div>
+            </td>
+            <td style="width: 34%; text-align: center; padding: 0 10px;">
+                <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #F4D03F; border-radius: 8px; padding: 10px 20px; display: inline-block;">
+                    <div style="color: #F4D03F; font-size: 12px; margin-bottom: 5px;">🎯 Primacy State</div>
+                    <div style="color: #F4D03F; font-size: 24px; font-weight: bold;">1.000</div>
+                    <div style="color: #888; font-size: 10px; margin-top: 5px;">Perfect Equilibrium</div>
+                </div>
+            </td>
+            <td style="width: 33%; text-align: center;">
+                <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #F4D03F; border-radius: 8px; padding: 10px; display: inline-block;">
+                    <div style="color: #F4D03F; font-size: 12px; margin-bottom: 5px;">🤖 AI Fidelity</div>
+                    <div style="color: #F4D03F; font-size: 24px; font-weight: bold;">1.000</div>
+                </div>
+            </td>
+        </tr>
+        </table>
+        """, unsafe_allow_html=True)
+
+        # Two-column layout for PAs using table
+        st.markdown("""
+        <table style="width: 100%; border-spacing: 15px;">
+        <tr>
+            <td style="width: 50%; vertical-align: top; padding: 0;">
+                <!-- LEFT COLUMN: USER PA -->
+                <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #4CAF50; border-radius: 8px; padding: 15px;">
+                    <div style="color: #4CAF50; font-weight: bold; text-align: center; font-size: 16px; margin-bottom: 15px;">
+                        User Primacy Attractor
+                    </div>
+                    <div style="color: #4CAF50; font-weight: bold; margin-bottom: 8px; font-size: 14px;">Your Purpose</div>
+                    <div style="color: #e0e0e0; line-height: 1.5; font-size: 13px;">
+                        • Understand TELOS without technical overwhelm<br>
+                        • Learn how purpose alignment keeps AI focused<br>
+                        • See real examples of governance in action
+                    </div>
+                </div>
+            </td>
+
+            <td style="width: 50%; vertical-align: top; padding: 0;">
+                <!-- RIGHT COLUMN: AI PA -->
+                <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #F4D03F; border-radius: 8px; padding: 15px; margin-bottom: 10px;">
+                    <div style="color: #F4D03F; font-weight: bold; text-align: center; font-size: 16px; margin-bottom: 15px;">
+                        AI Primacy Attractor
+                    </div>
+                    <div style="color: #F4D03F; font-weight: bold; margin-bottom: 8px; font-size: 14px;">Purpose</div>
+                    <div style="color: #e0e0e0; line-height: 1.5; font-size: 13px;">
+                        • Help you understand TELOS naturally<br>
+                        • Stay aligned with your learning goals<br>
+                        • Embody human dignity through action
+                    </div>
+                </div>
+
+                <!-- AI Scope -->
+                <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #F4D03F; border-radius: 8px; padding: 12px; margin-bottom: 10px;">
+                    <div style="color: #F4D03F; font-weight: bold; margin-bottom: 8px; font-size: 14px;">Scope</div>
+                    <div style="color: #e0e0e0; line-height: 1.5; font-size: 13px;">
+                        • TELOS dual attractor system<br>
+                        • Perfect equilibrium & primacy basin<br>
+                        • Real-time drift detection<br>
+                        • Trust through transparency
+                    </div>
+                </div>
+
+                <!-- AI Boundaries -->
+                <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #F4D03F; border-radius: 8px; padding: 12px;">
+                    <div style="color: #F4D03F; font-weight: bold; margin-bottom: 8px; font-size: 14px;">Boundaries</div>
+                    <div style="color: #e0e0e0; line-height: 1.5; font-size: 13px;">
+                        • Answer what you asked<br>
+                        • Stay conversational<br>
+                        • 2-3 paragraphs max<br>
+                        • No technical jargon
+                    </div>
+                </div>
+            </td>
+        </tr>
+        </table>
+        """, unsafe_allow_html=True)
+
+        # Close main container
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        # Close centered container
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    def _render_metric_window(self, title, value, icon, description, value_color="#F4D03F"):
         """Render a compact gold-themed metric window.
 
         Args:
@@ -63,7 +245,7 @@ class ObservationDeck:
         st.markdown(f"""
         <div style="
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border: 1px solid #FFD700;
+            border: 1px solid #F4D03F;
             border-radius: 8px;
             padding: 6px 8px;
             margin-bottom: 6px;
@@ -71,7 +253,7 @@ class ObservationDeck:
         ">
             <div style="display: flex; align-items: center; margin-bottom: 3px;">
                 <span style="font-size: 16px; margin-right: 6px;">{icon}</span>
-                <span style="color: #FFD700; font-size: 10px; font-weight: bold;">
+                <span style="color: #F4D03F; font-size: 10px; font-weight: bold;">
                     {title}
                 </span>
             </div>
@@ -92,38 +274,75 @@ class ObservationDeck:
 
     def _render_metrics(self, turn_data):
         """Render metrics readout section."""
-        col1, col2, col3, col4 = st.columns(4)
+        # First row: User and AI Fidelity (the dual attractors)
+        col1, col2 = st.columns(2)
 
         with col1:
+            user_fidelity = turn_data.get('user_fidelity', 1.0)
+            # 4-tier color system: Green (≥0.85) | Yellow (0.70-0.85) | Orange (0.50-0.70) | Red (<0.50)
+            if user_fidelity >= 0.85:
+                user_color = "#4CAF50"  # Green
+            elif user_fidelity >= 0.70:
+                user_color = "#F4D03F"  # Yellow
+            elif user_fidelity >= 0.50:
+                user_color = "#FFA500"  # Orange
+            else:
+                user_color = "#FF4444"  # Red
             self._render_metric_card(
-                "Alignment Fidelity",
-                f"{turn_data.get('fidelity', 0.0):.3f}",
-                "📊",
-                "Measure of response alignment"
+                "User Fidelity",
+                f"{user_fidelity:.3f}",
+                "👤",
+                "Your alignment to your PA",
+                value_color=user_color
             )
 
         with col2:
+            ai_fidelity = turn_data.get('ai_fidelity', 1.0)
+            # 4-tier color system: Green (≥0.85) | Yellow (0.70-0.85) | Orange (0.50-0.70) | Red (<0.50)
+            if ai_fidelity >= 0.85:
+                ai_color = "#4CAF50"  # Green
+            elif ai_fidelity >= 0.70:
+                ai_color = "#F4D03F"  # Yellow
+            elif ai_fidelity >= 0.50:
+                ai_color = "#FFA500"  # Orange
+            else:
+                ai_color = "#FF4444"  # Red
             self._render_metric_card(
-                "Semantic Distance",
-                f"{turn_data.get('distance', 0.0):.3f}",
-                "📏",
-                "Distance from ideal response"
+                "AI Fidelity",
+                f"{ai_fidelity:.3f}",
+                "🤖",
+                "My alignment to serve you",
+                value_color=ai_color
             )
 
+        # Second row: Primacy State and Intervention Status
+        col3, col4 = st.columns(2)
+
         with col3:
-            status = turn_data.get('status_text', 'Nominal')
-            status_color = "#4CAF50" if status == "Nominal" else "#FFA500"
+            # Calculate Primacy State from both fidelities
+            user_f = turn_data.get('user_fidelity', 1.0)
+            ai_f = turn_data.get('ai_fidelity', 1.0)
+            primacy_state = turn_data.get('primacy_state', (user_f * ai_f))  # Simple PS approximation
+            # 4-tier color system: Green (≥0.85) | Yellow (0.70-0.85) | Orange (0.50-0.70) | Red (<0.50)
+            if primacy_state >= 0.85:
+                ps_color = "#4CAF50"  # Green
+            elif primacy_state >= 0.70:
+                ps_color = "#F4D03F"  # Yellow
+            elif primacy_state >= 0.50:
+                ps_color = "#FFA500"  # Orange
+            else:
+                ps_color = "#FF4444"  # Red
             self._render_metric_card(
-                "System Status",
-                status,
-                "⚡",
-                "Current operational status",
-                value_color=status_color
+                "Primacy State",
+                f"{primacy_state:.3f}",
+                "🎯",
+                "Dynamic equilibrium between your goals and AI alignment",
+                value_color=ps_color
             )
 
         with col4:
             intervention = "ACTIVE" if turn_data.get('intervention_applied', False) else "STANDBY"
-            intervention_color = "#FFD700" if intervention == "ACTIVE" else "#4CAF50"
+            intervention_color = "#F4D03F" if intervention == "ACTIVE" else "#4CAF50"
             self._render_metric_card(
                 "Intervention Status",
                 intervention,
@@ -132,18 +351,18 @@ class ObservationDeck:
                 value_color=intervention_color
             )
 
-    def _render_metric_card(self, title, value, icon, description, value_color="#FFD700"):
+    def _render_metric_card(self, title, value, icon, description, value_color="#F4D03F"):
         """Render a single metric card."""
         st.markdown(f"""
         <div style="
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border: 1px solid #FFD700;
+            border: 1px solid #F4D03F;
             border-radius: 8px;
             padding: 10px;
             text-align: center;
         ">
             <div style="font-size: 20px; margin-bottom: 5px;">{icon}</div>
-            <div style="color: #FFD700; font-size: 10px; font-weight: bold; margin-bottom: 5px;">
+            <div style="color: #F4D03F; font-size: 10px; font-weight: bold; margin-bottom: 5px;">
                 {title}
             </div>
             <div style="

@@ -1,5 +1,6 @@
 # TELOS Observatory V3 - Python Dependencies
-# Last updated: November 5, 2025
+# Last updated: November 21, 2025
+# Optimized for Streamlit Cloud deployment
 
 # Core Framework
 streamlit>=1.28.0
@@ -13,14 +14,20 @@ numpy>=1.24.0                         # Numerical operations
 # Data Processing
 pandas>=2.0.0                         # Data manipulation and analysis
 
-# Database
-supabase>=2.0.0                       # Supabase client for delta storage
-
 # LLM Clients (optional - for extended features)
 anthropic>=0.25.0                     # Claude API (for comparisons)
 
 # Configuration & Security
 python-dotenv>=1.0.0                  # Environment variable management
+
+# Backend Storage
+supabase>=2.0.0                       # Telemetry storage backend
+
+# File Processing
+PyPDF2>=3.0.0                         # PDF text extraction
+python-docx>=0.8.11                   # DOCX document processing
+openpyxl>=3.1.0                       # XLSX spreadsheet processing
+Pillow>=10.0.0                        # Image processing and handling
 
 # Optional: Development & Testing
 # pytest>=7.4.0                       # Testing framework

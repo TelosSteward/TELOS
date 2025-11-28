@@ -39,35 +39,33 @@ class ObservatoryLens:
         """Render the Observatory Lens dashboard."""
         # Check if lens should be shown
         if not self.state_manager.state.show_observatory_lens:
-            # Collapsed state - thin gold bar with expand prompt
-            if st.button(
-                "🔭 Observatory Lens - Click to expand (Shift+L)",
-                key="observatory_lens_collapsed",
-                use_container_width=True
-            ):
-                self.state_manager.toggle_component('observatory_lens')
-                st.rerun()
             return
 
-        # Expanded state - full dashboard
-        # CRITICAL: Force dark background to prevent white flashing
+        # Expanded state - full dashboard with dark theme
         st.markdown("""
         <style>
         /* Force dark background for main content area */
         .main, .stApp {
             background-color: #0E1117 !important;
         }
+
+        /* Force dark background for all containers */
+        [data-testid="stVerticalBlock"],
+        [data-testid="stHorizontalBlock"],
+        .element-container {
+            background-color: transparent !important;
+        }
         </style>
 
         <div style="
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-            border: 2px solid #FFD700;
+            border: 2px solid #F4D03F;
             border-radius: 10px;
             padding: 20px;
             margin-top: 20px;
         ">
             <div style="text-align: center; margin-bottom: 20px;">
-                <h2 style="color: #FFD700; margin: 0; font-weight: bold; letter-spacing: 2px;">
+                <h2 style="color: #F4D03F; margin: 0; font-weight: bold; letter-spacing: 2px;">
                     🔭 OBSERVATORY LENS
                 </h2>
                 <p style="color: #888; font-size: 12px; margin: 5px 0 0 0;">
@@ -126,30 +124,18 @@ class ObservatoryLens:
         with bottom_col3:
             self._render_session_statistics()
 
-    # =========================================================================
-    # Individual Visualization Components (Phase 2-4 implementation)
-    # =========================================================================
-
     def _render_basin_visualization(self):
-        """Render Basin Visualization (spacecraft navigation display)."""
-        # Get turn data
+        """Render Basin Visualization (3D safe zone)."""
         turns = self.state_manager.get_all_turns()
 
-        # Generate 3D positions for visualization (simulated embedding space projection)
-        # In production, this would use actual embedding vectors
-        np.random.seed(42)  # Consistent positions for demo
-
-        positions = []
-        colors = []
-        sizes = []
-        hover_texts = []
+        np.random.seed(42)
+        positions, colors, sizes, hover_texts = [], [], [], []
 
         for turn in turns:
             fidelity = turn.get('fidelity', 0.0)
             turn_num = turn.get('turn', 0)
 
-            # Simulate 3D position based on fidelity (closer to center = higher fidelity)
-            distance = (1.0 - fidelity) * 2.0  # Scale distance inversely to fidelity
+            distance = (1.0 - fidelity) * 2.0
             angle1 = np.random.uniform(0, 2 * np.pi)
             angle2 = np.random.uniform(0, np.pi)
 
@@ -158,57 +144,37 @@ class ObservatoryLens:
             z = distance * np.cos(angle2)
 
             positions.append([x, y, z])
-
-            # Color by fidelity
-            if fidelity >= 0.8:
-                colors.append('#00FF00')  # Green (safe)
-            elif fidelity >= 0.7:
-                colors.append('#FFD700')  # Yellow (warning)
+            # 4-tier color system: Green (≥0.85) | Yellow (0.70-0.85) | Orange (0.50-0.70) | Red (<0.50)
+            if fidelity >= 0.85:
+                point_color = '#4CAF50'  # Green
+            elif fidelity >= 0.70:
+                point_color = '#F4D03F'  # Yellow
+            elif fidelity >= 0.50:
+                point_color = '#FFA500'  # Orange
             else:
-                colors.append('#FF0000')  # Red (danger)
-
+                point_color = '#FF4444'  # Red
+            colors.append(point_color)
             sizes.append(8)
             hover_texts.append(f"Turn {turn_num + 1}<br>Fidelity: {fidelity:.3f}")
 
-        # Create 3D scatter plot
         fig = go.Figure()
 
-        # Add response points
         if positions:
             positions = np.array(positions)
             fig.add_trace(go.Scatter3d(
-                x=positions[:, 0],
-                y=positions[:, 1],
-                z=positions[:, 2],
+                x=positions[:, 0], y=positions[:, 1], z=positions[:, 2],
                 mode='markers',
-                marker=dict(
-                    size=sizes,
-                    color=colors,
-                    line=dict(color='#FFD700', width=1)
-                ),
-                text=hover_texts,
-                hoverinfo='text',
-                name='Responses'
+                marker=dict(size=sizes, color=colors, line=dict(color='#F4D03F', width=1)),
+                text=hover_texts, hoverinfo='text', name='Responses'
             ))
 
-        # Add PA center (gold star at origin)
         fig.add_trace(go.Scatter3d(
-            x=[0],
-            y=[0],
-            z=[0],
+            x=[0], y=[0], z=[0],
             mode='markers',
-            marker=dict(
-                size=20,
-                color='#FFD700',
-                symbol='diamond',
-                line=dict(color='#FFFFFF', width=2)
-            ),
-            text=['Primacy Attractor<br>Center of Basin'],
-            hoverinfo='text',
-            name='PA Center'
+            marker=dict(size=20, color='#F4D03F', symbol='diamond', line=dict(color='#FFFFFF', width=2)),
+            text=['Primacy Attractor<br>Center of Basin'], hoverinfo='text', name='PA Center'
         ))
 
-        # Add threshold sphere (0.7 fidelity = distance ~0.6)
         threshold_radius = 0.6
         u = np.linspace(0, 2 * np.pi, 20)
         v = np.linspace(0, np.pi, 20)
@@ -217,125 +183,65 @@ class ObservatoryLens:
         sphere_z = threshold_radius * np.outer(np.ones(np.size(u)), np.cos(v))
 
         fig.add_trace(go.Surface(
-            x=sphere_x,
-            y=sphere_y,
-            z=sphere_z,
-            opacity=0.1,
-            colorscale=[[0, '#FFD700'], [1, '#FFD700']],
-            showscale=False,
-            hoverinfo='skip',
-            name='Safe Basin'
+            x=sphere_x, y=sphere_y, z=sphere_z,
+            opacity=0.1, colorscale=[[0, '#F4D03F'], [1, '#F4D03F']],
+            showscale=False, hoverinfo='skip', name='Safe Basin'
         ))
 
-        # Update layout with camera animation
         fig.update_layout(
             scene=dict(
                 xaxis=dict(showbackground=False, showgrid=False, showticklabels=False, title=''),
                 yaxis=dict(showbackground=False, showgrid=False, showticklabels=False, title=''),
                 zaxis=dict(showbackground=False, showgrid=False, showticklabels=False, title=''),
                 bgcolor='#1a1a1a',
-                camera=dict(
-                    eye=dict(x=1.5, y=1.5, z=1.3)
-                )
+                camera=dict(eye=dict(x=1.5, y=1.5, z=1.3))
             ),
-            paper_bgcolor='#1a1a1a',
-            plot_bgcolor='#1a1a1a',
-            showlegend=False,
-            height=280,
-            margin=dict(l=0, r=0, t=30, b=0),
-            transition={'duration': 500}
+            paper_bgcolor='#1a1a1a', plot_bgcolor='#1a1a1a',
+            showlegend=False, height=280, margin=dict(l=0, r=0, t=30, b=0)
         )
 
-        # Render with header
-        st.markdown("""
-        <div style="
-            background: #1a1a1a;
-            border: 1px solid #FFD700;
-            border-radius: 8px;
-            padding: 10px;
-        ">
-        """, unsafe_allow_html=True)
-
-        st.plotly_chart(fig, use_container_width=True, key=f"basin_viz_{self.state_manager.state.current_turn}")
-
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.plotly_chart(fig, use_container_width=True, key=f"basin_{self.state_manager.state.current_turn}")
 
     def _render_fidelity_gauge(self):
-        """Render Fidelity Gauge (speedometer/vital signs monitor)."""
-        # Get current fidelity
+        """Render Fidelity Gauge (speedometer)."""
         current_turn = self.state_manager.get_current_turn_data()
         fidelity = current_turn.get('fidelity', 0.0) if current_turn else 0.0
 
-        # Create Plotly gauge
         fig = go.Figure(go.Indicator(
             mode="gauge+number+delta",
             value=fidelity,
             domain={'x': [0, 1], 'y': [0, 1]},
-            title={'text': "Fidelity Score", 'font': {'size': 16, 'color': '#FFD700'}},
-            number={'font': {'size': 40, 'color': '#FFD700'}, 'valueformat': '.3f'},
+            title={'text': "Fidelity", 'font': {'size': 16, 'color': '#F4D03F'}},
+            number={'font': {'size': 40, 'color': '#F4D03F'}, 'valueformat': '.3f'},
             delta={'reference': 0.8, 'increasing': {'color': "#00FF00"}, 'decreasing': {'color': "#FF0000"}},
             gauge={
-                'axis': {'range': [0, 1], 'tickwidth': 1, 'tickcolor': "#FFD700"},
-                'bar': {'color': "#FFD700"},
+                'axis': {'range': [0, 1], 'tickwidth': 1, 'tickcolor': "#F4D03F"},
+                'bar': {'color': "#F4D03F"},
                 'bgcolor': "#1a1a1a",
-                'borderwidth': 2,
-                'bordercolor': "#FFD700",
+                'borderwidth': 2, 'bordercolor': "#F4D03F",
                 'steps': [
-                    {'range': [0, 0.7], 'color': '#330000'},      # Red zone (danger)
-                    {'range': [0.7, 0.8], 'color': '#333300'},    # Yellow zone (warning)
-                    {'range': [0.8, 1.0], 'color': '#003300'}     # Green zone (safe)
+                    {'range': [0, 0.7], 'color': '#330000'},
+                    {'range': [0.7, 0.8], 'color': '#333300'},
+                    {'range': [0.8, 1.0], 'color': '#003300'}
                 ],
-                'threshold': {
-                    'line': {'color': "#FF0000", 'width': 4},
-                    'thickness': 0.75,
-                    'value': 0.7  # Intervention threshold
-                }
+                'threshold': {'line': {'color': "#FF0000", 'width': 4}, 'thickness': 0.75, 'value': 0.7}
             }
         ))
 
-        # Update layout for dark theme with animations
         fig.update_layout(
-            paper_bgcolor='#1a1a1a',
-            plot_bgcolor='#1a1a1a',
-            font={'color': '#e0e0e0'},
-            height=280,
-            margin=dict(l=20, r=20, t=50, b=20),
-            transition={'duration': 500, 'easing': 'cubic-in-out'}
+            paper_bgcolor='#1a1a1a', plot_bgcolor='#1a1a1a',
+            font={'color': '#e0e0e0'}, height=280, margin=dict(l=20, r=20, t=50, b=20)
         )
 
-        # Render with header
-        st.markdown("""
-        <div style="
-            background: #1a1a1a;
-            border: 1px solid #FFD700;
-            border-radius: 8px;
-            padding: 10px;
-        ">
-        """, unsafe_allow_html=True)
-
-        st.plotly_chart(fig, use_container_width=True, key=f"fidelity_gauge_{self.state_manager.state.current_turn}")
-
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.plotly_chart(fig, use_container_width=True, key=f"gauge_{self.state_manager.state.current_turn}")
 
     def _render_intervention_pipeline(self):
-        """Render Intervention Pipeline (three-tier defense system)."""
+        """Render Intervention Pipeline (three-tier defense)."""
         st.markdown("""
-        <div style="
-            background: #1a1a1a;
-            border: 1px solid #FFD700;
-            border-radius: 8px;
-            padding: 15px;
-            height: 300px;
-        ">
-            <h4 style="color: #FFD700; margin: 0 0 10px 0;">Defense Pipeline</h4>
-            <p style="color: #888; font-size: 11px;">Three-tier governance system</p>
-            <div style="
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                height: 220px;
-                color: #888;
-            ">
+        <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid #F4D03F; border-radius: 8px; padding: 15px; height: 300px; box-shadow: 0 0 15px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);">
+            <h4 style="color: #F4D03F; margin: 0 0 10px 0;">Defense Pipeline</h4>
+            <p style="color: #888; font-size: 11px;">Three-tier governance</p>
+            <div style="display: flex; flex-direction: column; justify-content: center; height: 220px;">
                 <div style="padding: 10px; background: #0a0a0a; border-radius: 5px; margin: 5px 0;">
                     <strong style="color: #00FF00;">Tier 1:</strong> PA Math ✓
                 </div>
@@ -350,172 +256,92 @@ class ObservatoryLens:
         """, unsafe_allow_html=True)
 
     def _render_embedding_space(self):
-        """Render Embedding Space Viewer (gravitational field visualization)."""
-        # Get turn data
+        """Render Embedding Space (2D semantic space)."""
         turns = self.state_manager.get_all_turns()
 
         if not turns:
             st.markdown("""
-            <div style="background: #1a1a1a; border: 1px solid #FFD700; border-radius: 8px; padding: 15px; height: 350px;">
-                <h4 style="color: #FFD700; margin: 0 0 10px 0;">Embedding Space</h4>
-                <p style="color: #888; font-size: 11px;">Semantic space with PA center (2D projection)</p>
+            <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid #F4D03F; border-radius: 8px; padding: 15px; height: 350px; box-shadow: 0 0 15px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);">
+                <h4 style="color: #F4D03F;">Embedding Space</h4>
                 <div style="display: flex; align-items: center; justify-content: center; height: 270px; color: #888;">
-                    No conversation data yet
+                    No data yet
                 </div>
             </div>
             """, unsafe_allow_html=True)
             return
 
-        # Simulate 2D embedding projection (in production, use actual embeddings + t-SNE)
         np.random.seed(42)
-
-        positions_2d = []
-        colors = []
-        sizes = []
-        hover_texts = []
+        positions_2d, colors, sizes, hover_texts = [], [], [], []
 
         for turn in turns:
             fidelity = turn.get('fidelity', 0.0)
             turn_num = turn.get('turn', 0)
 
-            # Simulate 2D position based on fidelity and turn sequence
-            # Higher fidelity = closer to center, turn sequence adds temporal drift
             distance = (1.0 - fidelity) * 3.0
             angle = (turn_num / len(turns)) * 2 * np.pi + np.random.uniform(-0.3, 0.3)
 
-            x = distance * np.cos(angle)
-            y = distance * np.sin(angle)
-
+            x, y = distance * np.cos(angle), distance * np.sin(angle)
             positions_2d.append([x, y])
 
-            # Color by fidelity
-            if fidelity >= 0.8:
-                colors.append('#00FF00')  # Green (safe)
-            elif fidelity >= 0.7:
-                colors.append('#FFD700')  # Yellow (warning)
+            # 4-tier color system: Green (≥0.85) | Yellow (0.70-0.85) | Orange (0.50-0.70) | Red (<0.50)
+            if fidelity >= 0.85:
+                point_color = '#4CAF50'  # Green
+            elif fidelity >= 0.70:
+                point_color = '#F4D03F'  # Yellow
+            elif fidelity >= 0.50:
+                point_color = '#FFA500'  # Orange
             else:
-                colors.append('#FF0000')  # Red (danger)
-
-            # Size by recency (recent turns larger)
-            size = 8 + (turn_num / len(turns)) * 6
-            sizes.append(size)
-
+                point_color = '#FF4444'  # Red
+            colors.append(point_color)
+            sizes.append(8 + (turn_num / len(turns)) * 6)
             hover_texts.append(f"Turn {turn_num + 1}<br>Fidelity: {fidelity:.3f}")
 
         positions_2d = np.array(positions_2d)
-
-        # Create 2D scatter plot
         fig = go.Figure()
 
-        # Add drift trail (line connecting turns)
         fig.add_trace(go.Scatter(
-            x=positions_2d[:, 0],
-            y=positions_2d[:, 1],
-            mode='lines',
-            line=dict(color='#888888', width=1, dash='dot'),
-            hoverinfo='skip',
-            showlegend=False,
-            name='Conversation Trail'
+            x=positions_2d[:, 0], y=positions_2d[:, 1],
+            mode='lines', line=dict(color='#888888', width=1, dash='dot'),
+            hoverinfo='skip', showlegend=False
         ))
 
-        # Add response points
         fig.add_trace(go.Scatter(
-            x=positions_2d[:, 0],
-            y=positions_2d[:, 1],
+            x=positions_2d[:, 0], y=positions_2d[:, 1],
             mode='markers',
-            marker=dict(
-                size=sizes,
-                color=colors,
-                line=dict(color='#FFD700', width=1),
-                opacity=0.8
-            ),
-            text=hover_texts,
-            hoverinfo='text',
-            showlegend=False,
-            name='Responses'
+            marker=dict(size=sizes, color=colors, line=dict(color='#F4D03F', width=1), opacity=0.8),
+            text=hover_texts, hoverinfo='text', showlegend=False
         ))
 
-        # Add PA center (gold star at origin)
         fig.add_trace(go.Scatter(
-            x=[0],
-            y=[0],
+            x=[0], y=[0],
             mode='markers',
-            marker=dict(
-                size=20,
-                color='#FFD700',
-                symbol='star',
-                line=dict(color='#FFFFFF', width=2)
-            ),
-            text=['Primacy Attractor<br>Center'],
-            hoverinfo='text',
-            showlegend=False,
-            name='PA Center'
+            marker=dict(size=20, color='#F4D03F', symbol='star', line=dict(color='#FFFFFF', width=2)),
+            text=['PA Center'], hoverinfo='text', showlegend=False
         ))
 
-        # Add safe basin circle (0.7 fidelity threshold)
         theta = np.linspace(0, 2*np.pi, 100)
-        basin_radius = 0.9  # ~0.7 fidelity
-        circle_x = basin_radius * np.cos(theta)
-        circle_y = basin_radius * np.sin(theta)
+        circle_x = 0.9 * np.cos(theta)
+        circle_y = 0.9 * np.sin(theta)
 
         fig.add_trace(go.Scatter(
-            x=circle_x,
-            y=circle_y,
-            mode='lines',
-            line=dict(color='#FFD700', width=1, dash='dash'),
-            hoverinfo='skip',
-            showlegend=False,
-            name='Safe Basin'
+            x=circle_x, y=circle_y,
+            mode='lines', line=dict(color='#F4D03F', width=1, dash='dash'),
+            hoverinfo='skip', showlegend=False
         ))
 
-        # Update layout with smooth animations
         fig.update_layout(
-            xaxis=dict(
-                showgrid=False,
-                showticklabels=False,
-                zeroline=False,
-                range=[-4, 4]
-            ),
-            yaxis=dict(
-                showgrid=False,
-                showticklabels=False,
-                zeroline=False,
-                range=[-4, 4],
-                scaleanchor="x",
-                scaleratio=1
-            ),
-            paper_bgcolor='#1a1a1a',
-            plot_bgcolor='#1a1a1a',
-            height=330,
-            margin=dict(l=10, r=10, t=30, b=10),
-            hovermode='closest',
-            transition={'duration': 300, 'easing': 'cubic-in-out'}
+            xaxis=dict(showgrid=False, showticklabels=False, zeroline=False, range=[-4, 4]),
+            yaxis=dict(showgrid=False, showticklabels=False, zeroline=False, range=[-4, 4], scaleanchor="x", scaleratio=1),
+            paper_bgcolor='#1a1a1a', plot_bgcolor='#1a1a1a',
+            height=330, margin=dict(l=10, r=10, t=30, b=10), hovermode='closest'
         )
 
-        # Render with header
-        st.markdown("""
-        <div style="
-            background: #1a1a1a;
-            border: 1px solid #FFD700;
-            border-radius: 8px;
-            padding: 10px;
-        ">
-        """, unsafe_allow_html=True)
-
-        st.plotly_chart(fig, use_container_width=True, key=f"embedding_space_{self.state_manager.state.current_turn}")
-
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.plotly_chart(fig, use_container_width=True, key=f"embedding_{self.state_manager.state.current_turn}")
 
     def _render_attack_log(self):
-        """Render Attack Detection Log (security monitoring console)."""
-        # Container header
-        st.markdown("""
-<div style="background: #1a1a1a; border: 1px solid #FFD700; border-radius: 8px; padding: 15px; height: 350px; overflow-y: auto;">
-    <h4 style="color: #FFD700; margin: 0 0 10px 0;">Event Log</h4>
-    <p style="color: #888; font-size: 11px; margin-bottom: 10px;">Real-time governance events</p>
-        """, unsafe_allow_html=True)
+        """Render Attack Detection Log (event feed)."""
+        st.markdown('<div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid #F4D03F; border-radius: 8px; padding: 15px; height: 350px; overflow-y: auto; box-shadow: 0 0 15px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);"><h4 style="color: #F4D03F; margin: 0 0 10px 0;">Event Log</h4><p style="color: #888; font-size: 11px; margin-bottom: 10px;">Real-time events</p>', unsafe_allow_html=True)
 
-        # Get recent turns and render each event
         turns = self.state_manager.get_all_turns()
         recent_turns = turns[-10:] if len(turns) > 10 else turns
 
@@ -524,50 +350,40 @@ class ObservatoryLens:
             fidelity = turn.get('fidelity', 0.0)
             intervention = turn.get('intervention_applied', False)
 
-            # Determine event type and color
             if intervention:
-                icon = "🛡️"
-                color = "#FF0000"
-                event_type = "INTERVENTION"
+                icon, color, event_type = "🛡️", "#FF0000", "INTERVENTION"
             elif fidelity < 0.8:
-                icon = "⚠️"
-                color = "#FFD700"
-                event_type = "DRIFT WARNING"
+                icon, color, event_type = "⚠️", "#F4D03F", "DRIFT WARNING"
             else:
-                icon = "✓"
-                color = "#00FF00"
-                event_type = "NORMAL"
+                icon, color, event_type = "✓", "#00FF00", "NORMAL"
 
-            # Render each event individually
-            st.markdown(f"""<div style="padding: 8px; background: #0a0a0a; border-left: 3px solid {color}; border-radius: 3px; margin: 5px 0;"><div style="color: {color}; font-size: 11px;">{icon} <strong>Turn {turn_num + 1}:</strong> {event_type}</div><div style="color: #888; font-size: 10px;">Fidelity: {fidelity:.3f}</div></div>""", unsafe_allow_html=True)
+            st.markdown(f'<div style="padding: 8px; background: #0a0a0a; border-left: 3px solid {color}; border-radius: 3px; margin: 5px 0;"><div style="color: {color}; font-size: 11px;">{icon} <strong>Turn {turn_num + 1}:</strong> {event_type}</div><div style="color: #888; font-size: 10px;">Fidelity: {fidelity:.3f}</div></div>', unsafe_allow_html=True)
 
-        # Close container
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     def _render_session_statistics(self):
-        """Render Session Statistics (real-time metrics summary)."""
+        """Render Session Statistics (metrics summary)."""
         session_info = self.state_manager.get_session_info()
 
-        # Build HTML in parts to avoid formatting issues
         html = f"""
-<div style="background: #1a1a1a; border: 1px solid #FFD700; border-radius: 8px; padding: 15px; height: 350px;">
-    <h4 style="color: #FFD700; margin: 0 0 10px 0;">Session Stats</h4>
+<div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid #F4D03F; border-radius: 8px; padding: 15px; height: 350px; box-shadow: 0 0 15px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);">
+    <h4 style="color: #F4D03F; margin: 0 0 10px 0;">Session Stats</h4>
     <p style="color: #888; font-size: 11px;">Real-time metrics</p>
     <div style="margin-top: 20px;">
         <div style="padding: 10px; background: #0a0a0a; border-radius: 5px; margin: 10px 0;">
             <div style="color: #888; font-size: 10px;">TOTAL TURNS</div>
-            <div style="color: #FFD700; font-size: 24px; font-weight: bold;">{session_info.get('total_turns', 0)}</div>
+            <div style="color: #F4D03F; font-size: 24px; font-weight: bold;">{session_info.get('total_turns', 0)}</div>
         </div>
         <div style="padding: 10px; background: #0a0a0a; border-radius: 5px; margin: 10px 0;">
             <div style="color: #888; font-size: 10px;">AVG FIDELITY</div>
-            <div style="color: #FFD700; font-size: 24px; font-weight: bold;">{session_info.get('avg_fidelity', 0.0):.3f}</div>
+            <div style="color: #F4D03F; font-size: 24px; font-weight: bold;">{session_info.get('avg_fidelity', 0.0):.3f}</div>
         </div>
         <div style="padding: 10px; background: #0a0a0a; border-radius: 5px; margin: 10px 0;">
             <div style="color: #888; font-size: 10px;">INTERVENTIONS</div>
-            <div style="color: #FFD700; font-size: 24px; font-weight: bold;">{session_info.get('total_interventions', 0)}</div>
+            <div style="color: #F4D03F; font-size: 24px; font-weight: bold;">{session_info.get('total_interventions', 0)}</div>
         </div>
         <div style="padding: 10px; background: #0a0a0a; border-radius: 5px; margin: 10px 0;">
-            <div style="color: #888; font-size: 10px;">ASR (ATTACK SUCCESS)</div>
+            <div style="color: #888; font-size: 10px;">ASR</div>
             <div style="color: #00FF00; font-size: 24px; font-weight: bold;">0%</div>
         </div>
     </div>

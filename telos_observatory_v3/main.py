@@ -19,13 +19,16 @@ from core.state_manager import StateManager
 from components.sidebar_actions_beta import SidebarActionsBeta
 from components.conversation_display import ConversationDisplay
 from components.observation_deck import ObservationDeck
+from components.beta_observation_deck import BetaObservationDeck
 from components.beta_completion import BetaCompletion
 from components.teloscope_controls import TELOSCOPEControls
 from components.beta_onboarding import BetaOnboarding
+from components.pa_onboarding import PAOnboarding
 from components.steward_panel import StewardPanel
 from components.observatory_lens import ObservatoryLens
 from services.ab_test_manager import get_ab_test_manager
-from services.supabase_client import get_supabase_service
+from services.backend_client import get_backend_service
+from config.colors import GOLD
 
 
 def initialize_session():
@@ -59,23 +62,30 @@ def initialize_session():
         ab_manager.apply_experiment_configs()
         st.session_state.ab_manager = ab_manager
 
-        # Initialize Supabase service
-        supabase = get_supabase_service()
-        st.session_state.supabase = supabase
+        # Initialize backend service for delta storage
+        backend = get_backend_service()
+        st.session_state.backend = backend
 
 
 def check_demo_completion():
-    """Check if demo mode is complete (10 turns) and unlock BETA."""
+    """Check if demo mode is complete (10 turns OR reached final slide 12) and unlock BETA."""
     if st.session_state.get('demo_completed', False):
         return True
 
-    # Check if user is in demo mode and has completed 10 turns
+    # Check if user is in demo mode and has completed demo
     demo_mode = st.session_state.get('telos_demo_mode', False)
     if demo_mode:
+        # Check completion via either method:
+        # 1. Interactive Q&A: 10 conversation turns
+        # 2. Progressive slides: reached slide 12 (completion slide)
         state_manager = st.session_state.get('state_manager')
-        if state_manager and state_manager.state.total_turns >= 10:
+        demo_slide_index = st.session_state.get('demo_slide_index', 0)
+
+        completed_via_turns = state_manager and state_manager.state.total_turns >= 10
+        completed_via_slides = demo_slide_index >= 12
+
+        if completed_via_turns or completed_via_slides:
             st.session_state.demo_completed = True
-            st.balloons()
             st.success("""
             🎉 **Demo Complete!**
 
@@ -111,12 +121,12 @@ def check_beta_completion():
     if two_weeks_elapsed or fifty_feedbacks:
         st.session_state.beta_completed = True
 
-        # Export A/B test metrics to Supabase before completion
-        if 'ab_manager' in st.session_state and 'supabase' in st.session_state:
+        # Export A/B test metrics to backend before completion
+        if 'ab_manager' in st.session_state and 'backend' in st.session_state:
             try:
-                ab_metrics = st.session_state.ab_manager.export_metrics_for_supabase()
+                ab_metrics = st.session_state.ab_manager.export_metrics_for_backend()
                 # Store A/B test results
-                st.session_state.supabase.transmit_delta({
+                st.session_state.backend.transmit_delta({
                     'session_id': ab_metrics['session_id'],
                     'turn_number': 999,  # Special marker for A/B test results
                     'fidelity_score': 1.0,
@@ -127,7 +137,6 @@ def check_beta_completion():
             except Exception as e:
                 print(f"Failed to export A/B test metrics: {e}")
 
-        st.balloons()
         st.success("""
         🎉 **Beta Testing Complete!**
 
@@ -389,33 +398,38 @@ def main():
         display: none !important;
     }}
 
-    /* Main content: dark grey background - more aggressive selectors */
-    .stApp {{
-        background-color: #1a1a1a !important;
+    /* GLASSMORPHISM: Force ALL backgrounds transparent so we see the injected gradient div */
+    .stApp,
+    .stApp > *,
+    .main,
+    .main > *,
+    [data-testid="stAppViewContainer"],
+    [data-testid="stAppViewContainer"] > *,
+    .block-container,
+    section.main,
+    section.main > div,
+    #root,
+    .stApp > header,
+    .stApp [data-testid="stHeader"],
+    .stApp [data-testid="stToolbar"] {{
+        background: transparent !important;
+        background-color: transparent !important;
     }}
 
-    .main {{
-        background-color: #1a1a1a !important;
-    }}
-
-    /* Target the main app view container */
-    [data-testid="stAppViewContainer"] {{
-        background-color: #1a1a1a !important;
-    }}
-
-    /* Target block container */
-    .block-container {{
-        background-color: #1a1a1a !important;
-    }}
-
-    /* Force background on all main sections */
-    section.main > div {{
-        background-color: #1a1a1a !important;
-    }}
-
-    /* Root element */
-    #root {{
-        background-color: #1a1a1a !important;
+    /* The gradient background div (injected via HTML) */
+    #glassmorphism-bg {{
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: -1000 !important;
+        pointer-events: none !important;
+        background:
+            radial-gradient(ellipse 90% 90% at 15% 5%, rgba(244, 208, 63, 0.7) 0%, transparent 40%),
+            radial-gradient(ellipse 80% 80% at 90% 95%, rgba(200, 160, 40, 0.6) 0%, transparent 35%),
+            radial-gradient(ellipse 60% 60% at 50% 50%, rgba(244, 180, 63, 0.4) 0%, transparent 50%),
+            linear-gradient(135deg, #1a1510 0%, #0d0a05 50%, #0a0805 100%) !important;
     }}
 
     /* Sidebar: medium-dark grey */
@@ -427,14 +441,14 @@ def main():
     [data-testid="stSidebar"] .stButton > button {{
         background-color: #2d2d2d !important;
         color: #e0e0e0 !important;
-        border: 1px solid #FFD700 !important;
+        border: 1px solid #F4D03F !important;
         transition: all 0.3s ease !important;
     }}
 
     [data-testid="stSidebar"] .stButton > button:hover {{
         background-color: #3d3d3d !important;
         color: #e0e0e0 !important;
-        border: 1px solid #FFD700 !important;
+        border: 1px solid #F4D03F !important;
         box-shadow: 0 0 6px rgba(255, 215, 0, 0.5) !important;
     }}
 
@@ -448,8 +462,12 @@ def main():
     .stButton > button {{
         background-color: #2d2d2d !important;
         color: #e0e0e0 !important;
-        border: 1px solid #FFD700 !important;
+        border: 1px solid #F4D03F !important;
         transition: all 0.3s ease !important;
+        text-align: center !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
     }}
 
     /* ULTRA AGGRESSIVE HOVER - Target EVERYTHING */
@@ -498,7 +516,7 @@ def main():
 
     /* Gold border for main content */
     .main .block-container {{
-        border: 1px solid #FFD700;
+        border: 1px solid #F4D03F;
         border-radius: 10px;
         padding: 20px;
     }}
@@ -594,8 +612,8 @@ def main():
 
     /* Checked state */
     .stCheckbox input[type="checkbox"]:checked {{
-        background-color: #FFD700 !important;
-        border-color: #FFD700 !important;
+        background-color: #F4D03F !important;
+        border-color: #F4D03F !important;
     }}
 
     .stCheckbox input[type="checkbox"]:checked::after {{
@@ -612,7 +630,7 @@ def main():
     .stTextInput input {{
         background-color: #2d2d2d !important;
         color: #ffffff !important;
-        border: 1px solid #FFD700 !important;
+        border: 1px solid #F4D03F !important;
     }}
 
     .stTextInput input::placeholder {{
@@ -637,8 +655,8 @@ def main():
     }}
 
     .stCheckbox input[type="checkbox"]:checked {{
-        background-color: #FFD700 !important;
-        border-color: #FFD700 !important;
+        background-color: #F4D03F !important;
+        border-color: #F4D03F !important;
     }}
 
     /* Override any red colors in toggle switches */
@@ -647,7 +665,7 @@ def main():
     }}
 
     [data-baseweb="checkbox"][data-checked="true"] {{
-        background-color: #FFD700 !important;
+        background-color: #F4D03F !important;
     }}
 
     /* Tabs styling */
@@ -658,7 +676,7 @@ def main():
 
     .stTabs [data-baseweb="tab"] {{
         background-color: #2d2d2d;
-        border: 1px solid #FFD700;
+        border: 1px solid #F4D03F;
         border-radius: 8px 8px 0 0;
         color: #e0e0e0;
         font-size: 22px;
@@ -667,12 +685,56 @@ def main():
     }}
 
     .stTabs [aria-selected="true"] {{
-        background-color: #FFD700;
+        background-color: #F4D03F;
         color: #000;
         font-weight: bold;
     }}
     </style>
     """, unsafe_allow_html=True)
+
+    # GLASSMORPHISM: Apply gradient to page background only
+    import streamlit.components.v1 as components
+    components.html("""
+    <script>
+    (function() {
+        var doc = window.parent.document;
+        var gradientBg = `
+            radial-gradient(ellipse 90% 90% at 15% 5%, rgba(244, 208, 63, 0.7) 0%, transparent 40%),
+            radial-gradient(ellipse 80% 80% at 90% 95%, rgba(200, 160, 40, 0.6) 0%, transparent 35%),
+            radial-gradient(ellipse 60% 60% at 50% 50%, rgba(244, 180, 63, 0.4) 0%, transparent 50%),
+            linear-gradient(135deg, #1a1510 0%, #0d0a05 50%, #0a0805 100%)
+        `;
+
+        function applyGlassmorphism() {
+            // Apply gradient DIRECTLY to .stApp
+            var stApp = doc.querySelector('.stApp');
+            if (stApp) {
+                stApp.style.setProperty('background', gradientBg, 'important');
+                stApp.style.setProperty('background-attachment', 'fixed', 'important');
+            }
+
+            // Only make the top-level containers transparent (NOT content areas)
+            var topContainers = doc.querySelectorAll(`
+                [data-testid="stAppViewContainer"],
+                .main,
+                section.main
+            `);
+            topContainers.forEach(function(el) {
+                el.style.setProperty('background', 'transparent', 'important');
+                el.style.setProperty('background-color', 'transparent', 'important');
+            });
+        }
+
+        // Apply immediately
+        applyGlassmorphism();
+
+        // Re-apply every 500ms to override any Streamlit updates
+        setInterval(applyGlassmorphism, 500);
+
+        console.log('GLASSMORPHISM: Gradient background applied');
+    })();
+    </script>
+    """, height=0)
 
     # Keyboard navigation for Demo Mode (arrow keys)
     st.markdown("""
@@ -732,8 +794,10 @@ def main():
     steward_panel = StewardPanel(state_manager)
     conversation_display = ConversationDisplay(state_manager)
     observation_deck = ObservationDeck(state_manager)
+    beta_observation_deck = BetaObservationDeck()
     teloscope_controls = TELOSCOPEControls(state_manager)
     beta_onboarding = BetaOnboarding(state_manager)
+    pa_onboarding = PAOnboarding()
     observatory_lens = ObservatoryLens(state_manager)
 
     # Check if user has given beta consent
@@ -753,37 +817,48 @@ def main():
 
     # Initialize active tab if not set - default to DEMO for public users
     if 'active_tab' not in st.session_state:
-        # Check for admin mode
+        # Check for admin mode or beta direct access
         query_params = st.query_params
         is_admin = query_params.get("admin") == "true"
-        st.session_state.active_tab = "DEVOPS" if is_admin else "DEMO"
+        beta_direct = query_params.get("beta") == "true"
+
+        if is_admin:
+            st.session_state.active_tab = "DEVOPS"
+        elif beta_direct:
+            # Auto-grant consent for direct beta access (for grant demos)
+            st.session_state.beta_consent_given = True
+            st.session_state.active_tab = "BETA"
+        else:
+            st.session_state.active_tab = "DEMO"
 
     # DEMO tab is always accessible (no consent required)
     # BETA and TELOS tabs require consent
     # DEVOPS bypasses all restrictions for testing
     active_tab = st.session_state.active_tab
 
-    # Check for admin mode
+    # Check for admin mode or beta direct access
     query_params = st.query_params
     is_admin = query_params.get("admin") == "true"
+    beta_direct = query_params.get("beta") == "true"
 
     # If user is trying to access BETA or TELOS without consent, show consent screen
-    # DEVOPS mode and admin mode bypass consent requirement
-    if (active_tab in ["BETA", "TELOS"]) and not has_beta_consent and not is_admin:
+    # DEVOPS mode, admin mode, and beta direct mode bypass consent requirement
+    if (active_tab in ["BETA", "TELOS"]) and not has_beta_consent and not is_admin and not beta_direct:
         # Show consent screen for BETA/TELOS access
         beta_onboarding.render()
+        return  # Stop rendering anything else until consent is given
     else:
         # Render tabs and content (DEMO is always accessible, BETA/TELOS require consent, DEVOPS is unrestricted)
         render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
-                                conversation_display, observation_deck,
+                                conversation_display, observation_deck, beta_observation_deck,
                                 teloscope_controls, steward_panel, beta_onboarding,
-                                observatory_lens)
+                                pa_onboarding, observatory_lens)
 
 
 def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
-                            conversation_display, observation_deck,
+                            conversation_display, observation_deck, beta_observation_deck,
                             teloscope_controls, steward_panel, beta_onboarding,
-                            observatory_lens):
+                            pa_onboarding, observatory_lens):
     """Render tabs and main content area."""
     # Check if we're in TELOS or DEVOPS mode (which have sidebar access)
     active_tab = st.session_state.get('active_tab', 'DEMO')
@@ -823,7 +898,7 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
                 opacity: 1;
             }
             90% {
-                box-shadow: 0 0 8px #FFD700;
+                box-shadow: 0 0 8px #F4D03F;
             }
             95% {
                 box-shadow: none;
@@ -879,7 +954,7 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
         button[kind="primary"] {{
             background-color: #2d2d2d !important;
             color: #e0e0e0 !important;
-            border: 2px solid #FFD700 !important;
+            border: 2px solid #F4D03F !important;
             box-shadow: 0 0 8px rgba(255, 215, 0, 0.5) !important;
         }}
 
@@ -887,33 +962,31 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
         button[kind="primary"]:hover {{
             background-color: #3d3d3d !important;
             color: #e0e0e0 !important;
-            border: 1px solid #FFD700 !important;
-            box-shadow: 0 0 6px #FFD700 !important;
+            border: 1px solid #F4D03F !important;
+            box-shadow: 0 0 6px #F4D03F !important;
         }}
 
         /* Inactive tabs - normal thin border */
         button[kind="secondary"] {{
             background-color: #2d2d2d !important;
             color: #e0e0e0 !important;
-            border: 1px solid #FFD700 !important;
+            border: 1px solid #F4D03F !important;
         }}
 
         /* Inactive tabs get hover effect */
         button[kind="secondary"]:hover {{
             background-color: #3d3d3d !important;
-            border: 1px solid #FFD700 !important;
-            box-shadow: 0 0 6px #FFD700 !important;
+            border: 1px solid #F4D03F !important;
+            box-shadow: 0 0 6px #F4D03F !important;
         }}
 
-        /* Disabled/grayed tabs during beta-only mode */
+        /* Disabled/locked tabs - look like normal secondary buttons but with dimmed text */
         button[disabled],
         button.beta-locked {{
-            background-color: #1a1a1a !important;
-            color: #555 !important;
-            border: 1px solid #444 !important;
-            opacity: 0.4 !important;
+            background-color: #2d2d2d !important;
+            color: #888 !important;
+            border: 1px solid #F4D03F !important;
             cursor: not-allowed !important;
-            pointer-events: none !important;
         }}
 
         button[disabled]:hover,
@@ -931,6 +1004,9 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
     # Get current active tab
     active_tab = st.session_state.active_tab
 
+    # Check demo completion BEFORE reading the state
+    check_demo_completion()
+
     # Progressive unlock system
     demo_complete = st.session_state.get('demo_completed', False)
     beta_complete = st.session_state.get('beta_completed', False)
@@ -945,28 +1021,54 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
     query_params = st.query_params
     is_admin = query_params.get("admin") == "true"
 
-    # BETA mode only has 2 tabs (DEMO and BETA)
-    col_demo, col_beta = st.columns(2)
+    # Check if user has entered BETA (either completed DEMO or accepted BETA consent)
+    beta_entered = st.session_state.get('beta_consent_given', False) or st.session_state.get('pa_established', False)
 
-    with col_demo:
-        demo_active = active_tab == "DEMO"
-        # DEMO is always available - starting point for everyone
-        if st.button("DEMO", key="tab_demo", use_container_width=True,
-                    type="primary" if demo_active else "secondary"):
-            st.session_state.active_tab = "DEMO"
-            st.rerun()
+    if beta_entered:
+        # BETA mode: 2 tabs (BETA and TELOS)
+        col_beta, col_telos = st.columns(2)
 
-    with col_beta:
-        beta_active = active_tab == "BETA"
-        # BETA unlocks after completing demo (10 turns) OR in admin mode
-        beta_locked = not demo_complete and not is_admin  # Bypass lock in admin mode
-        if st.button("BETA", key="tab_beta", use_container_width=True,
-                    type="primary" if beta_active else "secondary",
-                    disabled=beta_locked,
-                    help="Complete DEMO mode to unlock BETA" if beta_locked else None):
-            if not beta_locked:
+        with col_beta:
+            beta_active = active_tab == "BETA"
+            if st.button("BETA", key="tab_beta", use_container_width=True,
+                        type="primary" if beta_active else "secondary"):
                 st.session_state.active_tab = "BETA"
                 st.rerun()
+
+        with col_telos:
+            telos_active = active_tab == "TELOS"
+            # TELOS unlocks after completing BETA (15 turns) OR in admin mode
+            telos_locked = not beta_complete and not is_admin
+            if st.button("TELOS", key="tab_telos", use_container_width=True,
+                        type="primary" if telos_active else "secondary",
+                        disabled=telos_locked,
+                        help="Complete BETA mode to unlock TELOS" if telos_locked else None):
+                if not telos_locked:
+                    st.session_state.active_tab = "TELOS"
+                    st.rerun()
+    else:
+        # DEMO mode: 2 tabs (DEMO and BETA)
+        col_demo, col_beta = st.columns(2)
+
+        with col_demo:
+            demo_active = active_tab == "DEMO"
+            # DEMO is always available - starting point for everyone
+            if st.button("DEMO", key="tab_demo", use_container_width=True,
+                        type="primary" if demo_active else "secondary"):
+                st.session_state.active_tab = "DEMO"
+                st.rerun()
+
+        with col_beta:
+            beta_active = active_tab == "BETA"
+            # BETA unlocks after completing demo (10 turns) OR in admin mode
+            beta_locked = not demo_complete and not is_admin  # Bypass lock in admin mode
+            if st.button("BETA", key="tab_beta", use_container_width=True,
+                        type="primary" if beta_active else "secondary",
+                        disabled=beta_locked,
+                        help="Complete DEMO mode to unlock BETA" if beta_locked else None):
+                if not beta_locked:
+                    st.session_state.active_tab = "BETA"
+                    st.rerun()
 
     if is_admin:
         st.markdown("<div style='margin: 10px 0;'></div>", unsafe_allow_html=True)
@@ -977,7 +1079,7 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
 
     # Removed unlock progression message - now shown in Steward intro
 
-    st.markdown("<hr style='border: 1px solid #FFD700; margin: 10px 0;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border: 1px solid #F4D03F; margin: 10px 0;'>", unsafe_allow_html=True)
 
     # Hide sidebar for DEMO and BETA modes - only show in TELOS and DEVOPS
     active_tab = st.session_state.get('active_tab', 'DEMO')
@@ -1018,6 +1120,141 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
             st.markdown("### 🔧 DEVOPS Mode - Full System Access")
             st.markdown("**All restrictions removed. Beta mode with full PA extraction and interventions enabled.**")
 
+        # BETA mode: Show PA questionnaire first if not established
+        if mode == "BETA":
+            # Check if PA is already established
+            if not st.session_state.get('pa_established', False):
+                # Show PA questionnaire and block conversation until complete
+                pa_answers = pa_onboarding.render_questionnaire()
+                if pa_answers is None:
+                    # PA not established yet, stop rendering (questionnaire is showing)
+                    return
+                # If we get here, PA was just established - continue to conversation
+
+            # Scroll to top when entering BETA mode (after PA established)
+            import streamlit.components.v1 as components
+            components.html("""
+            <script>
+            (function() {
+                // Scroll to top of page
+                window.scrollTo(0, 0);
+                if (window.parent) {
+                    window.parent.scrollTo(0, 0);
+                }
+                // Also try to scroll the main container
+                var mainContainer = window.parent.document.querySelector('.main');
+                if (mainContainer) {
+                    mainContainer.scrollTop = 0;
+                }
+                var appContainer = window.parent.document.querySelector('[data-testid="stAppViewContainer"]');
+                if (appContainer) {
+                    appContainer.scrollTop = 0;
+                }
+            })();
+            </script>
+            """, height=0)
+
+            # Show BETA welcome message if PA just established and welcome not yet shown
+            # Use a dedicated flag to ensure welcome shows only ONCE
+            if st.session_state.get('pa_established', False) and not st.session_state.get('beta_welcome_shown', False):
+                # Check if there are no turns yet using state_manager (not the non-existent conversation_turns)
+                has_turns = state_manager and len(state_manager.get_all_turns()) > 0
+                if not has_turns:
+                    # Mark welcome as shown BEFORE rendering to prevent re-showing on rerun
+                    st.session_state.beta_welcome_shown = True
+                    welcome_html = f"""
+<div style="background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); border: 3px solid {GOLD}; border-radius: 15px; padding: 30px; margin: 20px 0;">
+    <div style="text-align: center; color: {GOLD}; font-size: 28px; font-weight: bold; margin-bottom: 20px;">
+        Welcome to BETA Testing
+    </div>
+    <div style="color: #e0e0e0; font-size: 18px; line-height: 1.8;">
+        <div style="margin-bottom: 20px;">
+            Your <strong style="color: {GOLD};">Primacy Attractor</strong> has been established.
+            You're about to experience a 15-turn conversation where we'll test how well AI stays
+            aligned with your stated purpose.
+        </div>
+        <div style="background-color: #1a1a1a; padding: 20px; border-radius: 10px; margin: 20px 0;">
+            <div style="color: {GOLD}; font-size: 20px; font-weight: bold; margin-bottom: 15px;">
+                Here's What Will Happen:
+            </div>
+            <div style="margin-bottom: 15px;">
+                <strong style="color: {GOLD};">15 Conversation Turns</strong><br>
+                You'll have a natural conversation over 15 turns. Just ask questions or make requests
+                as you normally would.
+            </div>
+            <div style="margin-bottom: 15px;">
+                <strong style="color: {GOLD};">Two Types of Responses</strong><br>
+                • Some turns will show <strong>one response</strong> (you won't know the source)<br>
+                • Other turns will show <strong>two responses side-by-side</strong> (you'll choose your preference)
+            </div>
+            <div style="margin-bottom: 15px; display: flex; align-items: flex-start; gap: 20px;">
+                <div style="flex: 1;">
+                    <strong style="color: {GOLD};">Monitor Your Alignment</strong><br>
+                    Click the <strong>Observation Deck</strong> (below) at any time to view your Primacy Attractor
+                    and fidelity score. Your fidelity indicates if the system believes you may be straying
+                    off-topic from your stated purpose.
+                </div>
+                <div style="
+                    background:
+                        linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(0, 0, 0, 0.05) 100%),
+                        linear-gradient(180deg, rgba(244, 208, 63, 0.15) 0%, rgba(244, 208, 63, 0.05) 30%, rgba(0, 0, 0, 0.2) 100%),
+                        rgba(30, 25, 20, 0.85);
+                    border: 1.5px solid rgba(244, 208, 63, 0.5);
+                    border-radius: 14px;
+                    padding: 14px 15px;
+                    box-shadow:
+                        0 8px 32px rgba(0, 0, 0, 0.5),
+                        0 0 20px rgba(244, 208, 63, 0.25),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+                    min-width: 90px;
+                    text-align: center;
+                ">
+                    <div style="font-size: 10px; color: rgba(244, 208, 63, 0.9); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 500;">Fidelity</div>
+                    <div style="font-size: 24px; font-weight: bold; color: #4CAF50; margin: 6px 0; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 15px rgba(244, 208, 63, 0.3);">0.850</div>
+                    <div style="font-size: 9px; border-top: 1px solid rgba(244, 208, 63, 0.25); padding-top: 8px; margin-top: 8px;">
+                        <span style="color: rgba(200, 200, 200, 0.7);">PA:</span>
+                        <span style="color: #4CAF50; font-weight: 600;">Established</span>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <strong style="color: {GOLD};">After 15 Turns</strong><br>
+                You'll unlock the <strong>TELOS tab</strong> for full governed conversations with progressive
+                Primacy Attractor mode (not onboarding mode like BETA). You can continue in the existing
+                interface or start a fresh TELOS chat.
+            </div>
+        </div>
+        <div style="background-color: #2d2d2d; padding: 20px; border-radius: 10px; margin: 20px 0; border: 2px solid {GOLD};">
+            <div style="color: {GOLD}; font-size: 20px; font-weight: bold; margin-bottom: 15px;">
+                🤝 IMPORTANT: Use Steward for TELOS Questions
+            </div>
+            <div style="color: #e0e0e0; margin-bottom: 15px;">
+                <strong style="color: {GOLD};">Steward (🤝 handshake icon)</strong> is your TELOS guide.
+                Click the handshake icon to ask questions about the system, get help navigating,
+                or understand what you're seeing.
+            </div>
+            <div style="color: #e0e0e0;">
+                <strong style="color: {GOLD};">Main chat window</strong> is a standard LLM with
+                <strong>zero context about TELOS</strong> the system. Use it for your normal tasks,
+                but direct all TELOS-related questions to Steward.
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 25px; padding: 20px; background-color: #1a1a1a; border-radius: 10px;">
+            <div style="color: {GOLD}; font-size: 20px; font-weight: bold; margin-bottom: 10px;">
+                Ready to Begin?
+            </div>
+            <div style="color: #e0e0e0; font-size: 16px;">
+                Start by asking a question or making a request in the chat below.<br>
+                <span style="color: #888; font-size: 14px; margin-top: 10px; display: block;">
+                    (Remember: Use 🤝 Steward for TELOS help, not the main chat)
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+"""
+                    st.markdown(welcome_html, unsafe_allow_html=True)
+
         # Main conversation display (all modes)
         conversation_display.render()
 
@@ -1034,86 +1271,28 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
             pass
 
         elif mode == "BETA":
-            # In BETA mode, only show buttons after PA is established
-            # Check if PA is established (current turn >= convergence turn)
-            current_turn = state_manager.state.current_turn
-            convergence_turn = state_manager.state.metadata.get('convergence_turn', 7)
-            pa_established = current_turn >= convergence_turn
+            # In BETA mode, show simplified Observation Deck (no complex tools)
+            # No toggle buttons - Observation Deck is always available
+            pass
 
-            if pa_established:
-                st.markdown("<div style='margin: 30px 0;'></div>", unsafe_allow_html=True)
-
-                # Create centered columns for visualization toggle buttons
-                col_left_spacer, col_center, col_right_spacer = st.columns([0.3, 3.4, 0.3])
-
-                with col_center:
-                    col1, col2, col3 = st.columns([1, 1, 1])
-
-                    with col1:
-                        # Alignment Lens toggle button
-                        lens_active = st.session_state.get('show_observatory_lens', False)
-                        if st.button(
-                            f"{'Hide' if lens_active else 'Show'} Alignment Lens",
-                            key=f"toggle_lens_{mode}",
-                            use_container_width=True,
-                            help="TELOSCOPE: Real-time alignment and drift monitoring"
-                        ):
-                            st.session_state.show_observatory_lens = not lens_active
-                            # Track A/B test metric
-                            if 'ab_manager' in st.session_state:
-                                st.session_state.ab_manager.track_event('observatory_lens_toggled', {
-                                    'new_state': not lens_active,
-                                    'mode': mode
-                                })
-                            st.rerun()
-
-                    with col2:
-                        # Observation Deck toggle button
-                        deck_active = st.session_state.get('show_observation_deck', False)
-                        if st.button(
-                            f"{'Hide' if deck_active else 'Show'} Observation Deck",
-                            key=f"toggle_deck_{mode}",
-                            use_container_width=True,
-                            help="View your established Primacy Attractor and governance metrics"
-                        ):
-                            st.session_state.show_observation_deck = not deck_active
-                            # Track A/B test metric
-                            if 'ab_manager' in st.session_state:
-                                st.session_state.ab_manager.track_event('observation_deck_toggled', {
-                                    'new_state': not deck_active,
-                                    'mode': mode
-                                })
-                            st.rerun()
-
-                    with col3:
-                        # Info button for help
-                        if st.button(
-                            "About These Tools",
-                            key=f"info_viz_{mode}",
-                            use_container_width=True,
-                            help="Learn about visualization tools"
-                        ):
-                            st.info("""
-                            **TELOSCOPE: Alignment Lens**: Real-time visual dashboard showing TELOS governance in action through 6 core visualizations focused on alignment and drift monitoring.
-
-                            **Observation Deck**: View your established Primacy Attractor (purpose, scope, boundaries) and detailed governance metrics.
-
-                            These tools help you understand how TELOS maintains alignment with your stated purpose.
-                            """)
-
-        # Observation Deck (show if toggled in DEMO/BETA, or always in TELOS/DEVOPS)
-        if mode in ["DEMO", "BETA"]:
+        # Observation Deck (different rendering based on mode)
+        if mode == "BETA":
+            # BETA mode uses simplified BetaObservationDeck (always visible if PA established)
+            if st.session_state.get('pa_established', False):
+                st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
+                beta_observation_deck.render()
+        elif mode == "DEMO":
             # For DEMO, don't render the main observation deck on slide 4
             # (it has its own embedded observation deck in the demo)
-            if mode == "DEMO" and st.session_state.get('demo_slide_index', 0) == 4:
+            if st.session_state.get('demo_slide_index', 0) == 4:
                 # Skip rendering - demo slide 4 has its own observation deck
                 pass
             elif st.session_state.get('show_observation_deck', False):
-                # For DEMO (other slides) and BETA, only show if toggled on
+                # For DEMO (other slides), only show if toggled on
                 st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
                 observation_deck.render()
         elif show_observation_deck:
-            # For TELOS and DEVOPS, always show
+            # For TELOS and DEVOPS, always show full observation deck
             st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
             observation_deck.render()
 
@@ -1156,7 +1335,7 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
         background-color: #2d2d2d !important;
         background: #2d2d2d !important;
         color: #e0e0e0 !important;
-        border: 2px solid #FFD700 !important;
+        border: 2px solid #F4D03F !important;
         box-shadow: 0 0 8px rgba(255, 215, 0, 0.5) !important;
     }
 
@@ -1168,13 +1347,13 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
     }
 
     button:hover {
-        border: 1px solid #FFD700 !important;
-        box-shadow: 0 0 6px #FFD700 !important;
+        border: 1px solid #F4D03F !important;
+        box-shadow: 0 0 6px #F4D03F !important;
     }
 
     /* Message container hover glow */
     .message-container:hover {
-        box-shadow: 0 0 6px #FFD700 !important;
+        box-shadow: 0 0 6px #F4D03F !important;
         transition: box-shadow 0.3s ease !important;
     }
     </style>
