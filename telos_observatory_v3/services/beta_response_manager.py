@@ -1,17 +1,80 @@
 """
-Beta Response Manager - Generates ALL Responses for Analysis
-=============================================================
+Beta Response Manager - FIDELITY-FIRST Governance Demo
+======================================================
 
-Always generates TELOS analysis even when showing native response.
-Stores everything for Observatory review.
+Redesigned BETA mode that demonstrates TELOS governance in action:
+- Calculate user fidelity FIRST before deciding on response type
+- Only show TELOS intervention when drift is detected
+- Color-coded user messages based on calculated fidelity
+- Pre-generated Steward interpretation for intervention cases
+
+NO A/B testing - just pure TELOS demonstration.
 """
 
 import streamlit as st
 from typing import Dict, Tuple, Optional
 from datetime import datetime
 import logging
+import numpy as np
 
 logger = logging.getLogger(__name__)
+
+# =============================================================================
+# TWO-LAYER DRIFT DETECTION ARCHITECTURE
+# =============================================================================
+# LAYER 1: Baseline Pre-Filter (for extreme off-topic detection)
+# ----------------------------------------------------------------
+# Problem: In high-dimensional embedding spaces (1024-dim Mistral), completely
+# unrelated content (e.g., "PB&J sandwich" vs "AI governance") produces
+# cosine similarity around 0.35-0.56 due to concentration of measure.
+# Raw cosine similarity alone cannot detect extreme off-topic content.
+#
+# Solution: SIMILARITY_BASELINE acts as a fast pre-filter. If raw_sim < baseline,
+# the content is so far outside the embedding manifold of the PA that it's
+# definitely off-topic - trigger HARD_BLOCK intervention immediately.
+#
+# This is EMBEDDING-MODEL SPECIFIC. See docs/internal/EMBEDDING_BASELINE_NORMALIZATION.md
+SIMILARITY_BASELINE = 0.35  # Mistral 1024-dim empirical floor for unrelated content
+
+# =============================================================================
+# LAYER 2: TELOS Primacy State Mathematics (Basin Membership)
+# =============================================================================
+# Fidelity scale: 0.0 = absolute drift, 1.0 = perfect primacy state
+# Basin defines the region around the PA where user input is "within purpose"
+# Intervention triggers when fidelity drops BELOW (BASIN - TOLERANCE)
+BASIN = 0.50       # Basin boundary - inputs with fidelity >= this are "within purpose"
+TOLERANCE = 0.02   # Tolerance margin for basin boundary
+
+# Derived intervention threshold: below this triggers governance intervention
+INTERVENTION_THRESHOLD = BASIN - TOLERANCE  # 0.48
+
+# =============================================================================
+# UNIFIED INTERVENTION DECISION
+# =============================================================================
+# Intervene if: Layer1.HARD_BLOCK OR Layer2.outside_basin
+# Both layers produce a unified Primacy State for consistent UI display
+
+# UI color thresholds for visual feedback (do NOT affect intervention logic)
+FIDELITY_GREEN = 0.85   # High alignment - visually green
+FIDELITY_YELLOW = 0.70  # Moderate alignment - visually yellow
+FIDELITY_ORANGE = 0.50  # Low alignment - visually orange
+# Below FIDELITY_ORANGE = Red - severe drift
+
+# Intent to Role mapping for AI PA derivation (simplified version for BETA)
+INTENT_TO_ROLE_MAP = {
+    'learn': 'teach',
+    'understand': 'explain',
+    'solve': 'help solve',
+    'create': 'help create',
+    'decide': 'help decide',
+    'explore': 'guide exploration',
+    'analyze': 'help analyze',
+    'fix': 'help fix',
+    'debug': 'help debug',
+    'optimize': 'help optimize',
+    'research': 'help research',
+    'plan': 'help plan'
+}
 
 
 class BetaResponseManager:
@@ -29,75 +92,243 @@ class BetaResponseManager:
         self.telos_engine = None
         self.backend = backend_client
 
+        # Dual PA components for Primacy State calculation
+        self.user_pa_embedding = None  # User PA center embedding
+        self.ai_pa_embedding = None    # AI PA center embedding
+        self.ps_calculator = None      # PrimacyStateCalculator instance
+        self.embedding_provider = None # Cached embedding provider
+
     def generate_turn_responses(self,
                                user_input: str,
                                turn_number: int,
-                               sequence: Dict) -> Dict:
+                               sequence: Dict = None) -> Dict:
         """
-        Generate all necessary responses for a turn.
+        FIDELITY-FIRST response generation.
+
+        Flow:
+        1. Calculate user prompt fidelity FIRST
+        2. Decide intervention level based on fidelity
+        3. Generate appropriate response (governed or native)
+        4. Pre-generate Steward interpretation if intervention triggered
 
         Args:
             user_input: The user's message
             turn_number: Current turn number
-            sequence: The pre-generated test sequence
+            sequence: IGNORED - kept for backward compatibility
 
         Returns:
-            Dict containing all response data
+            Dict containing response data with fidelity-based decision
         """
-        from services.beta_sequence_generator import BetaSequenceGenerator
-
-        generator = BetaSequenceGenerator()
-        turn_config = generator.get_turn_config(sequence, turn_number)
+        logger.info(f"=== FIDELITY-FIRST Turn {turn_number} ===")
+        logger.info(f"User input: {user_input[:100]}...")
 
         # Initialize response data
         response_data = {
             'turn_number': turn_number,
-            'test_type': turn_config['test_type'],
             'timestamp': datetime.now().isoformat(),
-            'user_input': user_input
+            'user_input': user_input,
+            'governance_mode': 'fidelity_first',  # Mark as new mode
         }
 
-        # ALWAYS generate TELOS analysis (even if not shown)
-        telos_data = self._generate_telos_response(user_input, turn_number)
-        response_data['telos_analysis'] = telos_data
+        # ============================================================
+        # STEP 1: Calculate User Fidelity with TWO-LAYER Architecture
+        # ============================================================
+        # Returns: (fidelity, raw_similarity, baseline_hard_block)
+        user_fidelity, raw_similarity, baseline_hard_block = self._calculate_user_fidelity(user_input)
 
-        # Generate native response if needed
-        if turn_config['test_type'] == 'head_to_head' or \
-           turn_config['response_source'] in ['native', 'both']:
+        # Store all metrics in response_data
+        response_data['user_fidelity'] = user_fidelity
+        response_data['raw_similarity'] = raw_similarity
+        response_data['baseline_hard_block'] = baseline_hard_block
+        response_data['fidelity_level'] = self._get_fidelity_level(user_fidelity)
+
+        logger.info(f"User Fidelity: {user_fidelity:.3f} ({response_data['fidelity_level']})")
+        logger.info(f"Baseline Hard Block: {baseline_hard_block} (raw_sim={raw_similarity:.3f}, baseline={SIMILARITY_BASELINE})")
+
+        # ============================================================
+        # STEP 2: TWO-TIER INTERVENTION DECISION
+        # ============================================================
+        # LAYER 1: Baseline Pre-Filter - catches extreme off-topic (raw_sim < 0.35)
+        # LAYER 2: Orange/Red Zone - actual intervention for fidelity < 0.70
+        #
+        # ZONE LOGIC:
+        # - Green (>= 0.85): Full alignment, native response, no warning
+        # - Yellow (0.70-0.85): Temperature gauge only - native response + visual warning
+        # - Orange (0.50-0.70): TELOS intervention required
+        # - Red (<0.50): Strong TELOS intervention (forbidden zone)
+        #
+        # Yellow zone is like a yellow traffic light - cautionary awareness only
+        # User is free to explore but can check with Steward if curious why it triggered
+        in_basin = user_fidelity >= INTERVENTION_THRESHOLD  # 0.48
+        in_green_zone = user_fidelity >= FIDELITY_GREEN     # >= 0.85
+        in_yellow_zone = user_fidelity >= FIDELITY_YELLOW and user_fidelity < FIDELITY_GREEN  # 0.70-0.85
+
+        # Store layer-specific results for debugging/transparency
+        response_data['layer1_triggered'] = baseline_hard_block
+        response_data['layer2_in_basin'] = in_basin
+        response_data['in_green_zone'] = in_green_zone
+        response_data['in_yellow_zone'] = in_yellow_zone
+
+        # UNIFIED DECISION: Intervene ONLY when fidelity < 0.70 (orange/red zones)
+        # Yellow zone (0.70-0.85) gets native response with visual temperature warning
+        should_intervene = baseline_hard_block or user_fidelity < FIDELITY_YELLOW
+
+        if not should_intervene:
+            # GREEN or YELLOW zone: No TELOS intervention - native response
+            # Yellow zone still shows visual temperature warning but doesn't modify response
+            zone = "GREEN" if in_green_zone else "YELLOW (temperature gauge)"
+            logger.info(f"✅ {zone} zone (fidelity {user_fidelity:.3f} >= {FIDELITY_YELLOW}): No intervention")
+            response_data['intervention_triggered'] = False
+            response_data['intervention_reason'] = None
+            response_data['shown_source'] = 'native'
+
+            # Generate native response
             native_response = self._generate_native_response(user_input)
+            response_data['shown_response'] = native_response
             response_data['native_response'] = native_response
 
-        # Determine what to show the user
-        if turn_config['test_type'] == 'single_blind':
-            if turn_config['response_source'] == 'telos':
-                response_data['shown_response'] = telos_data['response']
-                response_data['shown_source'] = 'telos'
-                logger.info(f"🎲 Turn {turn_number}: A/B test selected TELOS response (governed)")
-            else:
-                response_data['shown_response'] = response_data.get('native_response')
-                response_data['shown_source'] = 'native'
-                logger.info(f"🎲 Turn {turn_number}: A/B test selected NATIVE response (ungoverned)")
+            # Still run TELOS in background for metrics (but don't show)
+            telos_data = self._generate_telos_response(user_input, turn_number)
+
+            # Use TELOS math for intervention decisions
+            telos_data['intervention_triggered'] = False  # No intervention when in basin
+            telos_data['intervention_reason'] = None
+            telos_data['user_pa_fidelity'] = user_fidelity  # Store for Steward to access
+            telos_data['fidelity_level'] = response_data['fidelity_level']
+            telos_data['in_basin'] = True
+
+            response_data['telos_analysis'] = telos_data
+
         else:
-            # Head-to-head: show both responses for comparison
-            # Store both responses for the UI to render side-by-side
-            response_data['shown_response'] = telos_data['response']  # Primary display
-            response_data['shown_source'] = 'both'
-            response_data['comparison_mode'] = True
-            response_data['response_a'] = telos_data['response']  # TELOS response
-            response_data['response_b'] = response_data.get('native_response', '')  # Native response
-            logger.info(f"🎲 Turn {turn_number}: Head-to-head test - showing BOTH responses for comparison")
+            # ORANGE or RED zone: Drift detected - TELOS intervention required
+            # TWO-TIER intervention based on fidelity color zones:
+            # Orange (0.50-0.70): Moderate intervention - drift from purpose
+            # Red (<0.50): Strong intervention - forbidden zone
 
-        # Generate Steward's interpretation
-        response_data['steward_interpretation'] = self._generate_steward_interpretation(
-            telos_data,
-            turn_config['response_source'],
-            turn_number
-        )
+            if user_fidelity >= FIDELITY_ORANGE:  # Orange zone: 0.50-0.70
+                intervention_reason = "Drift from your stated purpose detected - TELOS is guiding you back"
+                intervention_strength = "moderate"
+            else:  # Red zone: <0.50
+                intervention_reason = "Significant drift detected - TELOS intervention activated"
+                intervention_strength = "strong"
 
-        # Store in session for Observatory review
+            logger.info(f"⚠️ ORANGE/RED zone (fidelity {user_fidelity:.3f} < {FIDELITY_YELLOW}): {intervention_strength}")
+
+            response_data['intervention_triggered'] = True
+            response_data['intervention_reason'] = intervention_reason
+            response_data['intervention_strength'] = intervention_strength
+            response_data['shown_source'] = 'telos'
+
+            # Generate TELOS governed response
+            telos_data = self._generate_telos_response(user_input, turn_number)
+
+            # Use TELOS math for intervention decisions - outside basin means intervention
+            telos_data['intervention_triggered'] = True  # Intervention when outside basin
+            telos_data['intervention_reason'] = intervention_reason
+            telos_data['user_pa_fidelity'] = user_fidelity  # Store for Steward to access
+            telos_data['fidelity_level'] = response_data['fidelity_level']
+            telos_data['in_basin'] = False  # Outside basin
+
+            response_data['telos_analysis'] = telos_data
+            response_data['shown_response'] = telos_data.get('response', '')
+
+            # Pre-generate Steward interpretation (only for interventions)
+            response_data['steward_interpretation'] = self._generate_steward_interpretation(
+                telos_data,
+                'telos',
+                turn_number
+            )
+            response_data['has_steward_interpretation'] = True
+
+        # ============================================================
+        # STEP 3: Store Turn Data
+        # ============================================================
         self._store_turn_data(turn_number, response_data)
 
         return response_data
+
+    def _calculate_user_fidelity(self, user_input: str) -> tuple:
+        """
+        Calculate fidelity of user input relative to their PA using TWO-LAYER architecture.
+
+        This is the FIRST calculation - before any response generation.
+
+        LAYER 1: Baseline Pre-Filter
+        - If raw_similarity < SIMILARITY_BASELINE (0.35), trigger HARD_BLOCK
+        - This catches extreme off-topic content that cosine similarity struggles with
+
+        LAYER 2: TELOS Primacy State (Basin Membership)
+        - Uses raw cosine similarity with BASIN/TOLERANCE thresholds
+        - Fidelity = cosine_similarity(user_input, user_pa)
+
+        Args:
+            user_input: The user's message
+
+        Returns:
+            tuple: (fidelity, raw_similarity, baseline_hard_block)
+            - fidelity: Raw cosine similarity (0.0 to 1.0) - used for TELOS math
+            - raw_similarity: Same as fidelity (kept for logging clarity)
+            - baseline_hard_block: True if raw_sim < SIMILARITY_BASELINE
+        """
+        try:
+            # Ensure TELOS engine is initialized
+            if not self.telos_engine:
+                self._initialize_telos_engine()
+
+            if not self.embedding_provider or self.user_pa_embedding is None:
+                logger.warning("Embedding provider or PA not initialized - returning default fidelity")
+                return (0.85, 0.85, False)  # Default to green zone if not ready
+
+            # Get user input embedding
+            user_embedding = np.array(self.embedding_provider.encode(user_input))
+
+            # Calculate cosine similarity to User PA (RAW - no normalization)
+            # This is used by BOTH Layer 1 and Layer 2
+            raw_similarity = self._cosine_similarity(user_embedding, self.user_pa_embedding)
+
+            # ============================================================
+            # LAYER 1: Baseline Pre-Filter (extreme off-topic detection)
+            # ============================================================
+            baseline_hard_block = raw_similarity < SIMILARITY_BASELINE
+
+            if baseline_hard_block:
+                logger.warning(f"LAYER 1 HARD_BLOCK: raw_sim={raw_similarity:.3f} < baseline={SIMILARITY_BASELINE}")
+            else:
+                logger.info(f"Layer 1 PASS: raw_sim={raw_similarity:.3f} >= baseline={SIMILARITY_BASELINE}")
+
+            # ============================================================
+            # LAYER 2: TELOS Primacy State (fidelity = raw cosine similarity)
+            # ============================================================
+            # Fidelity IS raw cosine similarity - TELOS math handles thresholds
+            fidelity = raw_similarity
+
+            logger.info(f"Layer 2 Fidelity: {fidelity:.3f} (raw cosine similarity)")
+
+            return (fidelity, raw_similarity, baseline_hard_block)
+
+        except Exception as e:
+            logger.error(f"Error calculating user fidelity: {e}")
+            return (0.85, 0.85, False)  # Default to green zone on error
+
+    def _cosine_similarity(self, vec1: np.ndarray, vec2: np.ndarray) -> float:
+        """Calculate cosine similarity between two vectors."""
+        dot_product = np.dot(vec1, vec2)
+        norm1 = np.linalg.norm(vec1)
+        norm2 = np.linalg.norm(vec2)
+        if norm1 == 0 or norm2 == 0:
+            return 0.0
+        return dot_product / (norm1 * norm2)
+
+    def _get_fidelity_level(self, fidelity: float) -> str:
+        """Get human-readable fidelity level."""
+        if fidelity >= FIDELITY_GREEN:
+            return "green"
+        elif fidelity >= FIDELITY_YELLOW:
+            return "yellow"
+        elif fidelity >= FIDELITY_ORANGE:
+            return "orange"
+        else:
+            return "red"
 
     def _generate_telos_response(self, user_input: str, turn_number: int) -> Dict:
         """
@@ -148,6 +379,67 @@ class BetaResponseManager:
                     'pa': result.get('pa_embedding')
                 }
             }
+
+            # =================================================================
+            # DUAL PA: Compute Primacy State (f_user, f_ai, ps_score)
+            # Formula: PS = ρ_PA · (2·F_user·F_AI)/(F_user + F_AI)
+            # =================================================================
+            # DEBUG: Log PS calculation prerequisites (WARNING level to ensure visibility)
+            logger.warning(f"📊 PS Calculation Check:")
+            logger.warning(f"   ps_calculator exists: {self.ps_calculator is not None}")
+            logger.warning(f"   user_pa_embedding exists: {self.user_pa_embedding is not None}")
+            logger.warning(f"   ai_pa_embedding exists: {self.ai_pa_embedding is not None}")
+
+            if self.ps_calculator and self.user_pa_embedding is not None and self.ai_pa_embedding is not None:
+                try:
+                    # Get response text and compute embedding
+                    response_text = result.get('governed_response', '')
+                    if response_text and self.embedding_provider:
+                        response_embedding = np.array(self.embedding_provider.encode(response_text))
+
+                        # Compute Primacy State metrics
+                        ps_metrics = self.ps_calculator.compute_primacy_state(
+                            response_embedding=response_embedding,
+                            user_pa_embedding=self.user_pa_embedding,
+                            ai_pa_embedding=self.ai_pa_embedding,
+                            use_cached_correlation=True
+                        )
+
+                        # Store dual PA fidelity values in telos_data
+                        # NOTE: user_pa_fidelity is already set correctly using _calculate_user_fidelity()
+                        # which computes USER INPUT to User PA similarity (deterministic).
+                        # ps_metrics.f_user measures RESPONSE to User PA which is NOT what we want for F_user.
+                        # Only update if not already set (shouldn't happen, but defensive):
+                        if 'user_pa_fidelity' not in telos_data:
+                            telos_data['user_pa_fidelity'] = ps_metrics.f_user
+                        # AI fidelity correctly uses response embedding to AI PA
+                        telos_data['ai_pa_fidelity'] = ps_metrics.f_ai
+                        telos_data['primacy_state_score'] = ps_metrics.ps_score
+                        telos_data['pa_correlation'] = ps_metrics.rho_pa
+                        telos_data['primacy_state_condition'] = ps_metrics.condition
+
+                        # Log Primacy State metrics (WARNING level for visibility)
+                        logger.warning(f"📊 Primacy State Metrics:")
+                        logger.warning(f"   F_user (User Input Fidelity): {telos_data['user_pa_fidelity']:.3f} [deterministic]")
+                        logger.warning(f"   F_AI (AI Response Fidelity): {ps_metrics.f_ai:.3f}")
+                        logger.warning(f"   PS (Primacy State): {ps_metrics.ps_score:.3f}")
+                        logger.warning(f"   ρ_PA (Correlation): {ps_metrics.rho_pa:.3f}")
+                        logger.warning(f"   Condition: {ps_metrics.condition}")
+
+                except Exception as ps_error:
+                    logger.warning(f"⚠️ Could not compute Primacy State: {ps_error}")
+                    import traceback
+                    logger.warning(f"   PS Traceback: {traceback.format_exc()}")
+                    # Continue without PS metrics - don't fail the response
+            else:
+                # Log WHY PS calculation was skipped
+                logger.warning("⚠️ PS calculation SKIPPED - missing prerequisites:")
+                if not self.ps_calculator:
+                    logger.warning("   - ps_calculator is None (init may have failed)")
+                if self.user_pa_embedding is None:
+                    logger.warning("   - user_pa_embedding is None")
+                if self.ai_pa_embedding is None:
+                    logger.warning("   - ai_pa_embedding is None")
 
             # Log intervention if triggered
             if telos_data['intervention_triggered']:
@@ -319,7 +611,9 @@ class BetaResponseManager:
     def _get_conversation_history(self) -> list:
         """Get conversation history for context."""
         history = []
-        for i in range(1, st.session_state.get('beta_turn_count', 0) + 1):
+        # beta_current_turn is the NEXT turn to play (starts at 1), so completed turns = current_turn - 1
+        completed_turns = st.session_state.get('beta_current_turn', 1) - 1
+        for i in range(1, completed_turns + 1):
             turn_data = st.session_state.get(f'beta_turn_{i}_data', {})
             if turn_data:
                 history.append({'role': 'user', 'content': turn_data.get('user_input', '')})
@@ -327,11 +621,12 @@ class BetaResponseManager:
         return history
 
     def _initialize_telos_engine(self):
-        """Initialize TELOS engine for governance."""
+        """Initialize TELOS engine for governance with dual PA support."""
         try:
             from telos_purpose.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
             from telos_purpose.core.embedding_provider import MistralEmbeddingProvider
             from telos_purpose.llm_clients.mistral_client import MistralClient
+            from telos_purpose.core.primacy_state import PrimacyStateCalculator
 
             # Read PA from session state (established via BETA questionnaire)
             # PAOnboarding component saves to 'primacy_attractor' and 'pa_established'
@@ -374,9 +669,11 @@ class BetaResponseManager:
                 logger.info(f"   Scope: {scope_str[:80]}")
             else:
                 # Fallback PA (should rarely happen - PA questionnaire runs before BETA starts)
+                purpose_str = "Engage in helpful conversation"
+                scope_str = "General assistance"
                 attractor = PrimacyAttractor(
-                    purpose=["Engage in helpful conversation"],
-                    scope=["General assistance"],
+                    purpose=[purpose_str],
+                    scope=[scope_str],
                     boundaries=["Maintain respectful dialogue"],
                     constraint_tolerance=0.02  # STRICT governance for BETA testing
                 )
@@ -385,6 +682,7 @@ class BetaResponseManager:
             # Initialize LLM client and embedding provider
             llm_client = MistralClient()
             embedding_provider = MistralEmbeddingProvider()  # Using Mistral embeddings (1024 dims)
+            self.embedding_provider = embedding_provider  # Cache for later use
 
             # Initialize steward with proper attractor
             self.telos_engine = UnifiedGovernanceSteward(
@@ -399,19 +697,109 @@ class BetaResponseManager:
             self.telos_engine.start_session()
             logger.info("✅ TELOS session started successfully")
 
+            # =================================================================
+            # DUAL PA SETUP: Derive AI PA and compute embeddings
+            # CRITICAL: Cache PA embeddings in session state to ensure determinism
+            # The Mistral embedding API may return slightly different float values
+            # on each call, causing fidelity calculations to vary. By caching in
+            # session state, we ensure the same PA embedding is used throughout
+            # the entire BETA session.
+            # =================================================================
+            logger.info("🔧 Setting up Dual PA for Primacy State calculation...")
+
+            # Check if PA embeddings are already cached in session state
+            if 'cached_user_pa_embedding' in st.session_state and 'cached_ai_pa_embedding' in st.session_state:
+                # Use cached embeddings for deterministic fidelity calculations
+                self.user_pa_embedding = st.session_state.cached_user_pa_embedding
+                self.ai_pa_embedding = st.session_state.cached_ai_pa_embedding
+                logger.info("   ✅ Using CACHED PA embeddings from session state (deterministic)")
+                logger.info(f"   User PA embedded: {len(self.user_pa_embedding)} dims (cached)")
+                logger.info(f"   AI PA embedded: {len(self.ai_pa_embedding)} dims (cached)")
+            else:
+                # 1. Create User PA text for embedding
+                user_pa_text = f"Purpose: {purpose_str}. Scope: {scope_str}."
+                self.user_pa_embedding = np.array(embedding_provider.encode(user_pa_text))
+                logger.info(f"   User PA embedded: {len(self.user_pa_embedding)} dims")
+
+                # 2. Derive AI PA from User PA using intent detection
+                detected_intent = self._detect_intent_from_purpose(purpose_str)
+                role_action = INTENT_TO_ROLE_MAP.get(detected_intent, 'help')
+                ai_purpose = f"{role_action.capitalize()} the user as they work to: {purpose_str}"
+                ai_pa_text = f"AI Role: {ai_purpose}. Supporting scope: {scope_str}."
+                self.ai_pa_embedding = np.array(embedding_provider.encode(ai_pa_text))
+                logger.info(f"   AI PA derived (intent: {detected_intent} -> {role_action})")
+                logger.info(f"   AI PA embedded: {len(self.ai_pa_embedding)} dims")
+
+                # Cache in session state for future use (ensures determinism)
+                st.session_state.cached_user_pa_embedding = self.user_pa_embedding
+                st.session_state.cached_ai_pa_embedding = self.ai_pa_embedding
+                logger.info("   📦 PA embeddings CACHED in session state for deterministic calculations")
+
+            # 3. Initialize Primacy State Calculator
+            self.ps_calculator = PrimacyStateCalculator(track_energy=True)
+            logger.info("✅ PrimacyStateCalculator initialized with energy tracking")
+
+            # 4. Compute initial PA correlation (rho_PA)
+            rho_pa = self.ps_calculator.cosine_similarity(
+                self.user_pa_embedding,
+                self.ai_pa_embedding
+            )
+            logger.info(f"   PA Correlation (rho_PA): {rho_pa:.3f}")
+
             # Log basin configuration
             if hasattr(self.telos_engine, 'attractor_math') and self.telos_engine.attractor_math:
                 basin_radius = self.telos_engine.attractor_math.basin_radius
                 tolerance = self.telos_engine.attractor_math.constraint_tolerance
                 embedding_dim = embedding_provider.dimension
-                logger.info(f"✅ TELOS engine initialized for BETA testing")
+                logger.info(f"✅ TELOS engine initialized for BETA testing (DUAL PA MODE)")
                 logger.info(f"   Embedding model: Mistral mistral-embed ({embedding_dim} dims)")
                 logger.info(f"   Constraint tolerance: {tolerance}")
                 logger.info(f"   Basin radius: {basin_radius:.3f}")
                 logger.info(f"   Expected fidelity for off-topic: < {(1 - 0.5/basin_radius):.3f}")
             else:
-                logger.info("✅ TELOS engine initialized for BETA testing with correct PA")
+                logger.info("✅ TELOS engine initialized for BETA testing with DUAL PA")
 
         except Exception as e:
             logger.error(f"Failed to initialize TELOS engine: {e}")
+            import traceback
+            logger.error(f"   Traceback: {traceback.format_exc()}")
             self.telos_engine = None
+            self.ps_calculator = None
+
+    def _detect_intent_from_purpose(self, purpose: str) -> str:
+        """
+        Detect user intent from purpose string using keyword matching.
+
+        Simple synchronous implementation for BETA (avoids async complexity).
+
+        Args:
+            purpose: User's stated purpose
+
+        Returns:
+            Intent verb (e.g., 'learn', 'solve', 'create')
+        """
+        purpose_lower = purpose.lower()
+
+        # Check for intent keywords in purpose
+        intent_keywords = {
+            'learn': ['learn', 'study', 'understand better', 'education'],
+            'understand': ['understand', 'comprehend', 'grasp', 'figure out'],
+            'solve': ['solve', 'fix', 'resolve', 'troubleshoot', 'debug'],
+            'create': ['create', 'build', 'make', 'develop', 'design', 'write'],
+            'decide': ['decide', 'choose', 'select', 'pick', 'evaluate options'],
+            'explore': ['explore', 'discover', 'investigate', 'look into'],
+            'analyze': ['analyze', 'examine', 'review', 'assess', 'audit'],
+            'fix': ['fix', 'repair', 'correct', 'patch'],
+            'debug': ['debug', 'trace', 'diagnose'],
+            'optimize': ['optimize', 'improve', 'enhance', 'streamline'],
+            'research': ['research', 'study', 'survey', 'review literature'],
+            'plan': ['plan', 'organize', 'schedule', 'strategy', 'roadmap']
+        }
+
+        for intent, keywords in intent_keywords.items():
+            for keyword in keywords:
+                if keyword in purpose_lower:
+                    return intent
+
+        # Default to 'understand' if no match
+        return 'understand'
