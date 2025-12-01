@@ -85,3 +85,15 @@ archive/
 deprecated/
 *.bak
 *.old
+
+# Privacy-sensitive data (beta testing, consent logs)
+consent_log.json
+beta_consents/
+beta_testing/data/
+*.jsonl
+
+# Node modules
+node_modules/
+
+# Claude Code local settings
+.claude/

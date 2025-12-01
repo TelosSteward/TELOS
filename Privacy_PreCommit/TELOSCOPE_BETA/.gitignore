@@ -93,3 +93,12 @@ sentence-transformers/
 # Validation output (can be large)
 validation_results/
 test_sessions/
+
+# Privacy-sensitive data (beta testing, consent logs)
+consent_log.json
+beta_consents/
+beta_testing/data/
+*.jsonl
+
+# Node modules
+node_modules/

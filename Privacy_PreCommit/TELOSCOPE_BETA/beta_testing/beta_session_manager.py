@@ -202,9 +202,9 @@ class BetaSessionManager:
         """
         # Initialize TELOS if needed
         if not hasattr(state_manager, '_telos_steward'):
-            from telos.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
-            from telos.core.embedding_provider import SentenceTransformerProvider
-            from telos.llm_clients.mistral_client import MistralClient
+            from telos_purpose.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
+            from telos_purpose.core.embedding_provider import SentenceTransformerProvider
+            from telos_purpose.llm_clients.mistral_client import MistralClient
             import os
 
             logger.info("Initializing TELOS for beta testing...")

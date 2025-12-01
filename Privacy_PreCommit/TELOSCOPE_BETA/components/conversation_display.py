@@ -3244,7 +3244,7 @@ class ConversationDisplay:
             # Generate Steward response using Mistral API
             try:
                 import os
-                from telos.llm.mistral_client import MistralClient
+                from telos_purpose.llm_clients.mistral_client import MistralClient
 
                 # Get API key from Streamlit secrets or environment
                 mistral_api_key = st.secrets.get("MISTRAL_API_KEY", os.getenv("MISTRAL_API_KEY"))
