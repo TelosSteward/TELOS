@@ -11,8 +11,7 @@
 If you discover a security vulnerability in TELOS, please report it responsibly:
 
 1. **Do NOT open a public GitHub issue** for security vulnerabilities
-2. **Email**: [Security contact to be established with grant funding]
-3. **GitHub Private Vulnerability Reporting**: Use GitHub's private vulnerability reporting feature if available
+2. **GitHub Private Vulnerability Reporting**: Use GitHub's private vulnerability reporting feature if available
 
 ### What to Include
 
