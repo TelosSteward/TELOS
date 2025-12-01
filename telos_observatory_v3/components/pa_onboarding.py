@@ -268,7 +268,7 @@ class PAOnboarding:
                                 # Extract PA from answers
                                 self._extract_pa_from_answers()
 
-                                # Initialize BETA sequence for 15-turn A/B testing
+                                # Initialize BETA sequence for 5-turn TELOS demo
                                 from services.beta_sequence_generator import BetaSequenceGenerator
                                 generator = BetaSequenceGenerator()
                                 st.session_state.beta_sequence = generator.generate_session_sequence()
@@ -319,10 +319,20 @@ class PAOnboarding:
             if hasattr(st.session_state.state_manager, '_telos_steward'):
                 delattr(st.session_state.state_manager, '_telos_steward')
 
-            # ALSO delete BETA response manager's telos_engine
+            # ALSO delete BETA response manager's telos_engine AND all dual PA components
+            # to force full re-initialization with new PA
             if 'beta_response_manager' in st.session_state:
-                if hasattr(st.session_state.beta_response_manager, 'telos_engine'):
-                    st.session_state.beta_response_manager.telos_engine = None
+                brm = st.session_state.beta_response_manager
+                if hasattr(brm, 'telos_engine'):
+                    brm.telos_engine = None
+                if hasattr(brm, 'ps_calculator'):
+                    brm.ps_calculator = None
+                if hasattr(brm, 'user_pa_embedding'):
+                    brm.user_pa_embedding = None
+                if hasattr(brm, 'ai_pa_embedding'):
+                    brm.ai_pa_embedding = None
+                if hasattr(brm, 'embedding_provider'):
+                    brm.embedding_provider = None
 
         return pa
 
@@ -396,12 +406,22 @@ class PAOnboarding:
             if hasattr(st.session_state.state_manager, '_telos_steward'):
                 delattr(st.session_state.state_manager, '_telos_steward')
 
-            # ALSO delete BETA response manager's telos_engine
+            # ALSO delete BETA response manager's telos_engine AND all dual PA components
+            # to force full re-initialization with new PA
             if 'beta_response_manager' in st.session_state:
-                if hasattr(st.session_state.beta_response_manager, 'telos_engine'):
-                    st.session_state.beta_response_manager.telos_engine = None
+                brm = st.session_state.beta_response_manager
+                if hasattr(brm, 'telos_engine'):
+                    brm.telos_engine = None
+                if hasattr(brm, 'ps_calculator'):
+                    brm.ps_calculator = None
+                if hasattr(brm, 'user_pa_embedding'):
+                    brm.user_pa_embedding = None
+                if hasattr(brm, 'ai_pa_embedding'):
+                    brm.ai_pa_embedding = None
+                if hasattr(brm, 'embedding_provider'):
+                    brm.embedding_provider = None
 
-        # Initialize BETA sequence for 15-turn A/B testing
+        # Initialize BETA sequence for 5-turn TELOS demo
         from services.beta_sequence_generator import BetaSequenceGenerator
         generator = BetaSequenceGenerator()
         st.session_state.beta_sequence = generator.generate_session_sequence()

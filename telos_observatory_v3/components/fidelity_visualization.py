@@ -17,12 +17,22 @@ class FidelityBarGraph:
     """Creates interactive bar graph of fidelity scores across turns."""
 
     def __init__(self):
+        # Import Goldilocks zone thresholds from central config
+        try:
+            from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT
+        except ImportError:
+            _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT = 0.76, 0.73, 0.67
+
+        # Zone-based thresholds (Goldilocks optimized)
         self.color_thresholds = {
-            'green': (0.85, 1.0, '#4CAF50'),
-            'yellow': (0.70, 0.85, '{GOLD}'),
-            'orange': (0.50, 0.70, '{STATUS_MODERATE}'),
-            'red': (0.0, 0.50, '{STATUS_SEVERE}')
+            'green': (_ZONE_ALIGNED, 1.0, '#4CAF50'),      # "Aligned" zone
+            'yellow': (_ZONE_MINOR_DRIFT, _ZONE_ALIGNED, '{GOLD}'),  # "Minor Drift" zone
+            'orange': (_ZONE_DRIFT, _ZONE_MINOR_DRIFT, '{STATUS_MODERATE}'),  # "Drift Detected" zone
+            'red': (0.0, _ZONE_DRIFT, '{STATUS_SEVERE}')   # "Significant Drift" zone
         }
+        self._zone_aligned = _ZONE_ALIGNED
+        self._zone_minor = _ZONE_MINOR_DRIFT
+        self._zone_drift = _ZONE_DRIFT
 
     def get_color_for_score(self, score: float) -> tuple:
         """Get color based on fidelity score."""
@@ -125,27 +135,30 @@ class FidelityBarGraph:
             # Create segmented bar based on color zones
             segments = []
 
-            # Calculate segment heights
-            if fidelity > 0.85:
-                # All green
+            # Calculate segment heights using Goldilocks zone thresholds
+            if fidelity > self._zone_aligned:
+                # "Aligned" zone - all green
                 green_height = bar_height
                 segments.append(('green', green_height, fidelity))
-            elif fidelity > 0.70:
-                # Green + yellow
-                green_height = int(0.15 * 250)  # 0.85-1.0 range
+            elif fidelity > self._zone_minor:
+                # "Minor Drift" zone - green + yellow
+                green_zone_size = 1.0 - self._zone_aligned
+                green_height = int(green_zone_size * 250)
                 yellow_height = bar_height - green_height
                 segments.append(('yellow', yellow_height, ''))
                 segments.append(('green', green_height, fidelity))
-            elif fidelity > 0.50:
-                # Green + yellow + orange
-                green_height = int(0.15 * 250)
-                yellow_height = int(0.15 * 250)
+            elif fidelity > self._zone_drift:
+                # "Drift Detected" zone - green + yellow + orange
+                green_zone_size = 1.0 - self._zone_aligned
+                yellow_zone_size = self._zone_aligned - self._zone_minor
+                green_height = int(green_zone_size * 250)
+                yellow_height = int(yellow_zone_size * 250)
                 orange_height = bar_height - green_height - yellow_height
                 segments.append(('orange', orange_height, ''))
                 segments.append(('yellow', yellow_height, ''))
                 segments.append(('green', green_height, fidelity))
             else:
-                # All red
+                # "Significant Drift" zone - all red
                 segments.append(('red', bar_height, fidelity))
 
             # Build bar HTML
@@ -212,10 +225,10 @@ class FidelityBarGraph:
             border: 1px solid #444;
             border-radius: 8px;
         ">
-            <span style="color: #4CAF50;">■ ≥0.85 Aligned</span>
-            <span style="color: {GOLD};">■ 0.70-0.85 Mild Drift</span>
-            <span style="color: {STATUS_MODERATE};">■ 0.50-0.70 Moderate Drift</span>
-            <span style="color: {STATUS_SEVERE};">■ <0.50 Severe Drift</span>
+            <span style="color: #4CAF50;">■ ≥0.76 Aligned</span>
+            <span style="color: {GOLD};">■ 0.73-0.76 Minor Drift</span>
+            <span style="color: {STATUS_MODERATE};">■ 0.67-0.73 Drift Detected</span>
+            <span style="color: {STATUS_SEVERE};">■ <0.67 Significant Drift</span>
             <span style="color: {STATUS_MODERATE};">⚠️ Intervention</span>
         </div>
         """, unsafe_allow_html=True)

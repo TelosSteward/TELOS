@@ -69,7 +69,7 @@ class CounterfactualBranchManager:
 
     REAL DEMONSTRATION FLOW:
     ------------------------
-    1. Session replay detects drift at turn N (F < 0.8)
+    1. Session replay detects drift at turn N (F < 0.76)  # Goldilocks: Aligned threshold
     2. Manager triggered with:
        - Current conversation state
        - Remaining turns from session (N+1, N+2, ...)

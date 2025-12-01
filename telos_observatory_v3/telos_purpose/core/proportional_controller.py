@@ -17,12 +17,12 @@ At runtime, the Steward + Proportional Controller together implement the
 Teleological Operator pattern (a unified, coupled measurement–correction loop), 
 but remain distinct modules for testing and modularity.
 
-Intervention States (per whitepaper Section 5.3)
-------------------------------------------------
-1. MONITOR (F ≥ 0.85, e < ε_min): No action needed
-2. CORRECT (0.70 ≤ F < 0.85): Context injection (lightweight reminder)
-3. INTERVENE (0.50 ≤ F < 0.70): Regeneration with constraints
-4. ESCALATE (F < 0.50): Block response, require human review
+Intervention States (Goldilocks Zone Optimized)
+-----------------------------------------------
+1. MONITOR/ALIGNED (F ≥ 0.76, e < ε_min): No action needed
+2. CORRECT/MINOR DRIFT (0.73 ≤ F < 0.76): Context injection (lightweight reminder)
+3. INTERVENE/DRIFT DETECTED (0.67 ≤ F < 0.73): Regeneration with constraints
+4. ESCALATE/SIGNIFICANT DRIFT (F < 0.67): Block response, require human review
 
 Interface Contract
 ------------------

@@ -203,20 +203,28 @@ class BranchComparator:
             )
         )
 
-        # Add threshold lines
+        # Add Goldilocks zone threshold lines
         fig.add_hline(
-            y=0.8,
+            y=0.76,
             line_dash="dash",
-            line_color="orange",
-            annotation_text="Warning Threshold (F=0.8)",
+            line_color="green",
+            annotation_text="Aligned Threshold (F=0.76)",
             annotation_position="right"
         )
 
         fig.add_hline(
-            y=0.5,
+            y=0.73,
+            line_dash="dash",
+            line_color="gold",
+            annotation_text="Minor Drift (F=0.73)",
+            annotation_position="right"
+        )
+
+        fig.add_hline(
+            y=0.67,
             line_dash="dash",
             line_color="red",
-            annotation_text="Critical Threshold (F=0.5)",
+            annotation_text="Drift Threshold (F=0.67)",
             annotation_position="right"
         )
 

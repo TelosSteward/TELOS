@@ -7,6 +7,44 @@ import streamlit as st
 from datetime import datetime
 from services.beta_steward_llm import BetaStewardLLM
 import html
+import re
+
+
+# Zone color mapping for fidelity scores
+ZONE_COLORS = {
+    'green': '#2ecc71',   # Bright green
+    'yellow': '#f1c40f',  # Yellow (standard Steward color)
+    'orange': '#e67e22',  # Orange
+    'red': '#e74c3c',     # Red
+}
+
+
+def _md_to_html(text: str) -> str:
+    """Convert basic markdown to HTML for display in Steward panel.
+
+    Handles: **bold**, *italic*, `code`, [[zone:value]] colored scores, and line breaks.
+    """
+    # Escape HTML first to prevent injection
+    text = html.escape(text)
+
+    # Zone-colored scores: [[green:0.856]] -> colored span
+    def replace_zone_score(match):
+        zone = match.group(1)
+        value = match.group(2)
+        color = ZONE_COLORS.get(zone, '#F4D03F')  # Default to yellow
+        return f'<span style="color: {color}; font-weight: bold; font-size: 1.1em;">{value}</span>'
+
+    text = re.sub(r'\[\[(\w+):([^\]]+)\]\]', replace_zone_score, text)
+
+    # Bold: **text** -> <b>text</b>
+    text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', text)
+    # Italic: *text* -> <i>text</i>
+    text = re.sub(r'\*(.+?)\*', r'<i>\1</i>', text)
+    # Code: `text` -> <code>text</code>
+    text = re.sub(r'`(.+?)`', r'<code style="background: rgba(0,0,0,0.3); padding: 2px 4px; border-radius: 3px;">\1</code>', text)
+    # Line breaks
+    text = text.replace('\n', '<br>')
+    return text
 
 
 class BetaStewardPanel:
@@ -27,41 +65,17 @@ class BetaStewardPanel:
     def render_panel(self):
         """Render the Beta Steward chat panel."""
         # Check if opened from an intervention "Why?" button
-        intervention_turn = st.session_state.get('steward_intervention_turn')
+        # Pop it immediately to prevent duplicate processing
+        intervention_turn = st.session_state.pop('steward_intervention_turn', None)
 
         # Initialize chat history if not exists
         if 'beta_steward_chat_history' not in st.session_state:
-            # Get user's PA for personalized greeting
-            pa = st.session_state.get('primacy_attractor', {})
-            purpose = pa.get('purpose', 'your stated purpose')
-
             if intervention_turn:
-                # Opened from "Why?" button - explain the specific intervention
-                turn_data = st.session_state.get(f'beta_turn_{intervention_turn}_data', {})
-                telos_analysis = turn_data.get('telos_analysis', {})
-
-                user_fidelity = telos_analysis.get('user_pa_fidelity', 0.0)
-                intervention_reason = telos_analysis.get('intervention_reason', 'low fidelity detected')
-                user_input = turn_data.get('user_input', '')[:100]
-
-                initial_message = f"""You asked why TELOS intervened on Turn {intervention_turn}. Let me explain:
-
-**Your input had a fidelity score of {user_fidelity:.3f}**, which indicates your message drifted from your stated purpose.
-
-**Your purpose:** "{purpose[:80]}{'...' if len(purpose) > 80 else ''}"
-**Your input:** "{user_input}{'...' if len(user_input) >= 100 else ''}"
-
-**Why the intervention?** {intervention_reason}
-
-When fidelity drops below certain thresholds, TELOS governance kicks in to help steer the conversation back toward your goals. This is the system working as designed - it's protecting your stated intent.
-
-Would you like me to explain more about fidelity scores or how interventions work?"""
-
-                # Clear the intervention turn after using it
-                del st.session_state['steward_intervention_turn']
+                # Opened from "Why?" button - provide detailed explanation
+                initial_message = self._build_why_explanation(intervention_turn)
             else:
-                # Standard greeting - simple and instantaneous
-                initial_message = "Welcome to your BETA test! I'm Steward, here to help you understand what you're seeing."
+                # Standard greeting - minimal
+                initial_message = "I'm Steward. Ask me anything about what you're seeing."
 
             st.session_state.beta_steward_chat_history = [
                 {
@@ -72,32 +86,12 @@ Would you like me to explain more about fidelity scores or how interventions wor
             ]
         elif intervention_turn:
             # Chat history exists but opened from new "Why?" button
-            # Add the intervention explanation as a new conversation
-            turn_data = st.session_state.get(f'beta_turn_{intervention_turn}_data', {})
-            telos_analysis = turn_data.get('telos_analysis', {})
-            pa = st.session_state.get('primacy_attractor', {})
-            purpose = pa.get('purpose', 'your stated purpose')
-
-            user_fidelity = telos_analysis.get('user_pa_fidelity', 0.0)
-            intervention_reason = telos_analysis.get('intervention_reason', 'low fidelity detected')
-            user_input = turn_data.get('user_input', '')[:100]
-
-            intervention_message = f"""You asked about the intervention on Turn {intervention_turn}:
-
-**Fidelity score: {user_fidelity:.3f}** - Your message drifted from your purpose.
-**Your input:** "{user_input}{'...' if len(user_input) >= 100 else ''}"
-**Reason:** {intervention_reason}
-
-The system intervened to help realign the conversation with your stated goals. Want to know more?"""
-
+            fidelity_message = self._build_why_explanation(intervention_turn)
             st.session_state.beta_steward_chat_history.append({
                 'role': 'assistant',
-                'content': intervention_message,
+                'content': fidelity_message,
                 'timestamp': datetime.now().isoformat()
             })
-
-            # Clear the intervention turn after using it
-            del st.session_state['steward_intervention_turn']
 
         # Close button
         col_spacer, col_close = st.columns([5, 1])
@@ -112,10 +106,12 @@ The system intervened to help realign the conversation with your stated goals. W
         # Chat history display
         for message in st.session_state.beta_steward_chat_history:
             if message['role'] == 'assistant':
+                # Convert markdown to HTML for proper rendering
+                formatted_content = _md_to_html(message['content'])
                 st.markdown(f"""
                 <div style="background-color: rgba(255, 215, 0, 0.1); border: 1px solid #F4D03F; border-radius: 8px; padding: 12px; margin-bottom: 15px;">
                     <strong style="color: #F4D03F; font-size: 18px;">Steward:</strong><br>
-                    <span style="color: #F4D03F; font-size: 16px; line-height: 1.6;">{message['content']}</span>
+                    <span style="color: #F4D03F; font-size: 16px; line-height: 1.6;">{formatted_content}</span>
                 </div>
                 """, unsafe_allow_html=True)
             else:
@@ -226,6 +222,84 @@ The system intervened to help realign the conversation with your stated goals. W
                         break
 
         return context
+
+    def _build_why_explanation(self, turn_number: int) -> str:
+        """Build a detailed 'lift the curtain' explanation for a turn's fidelity score.
+
+        Args:
+            turn_number: The turn to explain
+
+        Returns:
+            Detailed explanation of why the fidelity was calculated this way
+        """
+        turn_data = st.session_state.get(f'beta_turn_{turn_number}_data', {})
+        telos_analysis = turn_data.get('telos_analysis', {})
+        user_fidelity = telos_analysis.get('user_pa_fidelity', 0.0)
+        raw_similarity = telos_analysis.get('raw_similarity', user_fidelity)
+        user_input = turn_data.get('user_input', '')
+        intervention_reason = telos_analysis.get('intervention_reason', '')
+        in_basin = telos_analysis.get('in_basin', user_fidelity >= 0.70)
+
+        # Get the PA purpose statement
+        pa = st.session_state.get('primacy_attractor', {})
+        purpose = pa.get('purpose', 'your stated purpose')
+
+        # Determine zone using Goldilocks thresholds from central config
+        from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT
+        if user_fidelity >= _ZONE_ALIGNED:  # 0.76
+            zone = "green"
+            zone_meaning = "Aligned"
+        elif user_fidelity >= _ZONE_MINOR_DRIFT:  # 0.73
+            zone = "yellow"
+            zone_meaning = "Minor Drift (no intervention)"
+        elif user_fidelity >= _ZONE_DRIFT:  # 0.67
+            zone = "orange"
+            zone_meaning = "Drift Detected (intervention triggered)"
+        else:
+            zone = "red"
+            zone_meaning = "Significant Drift (intervention triggered)"
+
+        # Build the explanation
+        lines = []
+        lines.append(f"**Turn {turn_number} Analysis**")
+        lines.append(f"*Fidelity Score:* [[{zone}:{user_fidelity:.3f}]] ({zone} zone - {zone_meaning})")
+        lines.append("")
+
+        # Show what was measured
+        truncated_input = user_input[:80] + ('...' if len(user_input) > 80 else '')
+        lines.append(f"*Your input:* \"{truncated_input}\"")
+        lines.append("")
+
+        # Explain the calculation
+        lines.append("**How this was calculated:**")
+        lines.append(f"1. Your input was embedded into a 1024-dimensional vector space")
+        lines.append(f"2. Cosine similarity measured against your Primacy Attractor")
+        if raw_similarity != user_fidelity:
+            lines.append(f"3. Raw similarity: `{raw_similarity:.3f}` -> normalized fidelity: `{user_fidelity:.3f}`")
+        lines.append("")
+
+        # Basin membership
+        lines.append("**Basin membership:**")
+        if in_basin:
+            lines.append(f"Your input is *inside* the purpose basin (threshold: 0.70)")
+            lines.append("No intervention was required.")
+        else:
+            lines.append(f"Your input fell *outside* the purpose basin (threshold: 0.70)")
+            if intervention_reason:
+                lines.append(f"*Intervention reason:* {intervention_reason}")
+        lines.append("")
+
+        # Why this matters (uses Goldilocks zone thresholds)
+        lines.append("**What this means:**")
+        if user_fidelity >= _ZONE_ALIGNED:  # Aligned zone
+            lines.append("Your input semantically aligns well with your stated purpose.")
+        elif user_fidelity >= _ZONE_MINOR_DRIFT:  # Minor Drift zone
+            lines.append("Your input shows minor drift but remains close enough to your purpose.")
+        else:  # Drift Detected or Significant Drift zone
+            lines.append("The semantic distance between your input and your purpose exceeded")
+            lines.append("the tolerance threshold, triggering TELOS governance.")
+
+        return "\n".join(lines)
 
 
 def render_beta_steward_button():

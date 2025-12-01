@@ -190,7 +190,7 @@ class TurnNavigator:
 
             # Fidelity score
             fidelity = turn.get('fidelity', turn.get('metrics', {}).get('telic_fidelity', 1.0))
-            fidelity_color = "🟢" if fidelity >= 0.8 else "🟡" if fidelity >= 0.6 else "🔴"
+            fidelity_color = "🟢" if fidelity >= 0.76 else "🟡" if fidelity >= 0.67 else "🔴"  # Goldilocks zones
             st.markdown(f"{fidelity_color} **Fidelity:** {fidelity:.2f}")
 
         with col2:

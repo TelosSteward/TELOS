@@ -32,16 +32,21 @@ class ControlStrip:
         fidelity = turn_data.get('fidelity', 0.0)
         status = turn_data.get('status_text', 'Calibrating...')
 
-        # Color coding for fidelity (4-tier system)
-        # Green (≥0.85) | Yellow (0.70-0.85) | Orange (0.50-0.70) | Red (<0.50)
-        if fidelity >= 0.85:
-            fidelity_color = "#4CAF50"  # Green
-        elif fidelity >= 0.70:
-            fidelity_color = "#F4D03F"  # Yellow
-        elif fidelity >= 0.50:
-            fidelity_color = "#FFA500"  # Orange
-        else:
-            fidelity_color = "#FF4444"  # Red
+        # Color coding for fidelity (Goldilocks zone system)
+        # Import from central config to stay in sync
+        try:
+            from config.colors import get_fidelity_color
+            fidelity_color = get_fidelity_color(fidelity)
+        except ImportError:
+            # Fallback if config not available
+            if fidelity >= 0.76:
+                fidelity_color = "#4CAF50"  # Green - "Aligned"
+            elif fidelity >= 0.73:
+                fidelity_color = "#F4D03F"  # Yellow - "Minor Drift"
+            elif fidelity >= 0.67:
+                fidelity_color = "#FFA500"  # Orange - "Drift Detected"
+            else:
+                fidelity_color = "#FF4444"  # Red - "Significant Drift"
 
         # Create clean strip display
         col1, col2 = st.columns([4, 1])

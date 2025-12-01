@@ -100,9 +100,8 @@ class BetaProgressDisplay:
     def render_turn_progress(self, current_turn: int):
         """Display turn-based progress tracker."""
 
-        total_turns = 15
-        phase1_complete = min(current_turn, 5)
-        phase2_complete = max(0, min(current_turn - 5, 10))
+        total_turns = 5
+        progress_complete = min(current_turn, 5)
 
         st.markdown("""
         <div style="
@@ -117,19 +116,11 @@ class BetaProgressDisplay:
             </div>
         """, unsafe_allow_html=True)
 
-        # Phase 1 Progress
+        # Progress display
         st.markdown(f"""
         <div style="margin-bottom: 10px;">
-            <span style="color: #e0e0e0;">Phase 1 (Single-blind):</span>
-            <span style="color: #4CAF50;">{phase1_complete}/5 turns</span>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Phase 2 Progress
-        st.markdown(f"""
-        <div style="margin-bottom: 10px;">
-            <span style="color: #e0e0e0;">Phase 2 (Mixed):</span>
-            <span style="color: #4CAF50;">{phase2_complete}/10 turns</span>
+            <span style="color: #e0e0e0;">TELOS-Governed Turns:</span>
+            <span style="color: #4CAF50;">{progress_complete}/5 turns</span>
         </div>
         """, unsafe_allow_html=True)
 
@@ -138,7 +129,7 @@ class BetaProgressDisplay:
         st.progress(progress, text=f"Turn {current_turn} of {total_turns}")
 
         # Completion message
-        if current_turn >= 15:
+        if current_turn >= 5:
             st.markdown("""
             <div style="
                 background-color: rgba(76, 175, 80, 0.1);

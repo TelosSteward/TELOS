@@ -123,24 +123,32 @@ Be concise like the example Steward responses - no fluff, just clear explanation
             if 'primacy_state' in context and context['primacy_state'] is not None:
                 context_str += f"- Primacy State (PS): {context['primacy_state']:.3f}\n"
 
-            # Alignment status interpretation
+            # Alignment status interpretation (using zone names, not threshold numbers)
+            # Import zone thresholds from central config
+            try:
+                from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, get_zone_name
+            except ImportError:
+                # Fallback thresholds if config not available
+                _ZONE_ALIGNED = 0.76
+                _ZONE_MINOR_DRIFT = 0.73
+
             if 'f_user' in context and context['f_user'] is not None:
                 f_user = context['f_user']
-                if f_user >= 0.85:
-                    context_str += "- User Alignment: GOOD (staying on purpose)\n"
-                elif f_user >= 0.70:
-                    context_str += "- User Alignment: DRIFTING (starting to stray from purpose)\n"
+                if f_user >= _ZONE_ALIGNED:
+                    context_str += "- User Alignment: ALIGNED (staying on purpose)\n"
+                elif f_user >= _ZONE_MINOR_DRIFT:
+                    context_str += "- User Alignment: MINOR DRIFT (slight deviation from purpose)\n"
                 else:
-                    context_str += "- User Alignment: OFF-TRACK (significantly off-purpose)\n"
+                    context_str += "- User Alignment: DRIFTING (significantly off-purpose)\n"
 
             if 'f_ai' in context and context['f_ai'] is not None:
                 f_ai = context['f_ai']
-                if f_ai >= 0.85:
-                    context_str += "- AI Alignment: GOOD (serving user's purpose)\n"
-                elif f_ai >= 0.70:
-                    context_str += "- AI Alignment: DRIFTING (response straying from purpose)\n"
+                if f_ai >= _ZONE_ALIGNED:
+                    context_str += "- AI Alignment: ALIGNED (serving user's purpose)\n"
+                elif f_ai >= _ZONE_MINOR_DRIFT:
+                    context_str += "- AI Alignment: MINOR DRIFT (response slightly off-purpose)\n"
                 else:
-                    context_str += "- AI Alignment: OFF-TRACK (response not serving purpose)\n"
+                    context_str += "- AI Alignment: DRIFTING (response not serving purpose)\n"
 
             base_prompt += context_str
 

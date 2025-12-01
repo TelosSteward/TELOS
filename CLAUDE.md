@@ -83,12 +83,12 @@ streamlit run telos_observatory_v3/main.py --server.port 8501
 | Constant | Value | Purpose | Location |
 |----------|-------|---------|----------|
 | `SIMILARITY_BASELINE` | 0.35 | Layer 1 hard-block (Mistral-specific) | beta_response_manager.py:37 |
-| `BASIN` | 0.50 | Basin boundary | beta_response_manager.py:45 |
-| `TOLERANCE` | 0.02 | Safety margin | beta_response_manager.py:46 |
-| `INTERVENTION_THRESHOLD` | 0.48 | Actual decision point | beta_response_manager.py:49 |
-| `FIDELITY_GREEN` | 0.85 | UI: High alignment | beta_response_manager.py:58 |
-| `FIDELITY_YELLOW` | 0.70 | UI: Moderate | beta_response_manager.py:59 |
-| `FIDELITY_ORANGE` | 0.50 | UI: Low | beta_response_manager.py:60 |
+| `BASIN` | 0.40 | Basin boundary | beta_response_manager.py:45 |
+| `TOLERANCE` | 0.04 | Safety margin | beta_response_manager.py:46 |
+| `INTERVENTION_THRESHOLD` | 0.36 | Actual decision point | beta_response_manager.py:49 |
+| `FIDELITY_GREEN` | 0.76 | UI: Aligned (Goldilocks optimized) | beta_response_manager.py:61 |
+| `FIDELITY_YELLOW` | 0.73 | UI: Minor Drift (Goldilocks optimized) | beta_response_manager.py:62 |
+| `FIDELITY_ORANGE` | 0.67 | UI: Drift Detected (Goldilocks optimized) | beta_response_manager.py:63 |
 
 **Model-Specific Warning:** `SIMILARITY_BASELINE` must be recalibrated if embedding model changes. See `docs/internal/EMBEDDING_BASELINE_NORMALIZATION.md`.
 
@@ -148,11 +148,11 @@ a_hat = (tau * purpose + (1-tau) * scope) / ||...||
 r = 1.0 / max(rigidity, 0.25)  where rigidity = 1 - tau
 ```
 
-**Intervention Cascade:**
-- F >= 0.85: MONITOR (no action)
-- 0.70 <= F < 0.85: CORRECT (context injection)
-- 0.50 <= F < 0.70: INTERVENE (regeneration)
-- F < 0.50: ESCALATE (block + human review)
+**Intervention Cascade (Goldilocks Zone Optimized):**
+- F >= 0.76: MONITOR/ALIGNED (no action)
+- 0.73 <= F < 0.76: CORRECT/MINOR DRIFT (context injection)
+- 0.67 <= F < 0.73: INTERVENE/DRIFT DETECTED (regeneration)
+- F < 0.67: ESCALATE/SIGNIFICANT DRIFT (block + human review)
 
 ---
 
@@ -213,5 +213,5 @@ r = 1.0 / max(rigidity, 0.25)  where rigidity = 1 - tau
 
 ---
 
-*Last updated: 2024-11-29*
+*Last updated: 2025-11-30*
 *Authoritative source for TELOS V3 project context*

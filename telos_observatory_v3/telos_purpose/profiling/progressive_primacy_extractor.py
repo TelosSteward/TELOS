@@ -60,7 +60,7 @@ class ProgressivePrimacyExtractor:
         window_size: int = 3,  # Rolling window for stability check
         centroid_stability_threshold: float = 0.95,  # Cosine similarity threshold
         variance_stability_threshold: float = 0.1,  # Relative variance threshold
-        confidence_threshold: float = 0.80,  # Overall confidence to declare convergence
+        confidence_threshold: float = 0.76,  # Goldilocks: Aligned threshold for convergence
         consecutive_stable_turns: int = 2,  # Turns of stability before declaring convergence
         max_turns_safety: int = 10,  # Safety limit (changed from 100 for Phase 2)
         distance_scale: float = 2.0  # Distance-to-fidelity scaling
@@ -362,8 +362,8 @@ class ProgressivePrimacyExtractor:
             # Convert distance to fidelity
             fidelity = self._distance_to_fidelity(distance)
 
-            # Detect drift
-            drift_detected = fidelity < 0.8
+            # Detect drift (Goldilocks: Aligned threshold)
+            drift_detected = fidelity < 0.76
 
             return {
                 'status': 'tracking',

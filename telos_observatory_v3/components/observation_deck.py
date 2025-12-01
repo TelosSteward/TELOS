@@ -278,16 +278,11 @@ class ObservationDeck:
         col1, col2 = st.columns(2)
 
         with col1:
-            user_fidelity = turn_data.get('user_fidelity', 1.0)
-            # 4-tier color system: Green (≥0.85) | Yellow (0.70-0.85) | Orange (0.50-0.70) | Red (<0.50)
-            if user_fidelity >= 0.85:
-                user_color = "#4CAF50"  # Green
-            elif user_fidelity >= 0.70:
-                user_color = "#F4D03F"  # Yellow
-            elif user_fidelity >= 0.50:
-                user_color = "#FFA500"  # Orange
-            else:
-                user_color = "#FF4444"  # Red
+            # DUAL PA: Try user_pa_fidelity first, then fallback to user_fidelity
+            user_fidelity = turn_data.get('user_pa_fidelity') or turn_data.get('user_fidelity', 1.0)
+            # Goldilocks zone color system - import from central config
+            from config.colors import get_fidelity_color
+            user_color = get_fidelity_color(user_fidelity)
             self._render_metric_card(
                 "User Fidelity",
                 f"{user_fidelity:.3f}",
@@ -297,19 +292,27 @@ class ObservationDeck:
             )
 
         with col2:
-            ai_fidelity = turn_data.get('ai_fidelity', 1.0)
-            # 4-tier color system: Green (≥0.85) | Yellow (0.70-0.85) | Orange (0.50-0.70) | Red (<0.50)
-            if ai_fidelity >= 0.85:
-                ai_color = "#4CAF50"  # Green
-            elif ai_fidelity >= 0.70:
-                ai_color = "#F4D03F"  # Yellow
-            elif ai_fidelity >= 0.50:
-                ai_color = "#FFA500"  # Orange
+            # DUAL PA: Try ai_pa_fidelity first
+            # Check for lightweight_path flag - if True, show N/A (no extra API calls were made)
+            # Values are stored inside telos_analysis dict, not at top level
+            telos_analysis = turn_data.get('telos_analysis', {})
+            is_lightweight = telos_analysis.get('lightweight_path', False)
+            ai_fidelity_raw = telos_analysis.get('ai_pa_fidelity')
+
+            if is_lightweight or ai_fidelity_raw is None:
+                # GREEN/YELLOW zone - no extra API calls were made
+                ai_color = "#888888"  # Gray for N/A
+                ai_display = "N/A"
             else:
-                ai_color = "#FF4444"  # Red
+                ai_fidelity = ai_fidelity_raw
+                # Goldilocks zone color system - import from central config
+                from config.colors import get_fidelity_color
+                ai_color = get_fidelity_color(ai_fidelity)
+                ai_display = f"{ai_fidelity:.3f}"
+
             self._render_metric_card(
                 "AI Fidelity",
-                f"{ai_fidelity:.3f}",
+                ai_display,
                 "🤖",
                 "My alignment to serve you",
                 value_color=ai_color
@@ -319,22 +322,25 @@ class ObservationDeck:
         col3, col4 = st.columns(2)
 
         with col3:
-            # Calculate Primacy State from both fidelities
-            user_f = turn_data.get('user_fidelity', 1.0)
-            ai_f = turn_data.get('ai_fidelity', 1.0)
-            primacy_state = turn_data.get('primacy_state', (user_f * ai_f))  # Simple PS approximation
-            # 4-tier color system: Green (≥0.85) | Yellow (0.70-0.85) | Orange (0.50-0.70) | Red (<0.50)
-            if primacy_state >= 0.85:
-                ps_color = "#4CAF50"  # Green
-            elif primacy_state >= 0.70:
-                ps_color = "#F4D03F"  # Yellow
-            elif primacy_state >= 0.50:
-                ps_color = "#FFA500"  # Orange
+            # DUAL PA: Get Primacy State from stored value (primacy_state_score)
+            # Check for lightweight_path flag - if True, show N/A (no extra API calls were made)
+            # Use telos_analysis dict from above (already extracted for ai_fidelity)
+            primacy_state_raw = telos_analysis.get('primacy_state_score')
+
+            if is_lightweight or primacy_state_raw is None:
+                # GREEN/YELLOW zone - no extra API calls were made
+                ps_color = "#888888"  # Gray for N/A
+                ps_display = "N/A"
             else:
-                ps_color = "#FF4444"  # Red
+                primacy_state = primacy_state_raw
+                # Goldilocks zone color system - import from central config
+                from config.colors import get_fidelity_color
+                ps_color = get_fidelity_color(primacy_state)
+                ps_display = f"{primacy_state:.3f}"
+
             self._render_metric_card(
                 "Primacy State",
-                f"{primacy_state:.3f}",
+                ps_display,
                 "🎯",
                 "Dynamic equilibrium between your goals and AI alignment",
                 value_color=ps_color

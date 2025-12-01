@@ -148,7 +148,7 @@ class DeckControlStrip:
             st.metric("Turns", total_turns, help="Total conversation turns")
 
         with col2:
-            color = "#00ff00" if avg_fidelity >= 0.8 else "#ffaa00" if avg_fidelity >= 0.6 else "#ff0000"
+            color = "#00ff00" if avg_fidelity >= 0.76 else "#ffaa00" if avg_fidelity >= 0.67 else "#ff0000"  # Goldilocks zones
             st.metric("Fidelity", f"{avg_fidelity:.2f}", help="Average governance fidelity")
 
         with col3:

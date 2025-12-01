@@ -43,20 +43,22 @@ Every message gets measured for how close it is to the intended purpose. If resp
 
 Fidelity is like a report card for how well the conversation stays on track.
 
-### The Score
+### The Score (Goldilocks Zones)
 
-- **0.9 - 1.0**: Excellent alignment, right on target
-- **0.8 - 0.9**: Good alignment, minor deviation
-- **0.7 - 0.8**: Acceptable but drifting
-- **Below 0.7**: Significant drift detected
+- **0.76 - 1.0**: Aligned - right on target (Green)
+- **0.73 - 0.76**: Minor Drift - slight deviation (Yellow)
+- **0.67 - 0.73**: Drift Detected - needs attention (Orange)
+- **Below 0.67**: Significant Drift - requires intervention (Red)
 
 ### What Happens at Different Scores
 
-**High Fidelity (above 0.9)**: Everything is great, conversation flows naturally
+**Aligned (0.76+)**: Everything is great, conversation flows naturally
 
-**Medium Fidelity (0.7-0.9)**: TELOS monitors closely but doesn't intervene
+**Minor Drift (0.73-0.76)**: TELOS monitors closely with visual warning
 
-**Low Fidelity (below 0.7)**: TELOS takes action to bring the conversation back
+**Drift Detected (0.67-0.73)**: TELOS intervenes to redirect the conversation
+
+**Significant Drift (below 0.67)**: Strong intervention to bring conversation back
 
 ## Observable Governance
 

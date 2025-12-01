@@ -233,8 +233,8 @@ class SessionStateManager:
         """
         triggers = []
         for snapshot in self._snapshots:
-            # Identify triggers: low fidelity or outside basin
-            if snapshot.telic_fidelity < 0.8 or not snapshot.basin_membership:
+            # Identify triggers: low fidelity or outside basin (Goldilocks: Aligned threshold)
+            if snapshot.telic_fidelity < 0.76 or not snapshot.basin_membership:
                 triggers.append({
                     'turn_number': snapshot.turn_number,
                     'timestamp': snapshot.timestamp,
@@ -247,12 +247,12 @@ class SessionStateManager:
         return triggers
 
     def _get_trigger_reason(self, snapshot: TurnSnapshot) -> str:
-        """Generate human-readable trigger reason."""
+        """Generate human-readable trigger reason (Goldilocks zones)."""
         reasons = []
-        if snapshot.telic_fidelity < 0.5:
-            reasons.append(f"Critical fidelity (F={snapshot.telic_fidelity:.3f})")
-        elif snapshot.telic_fidelity < 0.8:
-            reasons.append(f"Low fidelity (F={snapshot.telic_fidelity:.3f})")
+        if snapshot.telic_fidelity < 0.67:  # Goldilocks: Significant Drift
+            reasons.append(f"Significant drift (F={snapshot.telic_fidelity:.3f})")
+        elif snapshot.telic_fidelity < 0.76:  # Goldilocks: Below Aligned
+            reasons.append(f"Drift detected (F={snapshot.telic_fidelity:.3f})")
 
         if not snapshot.basin_membership:
             reasons.append(f"Outside basin (d={snapshot.drift_distance:.3f})")

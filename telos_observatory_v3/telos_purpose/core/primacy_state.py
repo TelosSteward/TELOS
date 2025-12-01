@@ -50,14 +50,20 @@ class PrimacyStateMetrics:
     condition: str = 'unknown'
 
     def __post_init__(self):
-        """Determine PS condition based on score."""
-        if self.ps_score >= 0.85:
+        """Determine PS condition based on score (Goldilocks zone thresholds)."""
+        # Import centralized thresholds
+        try:
+            from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT
+        except ImportError:
+            _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT = 0.76, 0.73, 0.67
+
+        if self.ps_score >= _ZONE_ALIGNED:  # >= 0.76
             self.condition = 'achieved'
-        elif self.ps_score >= 0.70:
+        elif self.ps_score >= _ZONE_MINOR_DRIFT:  # 0.73-0.76
             self.condition = 'weakening'
-        elif self.ps_score >= 0.50:
+        elif self.ps_score >= _ZONE_DRIFT:  # 0.67-0.73
             self.condition = 'violated'
-        else:
+        else:  # < 0.67
             self.condition = 'collapsed'
 
     def to_dict(self) -> Dict[str, Any]:
@@ -74,20 +80,26 @@ class PrimacyStateMetrics:
         }
 
     def get_diagnostic(self) -> str:
-        """Get human-readable diagnostic of PS state."""
+        """Get human-readable diagnostic of PS state (Goldilocks zone thresholds)."""
+        # Import centralized thresholds
+        try:
+            from config.colors import _ZONE_MINOR_DRIFT
+        except ImportError:
+            _ZONE_MINOR_DRIFT = 0.73
+
         diagnostics = []
 
-        if self.f_user < 0.70:
+        if self.f_user < _ZONE_MINOR_DRIFT:  # < 0.73 = drift
             diagnostics.append(f"User purpose drift (F_user={self.f_user:.2f})")
         elif self.f_user > 0.90:
             diagnostics.append(f"User purpose maintained (F_user={self.f_user:.2f})")
 
-        if self.f_ai < 0.70:
+        if self.f_ai < _ZONE_MINOR_DRIFT:  # < 0.73 = drift
             diagnostics.append(f"AI role violation (F_AI={self.f_ai:.2f})")
         elif self.f_ai > 0.90:
             diagnostics.append(f"AI role maintained (F_AI={self.f_ai:.2f})")
 
-        if self.rho_pa < 0.70:
+        if self.rho_pa < _ZONE_MINOR_DRIFT:  # < 0.73 = misalignment
             diagnostics.append(f"PA misalignment (ρ_PA={self.rho_pa:.2f})")
         elif self.rho_pa > 0.90:
             diagnostics.append(f"PA well-aligned (ρ_PA={self.rho_pa:.2f})")

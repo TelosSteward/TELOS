@@ -174,7 +174,7 @@ class UnifiedGovernanceSteward:
             embedding_provider=embedding_provider,
             steward_ref=self,  # Pass self so wrapper can access attractor
             salience_threshold=0.70,
-            coupling_threshold=0.80
+            coupling_threshold=0.76  # Goldilocks: Aligned threshold
         )
 
         # Set attractor attributes for wrapper to use
@@ -206,7 +206,7 @@ class UnifiedGovernanceSteward:
     def _initialize_spc_engine(self) -> None:
         """
         Initialize Statistical Process Controller (SPC Engine).
-        
+
         The SPC Engine is the measurement and analysis subsystem
         responsible for:
         - Computing fidelity scores
@@ -218,9 +218,17 @@ class UnifiedGovernanceSteward:
             # Build primacy attractor
             purpose_text = " ".join(self.attractor_config.purpose)
             scope_text = " ".join(self.attractor_config.scope)
-            
-            p_vec = self.embedding_provider.encode(purpose_text)
-            s_vec = self.embedding_provider.encode(scope_text)
+
+            # PERFORMANCE: Batch both embeddings in a single API call (2x faster)
+            if hasattr(self.embedding_provider, 'batch_encode'):
+                logger.info("Using batch embedding for SPC Engine initialization")
+                embeddings = self.embedding_provider.batch_encode([purpose_text, scope_text])
+                p_vec = embeddings[0]
+                s_vec = embeddings[1]
+            else:
+                # Fallback to sequential encoding
+                p_vec = self.embedding_provider.encode(purpose_text)
+                s_vec = self.embedding_provider.encode(scope_text)
             
             self.attractor_math = PrimacyAttractorMath(
                 purpose_vector=p_vec,

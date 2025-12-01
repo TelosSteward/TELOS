@@ -155,20 +155,25 @@ class BetaObservationDeck:
             color = "#888"  # Gray for missing data
             explanation = "TELOS is waiting for sufficient conversation data to calculate fidelity."
             fidelity_display = "---"
-        elif fidelity >= 0.85:
+        elif fidelity >= 0.76:
             status = "Aligned"
-            color = "#4CAF50"  # Green
+            color = "#4CAF50"  # Green >= 0.76 (Goldilocks optimized)
             explanation = "Your conversation is staying well-aligned with your stated purpose."
             fidelity_display = f"{fidelity:.2f}"
-        elif fidelity >= 0.70:
+        elif fidelity >= 0.73:
             status = "Minor Drift"
-            color = "#FFA500"  # Orange
-            explanation = "The conversation has drifted slightly from your original purpose."
+            color = "#F4D03F"  # Yellow 0.73-0.76 (soft guidance zone)
+            explanation = "The conversation has drifted slightly - soft guidance may help."
+            fidelity_display = f"{fidelity:.2f}"
+        elif fidelity >= 0.67:
+            status = "Drift Detected"
+            color = "#FFA500"  # Orange 0.67-0.73 (intervention zone)
+            explanation = "The conversation has drifted from your stated purpose. TELOS is guiding you back."
             fidelity_display = f"{fidelity:.2f}"
         else:
             status = "Significant Drift"
-            color = "#FF4444"  # Red
-            explanation = "The conversation has drifted significantly from your stated purpose."
+            color = "#FF4444"  # Red < 0.67 (strong intervention)
+            explanation = "The conversation has significantly drifted. Strong TELOS intervention activated."
             fidelity_display = f"{fidelity:.2f}"
 
         st.markdown(f"""

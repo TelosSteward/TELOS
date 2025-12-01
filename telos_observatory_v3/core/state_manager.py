@@ -464,7 +464,7 @@ class StateManager:
                 'response': '',  # Empty response signals "loading" state
                 'fidelity': None,
                 'distance': None,
-                'threshold': 0.8,
+                'threshold': 0.76,  # Goldilocks: Aligned threshold
                 'intervention_applied': False,
                 'drift_detected': False,
                 'status': "⏳",
@@ -807,15 +807,15 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
 
                                 # Get embeddings
                                 embedding_provider = self._telos_steward.embedding_provider
-                                response_embedding = embedding_provider.get_embedding(shown_response)
+                                response_embedding = embedding_provider.encode(shown_response)
 
                                 # Get PA embeddings from steward's attractor
                                 attractor = self._telos_steward.attractor
                                 user_pa_text = " ".join(attractor.purpose)
                                 ai_pa_text = " ".join(attractor.boundaries) if attractor.boundaries else user_pa_text
 
-                                user_pa_embedding = embedding_provider.get_embedding(user_pa_text)
-                                ai_pa_embedding = embedding_provider.get_embedding(ai_pa_text)
+                                user_pa_embedding = embedding_provider.encode(user_pa_text)
+                                ai_pa_embedding = embedding_provider.encode(ai_pa_text)
 
                                 # Compute PS
                                 ps_result = self._ps_calculator.compute_primacy_state(
@@ -903,15 +903,15 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                 try:
                     # Get embeddings
                     embedding_provider = self._telos_steward.embedding_provider
-                    response_embedding = embedding_provider.get_embedding(response_text)
+                    response_embedding = embedding_provider.encode(response_text)
 
                     # Get PA embeddings from steward's attractor
                     attractor = self._telos_steward.attractor
                     user_pa_text = " ".join(attractor.purpose)
                     ai_pa_text = " ".join(attractor.boundaries) if attractor.boundaries else user_pa_text
 
-                    user_pa_embedding = embedding_provider.get_embedding(user_pa_text)
-                    ai_pa_embedding = embedding_provider.get_embedding(ai_pa_text)
+                    user_pa_embedding = embedding_provider.encode(user_pa_text)
+                    ai_pa_embedding = embedding_provider.encode(ai_pa_text)
 
                     # Compute PS
                     from telos_purpose.core.primacy_state import PrimacyStateMetrics
@@ -928,15 +928,21 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                 except Exception as e:
                     logger.debug(f"PS calculation failed: {e}")
 
-            # Determine status
-            if fidelity >= 0.9:
-                status_icon, status_text = "✓", "Excellent"
-            elif fidelity >= 0.8:
-                status_icon, status_text = "✓", "Good"
-            elif fidelity >= 0.7:
-                status_icon, status_text = "⚠", "Acceptable"
+            # Determine status using zone names (Goldilocks thresholds)
+            # Import from central config to keep thresholds in sync
+            try:
+                from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT
+            except ImportError:
+                _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT = 0.76, 0.73, 0.67
+
+            if fidelity >= _ZONE_ALIGNED:
+                status_icon, status_text = "✓", "Aligned"
+            elif fidelity >= _ZONE_MINOR_DRIFT:
+                status_icon, status_text = "✓", "Minor Drift"
+            elif fidelity >= _ZONE_DRIFT:
+                status_icon, status_text = "⚠", "Drift Detected"
             else:
-                status_icon, status_text = "⚠", "Drift"
+                status_icon, status_text = "⚠", "Significant Drift"
 
         except Exception as e:
             # Log the error for debugging
@@ -963,7 +969,7 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             if "telos" in message_lower or "work" in message_lower:
                 response_text = "TELOS is a purpose alignment framework that keeps AI conversations focused on their intended goals. It uses mathematical geometry in embedding space to detect and correct drift."
             elif "fidelity" in message_lower or "score" in message_lower:
-                response_text = "Fidelity scores measure how well responses align with your purpose. Scores above 0.8 indicate good alignment, 0.6-0.8 is acceptable, and below 0.6 triggers intervention."
+                response_text = "Fidelity scores measure how well responses align with your purpose. Scores above 0.76 indicate alignment (green), 0.73-0.76 is minor drift (yellow), 0.67-0.73 is drift detected (orange), and below 0.67 triggers intervention (red)."
             elif "intervention" in message_lower or "drift" in message_lower:
                 response_text = "TELOS detects drift by measuring semantic distance from the primacy attractor. When responses drift too far, the system can inject context, regenerate responses, or block and alert."
             elif "primacy" in message_lower or "attractor" in message_lower:
@@ -988,7 +994,7 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             'fidelity': fidelity,
             'distance': distance,
             'intervention_applied': intervention_applied,
-            'drift_detected': fidelity < 0.8,
+            'drift_detected': fidelity < 0.76,  # Goldilocks: Aligned threshold
             'status': status_icon,
             'status_text': status_text,
             'in_basin': in_basin,
@@ -1036,7 +1042,7 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             'response': '',  # Will be filled by streaming
             'fidelity': None,
             'distance': None,
-            'threshold': 0.8,
+            'threshold': 0.76,  # Goldilocks: Aligned threshold
             'intervention_applied': False,
             'drift_detected': False,
             'status': "⏳",
@@ -1293,14 +1299,14 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             if self._ps_calculator and hasattr(self._telos_steward, 'embedding_provider'):
                 try:
                     embedding_provider = self._telos_steward.embedding_provider
-                    response_embedding = embedding_provider.get_embedding(full_response)
+                    response_embedding = embedding_provider.encode(full_response)
 
                     attractor = self._telos_steward.attractor
                     user_pa_text = " ".join(attractor.purpose)
                     ai_pa_text = " ".join(attractor.boundaries) if attractor.boundaries else user_pa_text
 
-                    user_pa_embedding = embedding_provider.get_embedding(user_pa_text)
-                    ai_pa_embedding = embedding_provider.get_embedding(ai_pa_text)
+                    user_pa_embedding = embedding_provider.encode(user_pa_text)
+                    ai_pa_embedding = embedding_provider.encode(ai_pa_text)
 
                     from telos_purpose.core.primacy_state import PrimacyStateMetrics
                     ps_result = self._ps_calculator.compute_primacy_state(
@@ -1314,14 +1320,20 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                 except Exception as e:
                     logger.debug(f"PS calculation failed (streaming): {e}")
 
-            if fidelity >= 0.9:
-                status_icon, status_text = "✓", "Excellent"
-            elif fidelity >= 0.8:
-                status_icon, status_text = "✓", "Good"
-            elif fidelity >= 0.7:
-                status_icon, status_text = "⚠", "Acceptable"
+            # Determine status using zone names (Goldilocks thresholds)
+            try:
+                from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT
+            except ImportError:
+                _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT = 0.76, 0.73, 0.67
+
+            if fidelity >= _ZONE_ALIGNED:
+                status_icon, status_text = "✓", "Aligned"
+            elif fidelity >= _ZONE_MINOR_DRIFT:
+                status_icon, status_text = "✓", "Minor Drift"
+            elif fidelity >= _ZONE_DRIFT:
+                status_icon, status_text = "⚠", "Drift Detected"
             else:
-                status_icon, status_text = "⚠", "Drift"
+                status_icon, status_text = "⚠", "Significant Drift"
         except Exception as telos_error:
             logger.error(f"TELOS processing error: {telos_error}")
             fidelity = 0.0  # Error fallback - no real metrics available
@@ -1337,7 +1349,7 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             'fidelity': fidelity,
             'distance': distance,
             'intervention_applied': intervention_applied,
-            'drift_detected': fidelity < 0.8,
+            'drift_detected': fidelity < 0.76,  # Goldilocks: Aligned threshold
             'status': status_icon,
             'status_text': status_text,
             'in_basin': in_basin,
@@ -1388,7 +1400,17 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
 
         try:
             # Initialize BetaResponseManager if needed
-            if 'beta_response_manager' not in st.session_state:
+            # Also force re-init if PA embeddings are None (stale cached instance)
+            needs_reinit = 'beta_response_manager' not in st.session_state
+            if not needs_reinit:
+                mgr = st.session_state.beta_response_manager
+                # Check if crucial PS components are None (indicates stale instance from before fix)
+                if mgr.telos_engine and (mgr.user_pa_embedding is None or mgr.ai_pa_embedding is None):
+                    logger.warning("⚠️ Stale BetaResponseManager detected (PA embeddings are None) - forcing re-init")
+                    needs_reinit = True
+                    del st.session_state['beta_response_manager']
+
+            if needs_reinit:
                 logger.info("🔍 AUDIT: BetaResponseManager not in session - initializing...")
                 logger.info("📦 Initializing BetaResponseManager")
                 from services.beta_response_manager import BetaResponseManager
@@ -1439,7 +1461,7 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
             # Update turn with REAL metrics from TELOS analysis
             turn = self.state.turns[turn_idx]
             turn['response'] = shown_response
-            turn['fidelity'] = telos_analysis.get('fidelity_score', 0.0)
+            turn['fidelity'] = telos_analysis.get('user_pa_fidelity') or telos_analysis.get('fidelity_score') or 0.0
             turn['distance'] = telos_analysis.get('distance_from_pa', 0.0)
             turn['intervention_applied'] = telos_analysis.get('intervention_triggered', False)
             turn['drift_detected'] = telos_analysis.get('drift_detected', False)
@@ -1467,7 +1489,7 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
                 }
 
             # Log metrics for verification
-            if turn['fidelity'] < 0.3:
+            if turn['fidelity'] is not None and turn['fidelity'] < 0.3:
                 logger.warning(f"⚠️ Low fidelity detected: {turn['fidelity']:.3f} - Drift alert!")
 
             # Increment beta turn counter

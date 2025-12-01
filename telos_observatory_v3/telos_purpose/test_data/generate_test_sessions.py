@@ -85,7 +85,7 @@ def generate_test_turn(
         'assistant_response': telos_resp,  # What was actually delivered
         'fidelity': round(current_fidelity, 3),
         'intervention_applied': intervention is not None,
-        'basin_membership': current_fidelity >= 0.80,
+        'basin_membership': current_fidelity >= 0.76,  # Goldilocks: Aligned threshold
         'timestamp': (base_timestamp + timedelta(seconds=turn_num * 30)).isoformat(),
         'governance_metadata': {
             'intervention_type': intervention,
@@ -103,9 +103,9 @@ def generate_test_turn(
 def generate_test_session(
     num_turns: int = 10,
     session_id: Optional[str] = None,
-    base_fidelity: float = 0.85,
+    base_fidelity: float = 0.76,  # Goldilocks "Aligned" threshold
     drift_rate: float = 0.10,
-    intervention_threshold: float = 0.70,
+    intervention_threshold: float = 0.73,  # Goldilocks "Minor Drift" threshold
     seed: Optional[int] = None
 ) -> Dict[str, Any]:
     """
@@ -188,55 +188,57 @@ def generate_test_session(
 
 
 # Session type configurations for cleaner code
+# Session type configurations using Goldilocks zone thresholds
+# Aligned >= 0.76, Minor Drift >= 0.73, Drift Detected >= 0.67, Significant Drift < 0.67
 SESSION_CONFIGS = {
     'normal': {
         'num_turns': 15,
         'session_id': 'normal_session_001',
-        'base_fidelity': 0.85,
+        'base_fidelity': 0.76,  # Starts at Aligned
         'drift_rate': 0.10,
-        'intervention_threshold': 0.70
+        'intervention_threshold': 0.73  # Minor Drift threshold
     },
     'high_drift': {
         'num_turns': 20,
         'session_id': 'high_drift_session_001',
-        'base_fidelity': 0.70,
+        'base_fidelity': 0.73,  # Starts at Minor Drift
         'drift_rate': 0.20,
-        'intervention_threshold': 0.65
+        'intervention_threshold': 0.67  # Drift Detected threshold
     },
     'excellent': {
         'num_turns': 12,
         'session_id': 'excellent_session_001',
         'base_fidelity': 0.92,
         'drift_rate': 0.05,
-        'intervention_threshold': 0.80
+        'intervention_threshold': 0.76  # Aligned threshold
     },
     'long': {
         'num_turns': 50,
         'session_id': 'long_session_001',
-        'base_fidelity': 0.88,
+        'base_fidelity': 0.80,
         'drift_rate': 0.08,
-        'intervention_threshold': 0.72
+        'intervention_threshold': 0.73  # Minor Drift threshold
     },
     'short': {
         'num_turns': 3,
         'session_id': 'short_session_001',
-        'base_fidelity': 0.90,
+        'base_fidelity': 0.82,
         'drift_rate': 0.12,
-        'intervention_threshold': 0.70
+        'intervention_threshold': 0.73  # Minor Drift threshold
     },
     'critical_drift': {
         'num_turns': 18,
         'session_id': 'critical_drift_session_001',
-        'base_fidelity': 0.65,
+        'base_fidelity': 0.67,  # Starts at Drift Detected boundary
         'drift_rate': 0.25,
-        'intervention_threshold': 0.60
+        'intervention_threshold': 0.60  # Below Significant Drift
     },
     'stable': {
         'num_turns': 25,
         'session_id': 'stable_session_001',
         'base_fidelity': 0.95,
         'drift_rate': 0.03,
-        'intervention_threshold': 0.85
+        'intervention_threshold': 0.76  # Aligned threshold
     }
 }
 
@@ -317,7 +319,7 @@ def generate_oscillating_session(seed: Optional[int] = None) -> Dict[str, Any]:
             current_fidelity = min(0.92, current_fidelity + 0.20)
         else:
             # Stable phase
-            current_fidelity = max(0.70, current_fidelity - 0.05)
+            current_fidelity = max(0.73, current_fidelity - 0.05)  # Goldilocks: Minor Drift threshold
             intervention = None
 
         turn_data = generate_test_turn(
@@ -466,9 +468,9 @@ def main():
             session = generate_test_session(
                 num_turns=_rng.randint(5, 30),
                 session_id=f'random_session_{i+1:03d}',
-                base_fidelity=_rng.uniform(0.70, 0.95),
+                base_fidelity=_rng.uniform(0.76, 0.95),  # Goldilocks: Start in Aligned zone
                 drift_rate=_rng.uniform(0.05, 0.20),
-                intervention_threshold=_rng.uniform(0.65, 0.80),
+                intervention_threshold=_rng.uniform(0.67, 0.76),  # Goldilocks: Drift to Minor Drift range
                 seed=session_seed
             )
             sessions.append(session)

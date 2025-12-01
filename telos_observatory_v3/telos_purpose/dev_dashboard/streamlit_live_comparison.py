@@ -86,8 +86,8 @@ def get_session_statistics_cached(turns_data: str) -> Dict[str, Any]:
         if metadata.get('intervention_applied', False):
             interventions += 1
 
-        # Count basin crossings (fidelity < 0.70)
-        if fidelity < 0.70:
+        # Count basin crossings (fidelity < 0.73 = Minor Drift threshold)
+        if fidelity < 0.73:
             basin_crossings += 1
 
     return {
@@ -478,8 +478,8 @@ def extract_session_metrics(session: Dict[str, Any]) -> Dict[str, Any]:
         if metadata.get('intervention_applied', False):
             interventions += 1
 
-        # Count basin violations (fidelity < 0.8)
-        if fidelity < 0.8:
+        # Count basin violations (fidelity < 0.76) - Goldilocks: Aligned threshold
+        if fidelity < 0.76:
             basin_violations += 1
 
     return {
@@ -588,13 +588,13 @@ def detect_intervention_patterns(sessions: List[Dict[str, Any]]) -> Dict[str, An
     }
 
 
-def detect_drift_triggers(sessions: List[Dict[str, Any]], threshold: float = 0.8) -> Dict[str, Any]:
+def detect_drift_triggers(sessions: List[Dict[str, Any]], threshold: float = 0.76) -> Dict[str, Any]:
     """
     Identify common drift triggers (turns with low fidelity).
 
     Args:
         sessions: List of session data dictionaries
-        threshold: Fidelity threshold for drift detection (default: 0.8)
+        threshold: Fidelity threshold for drift detection (default: 0.76 - Goldilocks: Aligned)
 
     Returns:
         Dict with drift trigger analysis
@@ -972,7 +972,7 @@ def generate_statistics_csv(sessions: List[Dict[str, Any]]) -> str:
 
             fidelity = metrics.get('telic_fidelity', 1.0)
             intervention = 1 if metadata.get('intervention_applied', False) else 0
-            basin = 1 if fidelity >= 0.8 else 0
+            basin = 1 if fidelity >= 0.76 else 0  # Goldilocks: Aligned threshold
 
             writer.writerow([
                 session_id,
@@ -1107,7 +1107,7 @@ def generate_governance_report_html(session_data: Dict[str, Any]) -> str:
 
         drift_events = sum(
             1 for s in snapshots
-            if s.get('telic_fidelity', 1.0) < 0.8 or not s.get('basin_membership', True)
+            if s.get('telic_fidelity', 1.0) < 0.76 or not s.get('basin_membership', True)  # Goldilocks: Aligned threshold
         )
 
     # Generate HTML
@@ -1206,7 +1206,7 @@ def generate_governance_report_html(session_data: Dict[str, Any]) -> str:
         <div class="metric-grid">
             <div class="metric-card">
                 <div class="metric-label">Average Fidelity</div>
-                <div class="metric-value {'good' if avg_fidelity >= 0.85 else 'warning' if avg_fidelity >= 0.70 else 'critical'}">
+                <div class="metric-value {'good' if avg_fidelity >= 0.76 else 'warning' if avg_fidelity >= 0.73 else 'critical'}">
                     {avg_fidelity:.3f}
                 </div>
             </div>
@@ -1603,14 +1603,19 @@ Step 1: Raw fidelity = 1 - (d / τ) = 1 - ({distance:.6f} / {distance_scale}) = 
 Step 2: Clamp to [0, 1]: F = max(0, min(1, {raw_fidelity:.6f})) = {clamped_fidelity:.6f}
         """)
 
-        # Threshold check
-        threshold = 0.8
-        passes = fidelity >= threshold
-        st.markdown(f"**Threshold Check**: F ≥ {threshold}?")
+        # Goldilocks threshold check
+        threshold_aligned = 0.76  # Goldilocks: Aligned
+        threshold_drift = 0.67    # Goldilocks: Significant Drift (intervention)
+        passes = fidelity >= threshold_aligned
+        st.markdown(f"**Threshold Check (Goldilocks Zones)**:")
+        st.markdown(f"- F ≥ 0.76: Aligned")
+        st.markdown(f"- 0.73 ≤ F < 0.76: Minor Drift")
+        st.markdown(f"- 0.67 ≤ F < 0.73: Drift Detected")
+        st.markdown(f"- F < 0.67: Significant Drift (Intervention)")
         st.markdown(f"- Current F: `{fidelity:.6f}`")
-        st.markdown(f"- Passes: **{'✅ YES' if passes else '❌ NO (DRIFT DETECTED)'}**")
+        st.markdown(f"- Status: **{'✅ ALIGNED' if passes else '⚠️ DRIFT DETECTED'}**")
 
-        st.markdown(f"### **Result**: `F = {fidelity:.6f}` {'✅' if passes else '⚠️'}")
+        st.markdown(f"### **Result**: `F = {fidelity:.6f}` {'✅' if fidelity >= 0.76 else '🟡' if fidelity >= 0.73 else '🟠' if fidelity >= 0.67 else '🔴'}")
 
     # ========================================================================
     # 4. INTERVENTION LOGIC (if occurred)
@@ -1626,19 +1631,21 @@ Step 2: Clamp to [0, 1]: F = max(0, min(1, {raw_fidelity:.6f})) = {clamped_fidel
 
             st.markdown(f"**Intervention Type**: `{interv_type}`")
 
-            # Decision tree
-            st.markdown("**Decision Tree**:")
+            # Decision tree (Goldilocks zones)
+            st.markdown("**Decision Tree (Goldilocks Zones)**:")
             st.code(f"""
-IF F < 0.8:
+IF F < 0.76 (Below Aligned):
     → Drift detected
-    → Check salience (attractor prominence in context)
-    → IF salience < 0.7:
-        → Inject attractor reinforcement
-    → Generate response
-    → Check coupling
-    → IF coupling < 0.8:
-        → Regenerate with entrainment
-    → Return governed response
+    → IF F < 0.67 (Significant Drift):
+        → Intervention triggered
+        → Check salience (attractor prominence in context)
+        → IF salience < 0.7:
+            → Inject attractor reinforcement
+        → Generate response
+        → Check coupling
+        → IF coupling < 0.76:
+            → Regenerate with entrainment
+        → Return governed response
             """)
 
             st.markdown(f"**Fidelity Before**: `{fidelity_before:.6f}` ⚠️")
@@ -1656,15 +1663,15 @@ IF F < 0.8:
     with st.expander("🎯 **5. Basin Verification** (Stability Proof)", expanded=True):
         st.markdown("**Primacy Basin Membership Check**")
 
-        in_basin = metrics.get('primacy_basin_membership', fidelity >= 0.8)
+        in_basin = metrics.get('primacy_basin_membership', fidelity >= 0.76)  # Goldilocks: Aligned threshold
         distance = metrics.get('drift_distance', 0.0)
 
         st.markdown("**Basin Definition**:")
         st.latex(r"B = \{\mathbf{x} : ||\mathbf{x} - \hat{\mathbf{a}}|| < r_{basin}\}")
         st.markdown("Where $r_{basin}$ is the basin radius (fidelity-based)")
 
-        st.markdown("**Membership Test**:")
-        st.latex(r"B(\mathbf{x}) = \begin{cases} \text{True} & \text{if } F(\mathbf{x}) \geq 0.8 \\ \text{False} & \text{otherwise} \end{cases}")
+        st.markdown("**Membership Test (Goldilocks: Aligned)**:")
+        st.latex(r"B(\mathbf{x}) = \begin{cases} \text{True} & \text{if } F(\mathbf{x}) \geq 0.76 \\ \text{False} & \text{otherwise} \end{cases}")
 
         st.markdown(f"**Current State**: `{'Inside Basin ✅' if in_basin else 'Outside Basin ❌'}`")
 
@@ -1745,7 +1752,7 @@ def initialize_teloscope():
                                 "Stay focused on AI governance topics"
                             ]
                         },
-                        'drift_threshold': 0.8,
+                        'drift_threshold': 0.76,  # Goldilocks: Aligned threshold
                         'branch_length': 5,
                         'enable_counterfactuals': True
                     }
@@ -1883,7 +1890,7 @@ def initialize_teloscope():
                     session_manager=st.session_state.session_manager,
                     branch_manager=st.session_state.branch_manager,
                     web_session_manager=st.session_state.web_session,
-                    drift_threshold=config.get('drift_threshold', 0.8),
+                    drift_threshold=config.get('drift_threshold', 0.76),  # Goldilocks: Aligned threshold
                     enable_counterfactuals=config.get('enable_counterfactuals', True)
                 )
 
@@ -2332,7 +2339,7 @@ def render_steward_lens():
                     st.line_chart(chart_data.set_index('Turn'), height=200)
 
                     # Add threshold references
-                    st.caption("🎯 Basin threshold: 0.70 | ⚠️ Escalation threshold: 0.30")
+                    st.caption("🎯 Minor Drift threshold: 0.73 | ⚠️ Significant Drift threshold: 0.67")
                 else:
                     st.info("💭 Start a conversation to see fidelity trends")
             else:
@@ -2369,17 +2376,17 @@ def render_steward_lens():
                 # Calculate metrics
                 avg_fidelity = sum(fidelities) / len(fidelities) if fidelities else 0.0
                 intervention_rate = (total_interventions / len(turns)) * 100 if turns else 0.0
-                basin_crossings = len([f for f in fidelities if f < 0.70])
+                basin_crossings = len([f for f in fidelities if f < 0.73])  # Minor Drift threshold
 
                 # Display in columns
                 col1, col2, col3, col4 = st.columns(4)
 
                 with col1:
-                    # Color-code fidelity health: Green (≥0.85), Yellow (0.70-0.85), Red (<0.70)
-                    if avg_fidelity >= 0.85:
-                        fidelity_delta = "Excellent"
+                    # Color-code fidelity health (Goldilocks zones): Green (≥0.76), Yellow (0.73-0.76), Red (<0.73)
+                    if avg_fidelity >= 0.76:  # Aligned
+                        fidelity_delta = "Aligned"
                         fidelity_delta_color = "normal"
-                    elif avg_fidelity >= 0.70:
+                    elif avg_fidelity >= 0.73:  # Minor Drift
                         fidelity_delta = "Good"
                         fidelity_delta_color = "normal"
                     else:
@@ -3995,14 +4002,14 @@ def render_observatory_control_strip():
     fidelity = current_turn.get('fidelity', 1.0)
     fidelity_display = f"{fidelity:.2f}" if fidelity is not None else "Cal"
 
-    # Status determination
+    # Status determination (Goldilocks zones)
     status_icon = "✓"
-    status_text = "Stable"
+    status_text = "Aligned"
     if fidelity is not None:
-        if fidelity < 0.6:
+        if fidelity < 0.67:  # Goldilocks: Significant Drift
             status_icon = "⚠️"
             status_text = "Drift"
-        elif fidelity < 0.8:
+        elif fidelity < 0.76:  # Goldilocks: Below Aligned
             status_icon = "⚡"
             status_text = "Watch"
 
@@ -4194,7 +4201,7 @@ def render_math_breakdown_section(turn_data):
         st.metric("Fidelity Score", f"{fidelity:.4f}")
 
         # Visual fidelity bar
-        fidelity_color = "green" if fidelity >= 0.8 else "orange" if fidelity >= 0.6 else "red"
+        fidelity_color = "green" if fidelity >= 0.76 else "gold" if fidelity >= 0.73 else "orange" if fidelity >= 0.67 else "red"  # Goldilocks zones
         st.markdown(f"""
         <div style="background-color: #f0f0f0; border-radius: 5px; padding: 5px; margin: 10px 0;">
             <div style="background-color: {fidelity_color}; width: {fidelity * 100}%; height: 20px; border-radius: 3px;"></div>
@@ -4662,9 +4669,9 @@ def render_sidebar():
 
             **Fidelity (F):**
             Measures how well responses stay aligned with governance purpose (0-1 scale).
-            - 🟢 **0.85+**: Excellent alignment
-            - 🟡 **0.5-0.85**: Acceptable with minor drift
-            - 🔴 **<0.5**: Critical drift requiring attention
+            - 🟢 **0.76+**: Aligned (Goldilocks optimized)
+            - 🟡 **0.67-0.76**: Minor to Moderate Drift
+            - 🔴 **<0.67**: Significant Drift requiring attention
 
             **Basin of Attraction:**
             The mathematical boundary defining acceptable governance drift. Responses within the basin maintain fidelity. Think of it as a "safe zone" where the Steward can keep conversations on track.
@@ -4932,7 +4939,7 @@ def render_live_session():
                                 fidelity = extractor_result.get('fidelity')
                                 distance = 0.0  # Not available in progressive mode yet
                                 error = 1.0 - fidelity if fidelity is not None else 0.0
-                                basin = fidelity >= 0.8 if fidelity is not None else True
+                                basin = fidelity >= 0.76 if fidelity is not None else True  # Goldilocks: Aligned threshold
                                 intervention_applied = False  # Not yet implemented in progressive mode
                                 governance_action = 'none'
 
@@ -4942,7 +4949,7 @@ def render_live_session():
 
                                 with metric_cols[0]:
                                     if fidelity is not None:
-                                        fidelity_color = "🟢" if fidelity >= 0.8 else ("🟡" if fidelity >= 0.5 else "🔴")
+                                        fidelity_color = "🟢" if fidelity >= 0.76 else ("🟡" if fidelity >= 0.67 else "🔴")  # Goldilocks zones
                                         st.metric(f"{fidelity_color} Fidelity", f"{fidelity:.3f}")
                                     else:
                                         st.metric("🔄 Fidelity", "Establishing...")
@@ -4965,7 +4972,7 @@ def render_live_session():
                                         st.success(progressive_extractor.get_status_message())
 
                                 # Show drift warning and trigger counterfactual if enabled
-                                if fidelity is not None and fidelity < 0.8:
+                                if fidelity is not None and fidelity < 0.76:  # Goldilocks: Aligned threshold
                                     st.warning(f"⚠️ DRIFT DETECTED (F={fidelity:.3f})")
 
                                     # Trigger counterfactual branching
@@ -5199,7 +5206,7 @@ def render_live_session():
                                                 disabled=True
                                             )
                                             fid = orig_turns[i]['metrics']['telic_fidelity']
-                                            fid_color = "🟢" if fid >= 0.8 else ("🟡" if fid >= 0.5 else "🔴")
+                                            fid_color = "🟢" if fid >= 0.76 else ("🟡" if fid >= 0.67 else "🔴")  # Goldilocks
                                             st.caption(f"{fid_color} Fidelity: {fid:.3f}")
 
                                         with col_telos:
@@ -5212,7 +5219,7 @@ def render_live_session():
                                                 disabled=True
                                             )
                                             fid = telos_turns[i]['metrics']['telic_fidelity']
-                                            fid_color = "🟢" if fid >= 0.8 else ("🟡" if fid >= 0.5 else "🔴")
+                                            fid_color = "🟢" if fid >= 0.76 else ("🟡" if fid >= 0.67 else "🔴")  # Goldilocks
                                             st.caption(f"{fid_color} Fidelity: {fid:.3f}")
 
                                             if telos_turns[i]['intervention_applied']:
@@ -5336,7 +5343,7 @@ def render_live_session():
                 mode = get_mode()
                 terms = get_terminology(mode)
 
-                if fidelity < 0.8:
+                if fidelity < 0.76:  # Goldilocks: Aligned threshold
                     if mode == 'Basic':
                         st.warning(f"⚠️ {terms['drift_message']}")
                     else:
@@ -5664,11 +5671,11 @@ def render_session_replay():
 
         # Fidelity
         fidelity = metrics.get('telic_fidelity', 1.0)
-        fidelity_color = "🟢" if fidelity >= 0.8 else ("🟡" if fidelity >= 0.5 else "🔴")
+        fidelity_color = "🟢" if fidelity >= 0.76 else ("🟡" if fidelity >= 0.67 else "🔴")
         st.metric(
             f"{fidelity_color} Fidelity",
             f"{fidelity:.3f}",
-            help="Alignment with governance purpose (0-1 scale). Higher is better. 0.85+ excellent, 0.5-0.85 acceptable, <0.5 critical"
+            help="Alignment with governance purpose (0-1 scale). Higher is better. 0.76+ aligned, 0.67-0.76 drift detected, <0.67 significant drift"
         )
 
         # Distance
@@ -5740,11 +5747,11 @@ def render_teloscope_view():
 
         **No counterfactual experiments yet.**
 
-        Counterfactuals are automatically triggered when drift is detected (fidelity < 0.8).
+        Counterfactuals are automatically triggered when drift is detected (fidelity < 0.76).
 
         **How TELOSCOPE works:**
         1. Continue conversations in the Live Session tab
-        2. When fidelity drops below 0.8, a trigger fires
+        2. When fidelity drops below 0.76 (Goldilocks: Aligned threshold), a trigger fires
         3. Two 5-turn branches are generated:
            - **🔴 Baseline**: What happens WITHOUT intervention
            - **🟢 TELOS**: What happens WITH intervention
@@ -5872,7 +5879,7 @@ def render_teloscope_view():
         baseline_turns = baseline.get('turns', [])
         for i, turn in enumerate(baseline_turns, 1):
             fidelity = turn.get('metrics', {}).get('telic_fidelity', 0.0)
-            fidelity_emoji = "🟢" if fidelity >= 0.8 else ("🟡" if fidelity >= 0.5 else "🔴")
+            fidelity_emoji = "🟢" if fidelity >= 0.76 else ("🟡" if fidelity >= 0.67 else "🔴")  # Goldilocks zones
 
             with st.expander(f"{fidelity_emoji} Turn {i} - F={fidelity:.3f}"):
                 st.write(f"**User:** {turn.get('user_input', 'N/A')}")
@@ -5890,7 +5897,7 @@ def render_teloscope_view():
         telos_turns = telos.get('turns', [])
         for i, turn in enumerate(telos_turns, 1):
             fidelity = turn.get('metrics', {}).get('telic_fidelity', 0.0)
-            fidelity_emoji = "🟢" if fidelity >= 0.8 else ("🟡" if fidelity >= 0.5 else "🔴")
+            fidelity_emoji = "🟢" if fidelity >= 0.76 else ("🟡" if fidelity >= 0.67 else "🔴")  # Goldilocks zones
 
             with st.expander(f"{fidelity_emoji} Turn {i} - F={fidelity:.3f}"):
                 st.write(f"**User:** {turn.get('user_input', 'N/A')}")
@@ -6045,7 +6052,7 @@ def render_analytics_dashboard():
 
     with col3:
         avg_f = stats.get('avg_fidelity', 1.0)
-        avg_color = "🟢" if avg_f >= 0.8 else ("🟡" if avg_f >= 0.5 else "🔴")
+        avg_color = "🟢" if avg_f >= 0.76 else ("🟡" if avg_f >= 0.67 else "🔴")  # Goldilocks zones
         st.metric(
             f"{avg_color} Avg Fidelity",
             f"{avg_f:.3f}",
@@ -6084,12 +6091,12 @@ def render_analytics_dashboard():
                 marker=dict(size=8)
             ))
 
-            # Threshold lines
+            # Goldilocks threshold lines
             fig.add_hline(
-                y=0.8,
+                y=0.76,
                 line_dash="dash",
-                line_color="orange",
-                annotation_text="Warning Threshold (F=0.8)",
+                line_color="green",
+                annotation_text="Aligned Threshold (F=0.76)",
                 annotation_position="right"
             )
 
@@ -6223,7 +6230,7 @@ def render_analytics_dashboard():
         st.info("""
         No counterfactual experiments yet.
 
-        Triggers fire automatically when drift is detected (F < 0.8).
+        Triggers fire automatically when drift is detected (F < 0.76).
         Start a conversation and try going off-topic to generate evidence!
         """)
 
@@ -6251,7 +6258,7 @@ def render_analytics_dashboard():
 
         with col2:
             avg_fidelity_all = compute_avg_fidelity_across_sessions(sessions_data)
-            fidelity_color = "🟢" if avg_fidelity_all >= 0.8 else ("🟡" if avg_fidelity_all >= 0.5 else "🔴")
+            fidelity_color = "🟢" if avg_fidelity_all >= 0.76 else ("🟡" if avg_fidelity_all >= 0.67 else "🔴")  # Goldilocks zones
             st.metric(
                 f"{fidelity_color} Avg Fidelity",
                 f"{avg_fidelity_all:.3f}",
@@ -6296,12 +6303,12 @@ def render_analytics_dashboard():
                 marker=dict(size=10)
             ))
 
-            # Threshold lines
+            # Goldilocks threshold lines
             fig.add_hline(
-                y=0.8,
+                y=0.76,
                 line_dash="dash",
-                line_color="orange",
-                annotation_text="Target (F=0.8)",
+                line_color="green",
+                annotation_text="Target (F=0.76)",
                 annotation_position="right"
             )
 
@@ -6323,8 +6330,8 @@ def render_analytics_dashboard():
             })
             st.line_chart(df.set_index('Session'))
 
-        # Overall cross-session assessment
-        if avg_fidelity_all > 0.8:
+        # Overall cross-session assessment (Goldilocks)
+        if avg_fidelity_all > 0.76:
             st.success("""
             ✅ **Excellent Cross-Session Performance**
 
@@ -6467,12 +6474,12 @@ def render_analytics_dashboard():
                     marker=dict(size=6)
                 ))
 
-                # Target threshold
+                # Goldilocks target threshold
                 fig.add_hline(
-                    y=0.8,
+                    y=0.76,
                     line_dash="dash",
-                    line_color="gray",
-                    annotation_text="Target (F=0.8)",
+                    line_color="green",
+                    annotation_text="Target (F=0.76)",
                     annotation_position="right"
                 )
 
@@ -6645,7 +6652,7 @@ def render_analytics_dashboard():
                 st.metric(
                     "Total Drift Events",
                     drift_triggers['total_drift_events'],
-                    help="Number of turns with fidelity below 0.8"
+                    help="Number of turns with fidelity below 0.76"  # Goldilocks: Aligned threshold
                 )
 
             with col2:
@@ -6753,10 +6760,10 @@ def render_analytics_dashboard():
                     ))
 
                     fig.add_hline(
-                        y=0.8,
+                        y=0.76,
                         line_dash="dash",
-                        line_color="red",
-                        annotation_text="Target (F=0.8)",
+                        line_color="green",
+                        annotation_text="Target (F=0.76)",
                         annotation_position="right"
                     )
 
@@ -6957,12 +6964,12 @@ def render_analytics_dashboard():
                     annotation_position="top"
                 )
 
-                # Add target threshold
+                # Add Goldilocks target threshold
                 fig.add_vline(
-                    x=0.8,
+                    x=0.76,
                     line_dash="dash",
-                    line_color="orange",
-                    annotation_text="Target (F=0.8)",
+                    line_color="green",
+                    annotation_text="Target (F=0.76)",
                     annotation_position="bottom"
                 )
 
@@ -7096,8 +7103,8 @@ def render_intervention_timeline(turns):
         intervention_applied = intervention_details.get('intervention_applied', False)
         interventions.append(intervention_applied)
 
-        # Mark drift points (low fidelity)
-        if fidelity < 0.8:
+        # Mark drift points (low fidelity) - Goldilocks: Aligned threshold
+        if fidelity < 0.76:
             drift_points.append({
                 'turn': idx + 1,
                 'fidelity': fidelity,
@@ -7118,12 +7125,12 @@ def render_intervention_timeline(turns):
         hovertemplate='Turn %{x}<br>Fidelity: %{y:.3f}<extra></extra>'
     ))
 
-    # Drift threshold line
+    # Goldilocks drift threshold line
     fig.add_hline(
-        y=0.8,
+        y=0.76,
         line_dash="dash",
-        line_color="red",
-        annotation_text="Drift Threshold (0.8)",
+        line_color="green",
+        annotation_text="Aligned Threshold (0.76)",
         annotation_position="right"
     )
 
@@ -7318,12 +7325,12 @@ def render_simulation_results(simulation_id):
             marker=dict(size=8)
         ))
 
-        # Drift threshold
+        # Goldilocks drift threshold
         fig.add_hline(
-            y=0.8,
+            y=0.76,
             line_dash="dot",
-            line_color="red",
-            annotation_text="Drift Threshold"
+            line_color="green",
+            annotation_text="Aligned Threshold (0.76)"
         )
 
         fig.update_layout(

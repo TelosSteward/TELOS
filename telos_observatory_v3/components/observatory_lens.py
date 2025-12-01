@@ -132,7 +132,17 @@ class ObservatoryLens:
         positions, colors, sizes, hover_texts = [], [], [], []
 
         for turn in turns:
-            fidelity = turn.get('fidelity', 0.0)
+            # DUAL PA: Use primacy_state_score for basin distance, fallback to computed PS
+            user_f = turn.get('user_pa_fidelity') or turn.get('user_fidelity') or turn.get('fidelity', 0.0)
+            ai_f = turn.get('ai_pa_fidelity') or turn.get('ai_fidelity') or user_f
+            rho_pa = turn.get('pa_correlation', 1.0)
+            # Try stored PS first, then compute harmonic mean
+            fidelity = turn.get('primacy_state_score') or turn.get('primacy_state')
+            if fidelity is None and (user_f + ai_f) > 0:
+                # PS = ρ_PA · (2·F_user·F_AI)/(F_user + F_AI)
+                fidelity = rho_pa * (2 * user_f * ai_f) / (user_f + ai_f)
+            elif fidelity is None:
+                fidelity = user_f  # Fallback to single fidelity
             turn_num = turn.get('turn', 0)
 
             distance = (1.0 - fidelity) * 2.0
@@ -144,15 +154,9 @@ class ObservatoryLens:
             z = distance * np.cos(angle2)
 
             positions.append([x, y, z])
-            # 4-tier color system: Green (≥0.85) | Yellow (0.70-0.85) | Orange (0.50-0.70) | Red (<0.50)
-            if fidelity >= 0.85:
-                point_color = '#4CAF50'  # Green
-            elif fidelity >= 0.70:
-                point_color = '#F4D03F'  # Yellow
-            elif fidelity >= 0.50:
-                point_color = '#FFA500'  # Orange
-            else:
-                point_color = '#FF4444'  # Red
+            # Goldilocks zone color system - import from central config
+            from config.colors import get_fidelity_color
+            point_color = get_fidelity_color(fidelity)
             colors.append(point_color)
             sizes.append(8)
             hover_texts.append(f"Turn {turn_num + 1}<br>Fidelity: {fidelity:.3f}")
@@ -213,18 +217,20 @@ class ObservatoryLens:
             domain={'x': [0, 1], 'y': [0, 1]},
             title={'text': "Fidelity", 'font': {'size': 16, 'color': '#F4D03F'}},
             number={'font': {'size': 40, 'color': '#F4D03F'}, 'valueformat': '.3f'},
-            delta={'reference': 0.8, 'increasing': {'color': "#00FF00"}, 'decreasing': {'color': "#FF0000"}},
+            delta={'reference': 0.76, 'increasing': {'color': "#00FF00"}, 'decreasing': {'color': "#FF0000"}},  # Goldilocks: Aligned threshold
             gauge={
                 'axis': {'range': [0, 1], 'tickwidth': 1, 'tickcolor': "#F4D03F"},
                 'bar': {'color': "#F4D03F"},
                 'bgcolor': "#1a1a1a",
                 'borderwidth': 2, 'bordercolor': "#F4D03F",
                 'steps': [
-                    {'range': [0, 0.7], 'color': '#330000'},
-                    {'range': [0.7, 0.8], 'color': '#333300'},
-                    {'range': [0.8, 1.0], 'color': '#003300'}
+                    # Goldilocks zone thresholds
+                    {'range': [0, 0.67], 'color': '#330000'},      # Significant Drift (Red)
+                    {'range': [0.67, 0.73], 'color': '#332200'},   # Drift Detected (Orange)
+                    {'range': [0.73, 0.76], 'color': '#333300'},   # Minor Drift (Yellow)
+                    {'range': [0.76, 1.0], 'color': '#003300'}     # Aligned (Green)
                 ],
-                'threshold': {'line': {'color': "#FF0000", 'width': 4}, 'thickness': 0.75, 'value': 0.7}
+                'threshold': {'line': {'color': "#FF0000", 'width': 4}, 'thickness': 0.75, 'value': 0.67}  # Goldilocks: Drift threshold
             }
         ))
 
@@ -283,15 +289,9 @@ class ObservatoryLens:
             x, y = distance * np.cos(angle), distance * np.sin(angle)
             positions_2d.append([x, y])
 
-            # 4-tier color system: Green (≥0.85) | Yellow (0.70-0.85) | Orange (0.50-0.70) | Red (<0.50)
-            if fidelity >= 0.85:
-                point_color = '#4CAF50'  # Green
-            elif fidelity >= 0.70:
-                point_color = '#F4D03F'  # Yellow
-            elif fidelity >= 0.50:
-                point_color = '#FFA500'  # Orange
-            else:
-                point_color = '#FF4444'  # Red
+            # Goldilocks zone color system - import from central config
+            from config.colors import get_fidelity_color
+            point_color = get_fidelity_color(fidelity)
             colors.append(point_color)
             sizes.append(8 + (turn_num / len(turns)) * 6)
             hover_texts.append(f"Turn {turn_num + 1}<br>Fidelity: {fidelity:.3f}")
@@ -352,10 +352,14 @@ class ObservatoryLens:
 
             if intervention:
                 icon, color, event_type = "🛡️", "#FF0000", "INTERVENTION"
-            elif fidelity < 0.8:
-                icon, color, event_type = "⚠️", "#F4D03F", "DRIFT WARNING"
-            else:
-                icon, color, event_type = "✓", "#00FF00", "NORMAL"
+            elif fidelity < 0.67:  # Goldilocks: Significant Drift
+                icon, color, event_type = "🔴", "#FF4444", "SIGNIFICANT DRIFT"
+            elif fidelity < 0.73:  # Goldilocks: Drift Detected
+                icon, color, event_type = "⚠️", "#FFA500", "DRIFT DETECTED"
+            elif fidelity < 0.76:  # Goldilocks: Minor Drift
+                icon, color, event_type = "⚠️", "#F4D03F", "MINOR DRIFT"
+            else:  # Goldilocks: Aligned
+                icon, color, event_type = "✓", "#00FF00", "ALIGNED"
 
             st.markdown(f'<div style="padding: 8px; background: #0a0a0a; border-left: 3px solid {color}; border-radius: 3px; margin: 5px 0;"><div style="color: {color}; font-size: 11px;">{icon} <strong>Turn {turn_num + 1}:</strong> {event_type}</div><div style="color: #888; font-size: 10px;">Fidelity: {fidelity:.3f}</div></div>', unsafe_allow_html=True)
 

@@ -68,8 +68,8 @@ Demo Mode implements a **two-layer architecture** that combines governance with 
 │  • Drift detection: Distance from attractor                 │
 │  • Observable metrics: Turn-by-turn telemetry               │
 │                                                              │
-│  ✓ Fidelity ≥ 0.8 → Response approved                      │
-│  ✗ Fidelity < 0.8 → Intervention triggered                 │
+│  ✓ Fidelity ≥ 0.76 → Response approved (Goldilocks: Aligned)    │
+│  ✗ Fidelity < 0.76 → Drift detected, intervention if < 0.67    │
 └────────────────────────┬────────────────────────────────────┘
                          │
                          ▼
@@ -479,7 +479,7 @@ if demo_mode:
 
 ### Success Metrics
 
-- ✅ Fidelity scores consistently > 0.8
+- ✅ Fidelity scores consistently ≥ 0.76 (Goldilocks: Aligned)
 - ✅ Responses cite actual documentation
 - ✅ Off-topic queries handled gracefully
 - ✅ No hallucinations about TELOS

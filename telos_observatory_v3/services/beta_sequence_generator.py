@@ -1,9 +1,9 @@
 """
-Beta Sequence Generator for Balanced A/B Testing
+Beta Sequence Generator - TELOS Governance Demo
 ================================================
 
-Ensures exactly 50/50 distribution while maintaining randomness.
-Pre-determines response types to avoid wasted LLM calls.
+Simplified for 5-turn TELOS-only demonstration (no A/B testing).
+All turns are TELOS-governed to demonstrate fidelity monitoring.
 """
 
 import random
@@ -12,7 +12,7 @@ from datetime import datetime
 
 
 class BetaSequenceGenerator:
-    """Generates balanced, randomized test sequences for BETA sessions."""
+    """Generates sequence for BETA sessions - all TELOS-governed."""
 
     def __init__(self):
         """Initialize the sequence generator."""
@@ -21,11 +21,10 @@ class BetaSequenceGenerator:
 
     def generate_session_sequence(self) -> Dict:
         """
-        Generate a complete test sequence for a 15-turn BETA session.
+        Generate a complete test sequence for a 5-turn BETA session.
 
-        NEW PATTERN: Alternating single-blind and head-to-head starting at turn 1
-        - Odd turns (1,3,5,7,9,11,13,15): Single-blind (8 turns - 5 TELOS, 3 native)
-        - Even turns (2,4,6,8,10,12,14): Head-to-head both (7 turns)
+        All 5 turns are TELOS-governed (no A/B testing).
+        Purpose: Demonstrate TELOS fidelity monitoring and governance.
 
         Returns:
             Dict with turn assignments and metadata
@@ -35,49 +34,23 @@ class BetaSequenceGenerator:
             'generated_at': datetime.now().isoformat(),
             'turns': {},
             'statistics': {
-                'total_telos': 0,
-                'total_native': 0,
-                'single_blind_telos': 0,
-                'single_blind_native': 0
+                'total_telos': 5,
+                'total_native': 0
             }
         }
 
-        # Create balanced pool for single-blind turns (8 total odd turns)
-        # 5 TELOS (62.5%), 3 native (37.5%) for slight TELOS bias
-        single_blind_pool = ['telos'] * 5 + ['native'] * 3
-        random.shuffle(single_blind_pool)
-        single_index = 0
+        # All 5 turns are TELOS-governed
+        for turn in range(1, 6):
+            sequence['turns'][turn] = {
+                'test_type': 'telos_governed',
+                'response_source': 'telos',
+                'phase': 1
+            }
 
-        for turn in range(1, 16):
-            if turn % 2 == 0:
-                # Even turns: Head-to-head (always show both)
-                sequence['turns'][turn] = {
-                    'test_type': 'head_to_head',
-                    'response_source': 'both',
-                    'phase': 1
-                }
-                # Count both as shown
-                sequence['statistics']['total_telos'] += 1
-                sequence['statistics']['total_native'] += 1
-            else:
-                # Odd turns: Single-blind
-                response_type = single_blind_pool[single_index]
-                single_index += 1
-                sequence['turns'][turn] = {
-                    'test_type': 'single_blind',
-                    'response_source': response_type,
-                    'phase': 1
-                }
-                sequence['statistics']['total_' + response_type] += 1
-                sequence['statistics']['single_blind_' + response_type] += 1
-
-        # Final statistics
+        # Statistics
         sequence['statistics']['guaranteed_distribution'] = {
-            'single_blind_total': 8,  # Odd turns: 1,3,5,7,9,11,13,15
-            'single_blind_telos': 5,  # 62.5% TELOS in single-blind
-            'single_blind_native': 3,  # 37.5% native in single-blind
-            'head_to_head_total': 7,  # Even turns: 2,4,6,8,10,12,14
-            'total_turns': 15
+            'telos_governed': 5,
+            'total_turns': 5
         }
 
         return sequence

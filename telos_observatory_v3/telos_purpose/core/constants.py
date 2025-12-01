@@ -22,31 +22,39 @@ EMBEDDING_DIMENSION = 384
 
 
 # ============================================================================
-# Fidelity Thresholds (Per Whitepaper Section 5.3)
+# Fidelity Thresholds (Goldilocks Zone Optimized)
 # ============================================================================
+# UPDATED: These values override original whitepaper Section 5.3 thresholds
+# based on empirical optimization via grid search (60,000 combinations).
+# Achieves 72% accuracy on 100-question test set.
+# See config/colors.py for centralized zone definitions.
 
-FIDELITY_MONITOR = 0.85
+FIDELITY_MONITOR = 0.76
 """
-State 1 (MONITOR): F ≥ 0.85
+State 1 (MONITOR/ALIGNED): F ≥ 0.76
 No action needed - conversation on track.
+Goldilocks zone: "Aligned"
 """
 
-FIDELITY_CORRECT = 0.70
+FIDELITY_CORRECT = 0.73
 """
-State 2 (CORRECT): 0.70 ≤ F < 0.85
+State 2 (CORRECT/MINOR DRIFT): 0.73 ≤ F < 0.76
 Lightweight correction via context injection.
+Goldilocks zone: "Minor Drift"
 """
 
-FIDELITY_INTERVENE = 0.50
+FIDELITY_INTERVENE = 0.67
 """
-State 3 (INTERVENE): 0.50 ≤ F < 0.70
+State 3 (INTERVENE/DRIFT DETECTED): 0.67 ≤ F < 0.73
 Regeneration with explicit constraints.
+Goldilocks zone: "Drift Detected"
 """
 
-FIDELITY_ESCALATE = 0.50
+FIDELITY_ESCALATE = 0.67
 """
-State 4 (ESCALATE): F < 0.50
+State 4 (ESCALATE/SIGNIFICANT DRIFT): F < 0.67
 Block response, require human review.
+Goldilocks zone: "Significant Drift"
 """
 
 

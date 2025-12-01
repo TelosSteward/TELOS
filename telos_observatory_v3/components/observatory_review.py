@@ -27,9 +27,10 @@ class ObservatoryReview:
         """Render the complete Observatory review interface."""
 
         # Check if BETA is complete
-        beta_turns = st.session_state.get('beta_turn_count', 0)
-        if beta_turns < 15:
-            st.warning("Complete BETA testing (15 turns) to unlock full Observatory review")
+        # beta_current_turn is the NEXT turn to play (starts at 1), so completed turns = current_turn - 1
+        beta_turns = st.session_state.get('beta_current_turn', 1) - 1
+        if beta_turns < 5:
+            st.warning("Complete BETA testing (5 turns) to unlock full Observatory review")
             return
 
         # Header

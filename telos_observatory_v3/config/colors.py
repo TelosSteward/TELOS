@@ -10,11 +10,12 @@ Updated based on accessibility audit to reduce eye strain.
 GOLD = '#F4D03F'  # Refined gold - less "neon", better for eyes
 GOLD_BRIGHT = '#F4D03F'  # Legacy bright gold (deprecated - do not use)
 
-# Status Colors (Fidelity Indicators)
-STATUS_GOOD = '#4CAF50'     # Green - Good/Aligned (≥0.85)
-STATUS_MILD = '#F4D03F'      # Yellow/Gold - Mild drift (0.70-0.85)
-STATUS_MODERATE = '#FF9E42'  # Orange - Moderate drift (0.50-0.70)
-STATUS_SEVERE = '#FF5757'    # Red - Severe drift (<0.50)
+# Status Colors (Fidelity Indicators) - Zone-based naming for user clarity
+# Thresholds are internal implementation details, not user-facing
+STATUS_GOOD = '#4CAF50'     # Green - "Aligned" zone
+STATUS_MILD = '#F4D03F'      # Yellow/Gold - "Minor Drift" zone
+STATUS_MODERATE = '#FF9E42'  # Orange - "Drift Detected" zone
+STATUS_SEVERE = '#FF5757'    # Red - "Significant Drift" zone
 
 # Background Colors
 BG_BASE = '#0d0d0d'        # Darkest - base layer
@@ -50,24 +51,54 @@ COLOR_MAPPINGS = {
     '#FFA500': STATUS_MODERATE,  # Map old orange to refined orange
 }
 
+# Goldilocks zone thresholds (internal - derived from mathematical optimization)
+# These are implementation details, users see zone names not numbers
+_ZONE_ALIGNED = 0.76      # "Aligned" zone threshold
+_ZONE_MINOR_DRIFT = 0.73  # "Minor Drift" zone threshold
+_ZONE_DRIFT = 0.67        # "Drift Detected" zone threshold
+# Below _ZONE_DRIFT = "Significant Drift" zone
+
+
 def get_fidelity_color(score: float) -> str:
-    """Get the appropriate color for a fidelity score."""
-    if score >= 0.85:
+    """Get the appropriate color for a fidelity score.
+
+    Uses Goldilocks zone thresholds derived from mathematical optimization.
+    """
+    if score >= _ZONE_ALIGNED:
         return STATUS_GOOD
-    elif score >= 0.70:
+    elif score >= _ZONE_MINOR_DRIFT:
         return STATUS_MILD
-    elif score >= 0.50:
+    elif score >= _ZONE_DRIFT:
         return STATUS_MODERATE
     else:
         return STATUS_SEVERE
 
+
 def get_color_name(score: float) -> str:
-    """Get the color name for a fidelity score."""
-    if score >= 0.85:
+    """Get the color name for a fidelity score.
+
+    Uses Goldilocks zone thresholds derived from mathematical optimization.
+    """
+    if score >= _ZONE_ALIGNED:
         return "green"
-    elif score >= 0.70:
+    elif score >= _ZONE_MINOR_DRIFT:
         return "gold"
-    elif score >= 0.50:
+    elif score >= _ZONE_DRIFT:
         return "orange"
     else:
         return "red"
+
+
+def get_zone_name(score: float) -> str:
+    """Get the human-friendly zone name for a fidelity score.
+
+    Returns semantic zone names instead of threshold numbers for better UX.
+    """
+    if score >= _ZONE_ALIGNED:
+        return "Aligned"
+    elif score >= _ZONE_MINOR_DRIFT:
+        return "Minor Drift"
+    elif score >= _ZONE_DRIFT:
+        return "Drift Detected"
+    else:
+        return "Significant Drift"

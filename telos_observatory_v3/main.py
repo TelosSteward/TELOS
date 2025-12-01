@@ -25,6 +25,7 @@ from components.teloscope_controls import TELOSCOPEControls
 from components.beta_onboarding import BetaOnboarding
 from components.pa_onboarding import PAOnboarding
 from components.steward_panel import StewardPanel
+from components.beta_steward_panel import BetaStewardPanel, render_beta_steward_button
 from components.observatory_lens import ObservatoryLens
 from services.ab_test_manager import get_ab_test_manager
 from services.backend_client import get_backend_service
@@ -86,12 +87,6 @@ def check_demo_completion():
 
         if completed_via_turns or completed_via_slides:
             st.session_state.demo_completed = True
-            st.success("""
-            🎉 **Demo Complete!**
-
-            You've learned the basics of TELOS! The BETA tab is now unlocked.
-            Ready to help test TELOS? Switch to the BETA tab to begin.
-            """)
             return True
 
     return False
@@ -792,6 +787,7 @@ def main():
     # Instantiate components
     sidebar_actions = SidebarActionsBeta(state_manager)
     steward_panel = StewardPanel(state_manager)
+    beta_steward_panel = BetaStewardPanel()  # BETA-specific Steward with correct context
     conversation_display = ConversationDisplay(state_manager)
     observation_deck = ObservationDeck(state_manager)
     beta_observation_deck = BetaObservationDeck()
@@ -812,8 +808,15 @@ def main():
     steward_panel.hide_sidebar_when_open()
 
     # Render Steward button (always visible after consent)
+    # Use appropriate button based on mode
+    # NOTE: BETA mode no longer shows a top-level Steward button.
+    # Instead, "Ask Steward why" appears contextually on intervention responses.
     if has_beta_consent:
-        steward_panel.render_button()
+        current_tab = st.session_state.get('active_tab', 'DEMO')
+        if current_tab == "BETA":
+            pass  # No top-level button - contextual "Ask Steward why" on interventions instead
+        else:
+            steward_panel.render_button()  # Regular Steward toggle
 
     # Initialize active tab if not set - default to DEMO for public users
     if 'active_tab' not in st.session_state:
@@ -851,13 +854,13 @@ def main():
         # Render tabs and content (DEMO is always accessible, BETA/TELOS require consent, DEVOPS is unrestricted)
         render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
                                 conversation_display, observation_deck, beta_observation_deck,
-                                teloscope_controls, steward_panel, beta_onboarding,
+                                teloscope_controls, steward_panel, beta_steward_panel, beta_onboarding,
                                 pa_onboarding, observatory_lens)
 
 
 def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
                             conversation_display, observation_deck, beta_observation_deck,
-                            teloscope_controls, steward_panel, beta_onboarding,
+                            teloscope_controls, steward_panel, beta_steward_panel, beta_onboarding,
                             pa_onboarding, observatory_lens):
     """Render tabs and main content area."""
     # Check if we're in TELOS or DEVOPS mode (which have sidebar access)
@@ -1114,6 +1117,7 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
         show_devops_header = (mode == "DEVOPS")
         show_observation_deck = (mode in ["BETA", "TELOS", "DEVOPS"])
         show_teloscope = (mode in ["TELOS", "DEVOPS"])
+        show_observatory_lens_auto = (mode in ["TELOS", "DEVOPS"])  # Auto-enabled in full modes
 
         # DEVOPS header
         if show_devops_header:
@@ -1132,27 +1136,30 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
                 # If we get here, PA was just established - continue to conversation
 
             # Scroll to top when entering BETA mode (after PA established)
-            import streamlit.components.v1 as components
-            components.html("""
-            <script>
-            (function() {
-                // Scroll to top of page
-                window.scrollTo(0, 0);
-                if (window.parent) {
-                    window.parent.scrollTo(0, 0);
-                }
-                // Also try to scroll the main container
-                var mainContainer = window.parent.document.querySelector('.main');
-                if (mainContainer) {
-                    mainContainer.scrollTop = 0;
-                }
-                var appContainer = window.parent.document.querySelector('[data-testid="stAppViewContainer"]');
-                if (appContainer) {
-                    appContainer.scrollTop = 0;
-                }
-            })();
-            </script>
-            """, height=0)
+            # CRITICAL: Only scroll once to prevent "redirected to beginning" bug
+            if not st.session_state.get('beta_scroll_to_top_done', False):
+                st.session_state.beta_scroll_to_top_done = True
+                import streamlit.components.v1 as components
+                components.html("""
+                <script>
+                (function() {
+                    // Scroll to top of page
+                    window.scrollTo(0, 0);
+                    if (window.parent) {
+                        window.parent.scrollTo(0, 0);
+                    }
+                    // Also try to scroll the main container
+                    var mainContainer = window.parent.document.querySelector('.main');
+                    if (mainContainer) {
+                        mainContainer.scrollTop = 0;
+                    }
+                    var appContainer = window.parent.document.querySelector('[data-testid="stAppViewContainer"]');
+                    if (appContainer) {
+                        appContainer.scrollTop = 0;
+                    }
+                })();
+                </script>
+                """, height=0)
 
             # Show BETA welcome message if PA just established and welcome not yet shown
             # Use a dedicated flag to ensure welcome shows only ONCE
@@ -1170,7 +1177,7 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
     <div style="color: #e0e0e0; font-size: 18px; line-height: 1.8;">
         <div style="margin-bottom: 20px;">
             Your <strong style="color: {GOLD};">Primacy Attractor</strong> has been established.
-            You're about to experience a 15-turn conversation where we'll test how well AI stays
+            You're about to experience a 5-turn conversation where we'll test how well AI stays
             aligned with your stated purpose.
         </div>
         <div style="background-color: #1a1a1a; padding: 20px; border-radius: 10px; margin: 20px 0;">
@@ -1178,14 +1185,9 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
                 Here's What Will Happen:
             </div>
             <div style="margin-bottom: 15px;">
-                <strong style="color: {GOLD};">15 Conversation Turns</strong><br>
-                You'll have a natural conversation over 15 turns. Just ask questions or make requests
-                as you normally would.
-            </div>
-            <div style="margin-bottom: 15px;">
-                <strong style="color: {GOLD};">Two Types of Responses</strong><br>
-                • Some turns will show <strong>one response</strong> (you won't know the source)<br>
-                • Other turns will show <strong>two responses side-by-side</strong> (you'll choose your preference)
+                <strong style="color: {GOLD};">5 Conversation Turns</strong><br>
+                You'll have a natural conversation over 5 turns. Just ask questions or make requests
+                as you normally would. Each response is TELOS-governed.
             </div>
             <div style="margin-bottom: 15px; display: flex; align-items: flex-start; gap: 20px;">
                 <div style="flex: 1;">
@@ -1218,7 +1220,7 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
                 </div>
             </div>
             <div style="margin-bottom: 15px;">
-                <strong style="color: {GOLD};">After 15 Turns</strong><br>
+                <strong style="color: {GOLD};">After 5 Turns</strong><br>
                 You'll unlock the <strong>TELOS tab</strong> for full governed conversations with progressive
                 Primacy Attractor mode (not onboarding mode like BETA). You can continue in the existing
                 interface or start a fresh TELOS chat.
@@ -1301,13 +1303,20 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
             st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
             teloscope_controls.render()
 
-        # Alignment Lens (show if toggled or in sidebar mode)
-        if st.session_state.get('show_observatory_lens', False):
+        # Alignment Lens (auto-enabled in TELOS/DEVOPS, or toggled manually in other modes)
+        if show_observatory_lens_auto or st.session_state.get('show_observatory_lens', False):
             st.markdown("<div style='margin: 20px 0;'></div>", unsafe_allow_html=True)
             observatory_lens.render()
 
-    # Check if Steward panel is open
-    steward_open = st.session_state.get('steward_panel_open', False)
+    # Check if Steward panel is open (BETA uses separate state)
+    active_tab = st.session_state.get('active_tab', 'DEMO')
+    is_beta_mode = active_tab == "BETA"
+
+    # Use appropriate panel state and component based on mode
+    if is_beta_mode:
+        steward_open = st.session_state.get('beta_steward_panel_open', False)
+    else:
+        steward_open = st.session_state.get('steward_panel_open', False)
 
     # Content rendering (DEMO accessible without consent, BETA/TELOS require consent)
     if steward_open and has_beta_consent:
@@ -1318,8 +1327,11 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
             render_mode_content(st.session_state.active_tab)
 
         with col_steward:
-            # Render Steward chat panel
-            steward_panel.render_panel()
+            # Render appropriate Steward chat panel based on mode
+            if is_beta_mode:
+                beta_steward_panel.render_panel()
+            else:
+                steward_panel.render_panel()
 
     else:
         # Normal full-width layout

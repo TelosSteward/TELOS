@@ -60,13 +60,15 @@ def plot_single_session(data: Dict[str, Any], output_dir: str = "plots"):
             fidelity = metrics['fidelity_history'][turn - 1]
             ax.plot(turn, fidelity, 'rx', markersize=15, markeredgewidth=3, label='Intervention')
 
-    # Threshold zones
-    ax.axhspan(0.8, 1.0, alpha=0.1, color='green', label='High Fidelity')
-    ax.axhspan(0.5, 0.8, alpha=0.1, color='orange', label='Warning Zone')
-    ax.axhspan(0.0, 0.5, alpha=0.1, color='red', label='Critical Zone')
+    # Goldilocks threshold zones
+    ax.axhspan(0.76, 1.0, alpha=0.1, color='green', label='Aligned (F≥0.76)')
+    ax.axhspan(0.73, 0.76, alpha=0.1, color='gold', label='Minor Drift (0.73-0.76)')
+    ax.axhspan(0.67, 0.73, alpha=0.1, color='orange', label='Drift Detected (0.67-0.73)')
+    ax.axhspan(0.0, 0.67, alpha=0.1, color='red', label='Significant Drift (F<0.67)')
 
-    ax.axhline(y=0.8, color='orange', linestyle='--', linewidth=1, alpha=0.7)
-    ax.axhline(y=0.5, color='red', linestyle='--', linewidth=1, alpha=0.7)
+    ax.axhline(y=0.76, color='green', linestyle='--', linewidth=1, alpha=0.7)
+    ax.axhline(y=0.73, color='gold', linestyle='--', linewidth=1, alpha=0.7)
+    ax.axhline(y=0.67, color='red', linestyle='--', linewidth=1, alpha=0.7)
 
     ax.set_xlabel('Turn', fontsize=12, fontweight='bold')
     ax.set_ylabel('Telic Fidelity (F)', fontsize=12, fontweight='bold')
@@ -78,12 +80,12 @@ def plot_single_session(data: Dict[str, Any], output_dir: str = "plots"):
     ax = axes[0, 1]
     ax.plot(turns, metrics['error_signal_history'], 'r-o', linewidth=2, markersize=8, label='Error Signal (ε)')
 
-    # Get thresholds from config if available
-    epsilon_min = 0.5
-    epsilon_max = 0.8
+    # Get thresholds from config if available (Goldilocks defaults)
+    epsilon_min = 0.24  # Goldilocks: 1 - 0.76 (Aligned threshold)
+    epsilon_max = 0.33  # Goldilocks: 1 - 0.67 (Significant Drift threshold)
     if 'config' in data and 'intervention_thresholds' in data['config']:
-        epsilon_min = data['config']['intervention_thresholds'].get('epsilon_min', 0.5)
-        epsilon_max = data['config']['intervention_thresholds'].get('epsilon_max', 0.8)
+        epsilon_min = data['config']['intervention_thresholds'].get('epsilon_min', 0.24)
+        epsilon_max = data['config']['intervention_thresholds'].get('epsilon_max', 0.33)
 
     ax.axhspan(epsilon_min, epsilon_max, alpha=0.15, color='orange', label=f'Warning (ε > {epsilon_min})')
     ax.axhspan(epsilon_max, 1.0, alpha=0.15, color='red', label=f'Critical (ε > {epsilon_max})')
@@ -169,10 +171,12 @@ def plot_comparison(sessions: List[Dict[str, Any]], output_dir: str = "plots"):
         ax.plot(turns, metrics['fidelity_history'], '-o', linewidth=2,
                 markersize=6, label=session_name, alpha=0.8)
 
-    ax.axhline(y=0.8, color='orange', linestyle='--', linewidth=1, alpha=0.5)
-    ax.axhline(y=0.5, color='red', linestyle='--', linewidth=1, alpha=0.5)
-    ax.axhspan(0.8, 1.0, alpha=0.05, color='green')
-    ax.axhspan(0.5, 0.8, alpha=0.05, color='orange')
+    ax.axhline(y=0.76, color='green', linestyle='--', linewidth=1, alpha=0.5)
+    ax.axhline(y=0.73, color='gold', linestyle='--', linewidth=1, alpha=0.5)
+    ax.axhline(y=0.67, color='red', linestyle='--', linewidth=1, alpha=0.5)
+    ax.axhspan(0.76, 1.0, alpha=0.05, color='green')
+    ax.axhspan(0.73, 0.76, alpha=0.05, color='gold')
+    ax.axhspan(0.67, 0.73, alpha=0.05, color='orange')
 
     ax.set_xlabel('Turn', fontsize=12, fontweight='bold')
     ax.set_ylabel('Telic Fidelity (F)', fontsize=12, fontweight='bold')

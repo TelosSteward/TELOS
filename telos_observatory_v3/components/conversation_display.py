@@ -14,6 +14,67 @@ from services.file_handler import get_file_handler
 logger = logging.getLogger(__name__)
 
 
+def _get_inline_copy_onclick(element_id: str) -> str:
+    """Generate an inline onclick handler for copy buttons that works in Streamlit.
+
+    This creates a self-contained JavaScript copy function that doesn't rely on
+    cross-frame function calls, which are unreliable in Streamlit's rendering context.
+
+    Args:
+        element_id: The ID of the element whose text content should be copied
+
+    Returns:
+        JavaScript code for the onclick handler
+    """
+    # Escape the element_id for safe inclusion in JavaScript
+    safe_id = element_id.replace("'", "\\'")
+
+    # Self-contained copy logic that works in any context
+    return f"""(function(btn) {{
+        try {{
+            var el = document.getElementById('{safe_id}');
+            if (!el) {{
+                btn.textContent = 'Not found';
+                setTimeout(function() {{ btn.textContent = 'Copy'; }}, 2000);
+                return;
+            }}
+            var text = el.innerText || el.textContent || '';
+            text = text.replace(/Copy$/g, '').trim();
+            if (navigator.clipboard && navigator.clipboard.writeText) {{
+                navigator.clipboard.writeText(text).then(function() {{
+                    btn.textContent = 'Copied!';
+                    setTimeout(function() {{ btn.textContent = 'Copy'; }}, 2000);
+                }}).catch(function() {{
+                    var ta = document.createElement('textarea');
+                    ta.value = text;
+                    ta.style.position = 'fixed';
+                    ta.style.left = '-9999px';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    btn.textContent = 'Copied!';
+                    setTimeout(function() {{ btn.textContent = 'Copy'; }}, 2000);
+                }});
+            }} else {{
+                var ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                btn.textContent = 'Copied!';
+                setTimeout(function() {{ btn.textContent = 'Copy'; }}, 2000);
+            }}
+        }} catch(e) {{
+            btn.textContent = 'Error';
+            setTimeout(function() {{ btn.textContent = 'Copy'; }}, 2000);
+        }}
+    }})(this)"""
+
+
 class ConversationDisplay:
     """ChatGPT-style conversation display using native Streamlit."""
 
@@ -279,7 +340,7 @@ class ConversationDisplay:
         # Render current turn in interactive mode (always show this)
         self._render_current_turn_only(current_turn_idx, all_turns)
 
-        # Input area - ONLY render when NOT loading (during contemplating, completely omit)
+        # Input area - ONLY render when NOT loading (during calibrating, completely omit)
         if not is_loading:
             self._render_input_with_scroll_toggle()
 
@@ -724,17 +785,9 @@ class ConversationDisplay:
             harmonic_mean = 0.0
         primacy_state = harmonic_mean  # ρ_PA = 1.0 for demo
 
-        # Determine colors based on fidelity levels (4-tier system)
-        # Green (≥0.85): Good alignment | Yellow (0.70-0.85): Mild drift | Orange (0.50-0.70): Moderate drift | Red (<0.50): Severe drift
-        def get_fidelity_color(f):
-            if f >= 0.85:
-                return "#4CAF50"  # Green - good alignment
-            elif f >= 0.70:
-                return "#F4D03F"  # Yellow - mild drift
-            elif f >= 0.50:
-                return "#FFA500"  # Orange - moderate drift
-            else:
-                return "#FF4444"  # Red - severe drift
+        # Determine colors based on Goldilocks fidelity zones (from central config)
+        # Green (≥0.76): Aligned | Yellow (0.73-0.76): Minor Drift | Orange (0.67-0.73): Drift Detected | Red (<0.67): Significant Drift
+        from config.colors import get_fidelity_color
 
         user_color = get_fidelity_color(user_fidelity)
         ai_color = get_fidelity_color(ai_fidelity)
@@ -1144,10 +1197,10 @@ class ConversationDisplay:
                     <div style='position: absolute; top: 73%; left: 73%; width: 12px; height: 12px; background-color: #FFA500; border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%); animation: pulse 2s infinite; z-index: 10;'></div>
                 </div>
                 <div style='margin-top: 15px;'>
-                    <div style='color: #4CAF50; font-size: 10px;'>● Good Alignment (F ≥ 0.85)</div>
-                    <div style='color: #F4D03F; font-size: 10px;'>● Mild Drift (0.70-0.85)</div>
-                    <div style='color: #FFA500; font-size: 10px;'>● Moderate Drift - User drift (0.50-0.70, F = 0.65)</div>
-                    <div style='color: #FF4444; font-size: 10px;'>● Severe Drift (F < 0.50)</div>
+                    <div style='color: #4CAF50; font-size: 10px;'>● Aligned (F ≥ 0.76)</div>
+                    <div style='color: #F4D03F; font-size: 10px;'>● Minor Drift (0.73-0.76)</div>
+                    <div style='color: #FFA500; font-size: 10px;'>● Drift Detected (0.67-0.73)</div>
+                    <div style='color: #FF4444; font-size: 10px;'>● Significant Drift (F < 0.67)</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -1900,7 +1953,8 @@ class ConversationDisplay:
 
         # Calculate fidelity from turn_data (same logic as before)
         fidelity = None
-        if turn_data and pa_converged:
+        # BETA MODE FIX: Allow value extraction even if pa_converged is not set
+        if turn_data and (pa_converged or beta_mode):
             fidelity = turn_data.get('fidelity')
 
             # Check beta_data first (more accurate for BETA mode)
@@ -1923,19 +1977,19 @@ class ConversationDisplay:
         # Determine colors based on fidelity - full color-coded versioning
         # Green (≥0.85): Good alignment
         # Yellow/Gold (0.70-0.85): Mild drift
-        # Orange (0.50-0.70): Moderate drift
-        # Red (<0.50): Severe drift
+        # Goldilocks zones: Orange (0.67-0.73): Drift Detected | Red (<0.67): Significant Drift
+        from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT
         if fidelity is not None:
-            if fidelity >= 0.85:
+            if fidelity >= _ZONE_ALIGNED:  # >= 0.76 Aligned
                 fidelity_color = "#4CAF50"  # Green
                 fidelity_glow = "76, 175, 80"  # Green RGB for box glow
-            elif fidelity >= 0.70:
+            elif fidelity >= _ZONE_MINOR_DRIFT:  # 0.73-0.76 Minor Drift
                 fidelity_color = "#F4D03F"  # Yellow/Gold
                 fidelity_glow = "244, 208, 63"  # Gold RGB for box glow
-            elif fidelity >= 0.50:
+            elif fidelity >= _ZONE_DRIFT:  # 0.67-0.73 Drift Detected
                 fidelity_color = "#FFA500"  # Orange
                 fidelity_glow = "255, 165, 0"  # Orange RGB for box glow
-            else:
+            else:  # < 0.67 Significant Drift
                 fidelity_color = "#FF4444"  # Red
                 fidelity_glow = "255, 68, 68"  # Red RGB for box glow
             fidelity_display = f"{fidelity:.3f}"
@@ -1948,7 +2002,7 @@ class ConversationDisplay:
         pa_color = "#4CAF50" if pa_converged else "#FFA500"
 
         # Glassmorphism CSS with warm gold tones and pulsing animation
-        # OPPOSITE to contemplating: bright at 0%/100%, dim at 50% (contemplating is dim at 0%/100%, bright at 50%)
+        # OPPOSITE to calibrating: bright at 0%/100%, dim at 50% (calibrating is dim at 0%/100%, bright at 50%)
         pulse_class = "fidelity-calculating" if is_calculating else ""
 
         # FAUX-GLASSMORPHISM: Since backdrop-filter doesn't work in Streamlit iframes,
@@ -1958,7 +2012,7 @@ class ConversationDisplay:
 <style>
 @keyframes fidelity-pulse-glass {{
     0%, 100% {{
-        /* BRIGHT at start/end (opposite of contemplating which is dim here) */
+        /* BRIGHT at start/end (opposite of calibrating which is dim here) */
         box-shadow:
             0 0 50px rgba({fidelity_glow}, 0.7),
             0 0 80px rgba({fidelity_glow}, 0.4),
@@ -1969,7 +2023,7 @@ class ConversationDisplay:
         transform: scale(1.02);
     }}
     50% {{
-        /* DIM at midpoint (opposite of contemplating which is bright here) */
+        /* DIM at midpoint (opposite of calibrating which is bright here) */
         box-shadow:
             0 0 20px rgba({fidelity_glow}, 0.3),
             0 12px 40px rgba(0, 0, 0, 0.6),
@@ -2100,6 +2154,23 @@ class ConversationDisplay:
         # Get PA convergence status
         pa_converged = getattr(self.state_manager.state, 'pa_converged', False)
         demo_mode = st.session_state.get('telos_demo_mode', False)
+        # FIX: Use correct BETA mode detection (matching line 243)
+        # telos_beta_mode was never set - active_tab is the actual indicator
+        active_tab = st.session_state.get('active_tab', '')
+        beta_mode = active_tab == "BETA"
+
+        # BETA MODE FIX: If turn_data is None in BETA mode, retrieve from session state
+        # BETA stores turn data in st.session_state[f'beta_turn_{turn_number}_data']
+        if turn_data is None and beta_mode:
+            # Get current turn number (beta_current_turn points to NEXT turn, so subtract 1)
+            current_turn = st.session_state.get('beta_current_turn', 1)
+            # During loading, we're on turn N but data is for turn N-1 (last completed)
+            # After response, beta_current_turn is incremented, so we need turn N-1
+            for turn_num in range(current_turn, 0, -1):
+                beta_turn_data = st.session_state.get(f'beta_turn_{turn_num}_data', {})
+                if beta_turn_data:
+                    turn_data = beta_turn_data
+                    break
 
         # Don't show calibration card in demo mode
         if demo_mode:
@@ -2117,9 +2188,12 @@ class ConversationDisplay:
         last_telos_values = st.session_state.get('last_telos_calibration_values', None)
         is_first_turn = last_telos_values is None
 
-        # Only pulse gray on the FIRST TURN (when no prior TELOS values exist)
-        # After that, even if is_calculating=True (loading), we show last values
+        # FIDELITY-FIRST FLOW: Always pulse when calculating, regardless of turn
+        # This provides clear feedback that fidelity is being calculated
+        # On first turn: gray pulse with "..."
+        # On subsequent turns: pulse with "Calculating Fidelity..." text
         show_gray_pulse = is_calculating and is_first_turn
+        show_calculating_state = is_calculating  # New: track calculating for all turns
 
         # Calculate fidelity values from turn_data using ACTUAL TELOS mathematics
         # The real values come from primacy_state.py compute_primacy_state():
@@ -2130,7 +2204,9 @@ class ConversationDisplay:
         ai_fidelity = None
         primacy_state = None
 
-        if turn_data and pa_converged:
+        # BETA MODE FIX: Allow value extraction even if pa_converged is not set
+        # In BETA mode, PA is established via questionnaire (pa_established=True)
+        if turn_data and (pa_converged or beta_mode):
             # === PRIMACY STATE (from actual PS calculation) ===
             # This is the REAL value: PS = ρ_PA · harmonic_mean(F_user, F_AI)
             primacy_state = turn_data.get('primacy_state_score')
@@ -2139,6 +2215,11 @@ class ConversationDisplay:
             ps_metrics = turn_data.get('ps_metrics', {})
             if primacy_state is None and ps_metrics:
                 primacy_state = ps_metrics.get('ps_score')
+
+            # BETA MODE FIX: Check inside telos_analysis for primacy_state_score
+            if primacy_state is None:
+                telos_analysis = turn_data.get('telos_analysis', {})
+                primacy_state = telos_analysis.get('primacy_state_score')
 
             # === USER FIDELITY (F_user from dual PA calculation) ===
             # From state_manager: turn_update['user_pa_fidelity'] = ps_metrics.get('f_user')
@@ -2151,22 +2232,42 @@ class ConversationDisplay:
                 beta_data = turn_data.get('beta_data', {})
                 user_fidelity = beta_data.get('user_fidelity') or beta_data.get('input_fidelity')
 
+            # BETA MODE FIX: Check inside telos_analysis for user_pa_fidelity
+            if user_fidelity is None:
+                telos_analysis = turn_data.get('telos_analysis', {})
+                user_fidelity = telos_analysis.get('user_pa_fidelity')
+
             # === AI/TELOS FIDELITY (F_AI from dual PA calculation) ===
-            # From state_manager: turn_update['ai_pa_fidelity'] = ps_metrics.get('f_ai')
+            # PRIORITY ORDER: Dual PA values (ai_pa_fidelity) FIRST, legacy fallbacks LAST
+            # This prevents legacy 0 values from masking real calculated values
+
+            # 1. Direct turn data (state_manager path)
             ai_fidelity = turn_data.get('ai_pa_fidelity')
+
+            # 2. ps_metrics dict
             if ai_fidelity is None and ps_metrics:
                 ai_fidelity = ps_metrics.get('f_ai')
 
-            # Fallback: check beta_data or telos_analysis
+            # 3. BETA MODE: Check telos_analysis for ai_pa_fidelity (the CORRECT dual PA value)
+            if ai_fidelity is None:
+                telos_analysis = turn_data.get('telos_analysis', {})
+                ai_fidelity = telos_analysis.get('ai_pa_fidelity')
+
+            # 4. Legacy fallbacks ONLY if dual PA not available (and skip 0/falsy values)
             if ai_fidelity is None:
                 beta_data = turn_data.get('beta_data', {})
-                ai_fidelity = beta_data.get('telos_fidelity') or beta_data.get('fidelity_score')
+                legacy_fidelity = beta_data.get('telos_fidelity') or beta_data.get('fidelity_score')
+                # Only use legacy if it's a real non-zero value
+                if legacy_fidelity is not None and legacy_fidelity > 0:
+                    ai_fidelity = legacy_fidelity
 
             if ai_fidelity is None:
                 telos_analysis = turn_data.get('telos_analysis', {})
-                ai_fidelity = telos_analysis.get('fidelity_score')
+                legacy_score = telos_analysis.get('fidelity_score')
+                if legacy_score is not None and legacy_score > 0:
+                    ai_fidelity = legacy_score
 
-            # Last resort fallback to general fidelity field
+            # 5. Last resort fallback to general fidelity field
             if ai_fidelity is None:
                 ai_fidelity = turn_data.get('fidelity')
 
@@ -2192,13 +2293,15 @@ class ConversationDisplay:
         def get_fidelity_color(fidelity):
             if fidelity is None:
                 return "#888", "136, 136, 136"
-            if fidelity >= 0.85:
+            # Goldilocks zone thresholds
+            from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT
+            if fidelity >= _ZONE_ALIGNED:  # >= 0.76 Aligned
                 return "#4CAF50", "76, 175, 80"  # Green
-            elif fidelity >= 0.70:
+            elif fidelity >= _ZONE_MINOR_DRIFT:  # 0.73-0.76 Minor Drift
                 return "#F4D03F", "244, 208, 63"  # Yellow/Gold
-            elif fidelity >= 0.50:
+            elif fidelity >= _ZONE_DRIFT:  # 0.67-0.73 Drift Detected
                 return "#FFA500", "255, 165, 0"  # Orange
-            else:
+            else:  # < 0.67 Significant Drift
                 return "#FF4444", "255, 68, 68"  # Red
 
         # Get colors for each metric
@@ -2217,28 +2320,39 @@ class ConversationDisplay:
         ai_display = f"{ai_fidelity:.3f}" if ai_fidelity is not None else "---"
         ps_display = f"{primacy_state:.3f}" if primacy_state is not None else "---"
 
-        # Pulse class for animation - ONLY on first turn with no prior values
-        # After first turn, we always show values (either current or last TELOS)
-        pulse_class = "calibration-calculating" if show_gray_pulse else ""
+        # Pulse class for animation - apply on ALL turns when calculating
+        # This provides clear "Calculating Fidelity..." feedback in fidelity-first flow
+        pulse_class = "calibration-calculating" if show_calculating_state else ""
 
-        # Helper to get status label for fidelity values
+        # Helper to get status label for fidelity values (Goldilocks zones)
         def get_fidelity_status(f):
+            from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT
             if f is None:
                 return "---"
-            if f >= 0.85:
+            if f >= _ZONE_ALIGNED:  # >= 0.76
                 return "ALIGNED"
-            elif f >= 0.70:
-                return "WEAKENING"
-            elif f >= 0.50:
+            elif f >= _ZONE_MINOR_DRIFT:  # 0.73-0.76
+                return "MINOR DRIFT"
+            elif f >= _ZONE_DRIFT:  # 0.67-0.73
                 return "DRIFT DETECTED"
-            else:
-                return "COLLAPSED"
+            else:  # < 0.67
+                return "SIGNIFICANT DRIFT"
 
         # Get status labels for USER and AI fidelity
-        # Only show "..." on first turn (gray pulse), otherwise show actual status
-        user_status = get_fidelity_status(user_fidelity) if not show_gray_pulse else "..."
-        ai_status = get_fidelity_status(ai_fidelity) if not show_gray_pulse else "..."
-        ps_status = "Harmonic Mean" if not show_gray_pulse else "..."
+        # Show "..." on first turn (gray pulse), "Calculating..." on subsequent turns during calc
+        # Otherwise show actual status
+        if show_gray_pulse:
+            user_status = "..."
+            ai_status = "..."
+            ps_status = "..."
+        elif show_calculating_state:
+            user_status = "Calculating..."
+            ai_status = "Calculating..."
+            ps_status = "Calculating..."
+        else:
+            user_status = get_fidelity_status(user_fidelity)
+            ai_status = get_fidelity_status(ai_fidelity)
+            ps_status = "Harmonic Mean"
 
         # Three miniature fidelity cards matching the expanded design
         st.markdown(f"""
@@ -2378,7 +2492,7 @@ class ConversationDisplay:
 
                     # Determine fidelity color and display (handle None properly)
                     if fidelity is not None and fidelity > 0 and fidelity != 0.5:
-                        fidelity_color = "#4CAF50" if fidelity >= 0.8 else "#FFA500" if fidelity >= 0.6 else "#FF5252"
+                        fidelity_color = "#4CAF50" if fidelity >= 0.76 else "#FFD700" if fidelity >= 0.73 else "#FFA500" if fidelity >= 0.67 else "#FF5252"  # Goldilocks zones
                         fidelity_display = f"{fidelity:.3f}"
                     else:
                         fidelity_color = "#888"  # Gray for missing data
@@ -2445,7 +2559,7 @@ class ConversationDisplay:
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {safe_message}
     </div>
-    <button class="demo-user-copy-btn-{user_msg_id}" onclick="window.parent.telosCopyText('demo-user-msg-{user_msg_id}', this)">Copy</button>
+    <button class="demo-user-copy-btn-{user_msg_id}" onclick="{_get_inline_copy_onclick(f'demo-user-msg-{user_msg_id}')}">Copy</button>
 </div>
 """, unsafe_allow_html=True)
         elif beta_mode:
@@ -2453,34 +2567,47 @@ class ConversationDisplay:
             # Create columns: [turn_badge 0.5, content 8.5, buttons 1.0]
             col_turn, col_content, col_buttons = st.columns([0.5, 8.5, 1.0])
 
-            # Turn badge
+            # Determine fidelity-based color for user message
+            # Use DIRECT session_state access like TELOS window does (proven working)
+            fidelity_level = None
+            user_fidelity_numeric = None
+            if turn_number is not None:
+                user_turn_data = st.session_state.get(f'beta_turn_{turn_number}_data', {})
+                user_telos_analysis = user_turn_data.get('telos_analysis', {})
+                user_fidelity_numeric = user_telos_analysis.get('user_pa_fidelity')
+                if user_fidelity_numeric is not None:
+                    # Goldilocks zone thresholds
+                    from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT
+                    if user_fidelity_numeric >= _ZONE_ALIGNED:  # >= 0.76 Aligned
+                        fidelity_level = 'green'
+                    elif user_fidelity_numeric >= _ZONE_MINOR_DRIFT:  # 0.73-0.76 Minor Drift
+                        fidelity_level = 'yellow'
+                    elif user_fidelity_numeric >= _ZONE_DRIFT:  # 0.67-0.73 Drift Detected
+                        fidelity_level = 'orange'
+                    else:  # < 0.67 Significant Drift
+                        fidelity_level = 'red'
+
+            # Map fidelity level to color
+            # No border by default (transparent) - colored border only appears after calibration
+            FIDELITY_COLORS = {
+                'green': '#4CAF50',   # Good alignment
+                'yellow': '#F4D03F',  # Mild drift (gold)
+                'orange': '#FFA500',  # Moderate drift
+                'red': '#FF4444'      # Severe drift
+            }
+            # Default to transparent (no visible border) before calibration
+            fidelity_color = FIDELITY_COLORS.get(fidelity_level, 'transparent') if fidelity_level else 'transparent'
+            # Label color - same as fidelity but use neutral gray when not calibrated
+            label_color = FIDELITY_COLORS.get(fidelity_level, '#888') if fidelity_level else '#888'
+            # Turn badge color - always visible (use gray before calibration, fidelity color after)
+            turn_badge_color = FIDELITY_COLORS.get(fidelity_level, '#888') if fidelity_level else '#888'
+
+            # Turn badge - use INLINE STYLES like TELOS window (proven working)
             if turn_number is not None:
                 with col_turn:
                     st.markdown(f"""
-<style>
-.turn-badge {{
-    background-color: #2d2d2d;
-    color: #F4D03F;
-    border: 1px solid #F4D03F;
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 24px;
-    font-weight: bold;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-    cursor: default;
-    transition: all 0.3s ease;
-}}
-
-.turn-badge:hover {{
-    box-shadow: 0 0 6px #F4D03F;
-}}
-</style>
 <div style="display: flex; align-items: flex-start; height: 100%; padding-bottom: 20px;">
-    <span class="turn-badge">{turn_number}</span>
+    <span style="background-color: #2d2d2d; color: {turn_badge_color}; border: 1px solid {turn_badge_color}; padding: 10px; border-radius: 5px; font-size: 24px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; cursor: default;">{turn_number}</span>
 </div>
 """, unsafe_allow_html=True)
 
@@ -2502,7 +2629,7 @@ class ConversationDisplay:
     right: 12px;
     background-color: #2d2d2d !important;
     color: #e0e0e0 !important;
-    border: 1px solid #F4D03F !important;
+    border: 1px solid {label_color} !important;
     padding: 6px 12px;
     border-radius: 5px;
     font-size: 14px;
@@ -2510,14 +2637,14 @@ class ConversationDisplay:
     transition: all 0.3s ease !important;
 }}
 </style>
-<div class="message-container user-message-{user_msg_id}" id="user-msg-{user_msg_id}" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #F4D03F;">
+<div class="message-container user-message-{user_msg_id}" id="user-msg-{user_msg_id}" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid {fidelity_color};">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
-        <strong style="color: #F4D03F;">User</strong>
+        <strong style="color: {label_color};">User</strong>
     </div>
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {safe_message}
     </div>
-    <button class="user-copy-btn-{user_msg_id}" onclick="window.parent.telosCopyText('user-msg-{user_msg_id}', this)">Copy</button>
+    <button class="user-copy-btn-{user_msg_id}" onclick="{_get_inline_copy_onclick(f'user-msg-{user_msg_id}')}">Copy</button>
 </div>
 """, unsafe_allow_html=True)
 
@@ -2526,8 +2653,12 @@ class ConversationDisplay:
                 with col_buttons:
                     # Steward button (🤝)
                     if st.button("🤝", key=f"{key_prefix}steward_btn_{turn_number}", use_container_width=True, help="Ask Steward"):
-                        # Toggle steward panel
-                        st.session_state.steward_panel_open = not st.session_state.get('steward_panel_open', False)
+                        # Toggle steward panel - use mode-appropriate state
+                        active_tab = st.session_state.get('active_tab', 'DEMO')
+                        if active_tab == "BETA":
+                            st.session_state.beta_steward_panel_open = not st.session_state.get('beta_steward_panel_open', False)
+                        else:
+                            st.session_state.steward_panel_open = not st.session_state.get('steward_panel_open', False)
                         st.rerun()
 
                     # Scroll button (📜) - only if not in history mode
@@ -2618,7 +2749,7 @@ class ConversationDisplay:
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {safe_message}
     </div>
-    <button class="user-copy-btn-{user_msg_id}" onclick="window.parent.telosCopyText('user-msg-{user_msg_id}', this)">Copy</button>
+    <button class="user-copy-btn-{user_msg_id}" onclick="{_get_inline_copy_onclick(f'user-msg-{user_msg_id}')}">Copy</button>
 </div>
 """, unsafe_allow_html=True)
 
@@ -2626,8 +2757,12 @@ class ConversationDisplay:
                 if turn_number is not None:
                     with col_scroll:
                         if st.button("🤝", key=f"{key_prefix}steward_btn_{turn_number}", use_container_width=True, help="Ask Steward"):
-                            # Toggle steward panel
-                            st.session_state.steward_panel_open = not st.session_state.get('steward_panel_open', False)
+                            # Toggle steward panel - use mode-appropriate state
+                            active_tab = st.session_state.get('active_tab', 'DEMO')
+                            if active_tab == "BETA":
+                                st.session_state.beta_steward_panel_open = not st.session_state.get('beta_steward_panel_open', False)
+                            else:
+                                st.session_state.steward_panel_open = not st.session_state.get('steward_panel_open', False)
                             st.rerun()
 
                 # Only render scroll button if we're showing the current turn (not in history mode)
@@ -2660,7 +2795,7 @@ class ConversationDisplay:
             if is_loading:
                 # Show contemplative pulsing animation
                 # Border pulses: gray → yellow
-                # "Contemplating..." text pulses: yellow → gray (opposite of border)
+                # "Calibrating..." text pulses: yellow → gray (opposite of border)
                 st.markdown(f"""
 <style>
 @keyframes border-pulse {{
@@ -2681,19 +2816,19 @@ class ConversationDisplay:
         color: #888;
     }}
 }}
-.contemplating-border {{
+.calibrating-border {{
     animation: border-pulse 2s ease-in-out infinite;
 }}
-.contemplating-text {{
+.calibrating-text {{
     animation: text-pulse 2s ease-in-out infinite;
 }}
 </style>
-<div class="contemplating-border" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 30%, transparent 60%), linear-gradient(180deg, rgba(244, 208, 63, 0.2) 0%, rgba(244, 208, 63, 0.1) 40%, rgba(0, 0, 0, 0.2) 100%), rgba(25, 22, 18, 0.85); padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888; box-shadow: 0 0 20px rgba(244, 208, 63, 0.2), 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.15);">
+<div class="calibrating-border" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 30%, transparent 60%), linear-gradient(180deg, rgba(244, 208, 63, 0.2) 0%, rgba(244, 208, 63, 0.1) 40%, rgba(0, 0, 0, 0.2) 100%), rgba(25, 22, 18, 0.85); padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888; box-shadow: 0 0 20px rgba(244, 208, 63, 0.2), 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.15);">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #F4D03F;">TELOS</strong>
     </div>
-    <div class="contemplating-text" style="font-size: 19px; font-style: italic; opacity: 0.9;">
-        Contemplating...
+    <div class="calibrating-text" style="font-size: 19px; font-style: italic; opacity: 0.9;">
+        Calibrating...
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -2732,7 +2867,7 @@ class ConversationDisplay:
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {html_message}
     </div>
-    <button class="demo-copy-btn-{message_id}" onclick="window.parent.telosCopyText('demo-msg-{message_id}', this)">Copy</button>
+    <button class="demo-copy-btn-{message_id}" onclick="{_get_inline_copy_onclick(f'demo-msg-{message_id}')}">Copy</button>
 </div>
 """, unsafe_allow_html=True)
         elif beta_mode:
@@ -2773,29 +2908,57 @@ class ConversationDisplay:
         color: #888;
     }}
 }}
-.contemplating-border {{
+.calibrating-border {{
     animation: border-pulse 2s ease-in-out infinite;
 }}
-.contemplating-text {{
+.calibrating-text {{
     animation: text-pulse 2s ease-in-out infinite;
 }}
 </style>
-<div class="contemplating-border" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888; box-shadow: 0 0 20px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);">
+<div class="calibrating-border" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888; box-shadow: 0 0 20px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #F4D03F;">TELOS</strong>
     </div>
-    <div class="contemplating-text" style="font-size: 19px; font-style: italic; opacity: 0.9;">
-        Contemplating...
+    <div class="calibrating-text" style="font-size: 19px; font-style: italic; opacity: 0.9;">
+        Calibrating...
     </div>
 </div>
 """, unsafe_allow_html=True)
                 else:
                     # Show response with native markdown rendering
+                    # Get fidelity data for this turn to determine border color
+                    telos_fidelity_level = None
+                    if turn_number is not None:
+                        telos_turn_data = st.session_state.get(f'beta_turn_{turn_number}_data', {})
+                        telos_analysis = telos_turn_data.get('telos_analysis', {})
+                        ai_fidelity = telos_analysis.get('ai_pa_fidelity')
+                        if ai_fidelity is not None:
+                            # Goldilocks zone thresholds
+                            from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT
+                            if ai_fidelity >= _ZONE_ALIGNED:  # >= 0.76 Aligned
+                                telos_fidelity_level = 'green'
+                            elif ai_fidelity >= _ZONE_MINOR_DRIFT:  # 0.73-0.76 Minor Drift
+                                telos_fidelity_level = 'yellow'
+                            elif ai_fidelity >= _ZONE_DRIFT:  # 0.67-0.73 Drift Detected
+                                telos_fidelity_level = 'orange'
+                            else:  # < 0.67 Significant Drift
+                                telos_fidelity_level = 'red'
+
+                    # Map fidelity level to color - transparent border by default (before calibration)
+                    TELOS_FIDELITY_COLORS = {
+                        'green': '#4CAF50',   # Good alignment
+                        'yellow': '#F4D03F',  # Mild drift (gold)
+                        'orange': '#FFA500',  # Moderate drift
+                        'red': '#FF4444'      # Severe drift
+                    }
+                    telos_fidelity_color = TELOS_FIDELITY_COLORS.get(telos_fidelity_level, 'transparent') if telos_fidelity_level else 'transparent'
+                    telos_label_color = TELOS_FIDELITY_COLORS.get(telos_fidelity_level, '#888') if telos_fidelity_level else '#888'
+
                     # Header with "TELOS" label - glassmorphism effect
-                    st.markdown("""
-<div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 15px 15px 5px 15px; border-radius: 10px 10px 0 0; margin-top: 15px; margin-bottom: 0; border: 2px solid #F4D03F; border-bottom: none; box-shadow: 0 0 20px rgba(244, 208, 63, 0.2), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);">
+                    st.markdown(f"""
+<div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 15px 15px 5px 15px; border-radius: 10px 10px 0 0; margin-top: 15px; margin-bottom: 0; border: 2px solid {telos_fidelity_color}; border-bottom: none; box-shadow: 0 0 20px rgba(244, 208, 63, 0.2), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);">
     <div style="color: #888; font-size: 19px;">
-        <strong style="color: #F4D03F;">TELOS</strong>
+        <strong style="color: {telos_label_color};">TELOS</strong>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -2817,7 +2980,7 @@ class ConversationDisplay:
     padding: 10px 15px 40px 15px;
     margin-top: 0;
     margin-bottom: 0;
-    border: 2px solid #F4D03F;
+    border: 2px solid {telos_fidelity_color};
     border-top: none;
     border-radius: 0 0 10px 10px;
     color: #fff;
@@ -2836,7 +2999,7 @@ class ConversationDisplay:
     right: 12px;
     background-color: #2d2d2d !important;
     color: #e0e0e0 !important;
-    border: 1px solid #F4D03F !important;
+    border: 1px solid {telos_label_color} !important;
     padding: 6px 12px;
     border-radius: 5px;
     font-size: 14px;
@@ -2846,13 +3009,22 @@ class ConversationDisplay:
 </style>
 <div class="steward-message-{message_id}" id="msg-{message_id}">
     {html_message}
-    <button class="copy-btn-{message_id}" onclick="window.parent.telosCopyText('msg-{message_id}', this)">Copy</button>
+    <button class="copy-btn-{message_id}" onclick="{_get_inline_copy_onclick(f'msg-{message_id}')}">Copy</button>
 </div>
 """, unsafe_allow_html=True)
 
-            # Empty column for layout symmetry with user message
+            # Buttons column - show "Why?" button only when intervention was triggered
             with col_buttons:
-                st.markdown("")
+                # Check if this turn had an intervention
+                if turn_number is not None and not is_loading:
+                    turn_data = st.session_state.get(f'beta_turn_{turn_number}_data', {})
+                    telos_analysis = turn_data.get('telos_analysis', {})
+                    intervention_triggered = telos_analysis.get('intervention_triggered', False)
+
+                    # "Ask Steward why" button moved to feedback section below response
+                    st.markdown("")
+                else:
+                    st.markdown("")
 
         else:
             # Open Mode: NO fidelity card on assistant messages (only on user messages)
@@ -2873,7 +3045,7 @@ class ConversationDisplay:
                     if is_loading:
                         # Show contemplative pulsing animation
                         # Border pulses: gray → yellow
-                        # "Contemplating..." text pulses: yellow → gray (opposite of border)
+                        # "Calibrating..." text pulses: yellow → gray (opposite of border)
                         st.markdown(f"""
 <style>
 @keyframes border-pulse {{
@@ -2894,19 +3066,19 @@ class ConversationDisplay:
         color: #888;
     }}
 }}
-.contemplating-border {{
+.calibrating-border {{
     animation: border-pulse 2s ease-in-out infinite;
 }}
-.contemplating-text {{
+.calibrating-text {{
     animation: text-pulse 2s ease-in-out infinite;
 }}
 </style>
-<div class="contemplating-border" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 30%, transparent 60%), linear-gradient(180deg, rgba(244, 208, 63, 0.2) 0%, rgba(244, 208, 63, 0.1) 40%, rgba(0, 0, 0, 0.2) 100%), rgba(25, 22, 18, 0.85); padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888; box-shadow: 0 0 20px rgba(244, 208, 63, 0.2), 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.15);">
+<div class="calibrating-border" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 30%, transparent 60%), linear-gradient(180deg, rgba(244, 208, 63, 0.2) 0%, rgba(244, 208, 63, 0.1) 40%, rgba(0, 0, 0, 0.2) 100%), rgba(25, 22, 18, 0.85); padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 0; border: 2px solid #888; box-shadow: 0 0 20px rgba(244, 208, 63, 0.2), 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.15);">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #F4D03F;">TELOS</strong>
     </div>
-    <div class="contemplating-text" style="font-size: 19px; font-style: italic; opacity: 0.9;">
-        Contemplating...
+    <div class="calibrating-text" style="font-size: 19px; font-style: italic; opacity: 0.9;">
+        Calibrating...
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -2967,7 +3139,7 @@ class ConversationDisplay:
 </style>
 <div class="steward-message-{message_id}" id="msg-{message_id}">
     {html_message}
-    <button class="copy-btn-{message_id}" onclick="window.parent.telosCopyText('msg-{message_id}', this)">Copy</button>
+    <button class="copy-btn-{message_id}" onclick="{_get_inline_copy_onclick(f'msg-{message_id}')}">Copy</button>
 </div>
 """, unsafe_allow_html=True)
 
@@ -3653,11 +3825,11 @@ Current Turn Data:
             with st.form(key="message_form", clear_on_submit=True):
                 col_input, col_send = st.columns([8.5, 1.5])
 
-                # Text input takes most of the space
+                # Text input takes most of the space - NO placeholder text
                 with col_input:
                     user_input = st.text_area(
                         "Message",
-                        placeholder="Tell TELOS",
+                        placeholder="",
                         key="main_chat_input_clean",
                         label_visibility="collapsed",
                         height=50
@@ -3670,13 +3842,30 @@ Current Turn Data:
                         use_container_width=True
                     )
 
-            # Add JavaScript to submit form on Enter key (Shift+Enter for new line)
+            # Add JavaScript for Enter key submission AND auto-expanding textarea
             import streamlit.components.v1 as components
             components.html("""
             <script>
             setTimeout(function() {
                 const textareas = window.parent.document.querySelectorAll('textarea');
                 textareas.forEach(function(textarea) {
+                    // Auto-expand functionality
+                    if (!textarea.dataset.autoExpand) {
+                        textarea.dataset.autoExpand = 'true';
+                        textarea.style.overflow = 'hidden';
+                        textarea.style.minHeight = '50px';
+                        textarea.style.resize = 'none';
+
+                        function autoResize() {
+                            textarea.style.height = 'auto';
+                            textarea.style.height = Math.max(50, textarea.scrollHeight) + 'px';
+                        }
+
+                        textarea.addEventListener('input', autoResize);
+                        autoResize(); // Initial resize
+                    }
+
+                    // Enter key submission (Shift+Enter for new line)
                     if (!textarea.dataset.chatEnterHandler) {
                         textarea.dataset.chatEnterHandler = 'true';
                         textarea.addEventListener('keydown', function(e) {
@@ -4077,12 +4266,60 @@ Current Turn Data:
                 st.session_state[feedback_key] = True
                 st.rerun()
 
-        # Add "Rate this response" text below the buttons, centered
-        st.markdown("""
-        <div style="color: #888; font-size: 14px; text-align: center; margin-top: 5px;">
-            Rate this response
-        </div>
-        """, unsafe_allow_html=True)
+        # Check if this turn has fidelity below Aligned zone (< 0.76) - show "Ask Steward why" button
+        # This includes Minor Drift (0.73-0.76), Drift Detected (0.67-0.73), and Significant Drift (<0.67) zones
+        from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT
+        turn_idx = turn_number - 1
+        show_steward_button = False
+        user_fidelity = None
+        if hasattr(self.state_manager.state, 'turns') and turn_idx < len(self.state_manager.state.turns):
+            turn_data_check = st.session_state.get(f'beta_turn_{turn_number}_data', {})
+            telos_analysis = turn_data_check.get('telos_analysis', {})
+            user_fidelity = telos_analysis.get('user_pa_fidelity')
+            # Show button for any fidelity below Aligned threshold (< 0.76)
+            if user_fidelity is not None and user_fidelity < _ZONE_ALIGNED:
+                show_steward_button = True
+
+        if show_steward_button and user_fidelity is not None:
+            # "Ask Steward why" button aligned with feedback buttons above
+            # Match exact proportions: feedback uses [3, 1, 1, 1, 3], center spans 3 units
+            # So we use [3, 3, 3] where center 3 aligns with the 1+1+1=3 above
+
+            # Determine fidelity text color (dark background with colored text) - Goldilocks zones
+            if user_fidelity >= _ZONE_MINOR_DRIFT:  # >= 0.73
+                # Minor Drift zone (0.73-0.76)
+                btn_text_color = '#F4D03F'  # STATUS_MILD (gold)
+            elif user_fidelity >= _ZONE_DRIFT:  # 0.67-0.73
+                # Drift Detected zone
+                btn_text_color = '#FFA500'  # STATUS_MODERATE
+            else:  # < 0.67
+                # Significant Drift zone
+                btn_text_color = '#FF4444'  # STATUS_SEVERE
+
+            _, steward_center, _ = st.columns([3, 3, 3])
+            with steward_center:
+                # Color-coded button using marker div + adjacent sibling selector (proven approach)
+                # Place a marker div, then the button - CSS targets the button container after the marker
+                st.markdown(f"""
+                <style>
+                .steward-btn-marker-{turn_number} + div button {{
+                    background-color: #2d2d2d !important;
+                    color: {btn_text_color} !important;
+                    border: 2px solid {btn_text_color} !important;
+                }}
+                .steward-btn-marker-{turn_number} + div button:hover {{
+                    box-shadow: 0 0 8px {btn_text_color} !important;
+                }}
+                </style>
+                <div class="steward-btn-marker-{turn_number}" style="display:none;"></div>
+                """, unsafe_allow_html=True)
+
+                if st.button("Ask Steward why", key=f"steward_why_feedback_{turn_number}",
+                            help="Ask Steward to explain this fidelity score",
+                            use_container_width=True):
+                    st.session_state.beta_steward_panel_open = True
+                    st.session_state.steward_intervention_turn = turn_number
+                    st.rerun()
 
     def _record_simple_feedback(self, turn_number: int, rating: str):
         """Record simple feedback to session state and beta session manager."""

@@ -70,7 +70,7 @@ class InterceptingLLMWrapper:
         embedding_provider: Any,
         steward_ref: Any,  # Reference to parent steward
         salience_threshold: float = 0.70,
-        coupling_threshold: float = 0.80
+        coupling_threshold: float = 0.76  # Goldilocks: Aligned threshold
     ):
         """
         Initialize intercepting wrapper.
@@ -80,7 +80,7 @@ class InterceptingLLMWrapper:
             embedding_provider: For measuring salience and coupling
             steward_ref: Reference to parent steward for attractor access
             salience_threshold: Trigger injection if salience drops below this
-            coupling_threshold: Trigger regeneration if fidelity drops below this
+            coupling_threshold: Trigger regeneration if fidelity drops below this (Goldilocks: 0.76)
         """
         self.llm = llm_client
         self.embeddings = embedding_provider
@@ -159,21 +159,26 @@ class InterceptingLLMWrapper:
         logger = logging.getLogger(__name__)
         logger.warning(f"🔍 PRE-GENERATION CHECK: User input fidelity = {user_input_fidelity:.3f}")
 
-        if user_input_fidelity < 0.70:  # Low fidelity - drifting from purpose
-            # INTERVENTION: User request is drifting from established purpose
-            # Redirect instead of generating off-topic response
-            refusal_message = (
-                f"Your question appears to be drifting from your stated purpose. "
+        # SIGNIFICANT DRIFT ZONE (<0.67): Completely off-topic - stock redirect, no API call needed
+        # DRIFT DETECTED ZONE (0.67-0.73): Full TELOS intervention with proportional controller
+        # Goldilocks zone thresholds (from config/colors.py)
+        _ZONE_DRIFT = 0.67  # Threshold for "Drift Detected"
+        _ZONE_MINOR_DRIFT = 0.73  # Threshold for "Minor Drift"
+        if user_input_fidelity < _ZONE_DRIFT:  # Significant Drift zone - too far from purpose
+            # HARD REDIRECT: User request is completely outside the purpose basin
+            # No API call needed - just redirect
+            redirect_message = (
+                f"This question is quite far from your session's purpose. "
                 f"Your session is focused on: {', '.join(self.steward.attractor.purpose)}. "
                 f"How can I help you with that instead?"
             )
 
-            # Log pre-generation refusal
+            # Log pre-generation redirect
             self.interventions.append(GovernanceIntervention(
                 turn_number=self.turn_count,
-                intervention_type="pre_generation_refusal",
+                intervention_type="pre_generation_redirect",
                 original_response=None,
-                governed_response=refusal_message,
+                governed_response=redirect_message,
                 fidelity_original=None,
                 fidelity_governed=user_input_fidelity,
                 salience_before=salience_before,
@@ -181,10 +186,93 @@ class InterceptingLLMWrapper:
                 timestamp=time.time()
             ))
 
-            return refusal_message
+            return redirect_message
+
+        # DRIFT DETECTED ZONE (0.67-0.73): Detected pre-generation
+        # Apply proportional controller intervention PROACTIVELY during generation
+        orange_zone_intervention = user_input_fidelity < _ZONE_MINOR_DRIFT  # < 0.73
 
         # Step 2: Generate with governed context
-        response = self._call_llm(conversation_context, user_input)
+        if orange_zone_intervention:
+            # ORANGE ZONE INTERVENTION: Add purpose-constraining context to generation
+            # This is where TELOS proportional controller actually runs with API call
+            logger.warning(f"🟠 ORANGE ZONE: Applying proactive proportional controller intervention")
+
+            # Calculate intervention strength based on user input fidelity
+            error_signal = 1.0 - user_input_fidelity
+            constraint_rigidity = 0.98  # For BETA with τ=0.02
+            K_attractor = 1.5  # Proportional gain
+            strength = min(constraint_rigidity * error_signal * K_attractor, 1.0)
+
+            attractor = self.steward.attractor
+            purpose_text = ', '.join(attractor.purpose) if hasattr(attractor, 'purpose') and attractor.purpose else "the session's stated purpose"
+            scope_text = ', '.join(attractor.scope) if hasattr(attractor, 'scope') and attractor.scope else "the session's defined scope"
+
+            # REFLECTIVE PIVOT INTERVENTION PROMPT
+            # Pattern: Surface awareness -> Validate agency -> Return choice -> Stay on purpose
+            # Philosophy: "Awareness is curative" - surfacing the pattern often suffices
+            # KEY: Acknowledge the off-topic request but do NOT engage with it substantively
+            # Anti-patterns to avoid: "Let me refocus you", "We need to get back to", "You should"
+            if strength >= 0.65:
+                # Significant drift: Surface pattern clearly, preserve agency, but stay on purpose
+                purpose_prompt = {
+                    "role": "system",
+                    "content": (
+                        f"SESSION PURPOSE: {purpose_text}\n"
+                        f"SESSION SCOPE: {scope_text}\n\n"
+                        "AGENCY-PRESERVING AWARENESS PROTOCOL:\n"
+                        "The user's input falls outside this session's stated purpose. Your response should:\n\n"
+                        "1. ACKNOWLEDGE their query briefly and neutrally - do not dismiss or redirect it.\n"
+                        "2. OFFER TRANSPARENT CHOICE: Present both options without bias:\n"
+                        "   - Option A: Continue with their new direction (you can adjust the session purpose)\n"
+                        "   - Option B: Return to the established purpose\n"
+                        "3. WAIT for their decision - do not assume or proceed without consent.\n\n"
+                        "TONE REQUIREMENTS:\n"
+                        "- Professional and neutral, not casual or enthusiastic\n"
+                        "- Brief acknowledgment, not lengthy explanation\n"
+                        "- Present options as equals - neither is 'better'\n"
+                        "- No judgment about their choice to shift topics\n\n"
+                        "WHAT TO AVOID:\n"
+                        "- Directive language: 'Let me refocus you', 'We should get back to'\n"
+                        "- Presumptuous phrases: 'I notice we're moving into', 'That's an interesting shift'\n"
+                        "- Casual enthusiasm: 'happy to explore', 'sounds fun'\n"
+                        "- Providing substantive off-topic content before they confirm the direction\n\n"
+                        "EXAMPLE RESPONSE PATTERN:\n"
+                        "'This touches on [brief topic label]. Would you like to:\n"
+                        "- Shift our session focus to this area, or\n"
+                        "- Continue with [original purpose]?\n"
+                        "Let me know your preference.'\n\n"
+                        "Keep responses concise. The user's agency is paramount."
+                    )
+                }
+            else:
+                # Mild drift: Light touch, professional acknowledgment
+                purpose_prompt = {
+                    "role": "system",
+                    "content": (
+                        f"SESSION PURPOSE: {purpose_text}\n"
+                        f"SESSION SCOPE: {scope_text}\n\n"
+                        "The user's input relates to a slightly different area than the session focus. "
+                        "Briefly acknowledge this and offer the choice to either:\n"
+                        "- Continue with their new direction, or\n"
+                        "- Return to the established purpose.\n\n"
+                        "Keep tone professional and neutral. Do not use casual phrases like "
+                        "'I notice we're touching on...' - simply state the observation concisely. "
+                        "Wait for their preference before proceeding."
+                    )
+                }
+
+            # Build context with purpose injection
+            # IMPORTANT: Insert system message at START (Mistral API requires system messages first)
+            governed_context = conversation_context.copy()
+            governed_context.insert(0, purpose_prompt)
+
+            logger.warning(f"🟠 Generating with purpose context (strength={strength:.2f})")
+            response = self._call_llm(governed_context, user_input)
+            intervention_type = "proactive_orange_zone"
+        else:
+            # GREEN/YELLOW ZONE: Normal generation without intervention
+            response = self._call_llm(conversation_context, user_input)
 
         # Step 3: Coupling check
         fidelity = self._measure_coupling(response)
@@ -337,7 +425,7 @@ class InterceptingLLMWrapper:
 
     def _measure_coupling(self, response: str) -> float:
         """
-        Measure response coupling to attractor using cosine distance.
+        Measure response coupling to attractor using raw cosine similarity.
 
         Coupling = how well response stays aligned with attractor trajectory.
 
@@ -345,16 +433,12 @@ class InterceptingLLMWrapper:
         Low coupling: Response drifted from purpose
 
         Mathematical basis:
-        - Uses cosine distance = 1 - cosine_similarity
-        - Range: 0 (identical direction) to 2 (opposite direction)
-        - Fidelity = 1 - (cosine_distance / distance_scale)
-        - With distance_scale=1.0:
-          - cos_sim=0.8 (similar) → fidelity=0.8
-          - cos_sim=0.5 (moderate) → fidelity=0.5
-          - cos_sim=0.2 (dissimilar) → fidelity=0.2
+        - Uses RAW cosine similarity (matching primacy_state.py)
+        - Fidelity = cosine_similarity(response, attractor_center)
+        - TELOS primacy math handles basin/tolerance thresholds
 
         Returns:
-            Coupling score 0.0-1.0 (fidelity)
+            Coupling score (raw cosine similarity)
         """
         if not hasattr(self.steward, 'attractor_center') or self.steward.attractor_center is None:
             return 1.0  # Can't measure without attractor
@@ -362,8 +446,7 @@ class InterceptingLLMWrapper:
         # Embed response (encode expects a string, not a list)
         response_embedding = self.embeddings.encode(response)
 
-        # Calculate COSINE DISTANCE to attractor (not Euclidean)
-        # This is consistent with salience measurement and more semantically meaningful
+        # Calculate cosine similarity to attractor
         attractor_center = self.steward.attractor_center
 
         # Cosine similarity: dot(a,b) / (||a|| * ||b||)
@@ -373,21 +456,15 @@ class InterceptingLLMWrapper:
         if norm_response == 0 or norm_attractor == 0:
             return 0.5  # Neutral if can't compute
 
-        cosine_similarity = float(np.dot(response_embedding, attractor_center) /
-                                  (norm_response * norm_attractor))
+        # RAW cosine similarity - no normalization
+        # This matches primacy_state.py approach
+        fidelity = float(np.dot(response_embedding, attractor_center) /
+                         (norm_response * norm_attractor))
 
-        # Cosine distance = 1 - cosine_similarity
-        # Range: 0 (identical) to 2 (opposite)
-        cosine_distance = 1.0 - cosine_similarity
-
-        # Convert to fidelity (0-1, higher is better)
-        # Using distance_scale from steward if available, DEFAULT 0.5 (strict)
-        # With distance_scale=0.5 and cosine distance:
-        #   - cos_sim=0.8 → distance=0.2 → fidelity=0.6 (acceptable)
-        #   - cos_sim=0.5 → distance=0.5 → fidelity=0.0 (triggers intervention)
-        #   - cos_sim=0.3 → distance=0.7 → fidelity=0.0 (clamped, off-topic)
-        distance_scale = getattr(self.steward, 'distance_scale', 0.5)
-        fidelity = max(0.0, min(1.0, 1.0 - (cosine_distance / distance_scale)))
+        # Log for debugging
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"_measure_coupling: fidelity={fidelity:.3f} (raw cosine similarity)")
 
         return fidelity
 
@@ -443,49 +520,55 @@ class InterceptingLLMWrapper:
         purpose_text = ', '.join(attractor.purpose) if hasattr(attractor, 'purpose') and attractor.purpose else "the session's stated purpose"
         scope_text = ', '.join(attractor.scope) if hasattr(attractor, 'scope') and attractor.scope else "the session's defined scope"
 
-        # STRENGTH-SCALED PROMPTS - AGENCY-PRESERVING, NATURAL TONE
-        # Philosophy: Give users agency, remind of context, never feel controlling
-        # "You're always free to explore" + "here's what we're centered on"
+        # STRENGTH-SCALED PROMPTS - REFLECTIVE PIVOT PATTERN
+        # Philosophy: "Awareness is curative" - surface the pattern, preserve agency, stay on purpose
+        # KEY: Acknowledge off-topic but do NOT engage with it substantively
+        # Anti-patterns: "Let me refocus you", "We need to get back to", "You should"
         if strength >= 0.85:
-            # EXTREME DRIFT: Only case where more direct approach is acceptable
-            # Still preserves agency, just clearer about the centered purpose
+            # EXTREME DRIFT: Surface pattern, preserve agency, but stay on purpose
             corrective_msg = {
                 "role": "system",
                 "content": (
-                    f"This conversation is centered on: {purpose_text}\n"
-                    f"Scope: {scope_text}\n\n"
-                    "The user's question is quite far from this purpose. "
-                    "You're free to briefly acknowledge their question naturally, "
-                    "but gently bring awareness back to what the conversation is centered on. "
-                    "Be warm and conversational - never robotic or controlling. "
-                    "Don't use phrases like 'I must redirect' or 'governance requires' - just be natural."
+                    f"SESSION PURPOSE: {purpose_text}\n"
+                    f"SESSION SCOPE: {scope_text}\n\n"
+                    "The user's question is quite far from the session purpose. Apply the Reflective Pivot:\n"
+                    "1. Surface the pattern: 'I notice we're moving into [topic]...'\n"
+                    "2. Acknowledge it might be intentional: 'If that's where you want to go, we could explore that.'\n"
+                    "3. Offer the choice: 'Or, continuing with [purpose], we could...'\n"
+                    "4. Then STAY ON PURPOSE - provide helpful on-topic content.\n\n"
+                    "CRITICAL: Do NOT provide substantive off-topic content. Just acknowledge it exists, "
+                    "offer the choice, then continue with purpose-aligned content.\n"
+                    "NEVER use: 'Let me refocus you', 'We need to get back to', 'You should'."
                 )
             }
         elif strength >= 0.65:
-            # MODERATE DRIFT: Gentle contextual reminder
+            # MODERATE DRIFT: Gentle awareness, stay on purpose
             corrective_msg = {
                 "role": "system",
                 "content": (
                     f"Session context - Purpose: {purpose_text}, Scope: {scope_text}\n\n"
-                    "The user is exploring a bit outside the centered topic. "
-                    "You can engage naturally, but weave in awareness of what the conversation is about. "
-                    "Never be robotic - just conversational with gentle context."
+                    "The user is exploring outside the centered topic. "
+                    "Gently surface this: 'I notice we're touching on [topic]...' "
+                    "Then offer to continue OR return to the original purpose. "
+                    "Keep your substantive content aligned with the session purpose. "
+                    "Do NOT engage with off-topic content; just acknowledge and stay on purpose."
                 )
             }
         elif strength >= 0.40:
-            # MILD DRIFT: Very light touch
+            # MILD DRIFT: Light awareness, stay on purpose
             corrective_msg = {
                 "role": "system",
                 "content": (
-                    f"Keep in mind this conversation is centered on: {purpose_text}. "
-                    f"Stay within scope: {scope_text}. Respond naturally."
+                    f"Session context: {purpose_text} (scope: {scope_text})\n\n"
+                    "The user is drifting slightly. Briefly note the shift and offer the choice. "
+                    "Keep your response content aligned with the session purpose."
                 )
             }
         else:
-            # VERY MILD: Just context, no correction needed
+            # VERY MILD: Just context awareness
             corrective_msg = {
                 "role": "system",
-                "content": f"Session context: {purpose_text} (scope: {scope_text})"
+                "content": f"Session context: {purpose_text} (scope: {scope_text}). Respond naturally."
             }
 
         # Build regeneration messages
@@ -495,6 +578,10 @@ class InterceptingLLMWrapper:
         # Regenerate with strength-scaled prompt
         try:
             regenerated = self._call_llm(regen_messages, user_input)
+            # Check if _call_llm returned an error string instead of raising
+            if regenerated and "[Error" in regenerated:
+                print(f"⚠️ Regeneration returned error, falling back to original response")
+                return drifted_response
             print(f"✅ Regeneration complete (strength={strength:.2f}, fidelity={fidelity:.3f})")
             return regenerated
         except Exception as e:
@@ -536,12 +623,21 @@ class InterceptingLLMWrapper:
             print(f"   Applying ProportionalController REGENERATION intervention")
 
             # Call ProportionalController's regeneration method directly
-            intervention_record = pc._apply_regeneration(
-                response_text=drifted_response,
-                conversation_history=conversation_context,
-                error_signal=error_signal
-            )
-            return intervention_record.modified_response
+            try:
+                intervention_record = pc._apply_regeneration(
+                    response_text=drifted_response,
+                    conversation_history=conversation_context,
+                    error_signal=error_signal
+                )
+                result = intervention_record.modified_response
+                # Check if result contains error string
+                if result and "[Error" in result:
+                    print(f"⚠️ ProportionalController regeneration returned error, falling back")
+                    return drifted_response
+                return result
+            except Exception as e:
+                print(f"⚠️ ProportionalController regeneration failed: {e}, falling back")
+                return drifted_response
 
         elif error_signal >= pc.epsilon_min:
             # MODERATE DRIFT: Use context injection (lighter intervention)
@@ -549,11 +645,20 @@ class InterceptingLLMWrapper:
             print(f"   Applying ProportionalController REMINDER intervention")
 
             # Call ProportionalController's reminder method
-            intervention_record = pc._apply_reminder(
-                response_text=drifted_response,
-                error_signal=error_signal
-            )
-            return intervention_record.modified_response
+            try:
+                intervention_record = pc._apply_reminder(
+                    response_text=drifted_response,
+                    error_signal=error_signal
+                )
+                result = intervention_record.modified_response
+                # Check if result contains error string
+                if result and "[Error" in result:
+                    print(f"⚠️ ProportionalController reminder returned error, falling back")
+                    return drifted_response
+                return result
+            except Exception as e:
+                print(f"⚠️ ProportionalController reminder failed: {e}, falling back")
+                return drifted_response
         else:
             # MILD DRIFT: Fallback to basic regeneration
             print(f"ℹ️  MILD DRIFT detected (error={error_signal:.3f}, below threshold={pc.epsilon_min:.3f})")
@@ -570,6 +675,16 @@ class InterceptingLLMWrapper:
 
         Handles different LLM client interfaces.
         """
+        # IMMEDIATE DEBUG: Confirm method entry
+        import sys
+        print(f"\n🔵 _call_llm() ENTERED", flush=True)
+        print(f"   conversation_context type: {type(conversation_context)}", flush=True)
+        print(f"   conversation_context len: {len(conversation_context) if conversation_context else 'None'}", flush=True)
+        print(f"   user_input: {user_input[:50] if user_input else 'None'}...", flush=True)
+        print(f"   self.llm type: {type(self.llm)}", flush=True)
+        print(f"   self.llm is None: {self.llm is None}", flush=True)
+        sys.stdout.flush()
+
         # Add user input to messages
         messages = conversation_context.copy()
         messages.append({"role": "user", "content": user_input})
@@ -610,7 +725,15 @@ class InterceptingLLMWrapper:
 
             return response
         except Exception as e:
+            import traceback
             print(f"⚠️ LLM generation error: {e}")
+            print(f"   Full traceback:\n{traceback.format_exc()}")
+            # Log additional debugging info
+            print(f"   LLM client type: {type(self.llm).__name__}")
+            print(f"   Messages count: {len(messages)}")
+            if messages:
+                print(f"   First message role: {messages[0].get('role', 'N/A')}")
+                print(f"   Last message role: {messages[-1].get('role', 'N/A')}")
             return "[Error generating response]"
 
     def get_intervention_statistics(self) -> Dict[str, Any]:

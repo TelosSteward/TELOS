@@ -100,6 +100,33 @@ class MistralEmbeddingProvider:
         except Exception as e:
             raise RuntimeError(f"Mistral embedding API error: {e}")
 
+    def batch_encode(self, texts: list) -> list:
+        """
+        Generate semantic embeddings for multiple texts in a single API call.
+
+        This is much faster than calling encode() multiple times because
+        it batches all texts into one API request.
+
+        Args:
+            texts: List of input texts
+
+        Returns:
+            List of semantic embedding vectors (1024 dimensions each)
+        """
+        if not texts:
+            return []
+
+        try:
+            response = self.client.embeddings.create(
+                model=self.model_name,
+                inputs=texts
+            )
+            # Extract embeddings from response, preserving order
+            embeddings = [np.array(item.embedding, dtype=np.float32) for item in response.data]
+            return embeddings
+        except Exception as e:
+            raise RuntimeError(f"Mistral batch embedding API error: {e}")
+
 
 class SentenceTransformerProvider:
     """

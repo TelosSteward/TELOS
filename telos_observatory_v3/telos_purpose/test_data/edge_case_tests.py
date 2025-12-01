@@ -102,8 +102,8 @@ def generate_very_long_session() -> Dict[str, Any]:
             'telos_response': f'TELOS response {i}',
             'assistant_response': f'TELOS response {i}',
             'fidelity': round(fidelity, 3),
-            'intervention_applied': i % 10 == 0 and fidelity < 0.7,
-            'basin_membership': fidelity >= 0.7,
+            'intervention_applied': i % 10 == 0 and fidelity < 0.67,  # Goldilocks: Drift threshold
+            'basin_membership': fidelity >= 0.76,  # Goldilocks: Aligned threshold
             'timestamp': datetime.now().isoformat()
         })
 
@@ -160,7 +160,7 @@ def generate_extreme_fidelity_session() -> Dict[str, Any]:
 
     Tests:
     - Min/max fidelity values (0.0, 1.0)
-    - Values at thresholds (0.8 basin boundary)
+    - Values at thresholds (0.76 Goldilocks aligned boundary)
     - Very precise values (0.999, 0.001)
     """
     turns = [
@@ -378,8 +378,8 @@ def generate_alternating_fidelity_session() -> Dict[str, Any]:
             'telos_response': f'Response {i}',
             'assistant_response': f'Response {i}',
             'fidelity': fidelity,
-            'intervention_applied': fidelity < 0.7,
-            'basin_membership': fidelity >= 0.8,
+            'intervention_applied': fidelity < 0.67,  # Goldilocks: Drift threshold
+            'basin_membership': fidelity >= 0.76,  # Goldilocks: Aligned threshold
             'timestamp': datetime.now().isoformat()
         })
 

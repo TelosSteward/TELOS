@@ -85,24 +85,26 @@ def _get_status_from_fidelity(fidelity: float) -> tuple:
     """
     Get status icon and text from fidelity score.
 
+    Uses Goldilocks zone thresholds (mathematically optimized):
+    - >= 0.76: Aligned (Green)
+    - 0.73-0.76: Minor Drift (Yellow)
+    - 0.67-0.73: Drift Detected (Orange)
+    - < 0.67: Significant Drift (Red)
+
     Args:
         fidelity: Fidelity score (0.0 to 1.0)
 
     Returns:
         Tuple of (status_icon, status_text)
     """
-    if fidelity >= 0.9:
-        return "✓", "Excellent"
-    elif fidelity >= 0.8:
-        return "✓", "Good"
-    elif fidelity >= 0.7:
-        return "⚠", "Acceptable"
-    elif fidelity >= 0.6:
-        return "⚠", "Drift"
-    elif fidelity >= 0.4:
-        return "🔴", "Critical"
-    else:
-        return "🔴", "Severe Drift"
+    if fidelity >= 0.76:  # Goldilocks: Aligned zone
+        return "✓", "Aligned"
+    elif fidelity >= 0.73:  # Goldilocks: Minor Drift zone
+        return "⚠", "Minor Drift"
+    elif fidelity >= 0.67:  # Goldilocks: Drift Detected zone
+        return "⚠", "Drift Detected"
+    else:  # Goldilocks: Significant Drift zone
+        return "🔴", "Significant Drift"
 
 
 def generate_telos_demo_session(num_turns: int = 10) -> Dict[str, Any]:
@@ -195,9 +197,9 @@ def generate_telos_demo_session(num_turns: int = 10) -> Dict[str, Any]:
                 'response': turn_data["model_response"],
                 'fidelity': fidelity,
                 'distance': distance,
-                'threshold': 0.8,
+                'threshold': 0.76,  # Goldilocks: Aligned threshold
                 'intervention_applied': intervention_applied,
-                'drift_detected': fidelity < 0.8,
+                'drift_detected': fidelity < 0.73,  # Goldilocks: Minor Drift threshold
                 'status': status_icon,
                 'status_text': status_text,
                 'in_basin': in_basin,
@@ -248,8 +250,8 @@ def _generate_fallback_demo(num_turns: int) -> Dict[str, Any]:
     for i, turn_data in enumerate(demo_conversation):
         fidelity = fidelity_pattern[i] if i < len(fidelity_pattern) else 0.85
         distance = 1.0 - fidelity
-        intervention_applied = fidelity < 0.7
-        drift_detected = fidelity < 0.8
+        intervention_applied = fidelity < 0.67  # Goldilocks: Drift threshold
+        drift_detected = fidelity < 0.73  # Goldilocks: Minor Drift threshold
 
         status_icon, status_text = _get_status_from_fidelity(fidelity)
 
@@ -260,7 +262,7 @@ def _generate_fallback_demo(num_turns: int) -> Dict[str, Any]:
             'response': turn_data["model_response"],
             'fidelity': fidelity,
             'distance': distance,
-            'threshold': 0.8,
+            'threshold': 0.76,  # Goldilocks: Aligned threshold
             'intervention_applied': intervention_applied,
             'drift_detected': drift_detected,
             'status': status_icon,

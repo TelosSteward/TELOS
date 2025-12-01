@@ -152,7 +152,7 @@ def initialize_teloscope():
                 session_manager=st.session_state.session_manager,
                 branch_manager=st.session_state.branch_manager,
                 web_session_manager=st.session_state.web_session,
-                drift_threshold=0.8,
+                drift_threshold=0.76,  # Goldilocks: Aligned threshold
                 enable_counterfactuals=True
             )
 
@@ -175,7 +175,7 @@ def render_live_session():
         col1, col2 = st.columns(2)
         with col1:
             fidelity = metrics['current_fidelity']
-            delta_color = "normal" if fidelity >= 0.8 else "inverse"
+            delta_color = "normal" if fidelity >= 0.76 else "inverse"  # Goldilocks: Aligned threshold
             st.metric(
                 "Fidelity",
                 f"{fidelity:.3f}",
@@ -230,7 +230,7 @@ def render_live_session():
             metrics = turn.get('metrics', {})
             fidelity = metrics.get('telic_fidelity', 1.0)
 
-            if fidelity < 0.8:
+            if fidelity < 0.76:  # Goldilocks: Aligned threshold
                 st.warning(f"⚠️ Drift detected (F={fidelity:.3f})")
 
     # Display triggers as badges
@@ -377,11 +377,11 @@ def render_teloscope_view():
 
         **No counterfactual experiments yet.**
 
-        Counterfactuals are automatically triggered when drift is detected (fidelity < 0.8).
+        Counterfactuals are automatically triggered when drift is detected (fidelity < 0.76).
 
         **How it works:**
         1. Continue conversations in the Live Session tab
-        2. When fidelity drops below 0.8, a trigger fires
+        2. When fidelity drops below 0.76 (Goldilocks Aligned threshold), a trigger fires
         3. Two 5-turn branches are generated:
            - **Baseline**: Shows what happens WITHOUT intervention
            - **TELOS**: Shows what happens WITH intervention

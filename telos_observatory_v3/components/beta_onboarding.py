@@ -100,7 +100,7 @@ class BetaOnboarding:
                     <strong style="color: #F4D03F;">What We Collect:</strong> As you converse, governance deltas (mathematical measurements like fidelity scores and intervention patterns) are transmitted to our research database. Your actual conversations are never sent to our servers. Only the numerical measurements are collected.
                 </p>
                 <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
-                    <strong style="color: #F4D03F;">Best Practice:</strong> Complete sessions of 15-20 turns provide the most useful governance data for improving TELOS.
+                    <strong style="color: #F4D03F;">Best Practice:</strong> Complete all 5 BETA turns to unlock full TELOS features and Observatory review.
                 </p>
             </div>
             """, unsafe_allow_html=True)
