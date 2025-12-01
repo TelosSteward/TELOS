@@ -31,8 +31,7 @@ else:
 
 # Test Demo Mode Configuration
 print("\nTesting Demo Mode Configuration...")
-import sys
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / 'telos_privacy'))
+# Demo mode is configured within the TELOSCOPE_BETA application
 from demo_mode import telos_framework_demo
 demo_config = telos_framework_demo.get_demo_attractor_config()
 print(f"  ✓ Demo PA config loaded")

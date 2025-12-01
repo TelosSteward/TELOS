@@ -69,12 +69,13 @@ cd TELOS/TELOSCOPE_BETA
 # Install dependencies
 pip install -r requirements-pinned.txt
 
-# Run validation
-cd ../healthcare_validation
-python3 run_unified_benchmark.py
+# Run TELOSCOPE Observatory
+streamlit run main.py
 ```
 
-Expected: ~8-10 seconds execution, 0% attack success rate
+**Validation data**: Download from Zenodo (https://doi.org/10.5281/zenodo.17702890)
+
+Published results: ~8-10 seconds execution (original hardware), 0% attack success rate
 
 ---
 

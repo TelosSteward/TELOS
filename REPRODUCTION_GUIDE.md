@@ -65,20 +65,25 @@ Opens at: `http://localhost:8501`
 
 ## Reproducing Validation Results
 
-### Option A: Full 1,300 Attack Validation
+### Option A: Review Published Validation Data
 
-**Location**: `healthcare_validation/` (in your local clone)
+**Validation results are published on Zenodo** (no local scripts required):
+- **DOI**: https://doi.org/10.5281/zenodo.17702890
+- **Files**: Complete JSON forensics, statistical analyses, raw results
 
-**Run validation**:
+**Download and verify**:
 ```bash
-cd /path/to/healthcare_validation
-python3 run_unified_benchmark.py
+# Download from Zenodo (visit link above)
+# Or use curl/wget with the direct download URLs
+
+# Review JSON forensics
+cat medsafetybench_validation_results.json | jq '.summary'
 ```
 
-**Expected output**:
-- Execution time: ~8-10 seconds
+**Published results**:
+- Execution time: ~8-10 seconds (on original hardware)
 - Result: 0% Attack Success Rate
-- Files created:
+- Files included:
   - `medsafetybench_validation_results.json` (490KB)
   - `harmbench_validation_results_summary.json`
 
@@ -175,8 +180,8 @@ To claim successful reproduction, verify:
 - [ ] TELOSCOPE Observatory runs (`streamlit run main.py`)
 - [ ] Demo mode functional (12-slide slideshow works)
 - [ ] BETA mode accessible (PA establishment works)
-- [ ] Validation script runs (`run_unified_benchmark.py`)
-- [ ] Results match published (0% ASR, forensic JSONs generated)
+- [ ] Validation data downloaded from Zenodo
+- [ ] Results match published (0% ASR, forensic JSONs verified)
 - [ ] Statistical analysis reproduces (Wilson Score, Bayesian, power)
 
 ---
@@ -339,25 +344,20 @@ TELOS/
 │   ├── main.py              # Entry point
 │   ├── requirements.txt     # Dependencies (flexible)
 │   ├── requirements-pinned.txt  # Dependencies (exact)
+│   ├── telos_purpose/       # Governance engine (embedded)
+│   │   ├── core/            # Core modules
+│   │   └── llm_clients/     # LLM integrations
 │   └── .streamlit/
 │       ├── config.toml      # UI configuration
 │       └── secrets.toml     # API keys (not in git)
-├── telos/core/              # Governance engine
-│   ├── unified_steward.py   # Main controller
-│   ├── dual_attractor.py    # PA/SA dynamics
-│   └── telemetric_keys.py   # Cryptographic signatures
-├── strix/                   # Adversarial testing framework
-│   └── attack_framework.py
-├── healthcare_validation/   # Validation scripts & data
-│   ├── run_unified_benchmark.py
-│   └── *.json               # Results (490KB+)
 ├── docs/whitepapers/        # Academic papers
 │   ├── TELOS_Technical_Paper.md
 │   ├── Statistical_Validity.md
 │   └── TELEMETRIC_KEYS_FOUNDATIONS.md
 ├── REPRODUCTION_GUIDE.md    # This file
-├── HARDWARE_REQUIREMENTS.md # Compute specifications
-└── README.md                # Project overview
+├── README.md                # Project overview
+└── validation_data/         # Available on Zenodo
+    └── (see https://doi.org/10.5281/zenodo.17702890)
 ```
 
 ---
