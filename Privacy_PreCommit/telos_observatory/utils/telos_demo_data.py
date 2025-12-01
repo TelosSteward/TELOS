@@ -22,7 +22,7 @@ import time
 # Import TELOS engine components
 try:
     from telos_purpose.core.unified_steward import UnifiedGovernanceSteward, PrimacyAttractor
-    from telos_purpose.core.embedding_provider import SentenceTransformerEmbeddingProvider
+    from telos_purpose.core.embedding_provider import SentenceTransformerProvider
     from telos_purpose.llm_clients.openai_client import OpenAIClient
     TELOS_AVAILABLE = True
 except ImportError as e:
@@ -44,11 +44,11 @@ def generate_demo_conversation() -> List[Dict[str, str]]:
         },
         {
             "user_input": "What are the main components of TELOS?",
-            "model_response": "TELOS has several key components: the Primacy Attractor (which defines purpose and scope), the Proportional Controller (which detects and corrects drift), and the Statistical Process Controller (which measures fidelity to the primacy attractor)."
+            "model_response": "TELOS has several key components: the Purpose Definition (which sets the AI's core mission and boundaries), the Drift Monitor (which watches for conversations going off-track), and the Alignment Tracker (which measures how well responses stay on purpose)."
         },
         {
             "user_input": "How does TELOS detect when a conversation is drifting off-topic?",
-            "model_response": "TELOS uses mathematical geometry in embedding space. It calculates the distance between each response and the primacy attractor (your purpose/scope). When responses drift too far outside the basin of attraction, TELOS intervenes."
+            "model_response": "TELOS continuously compares each response against your defined purpose and boundaries. It tracks how closely the conversation stays aligned with your goals. When responses start moving away from the intended purpose, TELOS can step in to redirect."
         },
         {
             "user_input": "Can you explain quantum physics instead?",
@@ -56,11 +56,11 @@ def generate_demo_conversation() -> List[Dict[str, str]]:
         },
         {
             "user_input": "Actually, yes - how would TELOS handle that kind of topic shift?",
-            "model_response": "Great question! When I started to shift toward quantum physics, TELOS would have detected that my response embedding was moving away from the purpose attractor. The system would either inject context to steer back, or regenerate the response to stay aligned with the TELOS explanation purpose."
+            "model_response": "Great question! When I started to shift toward quantum physics, TELOS would detect that my response was drifting away from the defined purpose. The system can either provide guidance to steer back on track, or suggest a better response that stays aligned with explaining TELOS."
         },
         {
-            "user_input": "What's the math behind fidelity scores?",
-            "model_response": "TELOS calculates fidelity using Lyapunov functions and basin geometry. The fidelity score F_t measures how close a response is to the attractor center, scaled by the basin radius. Scores above 0.8 indicate good alignment."
+            "user_input": "How does TELOS measure alignment quality?",
+            "model_response": "TELOS uses an alignment score that measures how closely each response matches your defined purpose. The score ranges from 0 to 1, where higher scores mean better alignment. Scores above 0.8 indicate the conversation is staying well on track with your goals."
         },
         {
             "user_input": "Tell me about your favorite movies.",
@@ -68,11 +68,11 @@ def generate_demo_conversation() -> List[Dict[str, str]]:
         },
         {
             "user_input": "Yes, what are the intervention strategies?",
-            "model_response": "TELOS uses graduated interventions: Monitor (F > 0.8, no action), Correct (0.6 < F < 0.8, context injection), Intervene (0.4 < F < 0.6, regenerate response), and Escalate (F < 0.4, block and alert). Each strategy is proportional to the detected drift."
+            "model_response": "TELOS uses a graduated approach based on how far off track the conversation is drifting: Monitor mode (staying well aligned, no action needed), Gentle Nudge (mild drift, provide subtle guidance), Active Redirect (moderate drift, suggest getting back on track), and Stop (severe drift, pause and alert you). Each response matches the severity of the drift."
         },
         {
             "user_input": "How does TELOS improve over time?",
-            "model_response": "TELOS implements continuous improvement through its DMAIC cycle at each turn: Define (governance perimeter), Measure (fidelity), Analyze (drift detection), Improve (intervention), Control (verify stabilization). This ensures consistent governance quality."
+            "model_response": "TELOS follows a continuous improvement cycle for each conversation turn: it starts by defining your goals clearly, measures how well responses align, analyzes any drift that occurs, applies corrections when needed, and verifies the conversation is back on track. This ensures consistent quality throughout your interactions."
         },
         {
             "user_input": "This has been really helpful, thank you!",
@@ -85,24 +85,26 @@ def _get_status_from_fidelity(fidelity: float) -> tuple:
     """
     Get status icon and text from fidelity score.
 
+    Uses Goldilocks zone thresholds (mathematically optimized):
+    - >= 0.76: Aligned (Green)
+    - 0.73-0.76: Minor Drift (Yellow)
+    - 0.67-0.73: Drift Detected (Orange)
+    - < 0.67: Significant Drift (Red)
+
     Args:
         fidelity: Fidelity score (0.0 to 1.0)
 
     Returns:
         Tuple of (status_icon, status_text)
     """
-    if fidelity >= 0.9:
-        return "✓", "Excellent"
-    elif fidelity >= 0.8:
-        return "✓", "Good"
-    elif fidelity >= 0.7:
-        return "⚠", "Acceptable"
-    elif fidelity >= 0.6:
-        return "⚠", "Drift"
-    elif fidelity >= 0.4:
-        return "🔴", "Critical"
-    else:
-        return "🔴", "Severe Drift"
+    if fidelity >= 0.76:  # Goldilocks: Aligned zone
+        return "✓", "Aligned"
+    elif fidelity >= 0.73:  # Goldilocks: Minor Drift zone
+        return "⚠", "Minor Drift"
+    elif fidelity >= 0.67:  # Goldilocks: Drift Detected zone
+        return "⚠", "Drift Detected"
+    else:  # Goldilocks: Significant Drift zone
+        return "🔴", "Significant Drift"
 
 
 def generate_telos_demo_session(num_turns: int = 10) -> Dict[str, Any]:
@@ -195,9 +197,9 @@ def generate_telos_demo_session(num_turns: int = 10) -> Dict[str, Any]:
                 'response': turn_data["model_response"],
                 'fidelity': fidelity,
                 'distance': distance,
-                'threshold': 0.8,
+                'threshold': 0.76,  # Goldilocks: Aligned threshold
                 'intervention_applied': intervention_applied,
-                'drift_detected': fidelity < 0.8,
+                'drift_detected': fidelity < 0.73,  # Goldilocks: Minor Drift threshold
                 'status': status_icon,
                 'status_text': status_text,
                 'in_basin': in_basin,
@@ -248,8 +250,8 @@ def _generate_fallback_demo(num_turns: int) -> Dict[str, Any]:
     for i, turn_data in enumerate(demo_conversation):
         fidelity = fidelity_pattern[i] if i < len(fidelity_pattern) else 0.85
         distance = 1.0 - fidelity
-        intervention_applied = fidelity < 0.7
-        drift_detected = fidelity < 0.8
+        intervention_applied = fidelity < 0.67  # Goldilocks: Drift threshold
+        drift_detected = fidelity < 0.73  # Goldilocks: Minor Drift threshold
 
         status_icon, status_text = _get_status_from_fidelity(fidelity)
 
@@ -260,7 +262,7 @@ def _generate_fallback_demo(num_turns: int) -> Dict[str, Any]:
             'response': turn_data["model_response"],
             'fidelity': fidelity,
             'distance': distance,
-            'threshold': 0.8,
+            'threshold': 0.76,  # Goldilocks: Aligned threshold
             'intervention_applied': intervention_applied,
             'drift_detected': drift_detected,
             'status': status_icon,

@@ -1,0 +1,11 @@
+[theme]
+primaryColor = "#F4D03F"
+# backgroundColor removed to allow CSS gradient glassmorphism
+secondaryBackgroundColor = "#262730"
+textColor = "#FAFAFA"
+font = "sans serif"
+base = "dark"
+
+[server]
+headless = true
+runOnSave = false

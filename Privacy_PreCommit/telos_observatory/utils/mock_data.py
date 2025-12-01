@@ -31,13 +31,13 @@ def generate_mock_session(num_turns: int = 10) -> Dict[str, Any]:
         fidelity = max(0.3, min(1.0, base_fidelity + drift_amount))
         fidelities.append(fidelity)
 
-        # Determine if intervention applied
-        intervention_applied = fidelity < 0.7
+        # Determine if intervention applied (Goldilocks: Drift Detected threshold)
+        intervention_applied = fidelity < 0.67
         if intervention_applied:
             interventions += 1
 
-        # Determine if drift detected
-        drift_detected = fidelity < 0.8
+        # Determine if drift detected (Goldilocks: Aligned threshold)
+        drift_detected = fidelity < 0.76
         if drift_detected:
             drift_count += 1
 
@@ -48,7 +48,7 @@ def generate_mock_session(num_turns: int = 10) -> Dict[str, Any]:
             'response': f"This is the assistant's response to turn {i}. It addresses the user's message appropriately.",
             'fidelity': fidelity,
             'distance': (1 - fidelity) * 2.0,  # Simplified distance calculation
-            'threshold': 0.8,
+            'threshold': 0.76,  # Goldilocks: Aligned threshold
             'intervention_applied': intervention_applied,
             'drift_detected': drift_detected,
             'status': _get_status_icon(fidelity),
@@ -73,23 +73,27 @@ def generate_mock_session(num_turns: int = 10) -> Dict[str, Any]:
 
 
 def _get_status_icon(fidelity: float) -> str:
-    """Get status icon based on fidelity."""
-    if fidelity >= 0.8:
+    """Get status icon based on fidelity (Goldilocks zones)."""
+    if fidelity >= 0.76:  # Goldilocks: Aligned
         return "✓"
-    elif fidelity >= 0.6:
-        return "⚡"
-    else:
+    elif fidelity >= 0.73:  # Goldilocks: Minor Drift
+        return "⚠"
+    elif fidelity >= 0.67:  # Goldilocks: Drift Detected
         return "⚠️"
+    else:  # Goldilocks: Significant Drift
+        return "🔴"
 
 
 def _get_status_text(fidelity: float) -> str:
-    """Get status text based on fidelity."""
-    if fidelity >= 0.8:
-        return "Stable"
-    elif fidelity >= 0.6:
-        return "Watch"
-    else:
-        return "Drift"
+    """Get status text based on fidelity (Goldilocks zones)."""
+    if fidelity >= 0.76:  # Goldilocks: Aligned
+        return "Aligned"
+    elif fidelity >= 0.73:  # Goldilocks: Minor Drift
+        return "Minor Drift"
+    elif fidelity >= 0.67:  # Goldilocks: Drift Detected
+        return "Drift Detected"
+    else:  # Goldilocks: Significant Drift
+        return "Significant Drift"
 
 
 def _generate_phase2_data() -> Dict[str, Any]:
