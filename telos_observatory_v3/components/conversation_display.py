@@ -14,22 +14,7 @@ from services.file_handler import get_file_handler
 logger = logging.getLogger(__name__)
 
 
-def _get_inline_copy_onclick(element_id: str) -> str:
-    """Generate an inline onclick handler for copy buttons that works in Streamlit.
-
-    Uses the global telosCopyText function defined in _render_main_chat for
-    reliable cross-frame clipboard access.
-
-    Args:
-        element_id: The ID of the element whose text content should be copied
-
-    Returns:
-        JavaScript code for the onclick handler
-    """
-    # Escape the element_id for safe inclusion in JavaScript
-    safe_id = html.escape(element_id.replace("'", "\\'"))
-    # Use the global copy function defined in the script tag
-    return f"if(window.parent.telosCopyText){{window.parent.telosCopyText('{safe_id}',this)}}else{{this.textContent='Error'}}"
+# Copy button functionality removed - clipboard API doesn't work reliably in Streamlit iframes
 
 
 class ConversationDisplay:
@@ -113,73 +98,6 @@ class ConversationDisplay:
 
     def _render_main_chat(self):
         """Render main conversation - either turn-by-turn or scrollable history."""
-        # Inject global copy function in parent window (more reliable than inline clipboard API)
-        st.components.v1.html("""
-        <script>
-        (function() {
-            var parentDoc = window.parent ? window.parent.document : document;
-            if (!parentDoc.telosCopyFuncAdded) {
-                parentDoc.telosCopyFuncAdded = true;
-
-                // Global copy function using fallback textarea method
-                window.parent.telosCopyText = function(elementId, btn) {
-                    try {
-                        var doc = window.parent ? window.parent.document : document;
-                        var el = doc.getElementById(elementId);
-                        if (!el) {
-                            btn.textContent = 'Not found';
-                            setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
-                            return;
-                        }
-
-                        // Get text content and clean it
-                        var text = el.innerText || el.textContent || '';
-                        text = text.replace(/Copy/g, '').replace(/TELOS/g, '').replace(/User/g, '').trim();
-
-                        // Create temporary textarea for copy (works in iframes)
-                        var textarea = doc.createElement('textarea');
-                        textarea.value = text;
-                        textarea.style.position = 'fixed';
-                        textarea.style.left = '-9999px';
-                        textarea.style.top = '0';
-                        doc.body.appendChild(textarea);
-                        textarea.focus();
-                        textarea.select();
-
-                        var success = false;
-                        try {
-                            success = doc.execCommand('copy');
-                        } catch (err) {
-                            success = false;
-                        }
-
-                        doc.body.removeChild(textarea);
-
-                        if (success) {
-                            btn.textContent = 'Copied!';
-                        } else {
-                            // Try clipboard API as fallback
-                            if (window.parent.navigator && window.parent.navigator.clipboard) {
-                                window.parent.navigator.clipboard.writeText(text).then(function() {
-                                    btn.textContent = 'Copied!';
-                                }).catch(function() {
-                                    btn.textContent = 'Failed';
-                                });
-                            } else {
-                                btn.textContent = 'Failed';
-                            }
-                        }
-                        setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
-                    } catch (e) {
-                        btn.textContent = 'Error';
-                        setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
-                    }
-                };
-            }
-        })();
-        </script>
-        """, height=0)
-
         # ESC key handler for Demo Mode -> Open Mode switch
         demo_mode = st.session_state.get('telos_demo_mode', False)
         if demo_mode:
@@ -2485,38 +2403,14 @@ class ConversationDisplay:
 
         if demo_mode:
             # Demo Mode: Clean, simple layout - NO scroll buttons (scrollable history disabled in Demo Mode)
-            # Create unique ID for copy button
-            import hashlib
-            user_msg_id = f"{key_prefix}user_{hashlib.md5(safe_message.encode()).hexdigest()[:8]}"
-
             st.markdown(f"""
-<style>
-.demo-user-message-{user_msg_id} {{
-    position: relative;
-    padding-bottom: 45px;
-}}
-.demo-user-copy-btn-{user_msg_id} {{
-    position: absolute;
-    bottom: 8px;
-    right: 12px;
-    background-color: #2d2d2d !important;
-    color: #e0e0e0 !important;
-    border: 1px solid #F4D03F !important;
-    padding: 6px 12px;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease !important;
-}}
-</style>
-<div class="message-container demo-user-message-{user_msg_id}" id="demo-user-msg-{user_msg_id}" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #F4D03F;">
+<div class="message-container" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #F4D03F;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #F4D03F;">User</strong>
     </div>
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {safe_message}
     </div>
-    <button class="demo-user-copy-btn-{user_msg_id}" onclick="{_get_inline_copy_onclick(f'demo-user-msg-{user_msg_id}')}">Copy</button>
 </div>
 """, unsafe_allow_html=True)
         elif beta_mode:
@@ -2570,38 +2464,14 @@ class ConversationDisplay:
 
             # Message content in center column (NO metrics inside - they're in fidelity card now)
             with col_content:
-                # Create unique ID for copy button
-                import hashlib
-                user_msg_id = f"{key_prefix}user_{hashlib.md5(safe_message.encode()).hexdigest()[:8]}"
-
                 st.markdown(f"""
-<style>
-.user-message-{user_msg_id} {{
-    position: relative;
-    padding-bottom: 45px;
-}}
-.user-copy-btn-{user_msg_id} {{
-    position: absolute;
-    bottom: 8px;
-    right: 12px;
-    background-color: #2d2d2d !important;
-    color: #e0e0e0 !important;
-    border: 1px solid {label_color} !important;
-    padding: 6px 12px;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease !important;
-}}
-</style>
-<div class="message-container user-message-{user_msg_id}" id="user-msg-{user_msg_id}" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid {fidelity_color};">
+<div class="message-container" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid {fidelity_color};">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: {label_color};">User</strong>
     </div>
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {safe_message}
     </div>
-    <button class="user-copy-btn-{user_msg_id}" onclick="{_get_inline_copy_onclick(f'user-msg-{user_msg_id}')}">Copy</button>
 </div>
 """, unsafe_allow_html=True)
 
@@ -2675,38 +2545,14 @@ class ConversationDisplay:
                 col_msg, col_scroll = st.columns([8.5, 1.5])
 
                 with col_msg:
-                    # Create unique ID for copy button
-                    import hashlib
-                    user_msg_id = f"{key_prefix}user_{hashlib.md5(safe_message.encode()).hexdigest()[:8]}"
-
                     st.markdown(f"""
-<style>
-.user-message-{user_msg_id} {{
-    position: relative;
-    padding-bottom: 45px;
-}}
-.user-copy-btn-{user_msg_id} {{
-    position: absolute;
-    bottom: 8px;
-    right: 12px;
-    background-color: #2d2d2d !important;
-    color: #e0e0e0 !important;
-    border: 1px solid #F4D03F !important;
-    padding: 6px 12px;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease !important;
-}}
-</style>
-<div class="message-container user-message-{user_msg_id}" id="user-msg-{user_msg_id}" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #F4D03F;">
+<div class="message-container" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin: 0; border: 2px solid #F4D03F;">
     <div style="color: #888; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #F4D03F;">User</strong>
     </div>
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {safe_message}
     </div>
-    <button class="user-copy-btn-{user_msg_id}" onclick="{_get_inline_copy_onclick(f'user-msg-{user_msg_id}')}">Copy</button>
 </div>
 """, unsafe_allow_html=True)
 
@@ -2793,38 +2639,14 @@ class ConversationDisplay:
                 # Show response - convert markdown to HTML for proper rendering
                 html_message = self._markdown_to_html(message)
 
-                # Create unique ID for this message (with prefix to avoid duplicates in history)
-                import hashlib
-                message_id = f"{key_prefix}{hashlib.md5(message.encode()).hexdigest()[:8]}"
-
                 st.markdown(f"""
-<style>
-.demo-message-{message_id} {{
-    position: relative;
-    padding-bottom: 40px;
-}}
-.demo-copy-btn-{message_id} {{
-    position: absolute;
-    bottom: 8px;
-    right: 12px;
-    background-color: #2d2d2d !important;
-    color: #e0e0e0 !important;
-    border: 1px solid #F4D03F !important;
-    padding: 6px 12px;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease !important;
-}}
-</style>
-<div class="message-container demo-message-{message_id}" id="demo-msg-{message_id}" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 15px; border: 2px solid #F4D03F;">
+<div class="message-container" style="background-color: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 15px; margin-bottom: 15px; border: 2px solid #F4D03F;">
     <div style="color: #888; font-size: 19px; margin-bottom: 10px;">
         <strong style="color: #F4D03F;">TELOS</strong>
     </div>
     <div style="color: #fff; font-size: 19px; white-space: pre-wrap;">
         {html_message}
     </div>
-    <button class="demo-copy-btn-{message_id}" onclick="{_get_inline_copy_onclick(f'demo-msg-{message_id}')}">Copy</button>
 </div>
 """, unsafe_allow_html=True)
         elif beta_mode:
@@ -2924,49 +2746,9 @@ class ConversationDisplay:
                     # Convert markdown to HTML for proper rendering inside the div
                     html_message = self._markdown_to_html(message)
 
-                    # Create unique ID for this message (with prefix to avoid duplicates in history)
-                    import hashlib
-                    message_id = f"{key_prefix}{hashlib.md5(message.encode()).hexdigest()[:8]}"
-
                     st.markdown(f"""
-<style>
-.steward-message-{message_id} {{
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%), rgba(26, 26, 30, 0.45);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: 10px 15px 40px 15px;
-    margin-top: 0;
-    margin-bottom: 0;
-    border: 2px solid {telos_fidelity_color};
-    border-top: none;
-    border-radius: 0 0 10px 10px;
-    color: #fff;
-    font-size: 19px;
-    position: relative;
-    box-shadow: 0 0 20px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 -1px 1px rgba(255, 255, 255, 0.08);
-}}
-.steward-message-{message_id} p {{
-    color: #fff !important;
-    font-size: 19px !important;
-    margin: 0;
-}}
-.copy-btn-{message_id} {{
-    position: absolute;
-    bottom: 8px;
-    right: 12px;
-    background-color: #2d2d2d !important;
-    color: #e0e0e0 !important;
-    border: 1px solid {telos_label_color} !important;
-    padding: 6px 12px;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease !important;
-}}
-</style>
-<div class="steward-message-{message_id}" id="msg-{message_id}">
+<div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 10px 15px 15px 15px; margin-top: 0; margin-bottom: 0; border: 2px solid {telos_fidelity_color}; border-top: none; border-radius: 0 0 10px 10px; color: #fff; font-size: 19px; box-shadow: 0 0 20px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 -1px 1px rgba(255, 255, 255, 0.08);">
     {html_message}
-    <button class="copy-btn-{message_id}" onclick="{_get_inline_copy_onclick(f'msg-{message_id}')}">Copy</button>
 </div>
 """, unsafe_allow_html=True)
 
@@ -3054,49 +2836,9 @@ class ConversationDisplay:
                         # Convert markdown to HTML for proper rendering inside the div
                         html_message = self._markdown_to_html(message)
 
-                        # Create unique ID for this message (with prefix to avoid duplicates in history)
-                        import hashlib
-                        message_id = f"{key_prefix}{hashlib.md5(message.encode()).hexdigest()[:8]}"
-
                         st.markdown(f"""
-<style>
-.steward-message-{message_id} {{
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%), rgba(26, 26, 30, 0.45);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: 10px 15px 40px 15px;
-    margin-top: 0;
-    margin-bottom: 0;
-    border: 2px solid #F4D03F;
-    border-top: none;
-    border-radius: 0 0 10px 10px;
-    color: #fff;
-    font-size: 19px;
-    position: relative;
-    box-shadow: 0 0 20px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 -1px 1px rgba(255, 255, 255, 0.08);
-}}
-.steward-message-{message_id} p {{
-    color: #fff !important;
-    font-size: 19px !important;
-    margin: 0;
-}}
-.copy-btn-{message_id} {{
-    position: absolute;
-    bottom: 8px;
-    right: 12px;
-    background-color: #2d2d2d !important;
-    color: #e0e0e0 !important;
-    border: 1px solid #F4D03F !important;
-    padding: 6px 12px;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease !important;
-}}
-</style>
-<div class="steward-message-{message_id}" id="msg-{message_id}">
+<div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 10px 15px 15px 15px; margin-top: 0; margin-bottom: 0; border: 2px solid #F4D03F; border-top: none; border-radius: 0 0 10px 10px; color: #fff; font-size: 19px; box-shadow: 0 0 20px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 -1px 1px rgba(255, 255, 255, 0.08);">
     {html_message}
-    <button class="copy-btn-{message_id}" onclick="{_get_inline_copy_onclick(f'msg-{message_id}')}">Copy</button>
 </div>
 """, unsafe_allow_html=True)
 

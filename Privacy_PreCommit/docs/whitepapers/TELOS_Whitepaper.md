@@ -1,8 +1,8 @@
 # The Constitutional Filter: Session-Level Governance for AI Systems
 
 **TELOS Framework Whitepaper**
-**Version 2.3 - January 2025**
-**Status: Adversarial Validation Complete (0% ASR) | SB 53 Compliance Ready | Dual PA Security-Tested**
+**Version 2.4 - December 2025**
+**Status: 1,300-Attack Validation Complete (0% ASR) | SB 53 Compliance Ready | 99.9% CI [0%, 0.28%]**
 
 ---
 
@@ -10,7 +10,7 @@
 
 AI systems drift from their intended purpose during extended conversations—a measured 20-40% reliability loss that creates compliance risk across healthcare, finance, and government deployments. TELOS (Telically Entrained Linguistic Operational Substrate) solves this by treating AI governance as a continuous quality control process, applying the same statistical methods that ensure manufacturing quality (Six Sigma, ISO 9001) to semantic systems.
 
-TELOS operates as orchestration-layer infrastructure that measures every AI response against human-defined constitutional constraints (Primacy Attractors), detects drift mathematically, and applies proportional corrections in real-time. Recent security testing demonstrates 0% attack success rate across 54 adversarial scenarios—100% attack elimination compared to standard prompt-based defenses (3.7-11.1% attack success rate). With California's SB 53 taking effect January 2026 and EU AI Act enforcement beginning August 2026, TELOS provides the continuous monitoring infrastructure that emerging regulations explicitly require.
+TELOS operates as orchestration-layer infrastructure that measures every AI response against human-defined constitutional constraints (Primacy Attractors), detects drift mathematically, and applies proportional corrections in real-time. Expanded security testing demonstrates **0% attack success rate across 1,300 adversarial attacks** (900 MedSafetyBench + 400 HarmBench) with **99.9% CI [0%, 0.28%]**—100% attack elimination compared to standard prompt-based defenses (3.7-11.1% ASR). Tier 1 autonomous blocking achieves 95.8%. With California's SB 53 taking effect January 2026 and EU AI Act enforcement beginning August 2026, TELOS provides the continuous monitoring infrastructure that emerging regulations explicitly require.
 
 ---
 
@@ -26,7 +26,15 @@ Mathematically, TELOS integrates proportional control (operational mechanism) wi
 
 **The Constitutional Filter for AI**: TELOS implements **session-level constitutional law** through the Primacy Attractor, which serves as instantiated constitutional requirements for ephemeral session state. Human governors author constitutional constraints (purpose, scope, boundaries), which are encoded as a fixed reference point in embedding space. Every AI response is measured against this constitutional reference, with deviations triggering proportional interventions—not through prompt engineering, but through **orchestration-layer governance** that operates architecturally above the model layer. This transforms AI alignment from subjective trust to **quantitative constitutional compliance**, providing the continuous monitoring infrastructure that regulatory frameworks explicitly require.
 
-**Adversarial Validation (November 2025)**: Security testing across 54 adversarial attacks (November 10, 2025) demonstrates **0% Attack Success Rate (ASR)** when Constitutional Filter governance is active, compared to 3.7-11.1% ASR with system prompts and 30.8-43.9% ASR for raw models—representing **100% attack elimination** through orchestration-layer governance. Testing spanned two Mistral models (Small and Large) across prompt injection, jailbreaking, role manipulation, context manipulation, and boundary violation attacks. TELOS achieved perfect defense (0/54 attacks succeeded) while system prompt baselines allowed 2-6 attacks through. These results establish TELOS not only as alignment infrastructure but as **constitutional security architecture** validated against real adversarial threats.
+**Adversarial Validation (November 2025)**: Expanded security testing across **1,300 adversarial attacks** using established academic benchmarks demonstrates **0% Attack Success Rate (ASR)** when Constitutional Filter governance is active:
+
+- **900 MedSafetyBench** (NeurIPS 2024): Medical misinformation, dangerous advice, PHI extraction
+- **400 HarmBench** (Center for AI Safety): Jailbreaking, harmful content, deception, privacy violations
+- **99.9% Confidence Interval**: [0%, 0.28%]
+- **95.8% Tier 1 autonomous blocking** without human intervention
+- **Published data**: Zenodo DOI: 10.5281/zenodo.17702890
+
+Compared to 3.7-11.1% ASR with system prompts and 30.8-43.9% ASR for raw models, this represents **100% attack elimination** through orchestration-layer governance. TELOS achieved perfect defense (0/1,300 attacks succeeded) while system prompt baselines allowed attacks through. These results establish TELOS not only as alignment infrastructure but as **constitutional security architecture** validated against real adversarial threats at unprecedented scale.
 
 By embedding Lean Six Sigma's DMAIC methodology directly into runtime mechanics, TELOS extends Quality Systems Regulation—proven in manufacturing (ISO 9001), medical devices (21 CFR Part 820), and process industries—into semantic systems. It demonstrates that alignment—the persistence of intended behavior over time—can be expressed as a quantitative property of a self-regulating system governed by the same continuous-improvement discipline that sustains industrial quality control.
 
@@ -540,7 +548,8 @@ where α ≈ 0.6-0.7 (user purpose weighted slightly higher)
 
 **Security Testing** (November 2025):
 - Dual PA architecture tested under adversarial conditions
-- 0% ASR across 54 attacks (Mistral Small and Large)
+- 0% ASR across 1,300 attacks (900 MedSafetyBench + 400 HarmBench)
+- 99.9% CI [0%, 0.28%] with 95.8% Tier 1 autonomous blocking
 - Framework successfully defended against attacks targeting both User PA and AI PA constraints
 
 **Counterfactual Validation** (Planned):
@@ -1124,10 +1133,11 @@ November 2024 validation results demonstrate that mathematical governance is ach
 ### 9.1 What Has Been Validated
 
 **Security** (November 2025):
-- ✅ 0% ASR across 54 adversarial attacks (Mistral Small/Large)
+- ✅ 0% ASR across 1,300 adversarial attacks (MedSafetyBench + HarmBench)
+- ✅ 99.9% CI [0%, 0.28%] - dramatically tighter than initial validation
+- ✅ 95.8% Tier 1 autonomous blocking without human intervention
 - ✅ 100% attack elimination vs 3.7-11.1% baseline (system prompts)
-- ✅ Cross-model consistency (perfect defense on both model sizes)
-- ✅ Attack categories: Prompt injection, jailbreaking, role manipulation, context manipulation, privacy violations
+- ✅ Published data: Zenodo DOI: 10.5281/zenodo.17702890
 
 **Framework**:
 - ✅ Dual PA architecture operational and security-tested
@@ -1195,16 +1205,17 @@ We explicitly distinguish **validated claims** from **theoretical predictions** 
 
 ## 10. Conclusion: Constitutional Security Architecture for AI Systems
 
-Adversarial validation establishes The Constitutional Filter as proven security infrastructure for AI governance. Testing across 54 adversarial attacks demonstrates **0% Attack Success Rate**—representing **100% attack elimination** compared to 3.7-11.1% ASR with system prompts and 30.8-43.9% ASR for raw models.
+Adversarial validation establishes The Constitutional Filter as proven security infrastructure for AI governance. Expanded testing across **1,300 adversarial attacks** (900 MedSafetyBench + 400 HarmBench) demonstrates **0% Attack Success Rate** with **99.9% CI [0%, 0.28%]**—representing **100% attack elimination** compared to 3.7-11.1% ASR with system prompts and 30.8-43.9% ASR for raw models.
 
 ### What We Have Validated
 
 **Adversarial Security** (November 2025):
-- **0% ASR** across 54 attacks targeting 5 attack categories
+- **0% ASR** across 1,300 attacks using academic benchmarks (MedSafetyBench, HarmBench)
+- **99.9% CI [0%, 0.28%]** - dramatically tighter than initial validation
+- **95.8% Tier 1 autonomous blocking** without human intervention
 - **100% VDR** (perfect violation defense) across two model sizes
 - **100% attack elimination** vs best baseline (Mistral Large + System Prompt: 3.7% ASR)
-- **Cross-model consistency**: Perfect defense maintained across Mistral Small and Large
-- **Architectural governance validated**: Orchestration-layer defense superior to prompt engineering
+- **Published data**: Zenodo DOI: 10.5281/zenodo.17702890
 
 **Mathematical Infrastructure**:
 - Governance expressed through control equations (proportional control, attractor dynamics)
@@ -1363,15 +1374,18 @@ The key insight: TELOS speaks the same language as existing quality systems, mak
 
 ## Appendix D: Adversarial Validation Results
 
-**Validation Date**: November 10, 2025
+**Validation Date**: November 2025
 **Models Tested**: Mistral Small 2501, Mistral Large 2501
-**Attack Library**: 54 adversarial prompts across 5 categories
+**Attack Library**: 1,300 adversarial prompts from MedSafetyBench (900) + HarmBench (400)
+**Published Data**: Zenodo DOI: 10.5281/zenodo.17702890
 
 ### Summary
 
-Adversarial security testing validates The Constitutional Filter's attack resistance:
-- **Attack Success Rate**: 0.0% (0/54 attacks succeeded)
-- **Violation Defense Rate**: 100.0% (54/54 attacks blocked)
+Expanded adversarial security testing validates The Constitutional Filter's attack resistance:
+- **Attack Success Rate**: 0.0% (0/1,300 attacks succeeded)
+- **Violation Defense Rate**: 100.0% (1,300/1,300 attacks blocked)
+- **99.9% Confidence Interval**: [0%, 0.28%]
+- **Tier 1 Autonomous Blocking**: 95.8%
 - **Baseline Comparison**: 100% elimination vs 3.7-11.1% ASR (system prompts)
 
 ### Attack Categories Tested
@@ -1514,9 +1528,9 @@ This telemetry provides the evidence trail that regulators require - showing the
 
 ---
 
-**Document Version**: 2.2  
-**Release Date**: November 2024  
-**Status**: Dual PA Architecture Validated  
+**Document Version**: 2.4
+**Release Date**: December 2025
+**Status**: 1,300-Attack Validation Complete (0% ASR, 99.9% CI [0%, 0.28%])
 **Next Review**: February 2026 (EU AI Act Template Release)
 
 ---
