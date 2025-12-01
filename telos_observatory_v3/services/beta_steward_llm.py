@@ -123,6 +123,18 @@ Be concise like the example Steward responses - no fluff, just clear explanation
             if 'primacy_state' in context and context['primacy_state'] is not None:
                 context_str += f"- Primacy State (PS): {context['primacy_state']:.3f}\n"
 
+            # Show the user's last input for context
+            if 'last_user_input' in context:
+                truncated_input = context['last_user_input'][:150] + ('...' if len(context['last_user_input']) > 150 else '')
+                context_str += f"- Last User Input: \"{truncated_input}\"\n"
+
+            # Show intervention status
+            if 'intervention_triggered' in context:
+                if context['intervention_triggered']:
+                    context_str += f"- Intervention: TRIGGERED - {context.get('intervention_reason', 'drift detected')}\n"
+                else:
+                    context_str += f"- Intervention: Not triggered (aligned)\n"
+
             # Alignment status interpretation (using zone names, not threshold numbers)
             # Import zone thresholds from central config
             try:

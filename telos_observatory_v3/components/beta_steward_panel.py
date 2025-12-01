@@ -122,55 +122,116 @@ class BetaStewardPanel:
                 </div>
                 """, unsafe_allow_html=True)
 
-        # Input form
+        # Input form - stacked layout matching main chat (text area above, Send button below)
         st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
 
         with st.form(key="beta_steward_form", clear_on_submit=True):
-            user_input = st.text_input(
+            user_input = st.text_area(
                 "Ask Steward anything...",
-                placeholder="What do these metrics mean?",
+                placeholder="",
                 label_visibility="collapsed",
-                key="beta_steward_input_form"
+                key="beta_steward_input_form",
+                height=100  # Multi-line input
             )
-
             submit = st.form_submit_button("Send", use_container_width=True)
 
             if submit and user_input:
-                # Add user message
+                # Add user message and set pending flag for two-phase processing
                 st.session_state.beta_steward_chat_history.append({
                     'role': 'user',
                     'content': user_input,
                     'timestamp': datetime.now().isoformat()
                 })
-
-                # Get response with BETA context
-                if st.session_state.beta_steward_llm_enabled:
-                    context = self._gather_beta_context()
-
-                    try:
-                        steward_response = st.session_state.beta_steward_llm.get_response(
-                            user_message=user_input,
-                            conversation_history=st.session_state.beta_steward_chat_history[:-1],
-                            context=context
-                        )
-                    except Exception as e:
-                        steward_response = f"I apologize, but I encountered an error: {str(e)}. Please try again."
-                else:
-                    steward_response = f"I'm currently in setup mode. {st.session_state.get('beta_steward_error', 'Please configure the MISTRAL_API_KEY.')}"
-
-                st.session_state.beta_steward_chat_history.append({
-                    'role': 'assistant',
-                    'content': steward_response,
-                    'timestamp': datetime.now().isoformat()
-                })
-
+                # Set pending flag to trigger contemplating animation on next render
+                st.session_state.steward_pending_response = True
+                st.session_state.steward_pending_input = user_input
                 st.rerun()
+
+        # Add JavaScript to submit form on Enter key (Shift+Enter for new line)
+        import streamlit.components.v1 as components
+        components.html("""
+        <script>
+        setTimeout(function() {
+            // Find textareas in the Steward panel specifically
+            const textareas = window.parent.document.querySelectorAll('textarea');
+            textareas.forEach(function(textarea) {
+                // Only target the Steward form textarea (check for form key pattern)
+                if (!textarea.dataset.stewardEnterHandler) {
+                    textarea.dataset.stewardEnterHandler = 'true';
+                    textarea.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            // Find the Send button in parent document
+                            const buttons = window.parent.document.querySelectorAll('button');
+                            for (let btn of buttons) {
+                                const text = btn.textContent || btn.innerText;
+                                if (text.includes('Send')) {
+                                    btn.click();
+                                    break;
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }, 300);
+        </script>
+        """, height=0)
+
+        # Two-phase response generation: Show contemplating, then fetch response
+        if st.session_state.get('steward_pending_response', False):
+            # Show contemplating animation
+            st.markdown("""
+            <style>
+            @keyframes contemplating-pulse {
+                0%, 100% { opacity: 0.5; }
+                50% { opacity: 1.0; }
+            }
+            @keyframes dot-bounce {
+                0%, 80%, 100% { transform: translateY(0); }
+                40% { transform: translateY(-5px); }
+            }
+            </style>
+            <div style="background-color: rgba(255, 215, 0, 0.1); border: 1px solid #F4D03F; border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+                <strong style="color: #F4D03F; font-size: 18px;">Steward:</strong><br>
+                <span style="color: #F4D03F; font-size: 16px; font-style: italic; animation: contemplating-pulse 1.5s ease-in-out infinite;">
+                    Contemplating<span style="display: inline-block; animation: dot-bounce 1.4s infinite ease-in-out;">.</span><span style="display: inline-block; animation: dot-bounce 1.4s infinite ease-in-out 0.2s;">.</span><span style="display: inline-block; animation: dot-bounce 1.4s infinite ease-in-out 0.4s;">.</span>
+                </span>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # Now fetch the actual response
+            user_input = st.session_state.steward_pending_input
+            if st.session_state.beta_steward_llm_enabled:
+                context = self._gather_beta_context()
+
+                try:
+                    steward_response = st.session_state.beta_steward_llm.get_response(
+                        user_message=user_input,
+                        conversation_history=st.session_state.beta_steward_chat_history[:-1],
+                        context=context
+                    )
+                except Exception as e:
+                    steward_response = f"I apologize, but I encountered an error: {str(e)}. Please try again."
+            else:
+                steward_response = f"I'm currently in setup mode. {st.session_state.get('beta_steward_error', 'Please configure the MISTRAL_API_KEY.')}"
+
+            st.session_state.beta_steward_chat_history.append({
+                'role': 'assistant',
+                'content': steward_response,
+                'timestamp': datetime.now().isoformat()
+            })
+
+            # Clear pending flags
+            st.session_state.steward_pending_response = False
+            st.session_state.steward_pending_input = None
+            st.rerun()
 
     def _gather_beta_context(self) -> dict:
         """Gather BETA-specific context for Steward.
 
         Returns:
-            dict: Context including PA, current metrics, turn info
+            dict: Context including PA, current metrics, turn info, last user input
         """
         context = {}
 
@@ -179,22 +240,23 @@ class BetaStewardPanel:
         if pa:
             context['primacy_attractor'] = pa
 
-        # Get current turn number
+        # Get current turn number (this is the NEXT turn to play, so completed = current - 1)
         current_turn = st.session_state.get('beta_current_turn', 1)
         context['current_turn'] = current_turn
+        completed_turns = current_turn - 1
 
-        # Get latest calibration card values from the most recent turn data
-        # Try multiple sources for robustness
+        # ============================================================
+        # PRIMARY SOURCE: beta_turn_X_data (where BETA mode stores data)
+        # This is the CORRECT and AUTHORITATIVE source for BETA mode
+        # ============================================================
+        latest_turn_data = None
+        for turn_num in range(completed_turns, 0, -1):
+            turn_data = st.session_state.get(f'beta_turn_{turn_num}_data', {})
+            if turn_data:
+                latest_turn_data = turn_data
+                telos_analysis = turn_data.get('telos_analysis', {})
 
-        # Source 1: state_manager turns
-        state_manager = st.session_state.get('state_manager')
-        if state_manager and hasattr(state_manager, 'state') and hasattr(state_manager.state, 'turns'):
-            turns = state_manager.state.turns
-            if turns:
-                latest_turn = turns[-1]
-                telos_analysis = latest_turn.get('telos_analysis', {})
-
-                # Extract the three metrics
+                # Extract the three calibration metrics
                 f_user = telos_analysis.get('user_pa_fidelity')
                 f_ai = telos_analysis.get('ai_pa_fidelity')
                 ps = telos_analysis.get('primacy_state_score')
@@ -206,20 +268,43 @@ class BetaStewardPanel:
                 if ps is not None:
                     context['primacy_state'] = ps
 
-        # Source 2: Direct beta_turn_X_data storage (fallback)
+                # Get the user's input that produced these metrics
+                user_input = turn_data.get('user_input', '')
+                if user_input:
+                    context['last_user_input'] = user_input
+
+                # Get intervention info
+                if telos_analysis.get('intervention_triggered'):
+                    context['intervention_triggered'] = True
+                    context['intervention_reason'] = telos_analysis.get('intervention_reason', '')
+                else:
+                    context['intervention_triggered'] = False
+
+                # Found data - stop searching
+                break
+
+        # ============================================================
+        # FALLBACK: state_manager.state.turns (original TELOS flow)
+        # Only used if beta_turn_X_data didn't have metrics
+        # ============================================================
         if 'f_user' not in context:
-            for turn_num in range(current_turn - 1, 0, -1):
-                turn_data = st.session_state.get(f'beta_turn_{turn_num}_data', {})
-                if turn_data:
-                    telos_analysis = turn_data.get('telos_analysis', {})
-                    if telos_analysis.get('user_pa_fidelity'):
-                        context['f_user'] = telos_analysis['user_pa_fidelity']
-                    if telos_analysis.get('ai_pa_fidelity'):
-                        context['f_ai'] = telos_analysis['ai_pa_fidelity']
-                    if telos_analysis.get('primacy_state_score'):
-                        context['primacy_state'] = telos_analysis['primacy_state_score']
-                    if 'f_user' in context:
-                        break
+            state_manager = st.session_state.get('state_manager')
+            if state_manager and hasattr(state_manager, 'state') and hasattr(state_manager.state, 'turns'):
+                turns = state_manager.state.turns
+                if turns:
+                    latest_turn = turns[-1]
+                    telos_analysis = latest_turn.get('telos_analysis', {})
+
+                    f_user = telos_analysis.get('user_pa_fidelity')
+                    f_ai = telos_analysis.get('ai_pa_fidelity')
+                    ps = telos_analysis.get('primacy_state_score')
+
+                    if f_user is not None:
+                        context['f_user'] = f_user
+                    if f_ai is not None:
+                        context['f_ai'] = f_ai
+                    if ps is not None:
+                        context['primacy_state'] = ps
 
         return context
 

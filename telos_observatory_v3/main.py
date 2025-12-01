@@ -820,13 +820,23 @@ def main():
 
     # Initialize active tab if not set - default to DEMO for public users
     if 'active_tab' not in st.session_state:
-        # Check for admin mode or beta direct access
+        # Check for admin mode or direct access bypasses
         query_params = st.query_params
         is_admin = query_params.get("admin") == "true"
         beta_direct = query_params.get("beta") == "true"
+        telos_direct = query_params.get("telos") == "true"
 
         if is_admin:
             st.session_state.active_tab = "DEVOPS"
+        elif telos_direct:
+            # TELOS BYPASS: Skip demo/beta, go directly to full TELOS open mode
+            # Auto-grant all consents and mark completions
+            st.session_state.beta_consent_given = True
+            st.session_state.demo_completed = True
+            st.session_state.beta_completed = True
+            st.session_state.pa_established = True  # Skip PA onboarding
+            st.session_state.telos_demo_mode = False  # Disable demo mode
+            st.session_state.active_tab = "TELOS"
         elif beta_direct:
             # Auto-grant consent for direct beta access (for grant demos)
             st.session_state.beta_consent_given = True
@@ -839,14 +849,15 @@ def main():
     # DEVOPS bypasses all restrictions for testing
     active_tab = st.session_state.active_tab
 
-    # Check for admin mode or beta direct access
+    # Check for admin mode or direct access bypasses
     query_params = st.query_params
     is_admin = query_params.get("admin") == "true"
     beta_direct = query_params.get("beta") == "true"
+    telos_direct = query_params.get("telos") == "true"
 
     # If user is trying to access BETA or TELOS without consent, show consent screen
-    # DEVOPS mode, admin mode, and beta direct mode bypass consent requirement
-    if (active_tab in ["BETA", "TELOS"]) and not has_beta_consent and not is_admin and not beta_direct:
+    # DEVOPS mode, admin mode, beta direct mode, and telos direct mode bypass consent requirement
+    if (active_tab in ["BETA", "TELOS"]) and not has_beta_consent and not is_admin and not beta_direct and not telos_direct:
         # Show consent screen for BETA/TELOS access
         beta_onboarding.render()
         return  # Stop rendering anything else until consent is given
@@ -1082,7 +1093,23 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
 
     # Removed unlock progression message - now shown in Steward intro
 
-    st.markdown("<hr style='border: 1px solid #F4D03F; margin: 10px 0;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border: 1px solid #F4D03F; margin: 5px 0;'>", unsafe_allow_html=True)
+
+    # Add CSS to reduce vertical spacing after divider in BETA mode
+    if st.session_state.get('active_tab') == 'BETA':
+        st.markdown("""
+        <style>
+        /* Reduce space after the gold divider line */
+        hr + div {
+            margin-top: 5px !important;
+            padding-top: 0 !important;
+        }
+        /* Reduce main block container padding */
+        .main .block-container {
+            padding-top: 1rem !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
     # Hide sidebar for DEMO and BETA modes - only show in TELOS and DEVOPS
     active_tab = st.session_state.get('active_tab', 'DEMO')

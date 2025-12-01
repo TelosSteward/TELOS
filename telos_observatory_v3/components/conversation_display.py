@@ -17,8 +17,8 @@ logger = logging.getLogger(__name__)
 def _get_inline_copy_onclick(element_id: str) -> str:
     """Generate an inline onclick handler for copy buttons that works in Streamlit.
 
-    This creates a self-contained JavaScript copy function that doesn't rely on
-    cross-frame function calls, which are unreliable in Streamlit's rendering context.
+    Uses the global telosCopyText function defined in _render_main_chat for
+    reliable cross-frame clipboard access.
 
     Args:
         element_id: The ID of the element whose text content should be copied
@@ -27,52 +27,9 @@ def _get_inline_copy_onclick(element_id: str) -> str:
         JavaScript code for the onclick handler
     """
     # Escape the element_id for safe inclusion in JavaScript
-    safe_id = element_id.replace("'", "\\'")
-
-    # Self-contained copy logic that works in any context
-    return f"""(function(btn) {{
-        try {{
-            var el = document.getElementById('{safe_id}');
-            if (!el) {{
-                btn.textContent = 'Not found';
-                setTimeout(function() {{ btn.textContent = 'Copy'; }}, 2000);
-                return;
-            }}
-            var text = el.innerText || el.textContent || '';
-            text = text.replace(/Copy$/g, '').trim();
-            if (navigator.clipboard && navigator.clipboard.writeText) {{
-                navigator.clipboard.writeText(text).then(function() {{
-                    btn.textContent = 'Copied!';
-                    setTimeout(function() {{ btn.textContent = 'Copy'; }}, 2000);
-                }}).catch(function() {{
-                    var ta = document.createElement('textarea');
-                    ta.value = text;
-                    ta.style.position = 'fixed';
-                    ta.style.left = '-9999px';
-                    document.body.appendChild(ta);
-                    ta.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(ta);
-                    btn.textContent = 'Copied!';
-                    setTimeout(function() {{ btn.textContent = 'Copy'; }}, 2000);
-                }});
-            }} else {{
-                var ta = document.createElement('textarea');
-                ta.value = text;
-                ta.style.position = 'fixed';
-                ta.style.left = '-9999px';
-                document.body.appendChild(ta);
-                ta.select();
-                document.execCommand('copy');
-                document.body.removeChild(ta);
-                btn.textContent = 'Copied!';
-                setTimeout(function() {{ btn.textContent = 'Copy'; }}, 2000);
-            }}
-        }} catch(e) {{
-            btn.textContent = 'Error';
-            setTimeout(function() {{ btn.textContent = 'Copy'; }}, 2000);
-        }}
-    }})(this)"""
+    safe_id = html.escape(element_id.replace("'", "\\'"))
+    # Use the global copy function defined in the script tag
+    return f"if(window.parent.telosCopyText){{window.parent.telosCopyText('{safe_id}',this)}}else{{this.textContent='Error'}}"
 
 
 class ConversationDisplay:
@@ -3821,26 +3778,133 @@ Current Turn Data:
         beta_mode = active_tab == "BETA"
 
         if beta_mode:
-            # BETA mode: Simple 2-column layout - text area fills the form, send button on right
+            # BETA mode: CSS to fix spacing, style buttons, and add animations
+            st.markdown("""
+            <style>
+            /* Hide "Press Enter to submit form" hint */
+            .stForm [data-testid="stFormSubmitButton"] ~ small,
+            .stForm small[class*="text"],
+            div[data-testid="stForm"] small {
+                display: none !important;
+            }
+
+            /* AGGRESSIVE spacing removal for BETA mode bottom section */
+            .main [data-testid="stVerticalBlock"] {
+                gap: 0 !important;
+            }
+
+            .main [data-testid="stVerticalBlock"] > div {
+                margin-bottom: 0 !important;
+                padding-bottom: 0 !important;
+            }
+
+            [data-testid="element-container"] {
+                margin-bottom: 0 !important;
+            }
+
+            /* Form styling - minimal margins */
+            [data-testid="stForm"] {
+                padding: 0 !important;
+                border: none !important;
+                margin-top: 8px !important;
+                margin-bottom: 8px !important;
+            }
+
+            [data-testid="stForm"] > div {
+                gap: 0.25rem !important;
+            }
+
+            /* Button containers - tight margins */
+            .stButton {
+                margin-top: 2px !important;
+                margin-bottom: 2px !important;
+            }
+
+            .main .stButton button {
+                margin-top: 0 !important;
+                margin-bottom: 0 !important;
+            }
+
+            [data-testid="stForm"] [data-testid="column"] {
+                padding: 0 !important;
+            }
+
+            [data-testid="stMarkdown"] {
+                margin-bottom: 0 !important;
+            }
+
+            .main .block-container > div:last-child {
+                padding-top: 0 !important;
+            }
+
+            /* ============================================ */
+            /* SEND BUTTON STYLING - Gold theme            */
+            /* ============================================ */
+            [data-testid="stForm"] button[kind="formSubmit"],
+            [data-testid="stForm"] button[type="submit"] {
+                background-color: #1a1a1a !important;
+                color: #F4D03F !important;
+                border: 2px solid #F4D03F !important;
+                border-radius: 8px !important;
+                font-weight: bold !important;
+                font-size: 16px !important;
+                padding: 8px 16px !important;
+                transition: all 0.2s ease !important;
+                height: 50px !important;
+            }
+
+            [data-testid="stForm"] button[kind="formSubmit"]:hover,
+            [data-testid="stForm"] button[type="submit"]:hover {
+                background-color: #F4D03F !important;
+                color: #1a1a1a !important;
+                box-shadow: 0 0 12px rgba(244, 208, 63, 0.5) !important;
+            }
+
+            /* ============================================ */
+            /* THINKING ANIMATION                          */
+            /* ============================================ */
+            @keyframes thinking-pulse {
+                0%, 100% { opacity: 0.4; }
+                50% { opacity: 1.0; }
+            }
+
+            .thinking-indicator {
+                animation: thinking-pulse 1.5s ease-in-out infinite;
+            }
+
+            @keyframes dot-bounce {
+                0%, 80%, 100% { transform: translateY(0); }
+                40% { transform: translateY(-8px); }
+            }
+
+            .thinking-dots span {
+                display: inline-block;
+                animation: dot-bounce 1.4s infinite ease-in-out both;
+            }
+
+            .thinking-dots span:nth-child(1) { animation-delay: -0.32s; }
+            .thinking-dots span:nth-child(2) { animation-delay: -0.16s; }
+            .thinking-dots span:nth-child(3) { animation-delay: 0s; }
+            </style>
+            """, unsafe_allow_html=True)
+
+            # BETA mode: Stacked layout - text area on top, send button below
+            # This gives more space and avoids horizontal spacing issues
             with st.form(key="message_form", clear_on_submit=True):
-                col_input, col_send = st.columns([8.5, 1.5])
+                # Text area takes full width
+                user_input = st.text_area(
+                    "Message",
+                    placeholder="",
+                    key="main_chat_input_clean",
+                    label_visibility="collapsed",
+                    height=80
+                )
 
-                # Text input takes most of the space - NO placeholder text
-                with col_input:
-                    user_input = st.text_area(
-                        "Message",
-                        placeholder="",
-                        key="main_chat_input_clean",
-                        label_visibility="collapsed",
-                        height=50
-                    )
-
-                # Send button on the right
-                with col_send:
-                    send_button = st.form_submit_button(
-                        "Send",
-                        use_container_width=True
-                    )
+                # Send button below the text area - full width, styled with gold theme
+                send_button = st.form_submit_button(
+                    "Send",
+                    use_container_width=True
+                )
 
             # Add JavaScript for Enter key submission AND auto-expanding textarea
             import streamlit.components.v1 as components

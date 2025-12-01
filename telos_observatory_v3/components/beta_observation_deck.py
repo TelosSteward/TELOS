@@ -31,7 +31,7 @@ class BetaObservationDeck:
         col_spacer_left, col_content, col_spacer_right = st.columns([1.5, 7.0, 1.5])
 
         with col_content:
-            # Toggle button at top
+            # Toggle button at top - minimal spacing
             deck_label = "🔭 Close Observation Deck" if st.session_state.beta_deck_visible else "🔭 Open Observation Deck"
             if st.button(deck_label, key="beta_deck_toggle_top", use_container_width=True):
                 st.session_state.beta_deck_visible = not st.session_state.beta_deck_visible
@@ -39,7 +39,7 @@ class BetaObservationDeck:
 
             # Render deck content if visible
             if st.session_state.beta_deck_visible:
-                st.markdown("<div style='margin: 10px 0;'></div>", unsafe_allow_html=True)
+                st.markdown("<div style='margin: 5px 0;'></div>", unsafe_allow_html=True)
                 self._render_pa_summary()
 
                 # Only show fidelity if there's at least one turn

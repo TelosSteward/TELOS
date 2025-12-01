@@ -225,13 +225,13 @@ class BetaResponseManager:
             response_data['intervention_strength'] = intervention_strength
             response_data['shown_source'] = 'telos'
 
-            # Generate TELOS governed response
-            telos_data = self._generate_telos_response(user_input, turn_number)
+            # Generate TELOS governed response (pass user_fidelity for correct PS calculation)
+            telos_data = self._generate_telos_response(user_input, turn_number, user_input_fidelity=user_fidelity)
 
             # Use TELOS math for intervention decisions - outside basin means intervention
             telos_data['intervention_triggered'] = True  # Intervention when outside basin
             telos_data['intervention_reason'] = intervention_reason
-            telos_data['user_pa_fidelity'] = user_fidelity  # Store for Steward to access
+            # user_pa_fidelity is now set inside _generate_telos_response() for correct PS calculation
             telos_data['fidelity_level'] = response_data['fidelity_level']
             telos_data['in_basin'] = False  # Outside basin
 
@@ -336,13 +336,15 @@ class BetaResponseManager:
         else:
             return "red"
 
-    def _generate_telos_response(self, user_input: str, turn_number: int) -> Dict:
+    def _generate_telos_response(self, user_input: str, turn_number: int, user_input_fidelity: float = None) -> Dict:
         """
         Generate TELOS response with ACTIVE governance.
 
         Args:
             user_input: User's message
             turn_number: Current turn
+            user_input_fidelity: Pre-calculated USER INPUT to User PA similarity (F_user)
+                                 This is deterministic and must be passed in from caller.
 
         Returns:
             Dict with TELOS response and metrics
@@ -412,18 +414,21 @@ class BetaResponseManager:
                         )
 
                         # Store dual PA fidelity values in telos_data
-                        # NOTE: user_pa_fidelity is already set correctly using _calculate_user_fidelity()
-                        # which computes USER INPUT to User PA similarity (deterministic).
-                        # ps_metrics.f_user measures RESPONSE to User PA which is NOT what we want for F_user.
-                        # Only update if not already set (shouldn't happen, but defensive):
-                        if 'user_pa_fidelity' not in telos_data:
+                        # CRITICAL: Use user_input_fidelity (passed from caller) for F_user, NOT ps_metrics.f_user
+                        # ps_metrics.f_user = RESPONSE to User PA (not what we want for user fidelity)
+                        # user_input_fidelity = USER INPUT to User PA (deterministic, correct value)
+                        if user_input_fidelity is not None:
+                            telos_data['user_pa_fidelity'] = user_input_fidelity
+                        else:
+                            # Fallback only if not passed (shouldn't happen in normal flow)
+                            logger.warning("⚠️ user_input_fidelity not passed to _generate_telos_response - using ps_metrics.f_user as fallback")
                             telos_data['user_pa_fidelity'] = ps_metrics.f_user
+
                         # AI fidelity correctly uses response embedding to AI PA
                         telos_data['ai_pa_fidelity'] = ps_metrics.f_ai
                         telos_data['pa_correlation'] = ps_metrics.rho_pa
 
-                        # FIX: Recalculate PS using the DISPLAYED F_user (USER INPUT fidelity)
-                        # not ps_metrics.ps_score which uses RESPONSE fidelity to User PA
+                        # Calculate PS using the CORRECT F_user (USER INPUT fidelity from caller)
                         # Formula: PS = harmonic_mean(F_user, F_AI) - pure harmonic mean, no rho_PA scaling
                         displayed_f_user = telos_data['user_pa_fidelity']
                         f_ai = ps_metrics.f_ai
