@@ -21,11 +21,11 @@ class BetaSequenceGenerator:
 
     def generate_session_sequence(self) -> Dict:
         """
-        Generate a complete test sequence for a 15-turn BETA session.
+        Generate a complete test sequence for a 5-turn BETA session.
 
-        NEW PATTERN: Alternating single-blind and head-to-head starting at turn 1
-        - Odd turns (1,3,5,7,9,11,13,15): Single-blind (8 turns - 5 TELOS, 3 native)
-        - Even turns (2,4,6,8,10,12,14): Head-to-head both (7 turns)
+        SIMPLIFIED PATTERN for quick testing:
+        - Odd turns (1,3,5): Single-blind (3 turns - 2 TELOS, 1 native)
+        - Even turns (2,4): Head-to-head both (2 turns)
 
         Returns:
             Dict with turn assignments and metadata
@@ -42,13 +42,13 @@ class BetaSequenceGenerator:
             }
         }
 
-        # Create balanced pool for single-blind turns (8 total odd turns)
-        # 5 TELOS (62.5%), 3 native (37.5%) for slight TELOS bias
-        single_blind_pool = ['telos'] * 5 + ['native'] * 3
+        # Create balanced pool for single-blind turns (3 total odd turns)
+        # 2 TELOS (66%), 1 native (33%) for slight TELOS bias
+        single_blind_pool = ['telos'] * 2 + ['native'] * 1
         random.shuffle(single_blind_pool)
         single_index = 0
 
-        for turn in range(1, 16):
+        for turn in range(1, 6):
             if turn % 2 == 0:
                 # Even turns: Head-to-head (always show both)
                 sequence['turns'][turn] = {

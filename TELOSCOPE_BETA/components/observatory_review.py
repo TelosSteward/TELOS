@@ -28,8 +28,8 @@ class ObservatoryReview:
 
         # Check if BETA is complete
         beta_turns = st.session_state.get('beta_turn_count', 0)
-        if beta_turns < 15:
-            st.warning("Complete BETA testing (15 turns) to unlock full Observatory review")
+        if beta_turns < 5:
+            st.warning("Complete BETA testing (5 turns) to unlock full Observatory review")
             return
 
         # Header
