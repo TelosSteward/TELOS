@@ -101,3 +101,14 @@ deprecated/
 
 # Research and development utilities (keep local only)
 research/
+
+# Beta consent logs (privacy protection)
+beta_consents/
+consent_log.json
+
+# Beta data (privacy protection)
+beta_data/
+
+# Test screenshots and artifacts
+*.png
+.playwright-mcp/
