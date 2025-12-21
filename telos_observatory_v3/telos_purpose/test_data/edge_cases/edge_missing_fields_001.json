@@ -1,0 +1,18 @@
+{
+  "session_id": "edge_missing_fields_001",
+  "total_turns": 3,
+  "turns": [
+    {
+      "turn_number": 1
+    },
+    {
+      "turn_number": 2,
+      "fidelity": 0.8
+    },
+    {
+      "turn_number": 3,
+      "user_input": "Partial message",
+      "fidelity": 0.75
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "session_id": "edge_missing_fidelity_001",
+  "timestamp": "2025-10-28T12:04:26.759745",
+  "total_turns": 5,
+  "avg_fidelity": null,
+  "turns": [
+    {
+      "turn_number": 1,
+      "user_input": "Message 1",
+      "user_message": "Message 1",
+      "native_response": "Native response 1",
+      "telos_response": "TELOS response 1",
+      "assistant_response": "TELOS response 1",
+      "fidelity": null,
+      "intervention_applied": false,
+      "basin_membership": null,
+      "timestamp": "2025-10-28T12:04:26.759748"
+    },
+    {
+      "turn_number": 2,
+      "user_input": "Message 2",
+      "user_message": "Message 2",
+      "native_response": "Native response 2",
+      "telos_response": "TELOS response 2",
+      "assistant_response": "TELOS response 2",
+      "fidelity": null,
+      "intervention_applied": false,
+      "basin_membership": null,
+      "timestamp": "2025-10-28T12:04:26.759750"
+    },
+    {
+      "turn_number": 3,
+      "user_input": "Message 3",
+      "user_message": "Message 3",
+      "native_response": "Native response 3",
+      "telos_response": "TELOS response 3",
+      "assistant_response": "TELOS response 3",
+      "fidelity": null,
+      "intervention_applied": false,
+      "basin_membership": null,
+      "timestamp": "2025-10-28T12:04:26.759752"
+    },
+    {
+      "turn_number": 4,
+      "user_input": "Message 4",
+      "user_message": "Message 4",
+      "native_response": "Native response 4",
+      "telos_response": "TELOS response 4",
+      "assistant_response": "TELOS response 4",
+      "fidelity": null,
+      "intervention_applied": false,
+      "basin_membership": null,
+      "timestamp": "2025-10-28T12:04:26.759754"
+    },
+    {
+      "turn_number": 5,
+      "user_input": "Message 5",
+      "user_message": "Message 5",
+      "native_response": "Native response 5",
+      "telos_response": "TELOS response 5",
+      "assistant_response": "TELOS response 5",
+      "fidelity": null,
+      "intervention_applied": false,
+      "basin_membership": null,
+      "timestamp": "2025-10-28T12:04:26.759756"
+    }
+  ],
+  "config": {
+    "purpose": [
+      "Test missing data handling"
+    ],
+    "scope": [
+      "Edge case testing"
+    ],
+    "boundaries": []
+  }
+}
