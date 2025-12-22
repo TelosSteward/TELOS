@@ -138,7 +138,7 @@ Large language models do not maintain alignment reliably across multi-turn inter
 
 The measured degradation: **20-40% reliability loss** across extended dialogues.
 
-This is not a future problem to be solved. It is happening now, in production systems, across every major provider. Users experience it as frustration: "I already told you not to do that." Enterprises experience it as compliance risk: governance constraints that were declared at session start silently erode by turn 30.
+This is not a future problem to be solved. It is happening now, in production systems, across every major provider. Users experience it as frustration: "I already told you not to do that." Enterprises experience it as compliance risk: governance constraints that were declared at session start silently erode by turn 15.
 
 ### 1.2 Real-World Consequences
 
@@ -192,8 +192,8 @@ The EU AI Act creates specific obligations for chatbots that will fundamentally 
 
 | Date | Requirement | Commercial Impact |
 |------|-------------|-------------------|
-| **Feb 2, 2025** | Transparency obligations | All chatbots must disclose AI nature |
-| **Feb 2, 2025** | AI literacy requirements | Staff training on AI capabilities/limitations mandatory |
+| **Feb 2, 2026** | Transparency obligations | All chatbots must disclose AI nature |
+| **Feb 2, 2026** | AI literacy requirements | Staff training on AI capabilities/limitations mandatory |
 | **Aug 2, 2026** | Full compliance | High-risk systems require complete governance documentation |
 
 **Key Requirements (Article 52 - Limited Risk Systems):**
@@ -289,7 +289,7 @@ Regulatory frameworks are converging on a common principle: **governance must be
 
 #### The Compliance Vacuum and Approaching Deadlines
 
-**As of November 2024, no standardized technical framework exists for Article 72 post-market monitoring.**
+**As of November 2025, no standardized technical framework exists for Article 72 post-market monitoring.**
 
 **California SB 53 (Transparency in Frontier Artificial Intelligence Act)** was signed into law on September 29, 2025, and takes effect **January 1, 2026**—creating the first state-level AI safety compliance requirements in the United States. The legislation requires frontier AI developers to:
 
@@ -337,7 +337,7 @@ AI System (decides acceptable behavior) → Humans (receive outputs)
 ```
 Human Authority (defines Primacy Attractor)
     ↓
-Steward (enforces alignment)
+Proportional Control (enforces alignment via F_t = K·e_t)
     ↓
 AI/LLM (generates outputs under governance)
 ```
@@ -349,7 +349,7 @@ This architectural inversion addresses the core concern in AI governance: **as s
 TELOS ensures:
 - **Humans remain the hierarchical apex**: Constitutional requirements are human-authored
 - **AI remains the governed subsystem**: Models generate outputs within human-defined constraints
-- **Steward serves as enforcement layer**: Operating on behalf of human authority, not AI autonomy
+- **Proportional correction enforces boundaries**: Operating on behalf of human authority, not AI autonomy
 
 This addresses EU AI Act "human oversight" requirements directly and aligns with Meaningful Human Control (MHC) frameworks in AI ethics literature. The Constitutional Filter™ doesn't align AI to AI preferences—it enforces **human constitutional law** over AI behavior through orchestration-layer architecture.
 
@@ -653,8 +653,8 @@ TELOS operates at the **orchestration layer**—the middleware between applicati
         ↓
 [TELOS Orchestration Layer] ← Constitutional Filter™ operates here
     ├── Primacy Attractor (Human-defined constitutional law)
-    ├── Fidelity Measurement (Continuous monitoring)
-    ├── Steward (Proportional control enforcement)
+    ├── Fidelity Measurement (Continuous f_t monitoring)
+    ├── Proportional Control (F_t = K·e_t enforcement)
     └── LLM Interface (API routing)
         ↓
 [Frontier LLM API] (OpenAI, Anthropic, Mistral, etc.)
@@ -670,7 +670,7 @@ TELOS operates at the **orchestration layer**—the middleware between applicati
 4. **Audit Trail**: Complete telemetry independent of model provider
 5. **Regulatory Compliance**: Generates documentation that Article 72 requires
 
-The Steward component serves as **Primacy Governor**, measuring every API call against human-defined constitutional constraints and intervening when mathematical drift exceeds thresholds. This is fundamentally different from:
+The proportional control system serves as **Primacy Governor**, measuring every API call against human-defined constitutional constraints and intervening when mathematical drift exceeds thresholds. This is fundamentally different from:
 
 - **Prompt engineering** (operates at request-time, no continuous measurement)
 - **Fine-tuning** (modifies model weights, provider-specific)

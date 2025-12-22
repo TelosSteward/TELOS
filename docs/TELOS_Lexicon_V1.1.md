@@ -32,7 +32,7 @@ f_t = \cos(x_t, \hat{a}) = \frac{x_t \cdot \hat{a}}{|x_t||\hat{a}|}
 ---
 
 ### Gravity (F_t)
-Proportional corrective force applied by the **Mitigation Layer / Steward** when decoupling occurs.  
+Proportional corrective force applied when decoupling occurs.  
 \[
 F_t = K \cdot e_t = K \cdot |x_t - \hat{a}|
 \]
@@ -82,7 +82,7 @@ It represents the precise mathematical onset of governance failure.
 f_t < \tau_b
 \]
 
-Triggers proportional correction by the **Mitigation Layer (Steward)**.
+Triggers proportional correction.
 
 ---
 
@@ -97,16 +97,22 @@ Used in narrative materials, not telemetry.
 
 ## IV. GOVERNANCE MECHANISMS
 
-### Mitigation Layer / Steward (Unified Term)
-The active control subsystem responsible for detecting, measuring, and correcting attractor decoupling in real time.  
-Operates autonomously in runtime and passively in observation or counterfactual analysis.
+### Proportional Correction
+When fidelity drops below threshold, the system applies corrective force proportional to deviation:
 
-**Capabilities:**
-- Measures fidelity at each conversational turn  
-- Calculates proportional correction (F = K·e_t)  
-- Applies or simulates correction (depending on mode)  
-- Logs interventions and recovery trajectories  
-- Hands control to Escalator if unrecoverable  
+\[
+F_t = K \cdot e_t \quad \text{where} \quad e_t = \tau_b - f_t
+\]
+
+**Correction is triggered when:**
+- \(f_t < \tau_b\) (fidelity below basin threshold)
+
+**The correction loop:**
+1. Measure fidelity at each turn
+2. If \(f_t < \tau_b\), calculate correction strength
+3. Apply graduated intervention (context injection, regeneration, or block)
+4. Log intervention and recovery trajectory
+5. If unrecoverable, hand to Escalator
 
 **Runtime Modes:**
 | Mode | Description |
