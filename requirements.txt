@@ -1,38 +1,26 @@
 # TELOS Core Dependencies
-
 # Python 3.8+
 
-# LLM API Clients
-
-anthropic>=0.18.0  # Powers TELOS governance and AI PA derivation
-mistralai>=0.1.0   # Optional: Alternative LLM backend
+# LLM API Client
+mistralai>=0.1.0   # Primary: Powers TELOS governance and embeddings
 
 # Embedding Models
-
 sentence-transformers>=2.2.0
 torch>=2.0.0
 
 # Data Processing
-
 numpy>=1.24.0
 pandas>=2.0.0
 
 # Utilities
-
 python-dotenv>=1.0.0
+pydantic>=2.0.0    # Required for evidence_schema.py
 
-# Optional: Dashboard & Visualization
-
-streamlit>=1.28.0  # For live dashboards
+# Dashboard & Visualization (Required)
+streamlit>=1.28.0  # Entry point: streamlit run telos_observatory_v3/main.py
 plotly>=5.17.0     # For visualizations
 matplotlib>=3.7.0  # For plotting
 
 # Optional: Testing & Validation
-
 pytest>=7.4.0
 pytest-cov>=4.1.0
-
-# Optional: Documentation
-
-mkdocs>=1.5.0
-mkdocs-material>=9.4.0

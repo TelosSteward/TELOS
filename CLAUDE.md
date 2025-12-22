@@ -1,6 +1,6 @@
 # TELOS Observatory V3 - Development Guide
 
-**Working Directory:** `/Users/brunnerjf/Desktop/telos_privacy`
+**Working Directory:** `/Users/brunnerjf/Desktop/TELOS_Master`
 **Entry Point:** `streamlit run telos_observatory_v3/main.py --server.port 8501`
 **Required:** `MISTRAL_API_KEY` in `.env`
 
@@ -248,13 +248,13 @@ strength = min(K_ATTRACTOR × error_signal, 1.0)  where K_ATTRACTOR = 1.5
 ## Environment Setup
 
 ```bash
-cd /Users/brunnerjf/Desktop/telos_privacy
+cd /Users/brunnerjf/Desktop/TELOS_Master
 
 # Ensure .env has:
 # MISTRAL_API_KEY=<your_key>
 
 # Set Python path
-export PYTHONPATH=/Users/brunnerjf/Desktop/telos_privacy
+export PYTHONPATH=/Users/brunnerjf/Desktop/TELOS_Master
 
 # Launch
 streamlit run telos_observatory_v3/main.py --server.port 8501

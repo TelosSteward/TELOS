@@ -35,7 +35,7 @@
 
 ## What is TELOS Observatory?
 
-TELOS (Telically Entrained Linguistic Operational Substrate) is a mathematical governance framework for AI alignment. It uses **Primacy Attractors** (embedding-space representations of user purpose) to detect and correct conversational drift in real-time.
+TELOS  is a mathematical governance framework for AI alignment. It uses **Primacy Attractors** (embedding-space representations of user purpose) to detect and correct conversational drift in real-time.
 
 **Core Innovation**: Two-layer fidelity detection - baseline normalization catches extreme off-topic content, basin membership catches purpose drift.
 
@@ -60,8 +60,11 @@ Opens in browser at `http://localhost:8501`
 See [REPRODUCTION_GUIDE.md](docs/REPRODUCTION_GUIDE.md) for step-by-step instructions.
 
 ```bash
-# Run adversarial validation (15 minutes)
-python tests/adversarial_validation/live_red_team.py
+# Run internal validation suite
+python3 telos_observatory_v3/telos_purpose/validation/run_internal_test0.py
+
+# Adversarial validation results are pre-computed in validation/ directory
+# See validation/telos_complete_validation_dataset.json
 ```
 
 ---
