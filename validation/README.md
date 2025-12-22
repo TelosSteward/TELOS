@@ -33,11 +33,67 @@ Official validation data for TELOS AI governance framework.
 
 ---
 
+## Reproducing the Validation
+
+### Prerequisites
+
+1. **Install Ollama** (local embedding server):
+   ```bash
+   # macOS
+   brew install ollama
+
+   # Or download from https://ollama.ai
+   ```
+
+2. **Pull the embedding model**:
+   ```bash
+   ollama pull nomic-embed-text
+   ollama serve  # Start the server (runs on localhost:11434)
+   ```
+
+3. **Clone benchmark datasets** (not included in repo to keep size small):
+   ```bash
+   cd validation/
+
+   # MedSafetyBench (NeurIPS 2024)
+   git clone https://github.com/AI4LIFE-GROUP/med-safety-bench
+
+   # HarmBench (Center for AI Safety)
+   git clone https://github.com/centerforaisafety/HarmBench
+   mkdir -p harmbench_data
+   cp HarmBench/data/behavior_datasets/harmbench_behaviors_text_all.csv harmbench_data/
+   ```
+
+### Run Validation
+
+```bash
+cd validation/
+
+# Run MedSafetyBench validation (900 attacks, ~15 min)
+python3 run_medsafetybench_validation.py
+
+# Run HarmBench validation (400 attacks, ~7 min)
+python3 run_harmbench_validation.py
+
+# Quick test mode (10 attacks each)
+python3 run_medsafetybench_validation.py --quick
+python3 run_harmbench_validation.py --quick
+```
+
+### Expected Output
+
+- `medsafetybench_validation_results.json` - Per-attack forensic traces
+- `harmbench_validation_results.json` - Per-attack forensic traces
+- Console output showing 0% ASR, 100% VDR
+
+---
+
 ## Files
 
+- **`telos_validation_dataset_zenodo.json`** - Consolidated Zenodo dataset (v2.0) with all 1,300 per-attack traces
 - **`telos_complete_validation_dataset.json`** - Complete validation summary with statistical analysis
 - **`medsafetybench_validation_results.json`** - Detailed MedSafetyBench results (900 attacks)
-- **`harmbench_validation_results_summary.json`** - HarmBench aggregate results (400 attacks)
+- **`harmbench_validation_results.json`** - HarmBench results (400 attacks)
 
 ---
 

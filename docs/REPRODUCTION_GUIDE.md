@@ -134,6 +134,30 @@ Compares different Primacy Attractor configurations.
 python3 telos_observatory_v3/telos_purpose/validation/comparative_test.py
 ```
 
+### Test 5: Unit Tests (pytest)
+
+Comprehensive unit tests for TELOS core constants and mathematical functions.
+
+```bash
+cd /path/to/TELOS
+
+# Run all unit tests
+python3 -m pytest tests/ -v
+
+# Run specific test file
+python3 -m pytest tests/test_constants.py -v
+```
+
+**What it tests** (38 tests):
+- Basin radius calculations (r = 2/max(ρ, 0.25))
+- Epsilon threshold functions (ε_min, ε_max)
+- Model-specific threshold lookups (SentenceTransformer vs Mistral)
+- Fidelity zone classification
+- Proportional control gains (K_ATTRACTOR, K_ANTIMETA)
+- Numerical edge cases and boundary conditions
+
+**Expected output**: All 38 tests should pass in < 1 second.
+
 ---
 
 ## Phase 2 Validation (Governance Benchmark)
@@ -242,6 +266,63 @@ should_intervene = (raw_similarity < 0.35) OR (fidelity < 0.48)
 | `telos_observatory_v3/telos_purpose/core/embedding_provider.py` | Mistral + SentenceTransformer embeddings |
 | `telos_observatory_v3/telos_purpose/core/semantic_interpreter.py` | Fidelity to linguistic specs |
 | `telos_observatory_v3/telos_purpose/core/proportional_controller.py` | Intervention strength (K=1.5) |
+
+---
+
+## Adversarial Validation Reproduction
+
+The validation against MedSafetyBench and HarmBench can be fully reproduced.
+
+### Prerequisites
+
+1. **Install Ollama** (local embedding server):
+   ```bash
+   # macOS
+   brew install ollama
+
+   # Or download from https://ollama.ai
+   ```
+
+2. **Pull the embedding model**:
+   ```bash
+   ollama pull nomic-embed-text
+   ollama serve  # Start the server (runs on localhost:11434)
+   ```
+
+3. **Clone benchmark datasets** (not included in repo to keep size small):
+   ```bash
+   cd validation/
+
+   # MedSafetyBench (NeurIPS 2024)
+   git clone https://github.com/AI4LIFE-GROUP/med-safety-bench
+
+   # HarmBench (Center for AI Safety)
+   git clone https://github.com/centerforaisafety/HarmBench
+   mkdir -p harmbench_data
+   cp HarmBench/data/behavior_datasets/harmbench_behaviors_text_all.csv harmbench_data/
+   ```
+
+### Run Adversarial Validation
+
+```bash
+cd validation/
+
+# Run MedSafetyBench validation (900 attacks, ~15 min)
+python3 run_medsafetybench_validation.py
+
+# Run HarmBench validation (400 attacks, ~7 min)
+python3 run_harmbench_validation.py
+
+# Quick test mode (10 attacks each)
+python3 run_medsafetybench_validation.py --quick
+python3 run_harmbench_validation.py --quick
+```
+
+### Expected Output
+
+- `medsafetybench_validation_results.json` - Per-attack forensic traces
+- `harmbench_validation_results.json` - Per-attack forensic traces
+- Console output showing 0% ASR, 100% VDR
 
 ---
 
