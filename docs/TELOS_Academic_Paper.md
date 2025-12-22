@@ -51,7 +51,7 @@ TELOS reconceptualizes AI governance through three key insights:
 This paper makes four primary contributions:
 
 1. **Theoretical:** We prove that external reference points in embedding space enable Lyapunov-stable governance with characterized basin geometry (r = 2/ρ)
-2. **Empirical:** We demonstrate 0% ASR across 84 adversarial attacks, compared to 3.7-43.9% for existing approaches
+2. **Empirical:** We demonstrate 0% ASR across 1,300 adversarial attacks (400 HarmBench + 900 MedSafetyBench), compared to 3.7-43.9% for existing approaches
 3. **Methodological:** We introduce TELOSCOPE, a research instrument for observable AI governance through counterfactual analysis
 4. **Practical:** We provide complete reproducible validation with healthcare-specific implementation achieving HIPAA compliance
 
