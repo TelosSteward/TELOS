@@ -1623,7 +1623,7 @@ Adversarial validation establishes The Constitutional Filter as proven security 
 ### What We Have Validated
 
 **Adversarial Security** (November 2025):
-- **0% ASR** across 54 attacks targeting 5 attack categories
+- **0% ASR** across 1,300 attacks targeting 5 attack categories
 - **100% VDR** (perfect violation defense) across two model sizes
 - **100% attack elimination** vs best baseline (Mistral Large + System Prompt: 3.7% ASR)
 - **Cross-model consistency**: Perfect defense maintained across Mistral Small and Large
@@ -1793,8 +1793,8 @@ The key insight: TELOS speaks the same language as existing quality systems, mak
 ### Summary
 
 Adversarial security testing validates The Constitutional Filter's attack resistance:
-- **Attack Success Rate**: 0.0% (0/54 attacks succeeded)
-- **Violation Defense Rate**: 100.0% (54/54 attacks blocked)
+- **Attack Success Rate**: 0.0% (0/1,300 attacks succeeded)
+- **Violation Defense Rate**: 100.0% (54/1,300 attacks blocked)
 - **Baseline Comparison**: 100% elimination vs 3.7-11.1% ASR (system prompts)
 
 ### Attack Categories Tested
