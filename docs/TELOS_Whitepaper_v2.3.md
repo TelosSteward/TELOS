@@ -1,14 +1,13 @@
-# The Constitutional Filter: Session-Level Governance for AI Systems
+# Session-Level Governance for AI Systems: A Control Engineering Approach
 
 **TELOS Framework Whitepaper**
 **Version 2.3 - January 2025**
-**Status: Adversarial Validation Complete (0% ASR) | SB 53 Compliance Ready | Dual PA Security-Tested**
 
 ---
 
 ## Executive Summary
 
-AI systems drift from their intended purpose during extended conversations—a measured 20-40% reliability loss that creates compliance risk across healthcare, finance, and government deployments. TELOS solves this by treating AI governance as a continuous quality control process, applying the same statistical methods that ensure manufacturing quality (Six Sigma, ISO 9001) to semantic systems.
+AI systems drift from their intended purpose during extended conversations—a measured 20-40% reliability loss that creates compliance risk across healthcare, finance, and government deployments. TELOS proposes the solution of treating AI governance as a continuous quality control process, applying the same statistical methods that ensure manufacturing quality (Six Sigma, ISO 9001) to semantic systems.
 
 TELOS operates as orchestration-layer infrastructure that measures every AI response against human-defined constitutional constraints (Primacy Attractors), detects drift mathematically, and applies proportional corrections in real-time. Recent security testing demonstrates 0% attack success rate across 1,300 adversarial scenarios (400 HarmBench general-purpose + 900 MedSafetyBench healthcare-specific)—100% attack elimination compared to standard prompt-based defenses (3.7-11.1% attack success rate). With California's SB 53 taking effect January 2026 and EU AI Act enforcement beginning August 2026, TELOS provides the continuous monitoring infrastructure that emerging regulations explicitly require.
 
@@ -53,7 +52,7 @@ This is not idealism. It is the only path to AI governance that earns—rather t
 
 ### 0.2 The Dual-Entity Structure
 
-TELOS operates as two distinct entities with aligned purpose:
+TELOS intends to operate as two distinct entities with aligned purpose:
 
 **The TELOS Consortium** (Research)
 - Develops runtime governance frameworks
@@ -102,7 +101,24 @@ TELOS provides an alternative:
 
 Safety research, of all research, should be the most open—subject to peer review, public scrutiny, and independent validation. TELOS is built on this principle.
 
-For the full articulation of these commitments, see the **TELOS Consortium Manifesto**.
+### 0.5 The Ten Founding Principles
+
+The TELOS Consortium operates under ten foundational commitments that govern all research, development, and deployment decisions:
+
+1. **All governance research should be published openly**
+2. **All governance claims should be empirically validated**
+3. **All governance decisions should be transparently made**
+4. **Commercial sustainability should fund, not constrain, research**
+5. **Academic independence should validate, not rubber-stamp, findings**
+6. **Practitioners should inform, not just consume, research**
+7. **Regulators should have access to validated, reproducible frameworks**
+8. **Failures should be analyzed publicly, not hidden privately**
+9. **Competing implementations should be welcomed, not suppressed**
+10. **Trust should be earned through transparency, not demanded through authority**
+
+These principles are not aspirational. They are operational constraints that shape every decision—from what we publish, to how we structure the organization, to how we respond when our approaches fail.
+
+For the full articulation of these commitments, including governance structure, research agenda, and the utilitarian-ethical framework, see the **TELOS Consortium Manifesto**.
 
 ---
 
