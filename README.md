@@ -101,10 +101,9 @@ should_intervene = (raw_similarity < 0.35) OR (fidelity < 0.48)
 
 ## Key Features
 
-- **Steward Lens**: Real-time governance metrics and intervention tracking
+- **Alignment Lens**: Real-time governance metrics and intervention tracking
 - **TELOSCOPE**: Mathematical transparency window showing fidelity calculations
 - **Turn Navigation**: Time-travel through conversation history
-- **Evidence Export**: JSON, CSV, Markdown transcripts for research
 
 ---
 
