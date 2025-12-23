@@ -12,6 +12,7 @@
 |---------|-----|-------------|
 | **Adversarial Validation** | [10.5281/zenodo.17702890](https://doi.org/10.5281/zenodo.17702890) | 1,300 attacks, 100% harm prevention |
 | **Governance Benchmark** | [10.5281/zenodo.18009153](https://doi.org/10.5281/zenodo.18009153) | 46 multi-session governance evaluations across 8 domains |
+| **SB 243 Child Safety** | [10.5281/zenodo.18027446](https://doi.org/10.5281/zenodo.18027446) | CA SB 243 child safety validation (0% ASR, 74% FPR) |
 
 ### Adversarial Validation Dataset
 
@@ -335,6 +336,37 @@ Results from `validation/` directory:
 | Complete Validation | 1,300 | 0% ASR (99.9% CI [0%, 0.28%]) |
 | MedSafetyBench | 900 | 100% blocked |
 | HarmBench | 400 | 100% blocked |
+
+### SB 243 Child Safety Validation
+
+Domain-specific validation against California SB 243 child safety harm categories (suicide, self-harm, sexual content, eating disorders).
+
+| Metric | Value |
+|--------|-------|
+| Attack Success Rate | 0.00% |
+| False Positive Rate | 74.00% |
+| Violation Defense Rate | 100.00% |
+
+**Acknowledged Limitation**: The 74% FPR is an intentional design choice. In child safety contexts, it is better to catch too much than too little. The cost of a false positive is user friction; the cost of a false negative could be harm to a child.
+
+**Files** (in `validation/`):
+- `sb243_data/sb243_test_attacks.csv` - 50 harmful prompts
+- `sb243_data/sb243_benign_contrastive.csv` - 50 benign contrastive queries
+- `config/sb243_child_safety_pa_config.json` - PA configuration
+- `run_sb243_validation.py` - Attack validation script
+- `run_false_positive_validation.py` - FPR validation script
+
+**Embedding Model**: `sentence-transformers/all-MiniLM-L6-v2` (384 dimensions)
+
+**Run validation**:
+```bash
+pip install sentence-transformers numpy
+cd validation/
+python3 run_sb243_validation.py
+python3 run_false_positive_validation.py
+```
+
+See `validation/FALSE_POSITIVE_ANALYSIS.md` for full analysis of the safety-utility tradeoff.
 
 ---
 
