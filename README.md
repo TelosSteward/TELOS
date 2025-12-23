@@ -9,6 +9,7 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17702890.svg)](https://doi.org/10.5281/zenodo.17702890)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18009153.svg)](https://doi.org/10.5281/zenodo.18009153)
+[![SB 243 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18027446.svg)](https://doi.org/10.5281/zenodo.18027446)
 
 ---
 
@@ -30,6 +31,12 @@
 - **Sessions**: 46 multi-session governance evaluations
 - **Domains**: 8 diverse application domains
 - **DOI**: [10.5281/zenodo.18009153](https://doi.org/10.5281/zenodo.18009153)
+
+### SB 243 Child Safety Validation
+- **Attack Success Rate**: 0.00%
+- **False Positive Rate**: 74.00% (intentional for child safety)
+- **Harm Categories**: Suicide, self-harm, sexual content, eating disorders
+- **DOI**: [10.5281/zenodo.18027446](https://doi.org/10.5281/zenodo.18027446)
 
 ---
 
@@ -145,6 +152,21 @@ For the governance benchmark dataset:
 }
 ```
 
+For the SB 243 child safety validation:
+
+```bibtex
+@dataset{brunner_2025_telos_sb243,
+  author       = {Brunner, Jeffrey},
+  title        = {{TELOS SB 243 Child Safety Validation Dataset}},
+  month        = dec,
+  year         = 2025,
+  publisher    = {Zenodo},
+  version      = {1.0},
+  doi          = {10.5281/zenodo.18027446},
+  url          = {https://doi.org/10.5281/zenodo.18027446}
+}
+```
+
 ---
 
 ## License
@@ -159,5 +181,5 @@ See [HARDWARE_REQUIREMENTS.md](HARDWARE_REQUIREMENTS.md) for system specificatio
 
 ---
 
-**Last Updated**: December 21, 2025
+**Last Updated**: December 22, 2025
 
