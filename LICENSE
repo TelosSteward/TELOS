@@ -19,23 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-================================================================================
-OPEN CORE LICENSING NOTICE
-================================================================================
-
-This repository uses an Open Core licensing model.
-
-OPEN SOURCE (MIT License - this file applies):
-  - telos_purpose/core/           Core governance mathematics
-  - telos_purpose/validation/     Validation and testing tools
-  - Documentation and examples
-
-COMMERCIAL LICENSE REQUIRED for production use:
-  - telos_observatory_v3/         Enterprise dashboard and UI
-  - Multi-tenant deployment features
-  - Compliance reporting modules
-  - Enterprise integrations and support
-
-For commercial licensing inquiries: enterprise@telos-labs.ai
-For research/academic use: research@telos-labs.ai

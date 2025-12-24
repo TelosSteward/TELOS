@@ -1,5 +1,13 @@
 # TELOS Observatory V3 - Development Guide
 
+## Organization Details
+
+- **Company:** TELOS AI Labs Inc.
+- **Primary Email:** JB@telos-labs.ai
+- **Contact:** contact@telos-labs.ai
+
+---
+
 **Working Directory:** `/Users/brunnerjf/Desktop/TELOS_Master`
 **Entry Point:** `streamlit run telos_observatory_v3/main.py --server.port 8501`
 **Required:** `MISTRAL_API_KEY` in `.env`
