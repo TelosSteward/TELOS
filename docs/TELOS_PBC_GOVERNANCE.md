@@ -35,7 +35,7 @@ TELOS AI Labs is incorporated as a Delaware C-Corporation to enable rapid execut
 
 - **Status**: Incorporated December 2025
 - **Jurisdiction**: Delaware
-- **EIN**: *(Pending - to be added upon receipt)*
+- **EIN**: 41-3192389
 - **Structure**: Single founder/director, standard certificate of incorporation
 - **Flexibility**: Positioned to pursue grants, customers, and partnerships
 
