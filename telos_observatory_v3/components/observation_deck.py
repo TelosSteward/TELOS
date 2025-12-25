@@ -216,20 +216,20 @@ class ObservationDeck:
             <td style="width: 33%; text-align: center;">
                 <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid {user_color}; border-radius: 8px; padding: 10px; display: inline-block;">
                     <div style="color: {user_color}; font-size: 12px; margin-bottom: 5px;">👤 User Fidelity</div>
-                    <div style="color: {user_color}; font-size: 24px; font-weight: bold;">{user_fidelity:.3f}</div>
+                    <div style="color: {user_color}; font-size: 24px; font-weight: bold;">{int(round(user_fidelity * 100))}%</div>
                 </div>
             </td>
             <td style="width: 34%; text-align: center; padding: 0 10px;">
                 <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid {ps_color}; border-radius: 8px; padding: 10px 20px; display: inline-block;">
                     <div style="color: {ps_color}; font-size: 12px; margin-bottom: 5px;">🎯 Primacy State</div>
-                    <div style="color: {ps_color}; font-size: 24px; font-weight: bold;">{primacy_state:.3f}</div>
+                    <div style="color: {ps_color}; font-size: 24px; font-weight: bold;">{int(round(primacy_state * 100))}%</div>
                     <div style="color: #888; font-size: 10px; margin-top: 5px;">{ps_label}</div>
                 </div>
             </td>
             <td style="width: 33%; text-align: center;">
                 <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid {ai_color}; border-radius: 8px; padding: 10px; display: inline-block;">
                     <div style="color: {ai_color}; font-size: 12px; margin-bottom: 5px;">🤖 AI Fidelity</div>
-                    <div style="color: {ai_color}; font-size: 24px; font-weight: bold;">{ai_fidelity:.3f}</div>
+                    <div style="color: {ai_color}; font-size: 24px; font-weight: bold;">{int(round(ai_fidelity * 100))}%</div>
                 </div>
             </td>
         </tr>
@@ -397,10 +397,10 @@ class ObservationDeck:
             d = Decimal(str(value))
             return float(d.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP))
 
-        # Format displays (2 decimal places to match DEMO/BETA style)
-        user_display = f"{round_half_up(user_fidelity):.2f}" if user_fidelity is not None else "---"
-        ai_display = f"{round_half_up(ai_fidelity):.2f}" if ai_fidelity is not None else "---"
-        ps_display = f"{round_half_up(primacy_state):.2f}" if primacy_state is not None else "---"
+        # Format displays as percentages to match BETA style
+        user_display = f"{int(round(user_fidelity * 100))}%" if user_fidelity is not None else "---"
+        ai_display = f"{int(round(ai_fidelity * 100))}%" if ai_fidelity is not None else "---"
+        ps_display = f"{int(round(primacy_state * 100))}%" if primacy_state is not None else "---"
 
         # Determine zone labels
         def get_zone_label(fidelity):

@@ -1611,15 +1611,12 @@ Once you send your first message, I'll understand your purpose and we can get st
 </style>
 """, unsafe_allow_html=True)
 
-        # Alignment Lens header - matches standard format with RED border for significant drift
+        # Alignment Lens header - compact horizontal bar format with RED border for significant drift
         st.markdown(f"""
 <div style="max-width: 700px; margin: 20px auto; opacity: 0; animation: obsDeckFadeIn 1.0s ease-in-out forwards;">
-    <div style="background-color: #1a1a1a; border: 3px solid #E74C3C; border-radius: 10px; padding: 20px; box-shadow: 0 0 20px rgba(231, 76, 60, 0.3);">
-        <h3 style="color: #F4D03F; text-align: center; margin-bottom: 10px; font-size: 22px;">Alignment Lens</h3>
-        <div style="text-align: center; margin-bottom: 10px;">
-            <span style="background-color: #2d2d2d; border: 1px solid #E74C3C; border-radius: 20px; padding: 8px 20px; color: #E74C3C; font-weight: bold; font-size: 14px;">SIGNIFICANT DRIFT</span>
-        </div>
-        <p style="color: #ddd; font-size: 14px; text-align: center; margin: 0;">Strong Intervention Active - Turn 9</p>
+    <div style="background-color: #1a1a1a; border: 2px solid #E74C3C; border-radius: 8px; padding: 12px 20px; box-shadow: 0 0 15px rgba(231, 76, 60, 0.2); display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: #E74C3C; font-size: 18px; font-weight: bold;">Alignment Lens</span>
+        <span style="background-color: #2d2d2d; border: 1px solid #E74C3C; border-radius: 15px; padding: 6px 16px; color: #E74C3C; font-weight: bold; font-size: 13px;">SIGNIFICANT DRIFT</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -1629,17 +1626,17 @@ Once you send your first message, I'll understand your purpose and we can get st
 <div style="display: flex; justify-content: center; gap: 10px; margin: 15px auto; max-width: 700px;">
     <div style="background-color: #1a1a1a; border: 2px solid {user_color}; border-radius: 10px; padding: 20px; text-align: center; flex: 1;">
         <div style="color: {user_color}; font-size: 20px; font-weight: bold; margin-bottom: 10px;">User Fidelity</div>
-        <div style="color: {user_color}; font-size: 42px; font-weight: bold;">{user_fidelity:.2f}</div>
+        <div style="color: {user_color}; font-size: 42px; font-weight: bold;">{int(round(user_fidelity * 100))}%</div>
         <div style="color: #E74C3C; font-size: 14px; margin-top: 8px;">RED ZONE - Significant Drift</div>
     </div>
     <div style="background-color: #1a1a1a; border: 2px solid {ai_color}; border-radius: 10px; padding: 20px; text-align: center; flex: 1;">
         <div style="color: {ai_color}; font-size: 20px; font-weight: bold; margin-bottom: 10px;">AI Fidelity</div>
-        <div style="color: {ai_color}; font-size: 42px; font-weight: bold;">{ai_fidelity:.2f}</div>
+        <div style="color: {ai_color}; font-size: 42px; font-weight: bold;">{int(round(ai_fidelity * 100))}%</div>
         <div style="color: #27ae60; font-size: 14px; margin-top: 8px;">GREEN ZONE - Aligned</div>
     </div>
     <div style="background-color: #1a1a1a; border: 2px solid {ps_color}; border-radius: 10px; padding: 20px; text-align: center; flex: 1;">
         <div style="color: {ps_color}; font-size: 20px; font-weight: bold; margin-bottom: 10px;">Primacy State</div>
-        <div style="color: {ps_color}; font-size: 42px; font-weight: bold;">{primacy_state:.3f}</div>
+        <div style="color: {ps_color}; font-size: 42px; font-weight: bold;">{int(round(primacy_state * 100))}%</div>
         <div style="color: {ps_color}; font-size: 14px; margin-top: 8px;">ORANGE ZONE - Drift Detected</div>
     </div>
 </div>
@@ -1945,14 +1942,12 @@ Once you send your first message, I'll understand your purpose and we can get st
             drift_status = "Severe Drift"
             drift_color = "#FF4444"
 
-        # Alignment Lens header - border color matches User Fidelity (user alignment is primary)
+        # Alignment Lens header - compact horizontal bar format
         st.markdown(f"""
 <div style="max-width: 700px; margin: 20px auto; opacity: 0; animation: obsDeckFadeIn 1.0s ease-in-out forwards;">
-    <div style="background-color: #1a1a1a; border: 3px solid {user_color}; border-radius: 10px; padding: 20px; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);">
-        <h3 style="color: {user_color}; text-align: center; margin-bottom: 20px; font-size: 22px;">Alignment Lens</h3>
-        <div style="text-align: center; margin-bottom: 15px;">
-            <span style="background-color: #2d2d2d; border: 1px solid {drift_color}; border-radius: 20px; padding: 8px 20px; color: {drift_color}; font-weight: bold; font-size: 14px;">{drift_status}</span>
-        </div>
+    <div style="background-color: #1a1a1a; border: 2px solid {user_color}; border-radius: 8px; padding: 12px 20px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: {user_color}; font-size: 18px; font-weight: bold;">Alignment Lens</span>
+        <span style="background-color: #2d2d2d; border: 1px solid {drift_color}; border-radius: 15px; padding: 6px 16px; color: {drift_color}; font-weight: bold; font-size: 13px;">{drift_status}</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -1977,17 +1972,17 @@ Once you send your first message, I'll understand your purpose and we can get st
 <div style="display: flex; justify-content: center; gap: 10px; margin: 15px auto; max-width: 700px;">
     <div style="background-color: #1a1a1a; border: 2px solid {user_color}; border-radius: 10px; padding: 20px; text-align: center; flex: 1;">
         <div style="color: {user_color}; font-size: 20px; font-weight: bold; margin-bottom: 10px;">User Fidelity</div>
-        <div style="color: {user_color}; font-size: 42px; font-weight: bold;">{user_fidelity:.2f}</div>
+        <div style="color: {user_color}; font-size: 42px; font-weight: bold;">{int(round(user_fidelity * 100))}%</div>
         <div style="color: {user_zone_color}; font-size: 14px; margin-top: 8px;">{user_zone}</div>
     </div>
     <div style="background-color: #1a1a1a; border: 2px solid {ai_color}; border-radius: 10px; padding: 20px; text-align: center; flex: 1;">
         <div style="color: {ai_color}; font-size: 20px; font-weight: bold; margin-bottom: 10px;">AI Fidelity</div>
-        <div style="color: {ai_color}; font-size: 42px; font-weight: bold;">{ai_fidelity:.2f}</div>
+        <div style="color: {ai_color}; font-size: 42px; font-weight: bold;">{int(round(ai_fidelity * 100))}%</div>
         <div style="color: {ai_zone_color}; font-size: 14px; margin-top: 8px;">{ai_zone}</div>
     </div>
     <div style="background-color: #1a1a1a; border: 2px solid {ps_color}; border-radius: 10px; padding: 20px; text-align: center; flex: 1;">
         <div style="color: {ps_color}; font-size: 20px; font-weight: bold; margin-bottom: 10px;">Primacy State</div>
-        <div style="color: {ps_color}; font-size: 42px; font-weight: bold;">{primacy_state:.3f}</div>
+        <div style="color: {ps_color}; font-size: 42px; font-weight: bold;">{int(round(primacy_state * 100))}%</div>
         <div style="color: {ps_color}; font-size: 14px; margin-top: 8px;">{ps_zone}</div>
     </div>
 </div>
@@ -2049,7 +2044,7 @@ Once you send your first message, I'll understand your purpose and we can get st
 
         with col_prev_bottom:
             if st.button("⬅️ Previous", key="slide_6_obs_prev_bottom", use_container_width=True):
-                st.session_state.demo_slide_index = 6
+                st.session_state.demo_slide_index = 7  # Go back to slide 7 (How drift detection works)
                 st.rerun()
 
         with col_toggle_bottom:
@@ -2064,7 +2059,7 @@ Once you send your first message, I'll understand your purpose and we can get st
 
         with col_next_bottom:
             if st.button("Next ➡️", key="slide_6_obs_next_bottom", use_container_width=True):
-                st.session_state.demo_slide_index = 8
+                st.session_state.demo_slide_index = 9  # Go to slide 9 (Movies - RED zone)
                 st.rerun()
 
         st.markdown("</div>", unsafe_allow_html=True)
@@ -2124,14 +2119,12 @@ Once you send your first message, I'll understand your purpose and we can get st
             drift_status = "Severe Drift"
             drift_color = "#FF4444"
 
-        # Alignment Lens header - border color matches User Fidelity (user alignment is primary)
+        # Alignment Lens header - compact horizontal bar format
         st.markdown(f"""
 <div style="max-width: 700px; margin: 20px auto; opacity: 0; animation: obsDeckFadeIn 1.0s ease-in-out forwards;">
-    <div style="background-color: #1a1a1a; border: 3px solid {user_color}; border-radius: 10px; padding: 20px; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);">
-        <h3 style="color: {user_color}; text-align: center; margin-bottom: 20px; font-size: 22px;">Alignment Lens</h3>
-        <div style="text-align: center; margin-bottom: 15px;">
-            <span style="background-color: #2d2d2d; border: 1px solid {drift_color}; border-radius: 20px; padding: 8px 20px; color: {drift_color}; font-weight: bold; font-size: 14px;">{drift_status}</span>
-        </div>
+    <div style="background-color: #1a1a1a; border: 2px solid {user_color}; border-radius: 8px; padding: 12px 20px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: {user_color}; font-size: 18px; font-weight: bold;">Alignment Lens</span>
+        <span style="background-color: #2d2d2d; border: 1px solid {drift_color}; border-radius: 15px; padding: 6px 16px; color: {drift_color}; font-weight: bold; font-size: 13px;">{drift_status}</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -2156,17 +2149,17 @@ Once you send your first message, I'll understand your purpose and we can get st
 <div style="display: flex; justify-content: center; gap: 10px; margin: 15px auto; max-width: 700px;">
     <div style="background-color: #1a1a1a; border: 2px solid {user_color}; border-radius: 10px; padding: 20px; text-align: center; flex: 1;">
         <div style="color: {user_color}; font-size: 20px; font-weight: bold; margin-bottom: 10px;">User Fidelity</div>
-        <div style="color: {user_color}; font-size: 42px; font-weight: bold;">{user_fidelity:.2f}</div>
+        <div style="color: {user_color}; font-size: 42px; font-weight: bold;">{int(round(user_fidelity * 100))}%</div>
         <div style="color: {user_zone_color}; font-size: 14px; margin-top: 8px;">{user_zone}</div>
     </div>
     <div style="background-color: #1a1a1a; border: 2px solid {ai_color}; border-radius: 10px; padding: 20px; text-align: center; flex: 1;">
         <div style="color: {ai_color}; font-size: 20px; font-weight: bold; margin-bottom: 10px;">AI Fidelity</div>
-        <div style="color: {ai_color}; font-size: 42px; font-weight: bold;">{ai_fidelity:.2f}</div>
+        <div style="color: {ai_color}; font-size: 42px; font-weight: bold;">{int(round(ai_fidelity * 100))}%</div>
         <div style="color: {ai_zone_color}; font-size: 14px; margin-top: 8px;">{ai_zone}</div>
     </div>
     <div style="background-color: #1a1a1a; border: 2px solid {ps_color}; border-radius: 10px; padding: 20px; text-align: center; flex: 1;">
         <div style="color: {ps_color}; font-size: 20px; font-weight: bold; margin-bottom: 10px;">Primacy State</div>
-        <div style="color: {ps_color}; font-size: 42px; font-weight: bold;">{primacy_state:.3f}</div>
+        <div style="color: {ps_color}; font-size: 42px; font-weight: bold;">{int(round(primacy_state * 100))}%</div>
         <div style="color: {ps_color}; font-size: 14px; margin-top: 8px;">{ps_zone}</div>
     </div>
 </div>
@@ -2472,14 +2465,12 @@ Once you send your first message, I'll understand your purpose and we can get st
             drift_status = "Severe Drift"
             drift_color = "#FF4444"
 
-        # Alignment Lens header - border color matches User Fidelity (user alignment is primary)
+        # Alignment Lens header - compact horizontal bar format
         st.markdown(f"""
 <div style="max-width: 700px; margin: 20px auto; opacity: 0; animation: obsDeckFadeIn 1.0s ease-in-out forwards;">
-    <div style="background-color: #1a1a1a; border: 3px solid {user_color}; border-radius: 10px; padding: 20px; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);">
-        <h3 style="color: {user_color}; text-align: center; margin-bottom: 20px; font-size: 22px;">Alignment Lens</h3>
-        <div style="text-align: center; margin-bottom: 15px;">
-            <span style="background-color: #2d2d2d; border: 1px solid {drift_color}; border-radius: 20px; padding: 8px 20px; color: {drift_color}; font-weight: bold; font-size: 14px;">{drift_status}</span>
-        </div>
+    <div style="background-color: #1a1a1a; border: 2px solid {user_color}; border-radius: 8px; padding: 12px 20px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: {user_color}; font-size: 18px; font-weight: bold;">Alignment Lens</span>
+        <span style="background-color: #2d2d2d; border: 1px solid {drift_color}; border-radius: 15px; padding: 6px 16px; color: {drift_color}; font-weight: bold; font-size: 13px;">{drift_status}</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -2504,17 +2495,17 @@ Once you send your first message, I'll understand your purpose and we can get st
 <div style="display: flex; justify-content: center; gap: 10px; margin: 15px auto; max-width: 700px;">
     <div style="background-color: #1a1a1a; border: 2px solid {user_color}; border-radius: 10px; padding: 20px; text-align: center; flex: 1;">
         <div style="color: {user_color}; font-size: 20px; font-weight: bold; margin-bottom: 10px;">User Fidelity</div>
-        <div style="color: {user_color}; font-size: 42px; font-weight: bold;">{user_fidelity:.2f}</div>
+        <div style="color: {user_color}; font-size: 42px; font-weight: bold;">{int(round(user_fidelity * 100))}%</div>
         <div style="color: {user_zone_color}; font-size: 14px; margin-top: 8px;">{user_zone}</div>
     </div>
     <div style="background-color: #1a1a1a; border: 2px solid {ai_color}; border-radius: 10px; padding: 20px; text-align: center; flex: 1;">
         <div style="color: {ai_color}; font-size: 20px; font-weight: bold; margin-bottom: 10px;">AI Fidelity</div>
-        <div style="color: {ai_color}; font-size: 42px; font-weight: bold;">{ai_fidelity:.2f}</div>
+        <div style="color: {ai_color}; font-size: 42px; font-weight: bold;">{int(round(ai_fidelity * 100))}%</div>
         <div style="color: {ai_zone_color}; font-size: 14px; margin-top: 8px;">{ai_zone}</div>
     </div>
     <div style="background-color: #1a1a1a; border: 2px solid {ps_color}; border-radius: 10px; padding: 20px; text-align: center; flex: 1;">
         <div style="color: {ps_color}; font-size: 20px; font-weight: bold; margin-bottom: 10px;">Primacy State</div>
-        <div style="color: {ps_color}; font-size: 42px; font-weight: bold;">{primacy_state:.3f}</div>
+        <div style="color: {ps_color}; font-size: 42px; font-weight: bold;">{int(round(primacy_state * 100))}%</div>
         <div style="color: {ps_color}; font-size: 14px; margin-top: 8px;">{ps_zone}</div>
     </div>
 </div>
@@ -3156,7 +3147,7 @@ Once you send your first message, I'll understand your purpose and we can get st
             else:  # < 0.67 Significant Drift
                 fidelity_color = "#FF4444"  # Red
                 fidelity_glow = "255, 68, 68"  # Red RGB for box glow
-            fidelity_display = f"{fidelity:.3f}"
+            fidelity_display = f"{int(round(fidelity * 100))}%"
         else:
             fidelity_color = "#888"
             fidelity_glow = "136, 136, 136"  # Gray RGB
@@ -3521,10 +3512,10 @@ Once you send your first message, I'll understand your purpose and we can get st
         # Get color for Primacy State (using the actual PS value)
         ps_color, ps_glow = get_fidelity_color(primacy_state)
 
-        # Display values - using ACTUAL mathematics from TELOS
-        user_display = f"{user_fidelity:.3f}" if user_fidelity is not None else "---"
-        ai_display = f"{ai_fidelity:.3f}" if ai_fidelity is not None else "---"
-        ps_display = f"{primacy_state:.3f}" if primacy_state is not None else "---"
+        # Display values - using ACTUAL mathematics from TELOS (percentages)
+        user_display = f"{int(round(user_fidelity * 100))}%" if user_fidelity is not None else "---"
+        ai_display = f"{int(round(ai_fidelity * 100))}%" if ai_fidelity is not None else "---"
+        ps_display = f"{int(round(primacy_state * 100))}%" if primacy_state is not None else "---"
 
         # Pulse class for animation - apply on ALL turns when calculating
         # This provides clear "Calculating Fidelity..." feedback in fidelity-first flow
@@ -3698,7 +3689,7 @@ Once you send your first message, I'll understand your purpose and we can get st
                     # Determine fidelity color and display (handle None properly)
                     if fidelity is not None and fidelity > 0 and fidelity != 0.5:
                         fidelity_color = "#27ae60" if fidelity >= 0.76 else "#FFD700" if fidelity >= 0.73 else "#FFA500" if fidelity >= 0.67 else "#FF5252"  # Goldilocks zones
-                        fidelity_display = f"{fidelity:.3f}"
+                        fidelity_display = f"{int(round(fidelity * 100))}%"
                     else:
                         fidelity_color = "#888"  # Gray for missing data
                         fidelity_display = "---"
@@ -3712,7 +3703,7 @@ Once you send your first message, I'll understand your purpose and we can get st
                         delta_f = turn_data.get('delta_f', 0.0)
                         delta_f_color = "#27ae60" if delta_f > 0 else "#FF5252" if delta_f < 0 else "#888"
                         delta_f_sign = "+" if delta_f >= 0 else ""
-                        delta_f_html = f'<span style="margin-left: 15px; display: inline-block;"><span style="color: #a8a8a8; font-size: 14px;">ΔF:</span> <span style="color: {delta_f_color}; font-size: 20px; font-weight: bold; margin-left: 5px;">{delta_f_sign}{delta_f:.3f}</span></span>'
+                        delta_f_html = f'<span style="margin-left: 15px; display: inline-block;"><span style="color: #a8a8a8; font-size: 14px;">ΔF:</span> <span style="color: {delta_f_color}; font-size: 20px; font-weight: bold; margin-left: 5px;">{delta_f_sign}{int(round(delta_f * 100))}%</span></span>'
 
                     metrics_html = f'<span style="margin-left: 15px; display: inline-block;"><span style="color: #a8a8a8; font-size: 14px;">Fidelity:</span> <span style="color: {fidelity_color}; font-size: 20px; font-weight: bold; margin-left: 5px;">{fidelity_display}</span></span>{delta_f_html}<span style="margin-left: 15px; display: inline-block;"><span style="color: #a8a8a8; font-size: 14px;">Primacy Attractor Status:</span> <span style="color: {pa_color}; font-size: 14px; font-weight: bold; margin-left: 5px;">{pa_status}</span></span>'
                 else:

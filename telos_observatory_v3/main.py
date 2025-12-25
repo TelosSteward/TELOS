@@ -686,8 +686,36 @@ def main():
         background-color: #0a0a0a !important;
     }}
 
-    /* Hide the SVG checkmark that Streamlit adds */
+    /* Hide the SVG checkmark that Streamlit adds - comprehensive selectors */
     .stCheckbox svg {{
+        display: none !important;
+    }}
+
+    /* Hide all checkmark icons within checkbox containers */
+    .stCheckbox svg,
+    .stCheckbox path,
+    .stCheckbox [data-testid="stCheckbox"] svg,
+    [data-testid="stCheckbox"] svg,
+    [data-testid="stCheckbox"] path,
+    .stCheckbox span svg,
+    .stCheckbox label svg {{
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+    }}
+
+    /* Target Streamlit's specific checkbox icon class */
+    .stCheckbox [data-baseweb="checkbox"] svg,
+    [data-baseweb="checkbox"] svg {{
+        display: none !important;
+        visibility: hidden !important;
+    }}
+
+    /* Hide any icon containers within checkbox */
+    .stCheckbox .st-emotion-cache-1inwz65,
+    .stCheckbox [class*="emotion-cache"] svg {{
         display: none !important;
     }}
 

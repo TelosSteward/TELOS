@@ -279,7 +279,7 @@ class BetaObservationDeck:
             # These caused display issues similar to other button rendering problems
 
     def _render_alignment_lens_header(self):
-        """Render the Alignment Lens header with USER fidelity color border and drift status."""
+        """Render the Alignment Lens header as a compact bar with USER fidelity color border and drift status."""
         # Get fidelity data - use USER fidelity for border color (follows user's alignment)
         user_fidelity, ai_fidelity, _, _ = self._get_fidelity_data()
 
@@ -311,13 +311,12 @@ class BetaObservationDeck:
 
         user_glow = get_glow_color(user_color)
 
+        # Compact horizontal bar design - title on left, status on right
         st.markdown(f"""
 <div style="max-width: 100%; margin: 0 auto; opacity: 0; animation: obsDeckFadeIn 1.0s ease-in-out forwards;">
-    <div style="background-color: #1a1a1a; border: 3px solid {user_color}; border-radius: 10px; padding: 20px; box-shadow: 0 0 20px {user_glow};">
-        <h3 style="color: {user_color}; text-align: center; margin-bottom: 15px; font-size: 22px;">Alignment Lens</h3>
-        <div style="text-align: center;">
-            <span style="background-color: #2d2d2d; border: 1px solid {drift_color}; border-radius: 20px; padding: 8px 20px; color: {drift_color}; font-weight: bold; font-size: 14px;">{drift_status}</span>
-        </div>
+    <div style="background-color: #1a1a1a; border: 2px solid {user_color}; border-radius: 8px; padding: 12px 20px; box-shadow: 0 0 15px {user_glow}; display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: {user_color}; font-size: 18px; font-weight: bold;">Alignment Lens</span>
+        <span style="background-color: #2d2d2d; border: 1px solid {drift_color}; border-radius: 15px; padding: 5px 15px; color: {drift_color}; font-weight: bold; font-size: 13px;">{drift_status}</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
