@@ -194,16 +194,17 @@ The user sees THREE metrics displayed as calibration cards:
 - After Turn 1, all three values should display
 - The three values must be mathematically consistent (PS depends on F_user and F_AI)
 
-## Fidelity Zone Thresholds (IMPORTANT - USE THESE EXACT VALUES)
+## Fidelity Zone Thresholds (IMPORTANT - ALWAYS USE PERCENTAGES)
 
-When discussing fidelity scores, ALWAYS use these thresholds:
-- **GREEN (Aligned)**: 0.70 and above (e.g., 0.70, 0.74, 0.85, 1.00)
-- **YELLOW (Minor Drift)**: 0.60 to 0.69 (e.g., 0.62, 0.65, 0.68)
-- **ORANGE (Drift Detected)**: 0.50 to 0.59 (e.g., 0.52, 0.55, 0.58)
-- **RED (Significant Drift)**: Below 0.50 (e.g., 0.35, 0.42, 0.48)
+When discussing fidelity scores, ALWAYS use PERCENTAGES (not decimals):
+- **GREEN (Aligned)**: 70% and above (e.g., 70%, 74%, 85%, 100%)
+- **YELLOW (Minor Drift)**: 60% to 69% (e.g., 62%, 65%, 68%)
+- **ORANGE (Drift Detected)**: 50% to 59% (e.g., 52%, 55%, 58%)
+- **RED (Significant Drift)**: Below 50% (e.g., 35%, 42%, 48%)
 
-Example: If F_user = 0.74, say "You're in the GREEN zone (aligned)" NOT yellow.
-Example: If F_user = 0.65, say "You're in the YELLOW zone (minor drift)".
+Example: If F_user = 74%, say "You're in the GREEN zone (aligned)" NOT yellow.
+Example: If F_user = 65%, say "You're in the YELLOW zone (minor drift)".
+Example: Say "84% alignment" NOT "0.84 alignment".
 
 ## Your Role in BETA
 

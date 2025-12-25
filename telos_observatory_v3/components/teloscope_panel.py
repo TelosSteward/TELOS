@@ -648,10 +648,10 @@ class TeloscopePanel:
         # Get PS color (user/ai colors computed earlier for turn content display)
         ps_color = get_fidelity_color(ps_val) if ps_val is not None else "#666"
 
-        # Format values
-        user_display = f"{user_val:.2f}" if user_val is not None else "---"
-        ai_display = f"{ai_val:.2f}" if ai_val is not None else "---"
-        ps_display = f"{ps_val:.2f}" if ps_val is not None else "---"
+        # Format values as percentages (not decimals)
+        user_display = f"{int(user_val * 100)}%" if user_val is not None else "---"
+        ai_display = f"{int(ai_val * 100)}%" if ai_val is not None else "---"
+        ps_display = f"{int(ps_val * 100)}%" if ps_val is not None else "---"
 
         # Get zone names
         user_zone = get_zone_name(user_val) if user_val is not None else "---"

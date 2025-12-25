@@ -145,7 +145,7 @@ class AlignmentIndicator:
                 color: {color};
                 font-weight: 600;
                 font-size: 14px;
-            ">{fidelity:.2f}</span>
+            ">{int(fidelity * 100)}%</span>
         </div>
         """, unsafe_allow_html=True)
 
@@ -168,7 +168,7 @@ class AlignmentIndicator:
                 font-weight: 700;
                 color: {color};
                 line-height: 1;
-            ">{fidelity:.3f}</div>
+            ">{int(fidelity * 100)}%</div>
 
             <!-- Zone Label -->
             <div style="
@@ -216,10 +216,10 @@ class AlignmentIndicator:
                 font-size: 10px;
                 color: #666;
             ">
-                <span>0.0</span>
-                <span>0.50</span>
-                <span>0.70</span>
-                <span>1.0</span>
+                <span>0%</span>
+                <span>50%</span>
+                <span>70%</span>
+                <span>100%</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -308,5 +308,5 @@ def alignment_badge(fidelity: float) -> str:
             background: {color};
             border-radius: 50%;
         "></span>
-        <span style="color: {color};">{fidelity:.2f}</span>
+        <span style="color: {color};">{int(fidelity * 100)}%</span>
     </span>"""
