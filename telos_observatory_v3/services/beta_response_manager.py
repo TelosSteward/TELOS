@@ -377,19 +377,34 @@ class BetaResponseManager:
             response_data['shown_response'] = native_response
             response_data['native_response'] = native_response
 
-            # OPTIMIZATION: Use lightweight metrics path instead of full TELOS response
-            # This avoids a redundant LLM call (saves 3-8 seconds per message)
-            telos_data = self._compute_telos_metrics_lightweight(
-                user_input, native_response, user_fidelity
-            )
+            # ================================================================
+            # FAST PATH: GREEN zone skips AI fidelity calculation entirely
+            # ================================================================
+            # In GREEN zone we ONLY need:
+            # 1. User fidelity (already computed via SentenceTransformer - instant)
+            # 2. LLM response (single API call - 15-20s)
+            # NO AI fidelity computation needed - saves embedding call and PS math
 
-            # Use TELOS math for intervention decisions
-            telos_data['intervention_triggered'] = False  # No intervention when in basin
-            telos_data['intervention_reason'] = None
-            telos_data['user_pa_fidelity'] = user_fidelity  # Raw value for Steward to access
-            telos_data['display_user_pa_fidelity'] = response_data['display_fidelity']  # Normalized for UI
-            telos_data['fidelity_level'] = response_data['fidelity_level']
-            telos_data['in_basin'] = True
+            telos_data = {
+                'response': native_response,
+                'fidelity_score': None,
+                'distance_from_pa': 1.0 - user_fidelity,
+                'intervention_triggered': False,
+                'intervention_type': None,
+                'intervention_reason': None,
+                'drift_detected': False,
+                'in_basin': True,
+                # Skip AI fidelity in GREEN zone for speed - show "---" in UI
+                'ai_pa_fidelity': None,
+                'primacy_state_score': None,
+                'display_primacy_state': None,
+                'primacy_state_condition': 'skipped_green_zone',
+                'pa_correlation': None,
+                'lightweight_path': True,
+                'user_pa_fidelity': user_fidelity,
+                'display_user_pa_fidelity': response_data['display_fidelity'],
+                'fidelity_level': response_data['fidelity_level'],
+            }
 
             response_data['telos_analysis'] = telos_data
 
