@@ -122,10 +122,10 @@ FIDELITY_ORANGE = 0.50  # 0.50-0.60: Intervention zone
 # Drifted responses should be CONCISE redirects, not full-length engagements.
 # This implements proportional brevity: more drift = shorter response.
 # Prevents the AI from giving detailed off-topic answers while "redirecting".
-MAX_TOKENS_GREEN = 1000   # Balanced response length (reduced from 1500 for latency)
-MAX_TOKENS_YELLOW = 800   # Moderate for minor drift (gentle redirect)
-MAX_TOKENS_ORANGE = 600   # Moderate-short for moderate drift (clear redirect)
-MAX_TOKENS_RED = 400      # Shorter for significant drift (redirect with context)
+MAX_TOKENS_GREEN = 600    # Concise responses for fast latency (reduced from 1000)
+MAX_TOKENS_YELLOW = 500   # Moderate for minor drift (gentle redirect)
+MAX_TOKENS_ORANGE = 400   # Moderate-short for moderate drift (clear redirect)
+MAX_TOKENS_RED = 300      # Shorter for significant drift (redirect with context)
 
 # Intent to Role mapping for AI PA derivation (simplified version for BETA)
 INTENT_TO_ROLE_MAP = {
@@ -663,18 +663,25 @@ class BetaResponseManager:
                 return (fidelity, raw_similarity, baseline_hard_block)
 
             # ================================================================
-            # STANDARD MODE: Mistral embeddings (original behavior)
+            # STANDARD MODE: Use local SentenceTransformer for FAST embedding
             # ================================================================
-            if not self.embedding_provider or self.user_pa_embedding is None:
+            # PERFORMANCE FIX: Use local ST embedding instead of Mistral API
+            # Mistral API takes 10-20s per call, ST takes <1s locally.
+            # We use ST for user input embedding but keep Mistral for PA setup
+            # (PA embeddings are cached and computed once per session).
+            if self.st_embedding_provider and hasattr(self, 'st_user_pa_embedding') and self.st_user_pa_embedding is not None:
+                # Fast path: use cached SentenceTransformer embedding
+                user_embedding = np.array(self.st_embedding_provider.encode(user_input))
+                raw_similarity = self._cosine_similarity(user_embedding, self.st_user_pa_embedding)
+                logger.info(f"FAST PATH: ST embedding, raw_sim={raw_similarity:.3f}")
+            elif not self.embedding_provider or self.user_pa_embedding is None:
                 logger.warning("Embedding provider or PA not initialized - returning default fidelity")
                 return (FIDELITY_GREEN, FIDELITY_GREEN, False)  # Default to Aligned zone if not ready
-
-            # Get user input embedding
-            user_embedding = np.array(self.embedding_provider.encode(user_input))
-
-            # Calculate cosine similarity to User PA (RAW - no normalization)
-            # This is used by BOTH Layer 1 and Layer 2
-            raw_similarity = self._cosine_similarity(user_embedding, self.user_pa_embedding)
+            else:
+                # Fallback: use Mistral API (slower)
+                user_embedding = np.array(self.embedding_provider.encode(user_input))
+                raw_similarity = self._cosine_similarity(user_embedding, self.user_pa_embedding)
+                logger.info(f"SLOW PATH: Mistral API, raw_sim={raw_similarity:.3f}")
 
             # ============================================================
             # LAYER 1: Baseline Pre-Filter (extreme off-topic detection)
