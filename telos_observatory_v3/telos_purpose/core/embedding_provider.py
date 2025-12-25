@@ -146,9 +146,9 @@ class SentenceTransformerProvider:
         import os
         import logging
 
-        # Force offline mode to use cached model and avoid network hangs
-        os.environ['HF_HUB_OFFLINE'] = '1'
-        os.environ['TRANSFORMERS_OFFLINE'] = '1'
+        # Allow HuggingFace to download models if not cached
+        # Previously forced offline mode which broke Railway deployments
+        # Models will be downloaded on first run and cached thereafter
 
         from sentence_transformers import SentenceTransformer
         import torch
