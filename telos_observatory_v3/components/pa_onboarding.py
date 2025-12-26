@@ -497,8 +497,8 @@ class PAOnboarding:
         # Fallback: compute embeddings if pre-computed not available
         if not embeddings_loaded:
             try:
-                from telos_purpose.core.embedding_provider import SentenceTransformerProvider
-                embedding_provider = SentenceTransformerProvider()
+                from telos_purpose.core.embedding_provider import get_cached_minilm_provider
+                embedding_provider = get_cached_minilm_provider()
                 user_embedding, ai_embedding = compute_pa_embeddings(user_pa, ai_pa, embedding_provider)
                 st.session_state.cached_user_pa_embedding = user_embedding
                 st.session_state.cached_ai_pa_embedding = ai_embedding
@@ -831,8 +831,8 @@ class PAOnboarding:
 
         # Compute and cache embeddings at establishment time
         try:
-            from telos_purpose.core.embedding_provider import SentenceTransformerProvider
-            embedding_provider = SentenceTransformerProvider()
+            from telos_purpose.core.embedding_provider import get_cached_minilm_provider
+            embedding_provider = get_cached_minilm_provider()
             user_embedding, ai_embedding = compute_pa_embeddings(user_pa, ai_pa, embedding_provider)
 
             # Cache embeddings - no lazy computation needed

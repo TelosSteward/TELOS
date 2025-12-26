@@ -672,11 +672,11 @@ class BetaStewardPanel:
             ai_pa: The derived AI PA structure
         """
         try:
-            from telos_purpose.core.embedding_provider import SentenceTransformerProvider
+            from telos_purpose.core.embedding_provider import get_cached_minilm_provider
 
-            # Get or create embedding provider
+            # Get or create embedding provider (use cached to avoid model reload)
             if 'embedding_provider' not in st.session_state:
-                st.session_state.embedding_provider = SentenceTransformerProvider()
+                st.session_state.embedding_provider = get_cached_minilm_provider()
 
             provider = st.session_state.embedding_provider
 
