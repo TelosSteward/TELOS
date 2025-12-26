@@ -1042,8 +1042,14 @@ RESPONSE GUIDELINES:
                 zone=zone  # For logging/compatibility
             )
 
-            # Build conversation (short context only)
+            # Build conversation WITH history (needed for context on follow-up questions)
+            # FIX: Include conversation history so LLM knows what the user is referring to
             conversation = [{'role': 'system', 'content': redirect_prompt}]
+
+            # Add conversation history for context (e.g., "what recipes?" needs prior context)
+            conversation_history = self._get_conversation_history()
+            conversation.extend(conversation_history)
+
             conversation.append({'role': 'user', 'content': user_input})
 
             logger.info(f"🔄 Generating redirect response (strength={intervention_strength:.2f}, zone={zone}, max_tokens={max_tokens})")
