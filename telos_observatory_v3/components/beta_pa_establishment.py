@@ -508,8 +508,9 @@ class BetaPAEstablishment:
                 # Compute embeddings at establishment time (if not already cached from template)
                 if 'cached_user_pa_embedding' not in st.session_state:
                     try:
-                        from telos_purpose.core.embedding_provider import SentenceTransformerProvider
-                        embedding_provider = SentenceTransformerProvider()
+                        # Use CACHED provider to avoid expensive model reloading (critical for Railway cold start)
+                        from telos_purpose.core.embedding_provider import get_cached_minilm_provider
+                        embedding_provider = get_cached_minilm_provider()
                         user_embedding, ai_embedding = compute_pa_embeddings(user_pa, ai_pa, embedding_provider)
 
                         # Cache embeddings immediately - no lazy computation

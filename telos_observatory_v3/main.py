@@ -40,6 +40,16 @@ from config.colors import GOLD
 
 def initialize_session():
     """Initialize session state - starts fresh (no pre-loaded demo data)."""
+    # EAGER MODEL INITIALIZATION - Critical for Railway cold start performance
+    # Pre-load embedding model at app startup, not on first user action
+    if 'embedding_model_initialized' not in st.session_state:
+        try:
+            from telos_purpose.core.embedding_provider import get_cached_minilm_provider
+            get_cached_minilm_provider()  # Pre-warm the cached model
+            st.session_state.embedding_model_initialized = True
+        except Exception:
+            pass  # Don't block app startup on model failure
+
     if 'state_manager' not in st.session_state:
         # Set Demo Mode based on initial active_tab (DEMO is default)
         if 'telos_demo_mode' not in st.session_state:
