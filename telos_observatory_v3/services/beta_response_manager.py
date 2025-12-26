@@ -1884,8 +1884,9 @@ Keep it to 2-3 sentences. Sound human, not robotic."""
 
         # Compute embeddings for fidelity calculation
         try:
-            from telos_purpose.core.embedding_provider import SentenceTransformerProvider
-            embedding_provider = SentenceTransformerProvider()
+            # Use CACHED provider to avoid expensive model reloading (critical for Railway cold start)
+            from telos_purpose.core.embedding_provider import get_cached_minilm_provider
+            embedding_provider = get_cached_minilm_provider()
             user_embedding, ai_embedding = compute_pa_embeddings(user_pa, ai_pa, embedding_provider)
 
             # Cache embeddings with PA identity for change detection

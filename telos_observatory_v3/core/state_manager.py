@@ -493,7 +493,9 @@ class StateManager:
             if not hasattr(self, '_telos_steward'):
                 try:
                     logger.info("Initializing TELOS engine...")
-                    embedding_provider = SentenceTransformerProvider()
+                    # Use CACHED provider to avoid expensive model reloading (critical for Railway cold start)
+                    from telos_purpose.core.embedding_provider import get_cached_minilm_provider
+                    embedding_provider = get_cached_minilm_provider()
 
                     # Check if demo mode is enabled (for TELOS framework walkthrough)
                     demo_mode = st.session_state.get('telos_demo_mode', False)
@@ -1111,7 +1113,9 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
 
             try:
                 logger.info("Initializing TELOS engine...")
-                embedding_provider = SentenceTransformerProvider()
+                # Use CACHED provider to avoid expensive model reloading (critical for Railway cold start)
+                from telos_purpose.core.embedding_provider import get_cached_minilm_provider
+                embedding_provider = get_cached_minilm_provider()
 
                 # Check if demo mode
                 demo_mode = st.session_state.get('telos_demo_mode', False)

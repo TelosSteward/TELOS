@@ -74,10 +74,11 @@ class BetaStewardLLM:
 
         try:
             from demo_mode.telos_corpus_loader import TELOSCorpusLoader, format_context_for_llm
-            from telos_purpose.core.embedding_provider import SentenceTransformerProvider
+            # Use CACHED provider to avoid expensive model reloading (critical for Railway cold start)
+            from telos_purpose.core.embedding_provider import get_cached_minilm_provider
 
-            # Create embedding provider (SentenceTransformer for local inference)
-            embedding_provider = SentenceTransformerProvider()
+            # Create embedding provider using cached version
+            embedding_provider = get_cached_minilm_provider()
 
             # Initialize and load corpus
             self._corpus_loader = TELOSCorpusLoader(embedding_provider)

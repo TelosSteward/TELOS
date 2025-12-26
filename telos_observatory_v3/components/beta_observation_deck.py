@@ -563,12 +563,13 @@ class BetaObservationDeck:
             enriched_pa: The new enriched PA structure
         """
         try:
-            from telos_purpose.core.embedding_provider import SentenceTransformerProvider
+            # Use CACHED provider to avoid expensive model reloading (critical for Railway cold start)
+            from telos_purpose.core.embedding_provider import get_cached_minilm_provider
             import numpy as np
 
-            # Get or create embedding provider
+            # Get or create embedding provider using cached version
             if 'embedding_provider' not in st.session_state:
-                st.session_state.embedding_provider = SentenceTransformerProvider()
+                st.session_state.embedding_provider = get_cached_minilm_provider()
 
             provider = st.session_state.embedding_provider
 
