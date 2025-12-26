@@ -287,3 +287,34 @@ class MistralClient:
 
 # Alias for backward compatibility
 TelosMistralClient = MistralClient
+
+
+# Cached client for performance optimization
+# This avoids creating new HTTP connections on every turn
+def get_cached_mistral_client(model: str = "mistral-small-latest") -> MistralClient:
+    """
+    Get a cached MistralClient instance using Streamlit's cache.
+
+    This avoids the overhead of creating new HTTP connections on every turn.
+    The client is cached per model, so different models get different clients.
+
+    Args:
+        model: Model to use for generation
+
+    Returns:
+        Cached MistralClient instance
+    """
+    try:
+        import streamlit as st
+
+        # Use st.cache_resource for singleton pattern
+        @st.cache_resource
+        def _get_client(model_name: str) -> MistralClient:
+            logger.info(f"Creating cached MistralClient for model: {model_name}")
+            return MistralClient(model=model_name)
+
+        return _get_client(model)
+    except ImportError:
+        # Fallback if streamlit not available
+        logger.warning("Streamlit not available, creating new MistralClient")
+        return MistralClient(model=model)

@@ -907,10 +907,10 @@ class BetaResponseManager:
             Native response string
         """
         try:
-            # Use base LLM without governance
-            from telos_purpose.llm_clients.mistral_client import MistralClient
+            # Use CACHED LLM client for performance (avoids HTTP connection overhead per turn)
+            from telos_purpose.llm_clients.mistral_client import get_cached_mistral_client
 
-            client = MistralClient()
+            client = get_cached_mistral_client()
 
             # Build PA-aware system prompt
             system_prompt = self._build_system_prompt()
@@ -1010,8 +1010,9 @@ RESPONSE GUIDELINES:
             Dict with redirect response and intervention metrics
         """
         try:
-            from telos_purpose.llm_clients.mistral_client import MistralClient
-            client = MistralClient()
+            # Use CACHED LLM client for performance (avoids HTTP connection overhead per turn)
+            from telos_purpose.llm_clients.mistral_client import get_cached_mistral_client
+            client = get_cached_mistral_client()
 
             # Get PA for context
             pa_data = st.session_state.get('primacy_attractor', {})

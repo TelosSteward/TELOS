@@ -4156,12 +4156,29 @@ Once you send your first message, I'll understand your purpose and we can get st
                     st.markdown("")
 
     def _process_streaming_turn(self, user_message: str, turn_idx: int):
-        """Process a streaming turn by generating the response and updating state."""
-        # Collect the full response from the stream
+        """Process a streaming turn by generating the response with TRUE streaming display.
+
+        Uses st.write_stream() to display tokens as they arrive, reducing perceived latency
+        from 15-20s to <2s for first token.
+        """
         full_response = ""
         try:
-            for chunk in self.state_manager.generate_response_stream(user_message, turn_idx):
-                full_response += chunk
+            # Create a placeholder for the streaming response
+            response_placeholder = st.empty()
+
+            # Use st.write_stream() for true streaming display - shows tokens as they arrive
+            # This dramatically reduces perceived latency (first token in <2s vs waiting 15-20s)
+            stream_generator = self.state_manager.generate_response_stream(user_message, turn_idx)
+
+            # st.write_stream() consumes the generator and displays tokens in real-time
+            # It returns the complete response when done
+            full_response = response_placeholder.write_stream(stream_generator)
+
+            # If write_stream returned None (edge case), fall back to empty string
+            if full_response is None:
+                full_response = ""
+                logger.warning(f"Turn {turn_idx}: write_stream returned None")
+
         except Exception as e:
             logger.error(f"Streaming error: {e}")
             import traceback
@@ -4181,7 +4198,7 @@ Once you send your first message, I'll understand your purpose and we can get st
                 logger.info(f"Turn {turn_idx} marked complete with error fallback response")
 
         # After streaming completes, the state is already updated by generate_response_stream
-        # Just trigger a rerun to show the completed response
+        # Just trigger a rerun to show the completed response with proper styling
         st.rerun()
 
     def _render_math_breakdown_window(self, turn_data: Dict[str, Any]):
