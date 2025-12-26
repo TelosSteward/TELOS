@@ -218,27 +218,30 @@ Be direct and helpful. When users ask about metrics:
 
 Be concise like the example Steward responses - no fluff, just clear explanations.
 
-## CRITICAL: Steward Conversations Are NOT Session Turns
+## CRITICAL: Using Turn History Data
 
 Questions asked to YOU (Steward) are NOT recorded as turns in the main session.
 Only messages in the main conversation window compute actual fidelity metrics.
 
-**When users ask you off-topic questions (like "What's the best pizza topping?"):**
-- DO NOT fabricate specific metric values (no "F_user: 0.00" or exact numbers)
-- Instead, use QUALITATIVE language: "That's clearly outside your stated purpose"
-- Remind them: "If you asked that in the main session, it would likely trigger drift detection"
-- Suggest: "Try it in the main conversation if you want to see the actual metrics"
+**IMPORTANT: You have ACCESS to actual session metrics in the "Complete Turn History" section below.**
 
-**Why this matters:**
-- You cannot compute fidelity - only the main session engine does that
-- Making up numbers undermines trust in the real metrics
-- Users testing the system need to understand what's calculated vs. explained
+When users ask you to explain what happened in the session, summarize the trajectory, or provide a synopsis:
+- **USE the actual Turn History data provided below** - these are REAL computed metrics
+- Report the exact percentages and zones from each turn
+- Explain trends: did fidelity improve or decline over turns?
+- Note any interventions that were triggered and why
 
-**Good response to off-topic question:**
-"That's completely unrelated to your stated purpose of [X]. If you asked that in the main session window, it would almost certainly register as significant drift. The TELOSCOPE would show you exactly how far off-topic it is. Want to test it there and see?"
+**Example good synopsis (when Turn History is provided):**
+"Looking at your session: In Turn 1, your query scored 84% (GREEN zone) - well aligned with your purpose. Turn 2 dropped to 62% (YELLOW zone) showing minor drift. Turn 3 triggered an intervention at 48% (RED zone). Your average alignment across 3 turns was 65%."
 
-**Bad response (DO NOT DO THIS):**
-"F_user: 0.00 (RED zone), F_AI: ---, PS: ---" ← Never fabricate specific values"""
+**When users ask HYPOTHETICAL questions (like "What would happen if I asked about pizza?"):**
+- Use QUALITATIVE language: "That would likely be outside your stated purpose"
+- Suggest: "Try it in the main conversation to see the actual metrics"
+- Do NOT fabricate specific values for questions NOT in the Turn History
+
+**The distinction:**
+- Turn History questions → USE the actual data provided below
+- Hypothetical "what if" questions → Explain qualitatively, don't invent numbers"""
 
         # Add current BETA context if provided
         if context:
@@ -308,6 +311,56 @@ Only messages in the main conversation window compute actual fidelity metrics.
                     context_str += "- AI Alignment: MINOR DRIFT (response slightly off-purpose)\n"
                 else:
                     context_str += "- AI Alignment: DRIFTING (response not serving purpose)\n"
+
+            # ============================================================
+            # FULL TURN HISTORY: Allows Steward to explain any turn
+            # ============================================================
+            if 'turn_history' in context and context['turn_history']:
+                context_str += "\n## Complete Turn History\n"
+                context_str += "Use this to answer questions about specific turns or overall session trajectory.\n\n"
+
+                for turn in context['turn_history']:
+                    turn_num = turn.get('turn', '?')
+                    user_input = turn.get('user_input', '')
+                    truncated = user_input[:100] + ('...' if len(user_input) > 100 else '')
+
+                    context_str += f"### Turn {turn_num}\n"
+                    context_str += f"- User Input: \"{truncated}\"\n"
+
+                    # Format metrics as percentages (matching system prompt guidance)
+                    f_user = turn.get('f_user')
+                    f_ai = turn.get('f_ai')
+                    ps = turn.get('primacy_state')
+
+                    if f_user is not None:
+                        pct = f_user * 100
+                        zone = "GREEN" if f_user >= _ZONE_ALIGNED else ("YELLOW" if f_user >= _ZONE_MINOR_DRIFT else ("ORANGE" if f_user >= 0.50 else "RED"))
+                        context_str += f"- F_user: {pct:.0f}% ({zone})\n"
+                    else:
+                        context_str += "- F_user: ---\n"
+
+                    if f_ai is not None:
+                        pct = f_ai * 100
+                        zone = "GREEN" if f_ai >= _ZONE_ALIGNED else ("YELLOW" if f_ai >= _ZONE_MINOR_DRIFT else ("ORANGE" if f_ai >= 0.50 else "RED"))
+                        context_str += f"- F_AI: {pct:.0f}% ({zone})\n"
+                    else:
+                        context_str += "- F_AI: ---\n"
+
+                    if ps is not None:
+                        pct = ps * 100
+                        zone = "GREEN" if ps >= _ZONE_ALIGNED else ("YELLOW" if ps >= _ZONE_MINOR_DRIFT else ("ORANGE" if ps >= 0.50 else "RED"))
+                        context_str += f"- Primacy State: {pct:.0f}% ({zone})\n"
+                    else:
+                        context_str += "- Primacy State: ---\n"
+
+                    # Intervention info
+                    if turn.get('intervention_triggered'):
+                        reason = turn.get('intervention_reason', 'drift detected')
+                        context_str += f"- Intervention: TRIGGERED ({reason})\n"
+                    else:
+                        context_str += "- Intervention: None (aligned)\n"
+
+                    context_str += "\n"
 
             base_prompt += context_str
 

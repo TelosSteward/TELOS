@@ -49,10 +49,11 @@ def normalize_st_fidelity(raw_fidelity: float) -> float:
     """
     Transform SentenceTransformer raw fidelity to display scale.
 
-    Uses linear transformation to map:
-        ST 0.32 → Display 0.70 (GREEN)
-        ST 0.28 → Display 0.60 (YELLOW)
-        ST 0.24 → Display 0.50 (ORANGE)
+    Uses linear transformation to map (RECALIBRATED):
+        ST 0.50 → Display 0.70 (GREEN)
+        ST 0.45 → Display 0.60 (YELLOW)
+        ST 0.40 → Display 0.50 (ORANGE)
+        ST 0.35 → Display 0.40 (RED - off-topic)
 
     Args:
         raw_fidelity: Raw cosine similarity from SentenceTransformer
@@ -61,14 +62,12 @@ def normalize_st_fidelity(raw_fidelity: float) -> float:
         Normalized fidelity on display scale (0.0 to 1.0)
 
     Examples:
-        >>> normalize_st_fidelity(0.32)
-        0.70
-        >>> normalize_st_fidelity(0.337)  # TELOS query
-        0.74  # GREEN zone - on-topic
-        >>> normalize_st_fidelity(0.274)  # PB&J vs TELOS
-        0.585 # ORANGE zone - off-topic
-        >>> normalize_st_fidelity(0.24)
-        0.50
+        >>> normalize_st_fidelity(0.55)   # On-topic TELOS query
+        0.80  # GREEN zone - aligned
+        >>> normalize_st_fidelity(0.35)   # PB&J vs TELOS PA
+        0.40  # RED zone - off-topic, triggers intervention
+        >>> normalize_st_fidelity(0.45)
+        0.60  # YELLOW zone - minor drift
     """
     display = LINEAR_SLOPE * raw_fidelity + LINEAR_INTERCEPT
     return max(0.0, min(1.0, display))  # Clamp to [0, 1]
@@ -81,6 +80,14 @@ def normalize_fidelity_for_display(
     """
     Normalize any model's raw fidelity to the universal display scale.
 
+    Both SentenceTransformer and Mistral embeddings produce similar raw
+    cosine similarity ranges (~0.35-0.60 for typical content), so we apply
+    the same linear transformation to both.
+
+    CHANGE (2025-12-26): Previously Mistral scores were passed through raw,
+    causing off-topic content (raw ~0.35-0.45) to display as 78-88% instead
+    of the expected ~40% (RED zone). Now both models use normalization.
+
     Args:
         raw_fidelity: Raw cosine similarity from embedding model
         model_type: 'sentence_transformer' or 'mistral'
@@ -88,11 +95,9 @@ def normalize_fidelity_for_display(
     Returns:
         Normalized fidelity for display (0.0 to 1.0)
     """
-    if model_type == 'sentence_transformer':
-        return normalize_st_fidelity(raw_fidelity)
-    else:
-        # Mistral scores already align with display expectations
-        return max(0.0, min(1.0, raw_fidelity))
+    # Apply same normalization to all embedding models
+    # Both ST and Mistral produce similar raw similarity ranges
+    return normalize_st_fidelity(raw_fidelity)
 
 
 def get_display_thresholds() -> dict:
@@ -111,13 +116,13 @@ def raw_to_display_mapping_table() -> str:
     Generate a mapping table for verification.
     """
     lines = [
-        "SentenceTransformer Raw → Display Mapping (DISCRIMINATIVE)",
+        "SentenceTransformer Raw → Display Mapping (RECALIBRATED 2025-12-26)",
         "=" * 60,
         f"{'Raw':<10} {'Display':<10} {'Zone':<10}",
         "-" * 60,
     ]
 
-    test_values = [0.55, 0.50, 0.45, 0.40, 0.337, 0.32, 0.30, 0.28, 0.274, 0.24, 0.20, 0.15, 0.10, 0.05, 0.00]
+    test_values = [0.60, 0.55, 0.50, 0.48, 0.45, 0.42, 0.40, 0.38, 0.35, 0.30, 0.25, 0.20, 0.15, 0.10]
 
     for raw in test_values:
         display = normalize_st_fidelity(raw)
@@ -132,13 +137,14 @@ def raw_to_display_mapping_table() -> str:
         lines.append(f"{raw:<10.3f} {display:<10.3f} {zone:<10}")
 
     lines.append("-" * 60)
-    lines.append("Anchor points verified:")
-    lines.append(f"  ST 0.32 → {normalize_st_fidelity(0.32):.2f} (expect 0.70)")
-    lines.append(f"  ST 0.28 → {normalize_st_fidelity(0.28):.2f} (expect 0.60)")
-    lines.append(f"  ST 0.24 → {normalize_st_fidelity(0.24):.2f} (expect 0.50)")
+    lines.append("Anchor points verified (RECALIBRATED):")
+    lines.append(f"  ST 0.50 → {normalize_st_fidelity(0.50):.2f} (expect 0.70 GREEN)")
+    lines.append(f"  ST 0.45 → {normalize_st_fidelity(0.45):.2f} (expect 0.60 YELLOW)")
+    lines.append(f"  ST 0.40 → {normalize_st_fidelity(0.40):.2f} (expect 0.50 ORANGE)")
+    lines.append(f"  ST 0.35 → {normalize_st_fidelity(0.35):.2f} (expect 0.40 RED)")
     lines.append("Test cases:")
-    lines.append(f"  ST 0.337 → {normalize_st_fidelity(0.337):.2f} (TELOS query - should be GREEN)")
-    lines.append(f"  ST 0.274 → {normalize_st_fidelity(0.274):.2f} (PB&J - should be ORANGE)")
+    lines.append(f"  ST 0.55 → {normalize_st_fidelity(0.55):.2f} (on-topic TELOS query - should be GREEN)")
+    lines.append(f"  ST 0.35 → {normalize_st_fidelity(0.35):.2f} (PB&J off-topic - should be RED)")
 
     return "\n".join(lines)
 

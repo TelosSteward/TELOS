@@ -341,13 +341,10 @@ class BetaObservationDeck:
             if hasattr(self, '_fidelity_cache'):
                 return self._fidelity_cache
 
-        # After a PA shift, show perfect alignment (1.0) to indicate fresh start
-        # The pa_just_shifted flag is cleared when the next message is sent
-        if pa_shifted:
-            result = (1.0, 1.0, 1.0, None)
-            self._fidelity_cache_key = cache_key
-            self._fidelity_cache = result
-            return result
+        # NOTE: Removed pa_just_shifted short-circuit (2025-12-26)
+        # Previously this returned hardcoded (1.0, 1.0, 1.0, None) when PA was shifted,
+        # which caused off-topic content to display 100% fidelity even when interventions
+        # correctly identified drift. Now we always fetch real fidelity values from turn data.
 
         user_fidelity = None
         ai_fidelity = None

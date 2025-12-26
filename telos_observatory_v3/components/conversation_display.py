@@ -3999,7 +3999,7 @@ Once you send your first message, I'll understand your purpose and we can get st
     animation: text-pulse 2s ease-in-out infinite;
 }}
 </style>
-<div class="calibrating-border" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 15px; border-radius: 10px; margin-top: 0; margin-bottom: 0; border: 2px solid #888; box-shadow: 0 0 20px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);">
+<div class="calibrating-border" style="background: #1a1a1e; padding: 15px; border-radius: 10px; margin-top: 0; margin-bottom: 0; border: 2px solid #888; box-shadow: 0 0 20px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3); position: relative; z-index: 10;">
     <div style="color: #a8a8a8; font-size: 19px; margin-bottom: 5px;">
         <strong style="color: #F4D03F;">TELOS</strong>
     </div>

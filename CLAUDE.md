@@ -97,6 +97,12 @@ telos_observatory_v3/
 | `services/session_summarizer.py` | AI-powered session summaries with caching |
 | `services/report_generator.py` | Self-contained HTML governance reports |
 
+### Adaptive Context System
+| File | Purpose |
+|------|---------|
+| `telos_purpose/core/adaptive_context.py` | Multi-tier context buffer, phase detection, adaptive thresholds |
+| `tests/test_adaptive_context.py` | Unit tests for adaptive context components |
+
 ### UI Components
 | File | Purpose |
 |------|---------|
@@ -186,6 +192,87 @@ interventions = collector.get_interventions()
 
 # Export
 session_data = collector.export_to_dict()
+```
+
+---
+
+## Adaptive Context System
+
+The Adaptive Context System provides intelligent message classification, conversation phase detection, and adaptive threshold adjustment.
+
+### Components
+| Component | Purpose |
+|-----------|---------|
+| `MessageType` | Enum: DIRECT, FOLLOW_UP, CLARIFICATION, ANAPHORA |
+| `ConversationPhase` | Enum: EXPLORATION, FOCUS, DRIFT, RECOVERY |
+| `TieredMessage` | Dataclass for messages with fidelity, embedding, tier |
+| `MultiTierContextBuffer` | Three-tier message buffer with capacity limits |
+| `PhaseDetector` | Rolling-window conversation phase detection |
+| `AdaptiveThresholdCalculator` | Adjusts intervention threshold based on context |
+| `AdaptiveContextManager` | Unified interface for all components |
+
+### Constants (adaptive_context.py)
+```python
+# Tier Thresholds (fidelity-based classification)
+TIER1_THRESHOLD = 0.70  # High fidelity messages
+TIER2_THRESHOLD = 0.35  # Medium fidelity messages
+TIER3_THRESHOLD = 0.25  # Low fidelity messages
+
+# Buffer Capacities (per tier)
+TIER1_CAPACITY = 5      # Most recent high-fidelity
+TIER2_CAPACITY = 3      # Most recent medium-fidelity
+TIER3_CAPACITY = 2      # Most recent low-fidelity
+
+# Governance Safeguards
+HARD_FLOOR = 0.20       # Minimum threshold (never go below)
+MAX_BOOST = 0.20        # Maximum threshold increase
+BASE_THRESHOLD = 0.48   # Default intervention threshold
+
+# Context Weighting
+RECENCY_DECAY = 0.8     # λ for weighted embeddings (newer = higher weight)
+PHASE_WINDOW_SIZE = 5   # Rolling window for phase detection
+```
+
+### Usage
+```python
+from telos_purpose.core.adaptive_context import (
+    AdaptiveContextManager,
+    classify_message_type,
+    MessageType
+)
+
+# Initialize manager
+manager = AdaptiveContextManager(base_threshold=0.48)
+
+# Process a message
+result = manager.process_message(
+    text="Tell me more about that",
+    embedding=embedding_vector,
+    fidelity_score=0.72
+)
+
+# Access result fields
+print(f"Message Type: {result.message_type}")     # e.g., MessageType.FOLLOW_UP
+print(f"Phase: {result.phase}")                   # e.g., ConversationPhase.FOCUS
+print(f"Tier: {result.tier}")                     # e.g., 1
+print(f"Adjusted Threshold: {result.adjusted_threshold}")  # e.g., 0.52
+print(f"Context Embedding: {result.context_embedding}")    # Weighted numpy array
+```
+
+### Message Type Classification
+```python
+MESSAGE_TYPE_THRESHOLDS = {
+    MessageType.DIRECT: 0.70,        # Clear, on-topic statements
+    MessageType.FOLLOW_UP: 0.35,     # Continuations, elaborations
+    MessageType.CLARIFICATION: 0.25, # Questions about prior content
+    MessageType.ANAPHORA: 0.25,      # Pronoun references
+}
+```
+
+### Feature Flag
+```python
+# In beta_response_manager.py
+ADAPTIVE_CONTEXT_ENABLED = True  # Set False to disable
 ```
 
 ---
@@ -314,5 +401,5 @@ python3 telos_observatory_v3/telos_purpose/validation/run_internal_test0.py
 
 ---
 
-*Last updated: 2025-12-19*
+*Last updated: 2025-12-26*
 *For grant language and research roadmap, see `docs/GRANT_ROADMAP.md`*

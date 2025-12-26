@@ -71,6 +71,27 @@ try:
 except ImportError:
     TRACE_COLLECTOR_AVAILABLE = False
 
+# =============================================================================
+# ADAPTIVE CONTEXT SYSTEM - Phase-aware, pattern-classified context management
+# =============================================================================
+# From ADAPTIVE_CONTEXT_PROPOSAL.md: Multi-tier buffer with message type
+# classification, conversation phase detection, and adaptive thresholds.
+# Feature flag allows gradual rollout and A/B testing.
+try:
+    from telos_purpose.core.adaptive_context import (
+        AdaptiveContextManager,
+        AdaptiveContextResult,
+        MessageType,
+        ConversationPhase,
+    )
+    ADAPTIVE_CONTEXT_AVAILABLE = True
+except ImportError:
+    ADAPTIVE_CONTEXT_AVAILABLE = False
+
+# Feature flag for adaptive context system
+# Set to True to enable full adaptive context, False to use legacy context-aware fidelity
+ADAPTIVE_CONTEXT_ENABLED = True
+
 logger = logging.getLogger(__name__)
 
 # =============================================================================
@@ -188,6 +209,22 @@ class BetaResponseManager:
             except Exception as e:
                 logger.warning(f"Could not initialize Telemetric Keys: {e}")
                 self.telemetric_manager = None
+
+        # Adaptive Context System - Phase-aware, pattern-classified context management
+        # Replaces simple context concatenation with multi-tier buffer + phase detection
+        self.adaptive_context_manager = None
+        self.adaptive_context_enabled = ADAPTIVE_CONTEXT_ENABLED and ADAPTIVE_CONTEXT_AVAILABLE
+        if self.adaptive_context_enabled:
+            try:
+                self.adaptive_context_manager = AdaptiveContextManager()
+                logger.info("AdaptiveContextManager initialized for session")
+            except Exception as e:
+                logger.warning(f"Could not initialize AdaptiveContextManager: {e}")
+                self.adaptive_context_manager = None
+                self.adaptive_context_enabled = False
+
+        # Last adaptive context result - cached for UI display
+        self.last_adaptive_context_result: Optional['AdaptiveContextResult'] = None
 
     def _get_thresholds(self) -> dict:
         """
@@ -458,11 +495,36 @@ class BetaResponseManager:
                         intervention_level = level_map.get(zone, InterventionLevel.INTERVENE)
                         trigger_reason = "basin_exit" if not in_basin else "drift_detected"
 
-                    # Calculate controller strength (K_ATTRACTOR = 1.5 from constants)
-                    error_signal = max(0, threshold_green - user_fidelity)
-                    controller_strength = min(1.5 * error_signal, 1.0)
+                    # =============================================================
+                    # PROPORTIONAL CONTROL: Correct error signal formula
+                    # Per whitepaper Section 5.3: F = K·e_t where e_t = 1.0 - fidelity
+                    # =============================================================
+                    # K_ATTRACTOR = 1.5 (from proportional_controller.py)
+                    # IMPORTANT: Error signal is 1.0 - fidelity, NOT threshold - fidelity
+                    # The old formula (threshold_green - fidelity) produced weak interventions
+                    # because it measured distance from GREEN, not from perfect alignment.
+                    K_ATTRACTOR = 1.5
+                    error_signal = 1.0 - user_fidelity  # FIXED: Correct formula
+                    controller_strength = min(K_ATTRACTOR * error_signal, 1.0)
 
-                    # Map strength to semantic band
+                    # Determine intervention state based on strength thresholds
+                    # Per ProportionalController: epsilon_min ~ 0.16, epsilon_max ~ 0.58
+                    # Simplified mapping for display/logging purposes:
+                    # State 1 (MONITOR):   e < 0.30, strength < 0.45 → No action
+                    # State 2 (CORRECT):   0.30 ≤ e < 0.50 → Context injection
+                    # State 3 (INTERVENE): 0.50 ≤ e < 0.67 → Regeneration
+                    # State 4 (ESCALATE):  e ≥ 0.67 → Block/escalate
+                    if error_signal < 0.30:
+                        intervention_state = "MONITOR"
+                    elif error_signal < 0.50:
+                        intervention_state = "CORRECT"
+                    elif error_signal < 0.67:
+                        intervention_state = "INTERVENE"
+                    else:
+                        intervention_state = "ESCALATE"
+
+                    # Map strength to semantic band (for linguistic output styling)
+                    # These bands control how the Semantic Interpreter generates prompts
                     if controller_strength < 0.45:
                         semantic_band = "minimal"
                     elif controller_strength < 0.60:
@@ -473,6 +535,10 @@ class BetaResponseManager:
                         semantic_band = "firm"
                     else:
                         semantic_band = "strong"
+
+                    logger.info(f"📐 Proportional Controller: e={error_signal:.3f}, "
+                               f"strength={controller_strength:.3f}, state={intervention_state}, "
+                               f"band={semantic_band}")
 
                     collector.record_intervention(
                         turn_number=len(self.state_manager.state.turns) + 1 if hasattr(self, 'state_manager') else 1,
@@ -599,11 +665,17 @@ class BetaResponseManager:
 
         return response_data
 
-    def _calculate_user_fidelity(self, user_input: str) -> tuple:
+    def _calculate_user_fidelity(self, user_input: str, use_context: bool = True) -> tuple:
         """
         Calculate fidelity of user input relative to their PA using TWO-LAYER architecture.
 
         This is the FIRST calculation - before any response generation.
+
+        CONTEXT-AWARE FIDELITY (NEW):
+        - When use_context=True, prepends recent conversation history to user input
+        - This allows queries that are contextually related to be recognized
+        - Example: "EU AI Act compliance" in Turn 2 gets context from Turn 1 about TELOS
+        - Prevents false positive interventions on contextually related queries
 
         TEMPLATE MODE (SentenceTransformer + Rescaling):
         - Uses SentenceTransformer for better off-topic discrimination
@@ -616,6 +688,7 @@ class BetaResponseManager:
 
         Args:
             user_input: The user's message
+            use_context: Whether to include conversation context (default: True)
 
         Returns:
             tuple: (fidelity, raw_similarity, baseline_hard_block)
@@ -629,23 +702,97 @@ class BetaResponseManager:
                 self._initialize_telos_engine()
 
             # ================================================================
-            # PA SHIFT FIX: Load cached ST mode & embedding from session state
-            # After a PA shift, a new BetaResponseManager instance is created.
-            # We need to restore the SentenceTransformer mode and embedding
-            # from session state to ensure fidelity is calculated against the
-            # new PA, not the old Mistral embeddings.
+            # PRE-LOAD SESSION STATE EMBEDDINGS (CRITICAL FOR ADAPTIVE CONTEXT)
             # ================================================================
+            # After a PA shift, a new BetaResponseManager instance is created.
+            # We must restore ST mode and embedding BEFORE the adaptive context
+            # check, otherwise the hasattr() condition will fail.
             if 'use_rescaled_fidelity_mode' in st.session_state and st.session_state.use_rescaled_fidelity_mode:
                 self.use_rescaled_fidelity = True
-                # Initialize ST provider if needed - uses cached version to avoid expensive model reloading
+                # Initialize ST provider if needed
                 if not self.st_embedding_provider:
                     from telos_purpose.core.embedding_provider import get_cached_minilm_provider
                     self.st_embedding_provider = get_cached_minilm_provider()
                     logger.info(f"   SentenceTransformer (cached): {self.st_embedding_provider.dimension} dims")
-                # Load cached PA embedding
+                # Load cached PA embedding EARLY so adaptive context can use it
                 if not hasattr(self, 'st_user_pa_embedding') and 'cached_st_user_pa_embedding' in st.session_state:
                     self.st_user_pa_embedding = st.session_state.cached_st_user_pa_embedding
-                    logger.info(f"   Loaded cached ST PA embedding from session state: {len(self.st_user_pa_embedding)} dims")
+                    logger.info(f"   ✅ Pre-loaded ST PA embedding for adaptive context: {len(self.st_user_pa_embedding)} dims")
+
+            # ================================================================
+            # ADAPTIVE CONTEXT SYSTEM: Phase-aware, pattern-classified context
+            # ================================================================
+            # If enabled, use the full adaptive context system from the proposal.
+            # This replaces simple context concatenation with:
+            # - Message type classification (DIRECT, FOLLOW_UP, CLARIFICATION, ANAPHORA)
+            # - Multi-tier context buffer with weighted embeddings
+            # - Conversation phase detection (EXPLORATION, FOCUS, DRIFT, RECOVERY)
+            # - Adaptive threshold calculation with governance bounds
+            if self.adaptive_context_enabled and self.adaptive_context_manager and hasattr(self, 'st_user_pa_embedding'):
+                try:
+                    # Get PA embedding (use ST embedding if available)
+                    pa_embedding = getattr(self, 'st_user_pa_embedding', None)
+                    if pa_embedding is None:
+                        pa_embedding = self.user_pa_embedding
+
+                    # Get input embedding
+                    if self.st_embedding_provider:
+                        input_embedding = np.array(self.st_embedding_provider.encode(user_input))
+                    elif self.embedding_provider:
+                        input_embedding = np.array(self.embedding_provider.encode(user_input))
+                    else:
+                        raise ValueError("No embedding provider available")
+
+                    # Calculate raw fidelity first (for adaptive system)
+                    raw_fidelity = self._cosine_similarity(input_embedding, pa_embedding)
+
+                    # Process through adaptive context system
+                    adaptive_result = self.adaptive_context_manager.process_message(
+                        user_input=user_input,
+                        input_embedding=input_embedding,
+                        pa_embedding=pa_embedding,
+                        raw_fidelity=raw_fidelity,
+                        base_threshold=INTERVENTION_THRESHOLD
+                    )
+
+                    # Cache result for UI display
+                    self.last_adaptive_context_result = adaptive_result
+
+                    # Log adaptive context decision
+                    logger.info(f"🔄 ADAPTIVE CONTEXT: type={adaptive_result.message_type.name}, "
+                               f"phase={adaptive_result.phase.name}, "
+                               f"raw={raw_fidelity:.3f} -> adjusted={adaptive_result.adjusted_fidelity:.3f}, "
+                               f"threshold={adaptive_result.adaptive_threshold:.3f}, "
+                               f"intervene={adaptive_result.should_intervene}")
+
+                    # Use adaptive result values
+                    fidelity = adaptive_result.adjusted_fidelity
+                    raw_similarity = raw_fidelity  # Keep original for logging
+                    baseline_hard_block = adaptive_result.should_intervene and adaptive_result.drift_detected
+
+                    return (fidelity, raw_similarity, baseline_hard_block)
+
+                except Exception as e:
+                    logger.warning(f"Adaptive context failed, falling back to legacy: {e}")
+                    # Fall through to legacy context-aware fidelity
+
+            # ================================================================
+            # LEGACY CONTEXT-AWARE FIDELITY: Prepend recent conversation for context
+            # ================================================================
+            # This allows queries like "EU AI Act compliance" to inherit context
+            # from Turn 1 about TELOS governance, preventing false interventions.
+            contextual_input = user_input
+            if use_context:
+                recent_context = self._get_recent_context_for_fidelity()
+                if recent_context:
+                    # Prepend context with separator - keeps user input primary
+                    # Format: "[Context: ...] | [Current query: ...]"
+                    contextual_input = f"[Context: {recent_context}] | {user_input}"
+                    logger.info(f"📚 Legacy context-aware fidelity: added {len(recent_context)} chars of context")
+
+            # NOTE: ST mode loading was already done in PRE-LOAD section above.
+            # This section is now redundant but kept for safety in case the
+            # early loading is bypassed for some code path.
 
             # ================================================================
             # TEMPLATE MODE: SentenceTransformer + Raw Thresholds (Clean Lane)
@@ -655,8 +802,8 @@ class BetaResponseManager:
             if self.use_rescaled_fidelity and self.st_embedding_provider and hasattr(self, 'st_user_pa_embedding'):
                 from telos_purpose.core.constants import ST_FIDELITY_GREEN, ST_FIDELITY_RED
 
-                # Embed user input with SentenceTransformer
-                user_embedding = np.array(self.st_embedding_provider.encode(user_input))
+                # Embed user input with SentenceTransformer (with context if available)
+                user_embedding = np.array(self.st_embedding_provider.encode(contextual_input))
 
                 # Calculate raw cosine similarity
                 raw_similarity = self._cosine_similarity(user_embedding, self.st_user_pa_embedding)
@@ -685,16 +832,16 @@ class BetaResponseManager:
             # We use ST for user input embedding but keep Mistral for PA setup
             # (PA embeddings are cached and computed once per session).
             if self.st_embedding_provider and hasattr(self, 'st_user_pa_embedding') and self.st_user_pa_embedding is not None:
-                # Fast path: use cached SentenceTransformer embedding
-                user_embedding = np.array(self.st_embedding_provider.encode(user_input))
+                # Fast path: use cached SentenceTransformer embedding (with context)
+                user_embedding = np.array(self.st_embedding_provider.encode(contextual_input))
                 raw_similarity = self._cosine_similarity(user_embedding, self.st_user_pa_embedding)
                 logger.info(f"FAST PATH: ST embedding, raw_sim={raw_similarity:.3f}")
             elif not self.embedding_provider or self.user_pa_embedding is None:
                 logger.warning("Embedding provider or PA not initialized - returning default fidelity")
                 return (FIDELITY_GREEN, FIDELITY_GREEN, False)  # Default to Aligned zone if not ready
             else:
-                # Fallback: use Mistral API (slower)
-                user_embedding = np.array(self.embedding_provider.encode(user_input))
+                # Fallback: use Mistral API (slower) - still use contextual input
+                user_embedding = np.array(self.embedding_provider.encode(contextual_input))
                 raw_similarity = self._cosine_similarity(user_embedding, self.user_pa_embedding)
                 logger.info(f"SLOW PATH: Mistral API, raw_sim={raw_similarity:.3f}")
 
@@ -1824,7 +1971,17 @@ Keep it to 2-3 sentences. Sound human, not robotic."""
         try:
             from mistralai import Mistral
             import os
-            mistral_client = Mistral(api_key=os.getenv('MISTRAL_API_KEY'))
+            import traceback
+
+            # Check API key before creating client
+            api_key = os.getenv('MISTRAL_API_KEY')
+            if not api_key:
+                logger.error("   ❌ MISTRAL_API_KEY not found in environment!")
+                logger.error(f"   Environment vars: {list(os.environ.keys())[:10]}...")
+            else:
+                logger.info(f"   ✅ MISTRAL_API_KEY found: {api_key[:10]}...")
+
+            mistral_client = Mistral(api_key=api_key)
             enrichment_service = PAEnrichmentService(mistral_client)
 
             logger.info("   🔧 Using PA Enrichment Service for semantic extraction...")
@@ -1836,8 +1993,12 @@ Keep it to 2-3 sentences. Sound human, not robotic."""
 
             if enriched_pa:
                 logger.info(f"   ✅ PA enriched with {len(enriched_pa.get('example_queries', []))} example queries")
+                logger.info(f"   ✅ PA purpose: {enriched_pa.get('purpose', 'N/A')[:100]}")
+            else:
+                logger.warning("   ⚠️ PA enrichment returned None (check pa_enrichment.py logs)")
         except Exception as e:
-            logger.warning(f"   ⚠️ PA enrichment failed: {e}, falling back to basic extraction")
+            logger.error(f"   ❌ PA enrichment exception: {type(e).__name__}: {e}")
+            logger.error(f"   ❌ Traceback: {traceback.format_exc()}")
 
         # Build User PA from enriched structure (or fallback)
         if enriched_pa:
@@ -2132,6 +2293,37 @@ Keep it to 2-3 sentences. Sound human, not robotic."""
             context_parts.append(f"{role}: {content}")
 
         return "\n".join(context_parts)
+
+    def _get_recent_context_for_fidelity(self) -> str:
+        """
+        Get recent conversation context for context-aware fidelity calculation.
+
+        This is optimized for fidelity calculation - it extracts topic keywords
+        from recent user messages to provide semantic context when embedding
+        the current query. This allows queries like "EU AI Act compliance" to
+        inherit context from Turn 1 about "TELOS governance".
+
+        Returns:
+            String containing recent topic context (empty string if no history)
+        """
+        history = self._get_conversation_history()
+        if not history:
+            return ""
+
+        # Get last 2 user messages only (not assistant) - focuses on user intent
+        user_messages = [msg for msg in history if msg.get('role') == 'user']
+        if not user_messages:
+            return ""
+
+        # Take last 2 user messages, truncate to 100 chars each
+        recent_user = user_messages[-2:]
+        context_parts = []
+        for msg in recent_user:
+            content = msg.get('content', '')[:100]
+            if content:
+                context_parts.append(content)
+
+        return " | ".join(context_parts)
 
     def _create_telos_error_response(self, turn_number: int, direction: str, error: str) -> Dict:
         """

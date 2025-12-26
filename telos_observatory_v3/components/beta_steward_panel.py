@@ -324,7 +324,8 @@ class BetaStewardPanel:
         """Gather BETA-specific context for Steward.
 
         Returns:
-            dict: Context including PA, current metrics, turn info, last user input
+            dict: Context including PA, current metrics, turn info, last user input,
+                  AND full turn history for multi-turn awareness
         """
         context = {}
 
@@ -339,61 +340,97 @@ class BetaStewardPanel:
         completed_turns = current_turn - 1
 
         # ============================================================
-        # PRIMARY SOURCE: beta_turn_X_data (where BETA mode stores data)
-        # This is the CORRECT and AUTHORITATIVE source for BETA mode
+        # FULL TURN HISTORY: Collect ALL turns for Steward awareness
+        # This allows Steward to explain any turn, not just the latest
         # ============================================================
+        turn_history = []
         latest_turn_data = None
-        for turn_num in range(completed_turns, 0, -1):
+
+        for turn_num in range(1, completed_turns + 1):
             turn_data = st.session_state.get(f'beta_turn_{turn_num}_data', {})
             if turn_data:
-                latest_turn_data = turn_data
                 telos_analysis = turn_data.get('telos_analysis', {})
 
-                # Extract the three calibration metrics - USE DISPLAY VALUES to match UI
-                # Fall back to raw values if display versions not available
+                # Extract metrics for this turn
                 f_user = telos_analysis.get('display_user_pa_fidelity') or telos_analysis.get('user_pa_fidelity')
 
-                # AI fidelity - use same multi-priority fallback as TELOSCOPE
-                # Priority 1: Direct from turn_data
+                # AI fidelity - multi-priority fallback
                 f_ai = turn_data.get('ai_pa_fidelity')
-                # Priority 2: From ps_metrics dict
                 if f_ai is None:
                     ps_metrics = turn_data.get('ps_metrics', {})
                     if ps_metrics:
                         f_ai = ps_metrics.get('f_ai')
-                # Priority 3: From telos_analysis
                 if f_ai is None:
                     f_ai = telos_analysis.get('ai_pa_fidelity')
 
                 ps = telos_analysis.get('display_primacy_state') or telos_analysis.get('primacy_state_score')
 
-                if f_user is not None:
-                    context['f_user'] = f_user
-                if f_ai is not None:
-                    context['f_ai'] = f_ai
-                if ps is not None:
-                    context['primacy_state'] = ps
+                # Build turn summary
+                turn_summary = {
+                    'turn': turn_num,
+                    'user_input': turn_data.get('user_input', ''),
+                    'f_user': f_user,
+                    'f_ai': f_ai,
+                    'primacy_state': ps,
+                    'intervention_triggered': telos_analysis.get('intervention_triggered', False),
+                    'intervention_reason': telos_analysis.get('intervention_reason', ''),
+                }
+                turn_history.append(turn_summary)
 
-                # Get the user's input that produced these metrics
-                user_input = turn_data.get('user_input', '')
-                if user_input:
-                    context['last_user_input'] = user_input
+                # Track latest for backward compatibility
+                latest_turn_data = turn_data
 
-                # Get the AI response displayed in the main session window
-                # Try 'shown_response' first (display key), then 'response' (standard key)
-                ai_response = turn_data.get('shown_response') or turn_data.get('response', '')
-                if ai_response:
-                    context['last_ai_response'] = ai_response
+        # Add full turn history to context
+        context['turn_history'] = turn_history
 
-                # Get intervention info
-                if telos_analysis.get('intervention_triggered'):
-                    context['intervention_triggered'] = True
-                    context['intervention_reason'] = telos_analysis.get('intervention_reason', '')
-                else:
-                    context['intervention_triggered'] = False
+        # ============================================================
+        # LATEST TURN DATA: For backward compatibility with existing code
+        # ============================================================
+        if latest_turn_data:
+            telos_analysis = latest_turn_data.get('telos_analysis', {})
 
-                # Found data - stop searching
-                break
+            # Extract the three calibration metrics - USE DISPLAY VALUES to match UI
+            # Fall back to raw values if display versions not available
+            f_user = telos_analysis.get('display_user_pa_fidelity') or telos_analysis.get('user_pa_fidelity')
+
+            # AI fidelity - use same multi-priority fallback as TELOSCOPE
+            # Priority 1: Direct from turn_data
+            f_ai = latest_turn_data.get('ai_pa_fidelity')
+            # Priority 2: From ps_metrics dict
+            if f_ai is None:
+                ps_metrics = latest_turn_data.get('ps_metrics', {})
+                if ps_metrics:
+                    f_ai = ps_metrics.get('f_ai')
+            # Priority 3: From telos_analysis
+            if f_ai is None:
+                f_ai = telos_analysis.get('ai_pa_fidelity')
+
+            ps = telos_analysis.get('display_primacy_state') or telos_analysis.get('primacy_state_score')
+
+            if f_user is not None:
+                context['f_user'] = f_user
+            if f_ai is not None:
+                context['f_ai'] = f_ai
+            if ps is not None:
+                context['primacy_state'] = ps
+
+            # Get the user's input that produced these metrics
+            user_input = latest_turn_data.get('user_input', '')
+            if user_input:
+                context['last_user_input'] = user_input
+
+            # Get the AI response displayed in the main session window
+            # Try 'shown_response' first (display key), then 'response' (standard key)
+            ai_response = latest_turn_data.get('shown_response') or latest_turn_data.get('response', '')
+            if ai_response:
+                context['last_ai_response'] = ai_response
+
+            # Get intervention info
+            if telos_analysis.get('intervention_triggered'):
+                context['intervention_triggered'] = True
+                context['intervention_reason'] = telos_analysis.get('intervention_reason', '')
+            else:
+                context['intervention_triggered'] = False
 
         # ============================================================
         # FALLBACK: state_manager.state.turns (original TELOS flow)
