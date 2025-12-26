@@ -88,7 +88,7 @@ logger = logging.getLogger(__name__)
 # definitely off-topic - trigger HARD_BLOCK intervention immediately.
 #
 # This is EMBEDDING-MODEL SPECIFIC. See docs/internal/EMBEDDING_BASELINE_NORMALIZATION.md
-SIMILARITY_BASELINE = 0.50  # Raised to catch more extreme off-topic content aggressively
+SIMILARITY_BASELINE = 0.20  # Layer 1 hard block - only catch truly extreme off-topic (e.g., "pizza" vs "AI governance")
 
 # =============================================================================
 # LAYER 2: TELOS Primacy State Mathematics (Basin Membership)
@@ -96,11 +96,11 @@ SIMILARITY_BASELINE = 0.50  # Raised to catch more extreme off-topic content agg
 # Fidelity scale: 0.0 = absolute drift, 1.0 = perfect primacy state
 # Basin defines the region around the PA where user input is "within purpose"
 # Intervention triggers when fidelity drops BELOW (BASIN - TOLERANCE)
-BASIN = 0.40       # Basin boundary - inputs with fidelity >= this are "within purpose"
+BASIN = 0.28       # Basin boundary - aligned with ST_FIDELITY_YELLOW raw threshold
 TOLERANCE = 0.04   # Tolerance margin for basin boundary
 
 # Derived intervention threshold: below this triggers governance intervention
-INTERVENTION_THRESHOLD = BASIN - TOLERANCE  # 0.36
+INTERVENTION_THRESHOLD = BASIN - TOLERANCE  # 0.24 - only intervene on clearly off-topic content
 
 # =============================================================================
 # UNIFIED INTERVENTION DECISION
