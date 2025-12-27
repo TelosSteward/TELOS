@@ -82,7 +82,10 @@ telos_observatory_v3/
 ### Core Engine
 | File | Purpose |
 |------|---------|
-| `services/beta_response_manager.py` | **Main fidelity engine** - two-layer detection, intervention decision |
+| `services/beta_response_manager.py` | **Orchestrator** - coordinates fidelity, intervention, and response modules |
+| `services/fidelity_calculator.py` | Fidelity calculation: cosine similarity, adaptive context, thresholds |
+| `services/intervention_decider.py` | Intervention decision: zone classification, proportional control |
+| `services/response_generator.py` | Response generation: native, redirect, steward styling |
 | `telos_purpose/core/constants.py` | All calibration constants (single source of truth) |
 | `telos_purpose/core/embedding_provider.py` | Mistral (1024-dim) + SentenceTransformer (384-dim) |
 | `telos_purpose/core/semantic_interpreter.py` | Fidelity → linguistic specifications |
@@ -126,6 +129,41 @@ telos_observatory_v3/
 |------|---------|
 | `core/state_manager.py` | Session state orchestration |
 | `beta_testing/beta_session_manager.py` | BETA session management |
+
+---
+
+## Decomposed Module Architecture
+
+The core engine has been decomposed into single-responsibility modules:
+
+```
+BetaResponseManager (Orchestrator)
+    │
+    ├── FidelityCalculator
+    │       ├── cosine_similarity()
+    │       ├── calculate_fidelity()
+    │       ├── get_thresholds()
+    │       └── adaptive context integration
+    │
+    ├── InterventionDecider
+    │       ├── decide() → InterventionDecision
+    │       ├── zone classification (GREEN/YELLOW/ORANGE/RED)
+    │       ├── proportional control (K=1.5)
+    │       └── governance trace logging
+    │
+    └── ResponseGenerator
+            ├── generate_native_response() - GREEN zone
+            ├── generate_redirect_response() - intervention zones
+            ├── _build_system_prompt() - PA-aware prompts
+            ├── _build_redirect_prompt() - hybrid styling
+            └── get_steward_styling() - band interpolation
+```
+
+**Benefits:**
+- Each module has a single responsibility
+- Easier testing and debugging
+- Clearer dependency graph
+- Can be imported independently
 
 ---
 
