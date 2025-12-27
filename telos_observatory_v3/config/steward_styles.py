@@ -483,8 +483,13 @@ def get_response_opener(fidelity: float, green_threshold: float = 0.70) -> str:
     params = get_style_interpolation(fidelity, green_threshold)
 
     # Select opener based on position within band
+    # Handle empty openers list (e.g., Band 6 which has no openers)
+    if not style.openers:
+        return ""  # No opener for near-GREEN responses
+
     index = int(params['band_position'] * len(style.openers))
     index = min(index, len(style.openers) - 1)
+    index = max(index, 0)  # Ensure non-negative
 
     return style.openers[index]
 

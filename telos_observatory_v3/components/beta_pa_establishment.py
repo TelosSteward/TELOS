@@ -251,6 +251,28 @@ class BetaPAEstablishment:
             # that beta_response_manager.py line 535 looks for when computing User Fidelity
             st.session_state.cached_st_user_pa_embedding = user_pa_embedding
 
+            # CRITICAL: Enable rescaled fidelity mode for adaptive context to work
+            # Without this flag, the adaptive context system is bypassed entirely
+            # and fidelity is calculated using the wrong code path/thresholds
+            st.session_state.use_rescaled_fidelity_mode = True
+
+            # CRITICAL: Set PA identity hash so beta_response_manager recognizes cached embeddings
+            # This must be computed EXACTLY the same way as beta_response_manager.py lines 1648-1733
+            # The extracted_pa from _apply_template will be in session state
+            if 'extracted_pa' in st.session_state:
+                purpose = st.session_state.extracted_pa.get('purpose', '')
+                scope = st.session_state.extracted_pa.get('scope', [])
+                # IMPORTANT: Use ' '.join() with space separator to match beta_response_manager.py
+                # Lines 1648-1649 use: purpose_str = ' '.join(purpose_raw) if isinstance...
+                if isinstance(purpose, list):
+                    purpose = ' '.join(purpose)
+                if isinstance(scope, list):
+                    scope = ' '.join(scope)
+                import hashlib
+                pa_identity = hashlib.md5(f"{purpose}|{scope}".encode()).hexdigest()[:16]
+                st.session_state.cached_pa_identity = pa_identity
+                logger.info(f"   Set PA identity hash: {pa_identity}")
+
             logger.info(f"Loaded pre-computed embeddings for template: {template_id}")
             logger.info(f"   User PA: {len(user_pa_embedding)} dims")
             logger.info(f"   AI PA: {len(ai_pa_embedding)} dims")

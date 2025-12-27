@@ -489,6 +489,10 @@ class PAOnboarding:
                     if user_embedding and ai_embedding:
                         st.session_state.cached_user_pa_embedding = user_embedding
                         st.session_state.cached_ai_pa_embedding = ai_embedding
+                        # NOTE: Do NOT set cached_st_user_pa_embedding here!
+                        # The pre-computed embeddings are 1024-dim (Mistral), but
+                        # cached_st_user_pa_embedding must be 384-dim (SentenceTransformer).
+                        # Let beta_response_manager.py compute the ST embedding fresh.
                         embeddings_loaded = True
         except Exception as e:
             import logging
@@ -502,6 +506,9 @@ class PAOnboarding:
                 user_embedding, ai_embedding = compute_pa_embeddings(user_pa, ai_pa, embedding_provider)
                 st.session_state.cached_user_pa_embedding = user_embedding
                 st.session_state.cached_ai_pa_embedding = ai_embedding
+                # CRITICAL: Also cache as cached_st_user_pa_embedding for adaptive context
+                # These embeddings are already 384-dim from MiniLM, so this is correct
+                st.session_state.cached_st_user_pa_embedding = user_embedding
             except Exception as e:
                 import logging
                 logging.warning(f"Failed to compute PA embeddings at template establishment: {e}")
@@ -512,6 +519,19 @@ class PAOnboarding:
         st.session_state.ai_pa = ai_pa  # This makes the derived AI PA available for display
         st.session_state.pa_established = True
         st.session_state.pa_establishment_time = datetime.now().isoformat()
+
+        # CRITICAL: Enable rescaled fidelity mode for adaptive context to work
+        # Without this flag, the adaptive context system is bypassed entirely
+        st.session_state.use_rescaled_fidelity_mode = True
+
+        # CRITICAL: Set PA identity hash so beta_response_manager recognizes cached embeddings
+        # This must match EXACTLY how beta_response_manager.py computes current_pa_identity (lines 1648-1733)
+        purpose_raw = user_pa.get('purpose', '')
+        scope_raw = user_pa.get('scope', [])
+        purpose_str = ' '.join(purpose_raw) if isinstance(purpose_raw, list) else purpose_raw
+        scope_str = ' '.join(scope_raw) if isinstance(scope_raw, list) else scope_raw
+        import hashlib
+        st.session_state.cached_pa_identity = hashlib.md5(f"{purpose_str}|{scope_str}".encode()).hexdigest()[:16]
         st.session_state.pa_answers = {
             'primary_goal': template['purpose'],
             'scope_boundaries': ", ".join(template['scope']),
