@@ -24,24 +24,26 @@ TELOS (Telically Entrained Linguistic Operational Substrate) is a mathematical g
 
 ## Two-Layer Fidelity System
 
+**Single source of truth:** `telos_purpose/core/constants.py`
+
 ### Layer 1: Baseline Pre-Filter
 ```
-Constant: SIMILARITY_BASELINE = 0.35
-Location: services/beta_response_manager.py
+Constant: SIMILARITY_BASELINE = 0.20
 ```
-Catches content completely outside the PA embedding space. Raw cosine similarity < 0.35 triggers immediate HARD_BLOCK.
+Catches extreme off-topic content. Raw cosine similarity < 0.20 triggers immediate HARD_BLOCK.
 
 ### Layer 2: Basin Membership
 ```
-Constants: BASIN = 0.50, TOLERANCE = 0.02
+Constants: BASIN_CENTER = 0.50, BASIN_TOLERANCE = 0.02
 Threshold: INTERVENTION_THRESHOLD = 0.48
-Location: services/beta_response_manager.py
 ```
-Detects when user has drifted from stated purpose. Fidelity < 0.48 means outside basin, triggers intervention.
+Detects purpose drift. Fidelity < 0.48 means outside the primacy basin.
 
 ### Intervention Decision
 ```python
-should_intervene = (raw_similarity < 0.35) OR (fidelity < 0.48)
+# Note: Intervention triggers below GREEN threshold (0.70), not basin threshold (0.48)
+# The basin threshold is for mathematical basin membership, not UI intervention
+should_intervene = (raw_similarity < 0.20) OR (fidelity < 0.70)
 ```
 
 ---
@@ -54,8 +56,6 @@ should_intervene = (raw_similarity < 0.35) OR (fidelity < 0.48)
 | YELLOW | 0.60-0.69 | `#f39c12` | Minor Drift | Context injection |
 | ORANGE | 0.50-0.59 | `#e67e22` | Drift Detected | Steward redirect |
 | RED | < 0.50 | `#e74c3c` | Significant Drift | Block + review |
-
-**Single source of truth:** `telos_purpose/core/constants.py`
 
 ---
 
@@ -137,23 +137,45 @@ User Input
     ▼
 BetaResponseManager.generate_turn_responses()
     │
-    ├──► Embed input (MistralEmbeddingProvider)
+    ├──► 1. EMBED: Embed input (SentenceTransformer or Mistral)
     │
-    ├──► Calculate fidelity
-    │     ├── Layer 1: raw_sim < 0.35? → HARD_BLOCK
-    │     └── Layer 2: fidelity < 0.48? → Outside basin
+    ├──► 2. RAW SIMILARITY: cosine(input_embedding, PA_embedding)
+    │         Range: ST (0.15-0.45), Mistral (0.40-0.75)
     │
-    ├──► Intervention Decision
-    │     should_intervene = hard_block OR NOT in_basin
+    ├──► 3. LAYER 1 CHECK: raw_sim < SIMILARITY_BASELINE (0.20)?
+    │         If yes → baseline_hard_block = True (extreme off-topic)
     │
-    ├──► If intervening:
-    │     ├── SemanticInterpreter.interpret() → linguistic specs
-    │     └── Generate governed response
+    ├──► 4. ADAPTIVE CONTEXT (if enabled):
+    │         ├── Classify message type (ANAPHORA, FOLLOW_UP, etc.)
+    │         ├── Compute MAX similarity to prior high-fidelity turns
+    │         ├── Apply type-specific boost (ANAPHORA: 1.5x, DIRECT: 0.7x)
+    │         └── Return adjusted_fidelity
     │
-    ├──► Record to GovernanceTraceCollector
+    ├──► 5. INTERVENTION DECISION:
+    │         should_intervene = baseline_hard_block OR fidelity < FIDELITY_GREEN (0.70)
+    │         GREEN (≥0.70): No intervention
+    │         YELLOW/ORANGE/RED (<0.70): Steward intervention
+    │
+    ├──► 6. If intervening:
+    │         ├── SemanticInterpreter.interpret() → linguistic specs
+    │         ├── get_intervention_prompt() → Steward therapeutic persona
+    │         └── Generate governed response (hybrid styling)
+    │
+    ├──► 7. Record to GovernanceTraceCollector
     │
     └──► Return response with fidelity metrics
 ```
+
+### Threshold Summary (Single Source of Truth: constants.py)
+
+| Threshold | Value | Purpose |
+|-----------|-------|---------|
+| SIMILARITY_BASELINE | 0.20 | Layer 1 hard block (extreme off-topic) |
+| INTERVENTION_THRESHOLD | 0.48 | Layer 2 basin boundary |
+| FIDELITY_GREEN | 0.70 | Display zone: Aligned (no intervention) |
+| FIDELITY_YELLOW | 0.60 | Display zone: Minor drift |
+| FIDELITY_ORANGE | 0.50 | Display zone: Drift detected |
+| FIDELITY_RED | 0.50 | Display zone: Significant drift |
 
 ---
 

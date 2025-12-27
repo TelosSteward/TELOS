@@ -365,10 +365,11 @@ class BetaStewardPanel:
 
                 ps = telos_analysis.get('display_primacy_state') or telos_analysis.get('primacy_state_score')
 
-                # Build turn summary
+                # Build turn summary - include AI response for full context
                 turn_summary = {
                     'turn': turn_num,
                     'user_input': turn_data.get('user_input', ''),
+                    'ai_response': turn_data.get('shown_response') or turn_data.get('response', ''),
                     'f_user': f_user,
                     'f_ai': f_ai,
                     'primacy_state': ps,

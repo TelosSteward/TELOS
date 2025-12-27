@@ -26,22 +26,24 @@ logger = logging.getLogger(__name__)
 
 
 # =============================================================================
-# CONSTANTS - Governance Safeguards (MUST NOT BE VIOLATED)
+# CONSTANTS - Imported from Single Source of Truth
 # =============================================================================
+from telos_purpose.core.constants import (
+    FIDELITY_GREEN,
+    INTERVENTION_THRESHOLD,
+)
 
-# Hard floor - never boost fidelity below this threshold
-HARD_FLOOR = 0.20
+# Governance Safeguards (MUST NOT BE VIOLATED)
+HARD_FLOOR = 0.20  # Never boost fidelity below this threshold
+MAX_BOOST = 0.20   # Threshold can never be reduced by more than this
 
-# Maximum boost - threshold can never be reduced by more than this
-MAX_BOOST = 0.20
+# Base intervention threshold - imported from constants.py
+BASE_THRESHOLD = INTERVENTION_THRESHOLD  # 0.48
 
-# Base intervention threshold (from constants.py)
-BASE_THRESHOLD = 0.48
-
-# Tier configuration
-TIER1_THRESHOLD = 0.70  # High fidelity
-TIER2_THRESHOLD = 0.35  # Medium fidelity
-TIER3_THRESHOLD = 0.25  # Low fidelity (minimum)
+# Tier configuration - aligned with display zone thresholds
+TIER1_THRESHOLD = FIDELITY_GREEN  # 0.70 - High fidelity (GREEN zone)
+TIER2_THRESHOLD = 0.35            # Medium fidelity
+TIER3_THRESHOLD = 0.25            # Low fidelity (minimum)
 
 TIER1_CAPACITY = 5
 TIER2_CAPACITY = 3
@@ -88,11 +90,18 @@ MESSAGE_PATTERNS = {
         r'(what do you mean|elaborate on that|tell me more about what you said)',
     ],
     MessageType.ANAPHORA: [
+        # Start-of-sentence anaphora (original patterns)
         r'^(it|this|that|these|those|they|them)\s+(is|are|was|were|has|have|should|could|would|will)',
         r'^(tell me more about (it|this|that))',
         r'^(expand on (it|this|that))',
         r'^(and|also|plus|furthermore|additionally)\s+',
         r'^(what about|how about)\s+(it|this|that|them)',
+        # END-OF-SENTENCE anaphora - FIX for "prepare ourselves for that" pattern
+        r'\b(for|about|on|to|with|of)\s+(that|this|it|them|those)\s*[?.!]?\s*$',
+        # Anaphoric pronoun at end of sentence without preposition
+        r'\b(that|this|it)\s*[?.!]?\s*$',
+        # "do that", "understand that", "prepare for that" etc.
+        r'\b(do|understand|know|prepare|ready|handle)\s+.{0,20}\b(that|this|it)\s*[?.!]?\s*$',
     ],
     MessageType.FOLLOW_UP: [
         r'^(ok|okay|alright|sure|yes|yeah|got it|i see|thanks)',
@@ -402,6 +411,19 @@ class MultiTierContextBuffer:
         all_msgs = self.get_all_messages()
         return [m.text for m in all_msgs[-n:]]
 
+    def get_all_embeddings(self) -> List[np.ndarray]:
+        """
+        Get all embeddings from all tiers as a list.
+
+        Used by Context Attractor v3 to compute MAX similarity
+        instead of centroid similarity.
+
+        Returns:
+            List of normalized embedding vectors
+        """
+        all_msgs = self.get_all_messages()
+        return [msg.embedding for msg in all_msgs]
+
     def clear(self):
         """Clear all tiers."""
         self.tier1.clear()
@@ -592,12 +614,14 @@ class AdaptiveContextManager:
 
         # Step 4: Compute contextualized fidelity
         context_embedding = self.context_buffer.get_weighted_context_embedding()
+        context_embeddings = self.context_buffer.get_all_embeddings()  # For MAX similarity
         adjusted_fidelity = self._compute_adjusted_fidelity(
             input_embedding=input_embedding,
             pa_embedding=pa_embedding,
             context_embedding=context_embedding,
             raw_fidelity=raw_fidelity,
-            message_type=message_type
+            message_type=message_type,
+            context_embeddings=context_embeddings  # Context Attractor v3: MAX similarity
         )
 
         # Step 5: Determine if intervention should occur
@@ -659,97 +683,128 @@ class AdaptiveContextManager:
         pa_embedding: np.ndarray,
         context_embedding: Optional[np.ndarray],
         raw_fidelity: float,
-        message_type: MessageType
+        message_type: MessageType,
+        context_embeddings: Optional[List[np.ndarray]] = None
     ) -> float:
         """
-        Compute adjusted fidelity using context as an ATTRACTOR.
+        Compute adjusted fidelity using CONTEXT AS THIRD ATTRACTOR.
 
-        The Adaptive Context system functions as a mathematical attractor:
-        - Context embedding represents the "basin center" from recent high-fidelity messages
-        - When a query is semantically similar to this context, it gets a fidelity boost
-        - This prevents false positives where contextually relevant queries (e.g., "EU AI Act"
-          in a TELOS governance session) are incorrectly classified as drift
+        ARCHITECTURE (v3 - MAX Similarity - 2025-12-26):
+        =================================================
+        The Context Attractor uses MAX similarity to any prior turn, not centroid.
 
-        ATTRACTOR MECHANISM:
-        - If input is similar to high-fidelity context, boost raw fidelity toward context
-        - The boost is proportional to how similar the input is to the context
-        - Even DIRECT messages benefit from context if they're semantically related
+        KEY INSIGHT: Centroid averages out the signal. When a query like
+        "prepare ourselves for that" is semantically similar to ONE specific
+        prior turn (0.492) but less similar to others, the centroid (0.381)
+        dilutes this signal, producing negligible boosts (+0.007).
+
+        Using MAX similarity captures the strongest contextual connection:
+        - MAX similarity to any turn: 0.492 → meaningful boost
+        - Centroid similarity: 0.381 → negligible boost
+
+        DUAL ATTRACTOR MODEL:
+        - Attractor 1: Primacy Attractor (PA) - user's declared purpose
+        - Attractor 2: Context Attractor - MAX similarity to any high-fidelity turn
 
         Args:
             input_embedding: Embedding of current user input
             pa_embedding: The Primacy Attractor embedding
-            context_embedding: Weighted embedding from high-fidelity conversation context
+            context_embedding: Weighted centroid (legacy, used as fallback)
             raw_fidelity: Raw similarity between input and PA
-            message_type: Classification of the message
+            message_type: Classification of the message (used for logging only)
+            context_embeddings: List of all context turn embeddings for MAX similarity
 
         Returns:
             Adjusted fidelity with context attractor applied
         """
-        # No context available - use raw fidelity
-        if context_embedding is None:
+        # Normalize input embedding once
+        input_norm = input_embedding / np.linalg.norm(input_embedding)
+
+        # =======================================================================
+        # CONTEXT ATTRACTOR v3: Use MAX similarity to any stored turn
+        # =======================================================================
+        # This captures the strongest contextual connection rather than averaging.
+
+        context_similarity = 0.0
+        best_turn_idx = -1
+
+        if context_embeddings and len(context_embeddings) > 0:
+            # Compute MAX similarity to any stored turn
+            similarities = []
+            for i, turn_emb in enumerate(context_embeddings):
+                turn_norm = turn_emb / np.linalg.norm(turn_emb)
+                sim = float(np.dot(input_norm, turn_norm))
+                similarities.append(sim)
+
+            context_similarity = max(similarities)
+            best_turn_idx = similarities.index(context_similarity)
+
+        elif context_embedding is not None:
+            # Fallback to centroid if no individual embeddings available
+            context_norm = context_embedding / np.linalg.norm(context_embedding)
+            context_similarity = float(np.dot(input_norm, context_norm))
+
+        else:
+            # No context available - use raw fidelity
             return raw_fidelity
 
-        # Compute similarity to context (how related is this query to the conversation?)
-        input_norm = input_embedding / np.linalg.norm(input_embedding)
-        context_norm = context_embedding / np.linalg.norm(context_embedding)
-        context_similarity = float(np.dot(input_norm, context_norm))
-
         # =======================================================================
-        # ATTRACTOR MECHANISM: Context acts as a gravitational pull on fidelity
+        # CONTEXT BOOST CALCULATION (v3.1 - MAX + Message Type Multipliers)
         # =======================================================================
-        # If the query is similar to high-fidelity context (context_similarity > 0.5),
-        # it should receive a boost toward the context's fidelity level.
-        #
-        # Formula: adjusted = raw + (context_boost * context_similarity * attractor_strength)
-        #
-        # The attractor strength varies by message type:
-        # - ANAPHORA: Strong pull (it/this/that references depend on context)
-        # - CLARIFICATION: Strong pull (asking about prior content)
-        # - FOLLOW_UP: Moderate pull (continuing the topic)
-        # - DIRECT: Light pull (new statement, but still benefits from context)
+        # Combines MAX similarity (best signal) with message-type-aware boosting.
+        # This restores the nuanced handling where ANAPHORA ("that", "it") gets
+        # stronger context pulls than DIRECT statements.
 
-        # Base attractor strengths by message type
-        attractor_strength = {
-            MessageType.ANAPHORA: 0.50,       # Strong context pull
-            MessageType.CLARIFICATION: 0.45, # Strong context pull
-            MessageType.FOLLOW_UP: 0.35,     # Moderate context pull
-            MessageType.DIRECT: 0.25,        # Light context pull (KEY FIX: was 0.0)
-        }.get(message_type, 0.20)
+        # Minimum context similarity to trigger boost
+        CONTEXT_RELEVANCE_THRESHOLD = 0.35
 
-        # Context boost: how much above baseline is the context?
-        # If context similarity is high (>0.5), this indicates the query is related
-        # to the high-fidelity conversation, so we should boost toward context
-        CONTEXT_RELEVANCE_THRESHOLD = 0.4  # Minimum similarity to consider context relevant
+        # Maximum boost from context (governance safeguard)
+        MAX_CONTEXT_BOOST = 0.30
+
+        # Base weight for context similarity in boost calculation
+        BASE_CONTEXT_WEIGHT = 0.50
+
+        # Message type multipliers - ANAPHORA/CLARIFICATION get stronger boosts
+        # because they inherently depend on prior context for meaning
+        MESSAGE_TYPE_MULTIPLIERS = {
+            MessageType.ANAPHORA: 1.5,       # "that", "it", "this" - strongest pull
+            MessageType.CLARIFICATION: 1.4,  # Questions about prior content
+            MessageType.FOLLOW_UP: 1.0,      # Baseline - continuing topic
+            MessageType.DIRECT: 0.7,         # New statements - weakest pull
+        }
+
+        type_multiplier = MESSAGE_TYPE_MULTIPLIERS.get(message_type, 1.0)
 
         if context_similarity < CONTEXT_RELEVANCE_THRESHOLD:
-            # Query is not related to context - no boost
+            # Query is semantically unrelated to conversation context - no boost
             logger.debug(
-                f"Context not relevant: context_sim={context_similarity:.2f} < threshold={CONTEXT_RELEVANCE_THRESHOLD}"
+                f"Context not relevant: max_context_sim={context_similarity:.3f} < {CONTEXT_RELEVANCE_THRESHOLD}"
             )
             return raw_fidelity
 
-        # Calculate context-based fidelity boost
-        # The boost is proportional to both context similarity and attractor strength
-        # We use the context buffer's weighted average fidelity as a proxy for "where
-        # the conversation is" in terms of alignment
-        context_fidelity_proxy = context_similarity  # Simplified: high context sim = high alignment
+        # Calculate boost proportional to similarity above threshold
+        excess_similarity = context_similarity - CONTEXT_RELEVANCE_THRESHOLD
+        max_excess = 1.0 - CONTEXT_RELEVANCE_THRESHOLD
+        normalized_excess = excess_similarity / max_excess
 
-        # Calculate adjusted fidelity using attractor formula
-        # The adjusted value pulls raw_fidelity toward context_fidelity_proxy
-        pull_strength = attractor_strength * context_similarity  # Stronger pull when more similar
-        adjusted = raw_fidelity + pull_strength * (context_fidelity_proxy - raw_fidelity)
+        # Calculate boost: proportional to normalized excess × type multiplier
+        # ANAPHORA gets 1.5x boost, DIRECT gets 0.7x boost
+        context_boost = normalized_excess * MAX_CONTEXT_BOOST * BASE_CONTEXT_WEIGHT * type_multiplier
 
-        # Governance: Cap the boost to prevent over-correction
-        MAX_BOOST = 0.25  # Maximum fidelity increase from context
-        boost_applied = adjusted - raw_fidelity
-        if boost_applied > MAX_BOOST:
-            adjusted = raw_fidelity + MAX_BOOST
+        # Apply boost
+        adjusted = raw_fidelity + context_boost
+
+        # Governance: Cap at MAX_CONTEXT_BOOST (even with multiplier)
+        if adjusted - raw_fidelity > MAX_CONTEXT_BOOST:
+            adjusted = raw_fidelity + MAX_CONTEXT_BOOST
+
+        # Cap at 1.0 (fidelity can't exceed 100%)
+        adjusted = min(adjusted, 1.0)
 
         logger.info(
-            f"🧲 CONTEXT ATTRACTOR: type={message_type.name}, "
-            f"raw={raw_fidelity:.3f}, context_sim={context_similarity:.3f}, "
-            f"attractor_strength={attractor_strength:.2f}, adjusted={adjusted:.3f}, "
-            f"boost={adjusted - raw_fidelity:+.3f}"
+            f"🧲 CONTEXT ATTRACTOR (v3.1-MAX): type={message_type.name}, mult={type_multiplier:.1f}, "
+            f"max_sim={context_similarity:.3f} (turn {best_turn_idx}), "
+            f"raw={raw_fidelity:.3f} → adjusted={adjusted:.3f}, boost={adjusted - raw_fidelity:+.3f}"
         )
 
         return adjusted

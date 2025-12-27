@@ -20,9 +20,16 @@ import numpy as np
 # Import TELOS command detection and PA enrichment
 from services.pa_enrichment import detect_telos_command, PAEnrichmentService
 
-# Import SentenceTransformer thresholds for template mode (Clean Lane approach)
+# Import ALL thresholds from single source of truth
 from telos_purpose.core.constants import (
-    ST_FIDELITY_GREEN, ST_FIDELITY_YELLOW, ST_FIDELITY_ORANGE, ST_FIDELITY_RED
+    # Display zone thresholds (normalized 0-1 scale)
+    FIDELITY_GREEN, FIDELITY_YELLOW, FIDELITY_ORANGE, FIDELITY_RED,
+    # Intervention decision thresholds
+    SIMILARITY_BASELINE as CONSTANTS_SIMILARITY_BASELINE,
+    INTERVENTION_THRESHOLD as CONSTANTS_INTERVENTION_THRESHOLD,
+    BASIN_CENTER, BASIN_TOLERANCE,
+    # Model-specific raw thresholds
+    ST_FIDELITY_GREEN, ST_FIDELITY_YELLOW, ST_FIDELITY_ORANGE, ST_FIDELITY_RED,
 )
 
 # Import display normalization for SentenceTransformer scores
@@ -43,9 +50,9 @@ from config.steward_styles import (
 
 # Import Semantic Interpreter - bridges mathematical governance to linguistic output
 # Two focal points: Fidelity Value + Purpose -> Concrete Linguistic Specifications
+# NOTE: get_exemplar is NOT imported - exemplars were leaking into LLM output
 from telos_purpose.core.semantic_interpreter import (
     interpret as semantic_interpret,
-    get_exemplar,
     compute_behavioral_fidelity,
     get_behavioral_fidelity_band
 )
@@ -97,45 +104,31 @@ logger = logging.getLogger(__name__)
 # =============================================================================
 # TWO-LAYER DRIFT DETECTION ARCHITECTURE
 # =============================================================================
+# All thresholds imported from telos_purpose/core/constants.py (single source of truth)
+#
 # LAYER 1: Baseline Pre-Filter (for extreme off-topic detection)
 # ----------------------------------------------------------------
-# Problem: In high-dimensional embedding spaces (1024-dim Mistral), completely
-# unrelated content (e.g., "PB&J sandwich" vs "AI governance") produces
-# cosine similarity around 0.35-0.56 due to concentration of measure.
-# Raw cosine similarity alone cannot detect extreme off-topic content.
+# SIMILARITY_BASELINE: If raw cosine similarity < this value, content is
+# extreme off-topic → trigger HARD_BLOCK immediately.
+# Imported as CONSTANTS_SIMILARITY_BASELINE from constants.py
 #
-# Solution: SIMILARITY_BASELINE acts as a fast pre-filter. If raw_sim < baseline,
-# the content is so far outside the embedding manifold of the PA that it's
-# definitely off-topic - trigger HARD_BLOCK intervention immediately.
-#
-# This is EMBEDDING-MODEL SPECIFIC. See docs/internal/EMBEDDING_BASELINE_NORMALIZATION.md
-SIMILARITY_BASELINE = 0.20  # Layer 1 hard block - only catch truly extreme off-topic (e.g., "pizza" vs "AI governance")
-
-# =============================================================================
 # LAYER 2: TELOS Primacy State Mathematics (Basin Membership)
+# ----------------------------------------------------------------
+# INTERVENTION_THRESHOLD: If normalized fidelity < this value, user has
+# drifted outside the primacy basin → trigger intervention.
+# Imported as CONSTANTS_INTERVENTION_THRESHOLD from constants.py
+#
+# DISPLAY ZONES: For UI color feedback (separate from intervention decision)
+# GREEN >= 0.70, YELLOW 0.60-0.69, ORANGE 0.50-0.59, RED < 0.50
+# Imported as FIDELITY_GREEN, FIDELITY_YELLOW, FIDELITY_ORANGE, FIDELITY_RED
 # =============================================================================
-# Fidelity scale: 0.0 = absolute drift, 1.0 = perfect primacy state
-# Basin defines the region around the PA where user input is "within purpose"
-# Intervention triggers when fidelity drops BELOW (BASIN - TOLERANCE)
-BASIN = 0.28       # Basin boundary - aligned with ST_FIDELITY_YELLOW raw threshold
-TOLERANCE = 0.04   # Tolerance margin for basin boundary
 
-# Derived intervention threshold: below this triggers governance intervention
-INTERVENTION_THRESHOLD = BASIN - TOLERANCE  # 0.24 - only intervene on clearly off-topic content
-
-# =============================================================================
-# UNIFIED INTERVENTION DECISION
-# =============================================================================
-# Intervene if: Layer1.HARD_BLOCK OR Layer2.outside_basin
-# Both layers produce a unified Primacy State for consistent UI display
-
-# UI color thresholds for visual feedback (GOLDILOCKS ZONE - simplified)
-# Clean round numbers for intuitive understanding
-# 0.7-1.0: Aligned (Green), 0.6-0.7: Minor Drift (Yellow), 0.5-0.6: Drift Detected (Orange), <0.5: Severe (Red)
-FIDELITY_GREEN = 0.70   # >= 0.70: High alignment - no intervention
-FIDELITY_YELLOW = 0.60  # 0.60-0.70: Soft guidance zone
-FIDELITY_ORANGE = 0.50  # 0.50-0.60: Intervention zone
-# Below 0.50 = RED: Strong intervention
+# Local aliases for backward compatibility with existing code in this file
+SIMILARITY_BASELINE = CONSTANTS_SIMILARITY_BASELINE  # 0.20 - Layer 1 hard block
+BASIN = BASIN_CENTER                                  # 0.50 - Basin boundary
+TOLERANCE = BASIN_TOLERANCE                           # 0.02 - Tolerance margin
+INTERVENTION_THRESHOLD = CONSTANTS_INTERVENTION_THRESHOLD  # 0.48 - Layer 2 threshold
+# Note: FIDELITY_GREEN, FIDELITY_YELLOW, FIDELITY_ORANGE, FIDELITY_RED are imported directly
 
 # =============================================================================
 # INTERVENTION RESPONSE LENGTH CONSTRAINTS
@@ -316,6 +309,25 @@ class BetaResponseManager:
         # ============================================================
         # STEP 1: Calculate User Fidelity with TWO-LAYER Architecture
         # ============================================================
+        # FIDELITY PIPELINE (documented for clarity):
+        #
+        # 1. RAW SIMILARITY: cosine(user_embedding, PA_embedding)
+        #    - This is the raw output from the embedding model
+        #    - Range varies by model: ST (0.15-0.45), Mistral (0.40-0.75)
+        #
+        # 2. LAYER 1 CHECK: raw_similarity < SIMILARITY_BASELINE (0.20)?
+        #    - If yes: extreme off-topic → baseline_hard_block = True
+        #
+        # 3. ADAPTIVE CONTEXT (if enabled):
+        #    - Classifies message type (ANAPHORA, FOLLOW_UP, etc.)
+        #    - Applies context boost based on MAX similarity to prior turns
+        #    - Returns adjusted_fidelity (can be higher than raw due to context)
+        #
+        # 4. INTERVENTION DECISION: baseline_hard_block OR fidelity < FIDELITY_GREEN (0.70)
+        #    - Uses adjusted fidelity for decision
+        #    - GREEN zone (>= 0.70): No intervention
+        #    - YELLOW/ORANGE/RED (< 0.70): Steward intervention
+        #
         # Returns: (fidelity, raw_similarity, baseline_hard_block)
         user_fidelity, raw_similarity, baseline_hard_block = self._calculate_user_fidelity(user_input)
 
@@ -1291,22 +1303,42 @@ RESPONSE GUIDELINES:
         Returns:
             System prompt with concrete linguistic specifications
         """
-        # Use the Semantic Interpreter to get concrete linguistic specs
-        spec = semantic_interpret(fidelity, purpose)
-        exemplar = get_exemplar(spec.strength, purpose)
+        # =======================================================================
+        # HYBRID INTERVENTION STYLING (SemanticInterpreter + StewardStyles)
+        # =======================================================================
+        # This combines two complementary systems:
+        # 1. StewardStyles: Therapeutic persona + band-based intervention intensity
+        # 2. SemanticInterpreter: Concrete linguistic specifications
+        #
+        # NOTE: get_exemplar() is NOT used - those example phrases were being
+        # copied verbatim into LLM output (e.g., "Far from your stated purpose...")
+        # =======================================================================
 
-        # Get the linguistic specification block from the interpreter
+        # Get concrete linguistic specs from SemanticInterpreter
+        spec = semantic_interpret(fidelity, purpose)
+
+        # Get therapeutic Steward prompt from steward_styles (already imported at top)
+        # This provides the band-appropriate intervention tone
+        steward_prompt = get_intervention_prompt(
+            fidelity=fidelity,
+            user_context=purpose,
+            green_threshold=FIDELITY_GREEN  # Use imported constant
+        )
+
+        # Get the linguistic specification block (sentence form, hedging, etc.)
         linguistic_spec = spec.to_prompt_block(purpose)
 
-        # Single, consolidated prompt - no redundant purpose mentions
-        return f"""You are Steward. User's goal: "{purpose}"
+        # Combine: Steward therapeutic persona + concrete linguistic specs
+        return f"""{steward_prompt}
 
+LINGUISTIC GUIDELINES:
 {linguistic_spec}
 
-MATCH THIS STYLE:
-{exemplar}
-
-Keep it to 2-3 sentences. Sound human, not robotic."""
+CRITICAL INSTRUCTIONS:
+- Never use stock phrases like "far from your stated purpose" or "here's the path back"
+- Be natural and conversational - sound like a human, not a governance system
+- Keep responses concise (2-3 sentences unless more detail is genuinely needed)
+- Use the linguistic form specified above ({spec.sentence_form})"""
 
     def _compute_telos_metrics_lightweight(
         self, user_input: str, response: str, user_fidelity: float

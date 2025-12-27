@@ -22,43 +22,86 @@ EMBEDDING_DIMENSION = 384
 
 
 # ============================================================================
-# Fidelity Thresholds (Goldilocks Zone Optimized)
+# Fidelity Thresholds - UNIFIED CONFIGURATION
 # ============================================================================
-# UPDATED: These values override original whitepaper Section 5.3 thresholds
-# based on empirical optimization via grid search (60,000 combinations).
-# Achieves 72% accuracy on 100-question test set.
-# See config/colors.py for centralized zone definitions.
+# IMPORTANT: This is the SINGLE SOURCE OF TRUTH for all fidelity thresholds.
+# All other files MUST import from here. Do NOT define thresholds elsewhere.
 #
-# NOTE: These are "normalized" thresholds used for UI display and intervention
-# decisions. Raw embedding similarity must be mapped to this scale first.
+# ARCHITECTURE: Two-layer fidelity system
+#   Layer 1: Baseline pre-filter (raw similarity) - catches extreme off-topic
+#   Layer 2: Basin membership (normalized fidelity) - catches purpose drift
+#
+# DISPLAY ZONES: Used for UI coloring and user feedback
+#   GREEN:  >= 0.70 - Aligned (no intervention)
+#   YELLOW: 0.60-0.69 - Minor drift (context injection)
+#   ORANGE: 0.50-0.59 - Drift detected (Steward redirect)
+#   RED:    < 0.50 - Significant drift (block + review)
+#
+# INTERVENTION DECISION: Separate from display zones
+#   Intervene when: (raw_sim < SIMILARITY_BASELINE) OR (fidelity < INTERVENTION_THRESHOLD)
+# ============================================================================
 
-FIDELITY_MONITOR = 0.76
+# --- Display Zone Thresholds (Normalized 0-1 scale) ---
+# These define UI color zones for user feedback
+FIDELITY_GREEN = 0.70
 """
-State 1 (MONITOR/ALIGNED): F ≥ 0.76
-No action needed - conversation on track.
-Goldilocks zone: "Aligned"
-"""
-
-FIDELITY_CORRECT = 0.73
-"""
-State 2 (CORRECT/MINOR DRIFT): 0.73 ≤ F < 0.76
-Lightweight correction via context injection.
-Goldilocks zone: "Minor Drift"
-"""
-
-FIDELITY_INTERVENE = 0.67
-"""
-State 3 (INTERVENE/DRIFT DETECTED): 0.67 ≤ F < 0.73
-Regeneration with explicit constraints.
-Goldilocks zone: "Drift Detected"
+Display Zone: GREEN (Aligned)
+Fidelity >= 0.70: No intervention needed. Conversation is on track.
 """
 
-FIDELITY_ESCALATE = 0.67
+FIDELITY_YELLOW = 0.60
 """
-State 4 (ESCALATE/SIGNIFICANT DRIFT): F < 0.67
-Block response, require human review.
-Goldilocks zone: "Significant Drift"
+Display Zone: YELLOW (Minor Drift)
+Fidelity 0.60-0.69: Light context injection may occur.
 """
+
+FIDELITY_ORANGE = 0.50
+"""
+Display Zone: ORANGE (Drift Detected)
+Fidelity 0.50-0.59: Steward redirect likely.
+"""
+
+FIDELITY_RED = 0.50
+"""
+Display Zone: RED (Significant Drift)
+Fidelity < 0.50: Strong intervention or block.
+"""
+
+# --- Intervention Decision Thresholds ---
+# These are SEPARATE from display zones - intervention logic uses these
+SIMILARITY_BASELINE = 0.20
+"""
+Layer 1 Threshold: Raw cosine similarity baseline for HARD_BLOCK.
+If raw_similarity < this value, content is extreme off-topic.
+Model-specific: calibrated for SentenceTransformer (384-dim).
+"""
+
+BASIN_CENTER = 0.50
+"""
+Layer 2: Basin center for fidelity normalization.
+The "expected" fidelity for on-topic content.
+"""
+
+BASIN_TOLERANCE = 0.02
+"""
+Layer 2: Tolerance margin around basin boundary.
+Small buffer to prevent oscillation at boundary.
+"""
+
+INTERVENTION_THRESHOLD = 0.48
+"""
+Layer 2 Threshold: Normalized fidelity below which intervention triggers.
+Computed as: BASIN_CENTER - BASIN_TOLERANCE = 0.48
+If fidelity < 0.48, user has drifted outside the primacy basin.
+"""
+
+# --- Legacy Goldilocks Constants (Deprecated) ---
+# These were from grid search optimization but created confusion.
+# Kept for backward compatibility but new code should use above constants.
+FIDELITY_MONITOR = FIDELITY_GREEN  # Alias: 0.70
+FIDELITY_CORRECT = 0.65  # Deprecated: use FIDELITY_YELLOW (0.60)
+FIDELITY_INTERVENE = 0.55  # Deprecated: use FIDELITY_ORANGE (0.50)
+FIDELITY_ESCALATE = FIDELITY_RED  # Alias: 0.50
 
 
 # ============================================================================

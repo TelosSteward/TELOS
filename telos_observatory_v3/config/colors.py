@@ -52,12 +52,23 @@ COLOR_MAPPINGS = {
     '#FFA500': STATUS_MODERATE,  # Map old orange to refined orange
 }
 
-# Goldilocks zone thresholds (simplified for intuitive understanding)
-# Clean round numbers: 0.7-1.0 Aligned, 0.6-0.7 Minor Drift, 0.5-0.6 Drift, <0.5 Severe
-_ZONE_ALIGNED = 0.70      # "Aligned" zone threshold
-_ZONE_MINOR_DRIFT = 0.60  # "Minor Drift" zone threshold
-_ZONE_DRIFT = 0.50        # "Drift Detected" zone threshold
-# Below _ZONE_DRIFT = "Significant Drift" zone
+# =============================================================================
+# Zone Thresholds - IMPORTED FROM SINGLE SOURCE OF TRUTH
+# =============================================================================
+# All thresholds are defined in telos_purpose/core/constants.py
+# This file re-exports them for backward compatibility with existing imports.
+from telos_purpose.core.constants import (
+    FIDELITY_GREEN,
+    FIDELITY_YELLOW,
+    FIDELITY_ORANGE,
+    FIDELITY_RED,
+)
+
+# Zone aliases for this module's API (backward compatibility)
+_ZONE_ALIGNED = FIDELITY_GREEN       # 0.70 - "Aligned" zone threshold
+_ZONE_MINOR_DRIFT = FIDELITY_YELLOW  # 0.60 - "Minor Drift" zone threshold
+_ZONE_DRIFT = FIDELITY_ORANGE        # 0.50 - "Drift Detected" zone threshold
+# Below _ZONE_DRIFT = "Significant Drift" zone (FIDELITY_RED)
 
 
 def get_fidelity_color(score: float) -> str:

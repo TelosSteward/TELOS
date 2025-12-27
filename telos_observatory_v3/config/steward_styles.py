@@ -96,22 +96,28 @@ class StewardStyle:
 STEWARD_STYLES = {
     # -------------------------------------------------------------------------
     # BAND 6: THRESHOLD (85-100% of GREEN)
-    # Just crossed into intervention zone - lightest Steward touch
+    # Just crossed into intervention zone - NATURAL Steward (light presence)
     # -------------------------------------------------------------------------
+    # The Steward is present but integrated naturally into the response.
+    # NO robotic preambles ("Before we go further..."), but DO weave in
+    # purpose awareness conversationally.
     6: StewardStyle(
         band=6,
         band_name="Threshold",
         fidelity_pct=92.5,  # Midpoint of 85-100%
-        tone="warm but focused",
-        directness=0.2,
-        urgency=0.1,
+        tone="natural and present",
+        directness=0.15,  # Light presence - not invisible, but not pushy
+        urgency=0.05,     # Very low urgency - nearly GREEN
         openers=[
-            "Before we go further...",
-            "I want to pause on something.",
-            "Let me make sure I understand what you're looking for.",
-            "Can we take a step back?",
+            # Natural conversation continuers - no steering language
+            # These should feel like natural topic connections, not redirects
         ],
-        style_notes="Steward just appearing. Gentle steering. Checking alignment with stated purpose."
+        style_notes=(
+            "Near-GREEN queries - respond NATURALLY with light purpose-awareness. "
+            "Answer the question directly, then briefly connect it to their purpose if relevant. "
+            "NO robotic phrases like 'can we step back' or 'before we go further'. "
+            "Think: helpful assistant who remembers what the user is working on."
+        )
     ),
 
     # -------------------------------------------------------------------------
@@ -236,14 +242,16 @@ You are warm, grounded, and genuinely helpful. You are never punitive or condesc
 
 
 INTERVENTION_PROMPT_TEMPLATES = {
-    # Band 6: Soft nudge
+    # Band 6: Natural with purpose-awareness
     6: """{base_prompt}
 
-Current response style: SOFT NUDGE
-- Gently check alignment with user's stated goal
-- Ask if the current direction is serving them
-- Offer to refocus if helpful
-- Directness level: Low
+Current response style: NATURAL WITH PURPOSE-AWARENESS
+- Answer the user's question DIRECTLY first
+- Weave in a brief, natural connection to their purpose if relevant
+- NO steering language or robotic preambles
+- NO phrases like "before we go further" or "let's step back"
+- Sound like a helpful assistant who remembers what they're working on
+- Directness level: Very Low (light presence, not invisible)
 - User's purpose: {user_context}""",
 
     # Band 5: Clear inquiry
