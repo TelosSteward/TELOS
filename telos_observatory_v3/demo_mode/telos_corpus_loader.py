@@ -52,8 +52,9 @@ HUMAN_CORPUS_FILES = [
     "CLINICAL_COMMUNICATION.md",      # Evidence-based communication principles
     "EMPATHIC_FACILITATION.md",       # Practical facilitation techniques
     # TELOS knowledge - WHAT to explain
-    "TELOS_HUMAN_EXPLAINER.md",       # TELOS technical knowledge
-    "TELOS_QUICK_ANSWERS.md"          # TELOS quick reference
+    "TELOS_HUMAN_EXPLAINER.md",       # TELOS conceptual overview
+    "TELOS_QUICK_ANSWERS.md",         # TELOS quick reference / FAQ
+    "TELOS_IMPLEMENTATION.md",        # TELOS actual implementation details (how the code works)
 ]
 
 # Corpus directory (relative to this file)

@@ -316,16 +316,46 @@ When users ask you to explain what happened in the session, summarize the trajec
             # FULL TURN HISTORY: Allows Steward to explain any turn
             # ============================================================
             if 'turn_history' in context and context['turn_history']:
-                context_str += "\n## Complete Turn History\n"
+                # ============================================================
+                # SESSION SUMMARY STATISTICS
+                # ============================================================
+                turn_history = context['turn_history']
+                total_turns = len(turn_history)
+
+                # Calculate aggregates
+                f_user_values = [t.get('f_user') for t in turn_history if t.get('f_user') is not None]
+                intervention_count = sum(1 for t in turn_history if t.get('intervention_triggered'))
+
+                context_str += "\n## Session Summary\n"
+                context_str += f"- Total Turns: {total_turns}\n"
+                if f_user_values:
+                    avg_fidelity = sum(f_user_values) / len(f_user_values)
+                    min_fidelity = min(f_user_values)
+                    max_fidelity = max(f_user_values)
+                    context_str += f"- Average User Fidelity: {avg_fidelity * 100:.0f}%\n"
+                    context_str += f"- Fidelity Range: {min_fidelity * 100:.0f}% - {max_fidelity * 100:.0f}%\n"
+                context_str += f"- Interventions Triggered: {intervention_count}\n"
+                context_str += "\n"
+
+                # ============================================================
+                # COMPLETE TURN HISTORY (with AI responses)
+                # ============================================================
+                context_str += "## Complete Turn History\n"
                 context_str += "Use this to answer questions about specific turns or overall session trajectory.\n\n"
 
-                for turn in context['turn_history']:
+                for turn in turn_history:
                     turn_num = turn.get('turn', '?')
                     user_input = turn.get('user_input', '')
-                    truncated = user_input[:100] + ('...' if len(user_input) > 100 else '')
+                    ai_response = turn.get('ai_response', '')
+                    truncated_input = user_input[:100] + ('...' if len(user_input) > 100 else '')
+                    truncated_response = ai_response[:200] + ('...' if len(ai_response) > 200 else '')
 
                     context_str += f"### Turn {turn_num}\n"
-                    context_str += f"- User Input: \"{truncated}\"\n"
+                    context_str += f"- User Input: \"{truncated_input}\"\n"
+
+                    # Include AI response so Steward has full conversation context
+                    if ai_response:
+                        context_str += f"- AI Response: \"{truncated_response}\"\n"
 
                     # Format metrics as percentages (matching system prompt guidance)
                     f_user = turn.get('f_user')
