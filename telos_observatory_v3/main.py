@@ -1828,10 +1828,12 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
                     beta_observation_deck.render()
 
                 # TELOSCOPE toggle button (only show when there's conversation data)
-                # Mutual exclusion: hide when Alignment Lens is open
+                # Show button when: TELOSCOPE is open OR Alignment Lens is closed
+                # (user needs the button to close TELOSCOPE once opened)
                 has_turn_data = st.session_state.get('beta_turn_1_data') is not None
                 alignment_lens_open = st.session_state.get('beta_deck_visible', False)
-                if has_turn_data and not alignment_lens_open:
+                teloscope_open = st.session_state.get('teloscope_open', False)
+                if has_turn_data and (teloscope_open or not alignment_lens_open):
                     st.markdown("<div style='margin: 8px 0;'></div>", unsafe_allow_html=True)
                     render_teloscope_button()
         elif mode == "DEMO":

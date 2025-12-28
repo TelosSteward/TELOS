@@ -71,11 +71,51 @@ _ZONE_DRIFT = FIDELITY_ORANGE        # 0.50 - "Drift Detected" zone threshold
 # Below _ZONE_DRIFT = "Significant Drift" zone (FIDELITY_RED)
 
 
-def get_fidelity_color(score: float) -> str:
+def _normalize_score(score) -> float:
+    """Convert score to float, handling string percentages like '100%'.
+
+    Args:
+        score: Float (0.75), int (75), or string ('75%', '0.75')
+
+    Returns:
+        Float in 0.0-1.0 range
+    """
+    if score is None:
+        return 0.0
+    if isinstance(score, str):
+        # Handle percentage strings like "100%", "75%"
+        score = score.strip()
+        if score.endswith('%'):
+            try:
+                return float(score[:-1]) / 100.0
+            except ValueError:
+                return 0.0
+        # Handle decimal strings like "0.75"
+        try:
+            val = float(score)
+            # If it's > 1, assume it's a percentage
+            if val > 1.0:
+                return val / 100.0
+            return val
+        except ValueError:
+            return 0.0
+    if isinstance(score, (int, float)):
+        # If it's > 1, assume it's a percentage (e.g., 75 instead of 0.75)
+        if score > 1.0:
+            return float(score) / 100.0
+        return float(score)
+    return 0.0
+
+
+def get_fidelity_color(score) -> str:
     """Get the appropriate color for a fidelity score.
 
     Uses Goldilocks zone thresholds derived from mathematical optimization.
+
+    Args:
+        score: Float (0.75), int, or string ('75%') - automatically normalized
     """
+    score = _normalize_score(score)
     if score >= _ZONE_ALIGNED:
         return STATUS_GOOD
     elif score >= _ZONE_MINOR_DRIFT:
@@ -86,11 +126,15 @@ def get_fidelity_color(score: float) -> str:
         return STATUS_SEVERE
 
 
-def get_color_name(score: float) -> str:
+def get_color_name(score) -> str:
     """Get the color name for a fidelity score.
 
     Uses Goldilocks zone thresholds derived from mathematical optimization.
+
+    Args:
+        score: Float (0.75), int, or string ('75%') - automatically normalized
     """
+    score = _normalize_score(score)
     if score >= _ZONE_ALIGNED:
         return "green"
     elif score >= _ZONE_MINOR_DRIFT:
@@ -101,11 +145,15 @@ def get_color_name(score: float) -> str:
         return "red"
 
 
-def get_zone_name(score: float) -> str:
+def get_zone_name(score) -> str:
     """Get the human-friendly zone name for a fidelity score.
 
     Returns semantic zone names instead of threshold numbers for better UX.
+
+    Args:
+        score: Float (0.75), int, or string ('75%') - automatically normalized
     """
+    score = _normalize_score(score)
     if score >= _ZONE_ALIGNED:
         return "Aligned"
     elif score >= _ZONE_MINOR_DRIFT:
@@ -116,17 +164,21 @@ def get_zone_name(score: float) -> str:
         return "Significant Drift"
 
 
-def format_fidelity_percent(score: float) -> str:
+def format_fidelity_percent(score) -> str:
     """Format fidelity as percentage (e.g., '75%').
 
     More intuitive for users than raw decimals (0.75).
+
+    Args:
+        score: Float (0.75), int, or string ('75%') - automatically normalized
     """
     if score is None:
         return "---"
+    score = _normalize_score(score)
     return f"{int(score * 100)}%"
 
 
-def get_letter_grade(score: float) -> str:
+def get_letter_grade(score) -> str:
     """Get letter grade for fidelity score.
 
     A+ = 95-100% (0.95-1.00)
@@ -140,9 +192,13 @@ def get_letter_grade(score: float) -> str:
     C- = 55-59%  (0.55-0.59)
     D  = 50-54%  (0.50-0.54) - Drift detected threshold
     F  = <50%    (<0.50)     - Significant drift
+
+    Args:
+        score: Float (0.75), int, or string ('75%') - automatically normalized
     """
     if score is None:
         return "---"
+    score = _normalize_score(score)
     if score >= 0.95:
         return "A+"
     elif score >= 0.90:

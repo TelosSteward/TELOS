@@ -3130,21 +3130,20 @@ Once you send your first message, I'll understand your purpose and we can get st
             # REMOVED: fidelity = 0.85 default that was masking missing data
 
         # Determine colors based on fidelity - full color-coded versioning
-        # Green (≥0.85): Good alignment
-        # Yellow/Gold (0.70-0.85): Mild drift
-        # Goldilocks zones: Orange (0.67-0.73): Drift Detected | Red (<0.67): Significant Drift
-        from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT
+        # Goldilocks zones: GREEN >= 0.70, YELLOW 0.60-0.69, ORANGE 0.50-0.59, RED < 0.50
+        from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT, _normalize_score
         if fidelity is not None:
-            if fidelity >= _ZONE_ALIGNED:  # >= 0.76 Aligned
+            fidelity = _normalize_score(fidelity)  # Handle string percentages like "68%"
+            if fidelity >= _ZONE_ALIGNED:  # >= 0.70 Aligned
                 fidelity_color = "#27ae60"  # Green
                 fidelity_glow = "76, 175, 80"  # Green RGB for box glow
-            elif fidelity >= _ZONE_MINOR_DRIFT:  # 0.73-0.76 Minor Drift
+            elif fidelity >= _ZONE_MINOR_DRIFT:  # 0.60-0.69 Minor Drift
                 fidelity_color = "#F4D03F"  # Yellow/Gold
                 fidelity_glow = "244, 208, 63"  # Gold RGB for box glow
-            elif fidelity >= _ZONE_DRIFT:  # 0.67-0.73 Drift Detected
+            elif fidelity >= _ZONE_DRIFT:  # 0.50-0.59 Drift Detected
                 fidelity_color = "#FFA500"  # Orange
                 fidelity_glow = "255, 165, 0"  # Orange RGB for box glow
-            else:  # < 0.67 Significant Drift
+            else:  # < 0.50 Significant Drift
                 fidelity_color = "#FF4444"  # Red
                 fidelity_glow = "255, 68, 68"  # Red RGB for box glow
             fidelity_display = f"{int(round(fidelity * 100))}%"
@@ -3490,15 +3489,17 @@ Once you send your first message, I'll understand your purpose and we can get st
         def get_fidelity_color(fidelity):
             if fidelity is None:
                 return "#888", "136, 136, 136"
-            # Goldilocks zone thresholds
-            from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT
-            if fidelity >= _ZONE_ALIGNED:  # >= 0.76 Aligned
+            # Use centralized normalizer to handle string percentages like "68%"
+            from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT, _normalize_score
+            fidelity = _normalize_score(fidelity)
+            # Goldilocks zone thresholds: GREEN >= 0.70, YELLOW >= 0.60, ORANGE >= 0.50
+            if fidelity >= _ZONE_ALIGNED:  # >= 0.70 Aligned
                 return "#27ae60", "76, 175, 80"  # Green
-            elif fidelity >= _ZONE_MINOR_DRIFT:  # 0.73-0.76 Minor Drift
+            elif fidelity >= _ZONE_MINOR_DRIFT:  # 0.60-0.69 Minor Drift
                 return "#F4D03F", "244, 208, 63"  # Yellow/Gold
-            elif fidelity >= _ZONE_DRIFT:  # 0.67-0.73 Drift Detected
+            elif fidelity >= _ZONE_DRIFT:  # 0.50-0.59 Drift Detected
                 return "#FFA500", "255, 165, 0"  # Orange
-            else:  # < 0.67 Significant Drift
+            else:  # < 0.50 Significant Drift
                 return "#FF4444", "255, 68, 68"  # Red
 
         # Get colors for each metric
@@ -3523,16 +3524,17 @@ Once you send your first message, I'll understand your purpose and we can get st
 
         # Helper to get status label for fidelity values (Goldilocks zones)
         def get_fidelity_status(f):
-            from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT
+            from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT, _normalize_score
             if f is None:
                 return "---"
-            if f >= _ZONE_ALIGNED:  # >= 0.76
+            f = _normalize_score(f)
+            if f >= _ZONE_ALIGNED:  # >= 0.70
                 return "ALIGNED"
-            elif f >= _ZONE_MINOR_DRIFT:  # 0.73-0.76
+            elif f >= _ZONE_MINOR_DRIFT:  # 0.60-0.69
                 return "MINOR DRIFT"
-            elif f >= _ZONE_DRIFT:  # 0.67-0.73
+            elif f >= _ZONE_DRIFT:  # 0.50-0.59
                 return "DRIFT DETECTED"
-            else:  # < 0.67
+            else:  # < 0.50
                 return "SIGNIFICANT DRIFT"
 
         # Get status labels for USER and AI fidelity
@@ -3749,15 +3751,16 @@ Once you send your first message, I'll understand your purpose and we can get st
                 # Prefer display value (normalized) over raw value
                 user_fidelity_numeric = user_telos_analysis.get('display_user_pa_fidelity') or user_telos_analysis.get('user_pa_fidelity')
                 if user_fidelity_numeric is not None:
-                    # Goldilocks zone thresholds
-                    from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT
-                    if user_fidelity_numeric >= _ZONE_ALIGNED:  # >= 0.76 Aligned
+                    # Goldilocks zone thresholds - use normalizer for string percentages
+                    from config.colors import _ZONE_ALIGNED, _ZONE_MINOR_DRIFT, _ZONE_DRIFT, _normalize_score
+                    user_fidelity_numeric = _normalize_score(user_fidelity_numeric)
+                    if user_fidelity_numeric >= _ZONE_ALIGNED:  # >= 0.70 Aligned
                         fidelity_level = 'green'
-                    elif user_fidelity_numeric >= _ZONE_MINOR_DRIFT:  # 0.73-0.76 Minor Drift
+                    elif user_fidelity_numeric >= _ZONE_MINOR_DRIFT:  # 0.60-0.69 Minor Drift
                         fidelity_level = 'yellow'
-                    elif user_fidelity_numeric >= _ZONE_DRIFT:  # 0.67-0.73 Drift Detected
+                    elif user_fidelity_numeric >= _ZONE_DRIFT:  # 0.50-0.59 Drift Detected
                         fidelity_level = 'orange'
-                    else:  # < 0.67 Significant Drift
+                    else:  # < 0.50 Significant Drift
                         fidelity_level = 'red'
 
             # Map fidelity level to color

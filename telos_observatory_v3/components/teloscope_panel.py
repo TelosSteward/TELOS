@@ -716,6 +716,19 @@ class TeloscopePanel:
         # Attractor dropdown buttons - use Streamlit expanders
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
+        # CSS to force expander labels to be white text
+        st.markdown(f"""
+<style>
+/* Force expander labels to white text */
+[data-testid="stExpander"] > details > summary > span > div > p {{
+    color: {TEXT_PRIMARY} !important;
+}}
+[data-testid="stExpander"] > details > summary {{
+    color: {TEXT_PRIMARY} !important;
+}}
+</style>
+""", unsafe_allow_html=True)
+
         # User Attractor expander
         with st.expander("User Attractor", expanded=False):
             st.markdown(f"""
@@ -924,29 +937,115 @@ class TeloscopePanel:
             st.rerun()
 
     def _gather_teloscope_context(self) -> dict:
-        """Gather context for Steward in TELOSCOPE mode."""
+        """Gather context for Steward in TELOSCOPE mode.
+
+        CRITICAL: Must include full turn_history so Steward can explain
+        the entire session trajectory, not just the latest turn.
+        """
         context = {
             'mode': 'teloscope',
             'viewing': 'fidelity_trajectory'
         }
 
         # Get PA
-        pa = st.session_state.get('primacy_attractor', {})
+        pa = st.session_state.get('user_pa') or st.session_state.get('primacy_attractor', {})
         if pa:
             context['primacy_attractor'] = pa
 
-        # Get latest turn data
+        # Get current turn counter
         current_turn = st.session_state.get('beta_current_turn', 1)
-        for turn_num in range(current_turn, 0, -1):
+        completed_turns = current_turn - 1
+        context['current_turn'] = current_turn
+
+        # Find all beta turn keys for robustness
+        beta_keys = [k for k in st.session_state.keys() if k.startswith('beta_turn_') and k.endswith('_data')]
+        max_turn_from_keys = 0
+        for key in beta_keys:
+            try:
+                turn_num_str = key.replace('beta_turn_', '').replace('_data', '')
+                turn_num_from_key = int(turn_num_str)
+                max_turn_from_keys = max(max_turn_from_keys, turn_num_from_key)
+            except (ValueError, AttributeError):
+                pass
+
+        # Use the larger of: completed_turns from counter, or max turn number found in keys
+        actual_completed_turns = max(completed_turns, max_turn_from_keys)
+
+        # ============================================================
+        # FULL TURN HISTORY: Collect ALL turns for Steward awareness
+        # This allows Steward to explain any turn, not just the latest
+        # ============================================================
+        turn_history = []
+        latest_turn_data = None
+
+        for turn_num in range(1, actual_completed_turns + 1):
             turn_data = st.session_state.get(f'beta_turn_{turn_num}_data', {})
             if turn_data:
                 telos_analysis = turn_data.get('telos_analysis', {})
-                context['f_user'] = telos_analysis.get('display_user_pa_fidelity') or telos_analysis.get('user_pa_fidelity')
-                context['f_ai'] = telos_analysis.get('ai_pa_fidelity')
-                context['primacy_state'] = telos_analysis.get('display_primacy_state') or telos_analysis.get('primacy_state_score')
-                context['last_user_input'] = turn_data.get('user_input', '')
-                context['intervention_triggered'] = telos_analysis.get('intervention_triggered', False)
-                break
+
+                # Extract metrics for this turn
+                f_user = telos_analysis.get('display_user_pa_fidelity') or telos_analysis.get('user_pa_fidelity')
+
+                # AI fidelity - multi-priority fallback
+                f_ai = turn_data.get('ai_pa_fidelity')
+                if f_ai is None:
+                    ps_metrics = turn_data.get('ps_metrics', {})
+                    if ps_metrics:
+                        f_ai = ps_metrics.get('f_ai')
+                if f_ai is None:
+                    f_ai = telos_analysis.get('ai_pa_fidelity')
+
+                ps = telos_analysis.get('display_primacy_state') or telos_analysis.get('primacy_state_score')
+
+                # Build turn summary - include AI response for full context
+                turn_summary = {
+                    'turn': turn_num,
+                    'user_input': turn_data.get('user_input', ''),
+                    'ai_response': turn_data.get('shown_response') or turn_data.get('response', ''),
+                    'f_user': f_user,
+                    'f_ai': f_ai,
+                    'primacy_state': ps,
+                    'intervention_triggered': telos_analysis.get('intervention_triggered', False),
+                    'intervention_reason': telos_analysis.get('intervention_reason', ''),
+                }
+                turn_history.append(turn_summary)
+
+                # Track latest for backward compatibility
+                latest_turn_data = turn_data
+
+        # Add full turn history to context
+        context['turn_history'] = turn_history
+
+        # ============================================================
+        # LATEST TURN DATA: For backward compatibility
+        # ============================================================
+        if latest_turn_data:
+            telos_analysis = latest_turn_data.get('telos_analysis', {})
+
+            f_user = telos_analysis.get('display_user_pa_fidelity') or telos_analysis.get('user_pa_fidelity')
+
+            # AI fidelity - use same multi-priority fallback
+            f_ai = latest_turn_data.get('ai_pa_fidelity')
+            if f_ai is None:
+                ps_metrics = latest_turn_data.get('ps_metrics', {})
+                if ps_metrics:
+                    f_ai = ps_metrics.get('f_ai')
+            if f_ai is None:
+                f_ai = telos_analysis.get('ai_pa_fidelity')
+
+            ps = telos_analysis.get('display_primacy_state') or telos_analysis.get('primacy_state_score')
+
+            if f_user is not None:
+                context['f_user'] = f_user
+            if f_ai is not None:
+                context['f_ai'] = f_ai
+            if ps is not None:
+                context['primacy_state'] = ps
+
+            context['last_user_input'] = latest_turn_data.get('user_input', '')
+            context['last_ai_response'] = latest_turn_data.get('shown_response') or latest_turn_data.get('response', '')
+            context['intervention_triggered'] = telos_analysis.get('intervention_triggered', False)
+            context['intervention_reason'] = telos_analysis.get('intervention_reason', '')
 
         return context
 

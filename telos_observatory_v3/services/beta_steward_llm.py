@@ -266,12 +266,23 @@ When users ask you to explain what happened in the session, summarize the trajec
                 context_str += f"- Current Turn: {context['current_turn']}\n"
 
             # Current calibration card values
+            # Note: Values may be floats (0.85) or display strings ("85%")
+            # Handle both gracefully
+            def format_metric(value):
+                """Format a metric value, handling both floats and display strings."""
+                if isinstance(value, str):
+                    return value  # Already formatted (e.g., "100%")
+                elif isinstance(value, (int, float)):
+                    return f"{value:.3f}"
+                else:
+                    return str(value)
+
             if 'f_user' in context and context['f_user'] is not None:
-                context_str += f"- User Fidelity (F_user): {context['f_user']:.3f}\n"
+                context_str += f"- User Fidelity (F_user): {format_metric(context['f_user'])}\n"
             if 'f_ai' in context and context['f_ai'] is not None:
-                context_str += f"- AI Fidelity (F_AI): {context['f_ai']:.3f}\n"
+                context_str += f"- AI Fidelity (F_AI): {format_metric(context['f_ai'])}\n"
             if 'primacy_state' in context and context['primacy_state'] is not None:
-                context_str += f"- Primacy State (PS): {context['primacy_state']:.3f}\n"
+                context_str += f"- Primacy State (PS): {format_metric(context['primacy_state'])}\n"
 
             # Show the user's last input for context
             if 'last_user_input' in context:

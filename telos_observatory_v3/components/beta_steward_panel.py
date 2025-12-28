@@ -327,6 +327,9 @@ class BetaStewardPanel:
             dict: Context including PA, current metrics, turn info, last user input,
                   AND full turn history for multi-turn awareness
         """
+        import logging
+        logger = logging.getLogger(__name__)
+
         context = {}
 
         # Get the established PA
@@ -339,6 +342,15 @@ class BetaStewardPanel:
         context['current_turn'] = current_turn
         completed_turns = current_turn - 1
 
+        # DEBUG: Log what we're collecting (use print for guaranteed visibility)
+        print(f"🔍 STEWARD CONTEXT: beta_current_turn={current_turn}, completed_turns={completed_turns}")
+        logger.info(f"🔍 STEWARD CONTEXT: beta_current_turn={current_turn}, completed_turns={completed_turns}")
+
+        # DEBUG: Also log all beta_turn_X_data keys in session state
+        beta_keys = [k for k in st.session_state.keys() if k.startswith('beta_turn_') and k.endswith('_data')]
+        print(f"🔍 STEWARD CONTEXT: Found beta turn keys in session: {beta_keys}")
+        logger.info(f"🔍 STEWARD CONTEXT: Found beta turn keys in session: {beta_keys}")
+
         # ============================================================
         # FULL TURN HISTORY: Collect ALL turns for Steward awareness
         # This allows Steward to explain any turn, not just the latest
@@ -346,8 +358,25 @@ class BetaStewardPanel:
         turn_history = []
         latest_turn_data = None
 
-        for turn_num in range(1, completed_turns + 1):
+        # ROBUSTNESS FIX: Use BOTH beta_current_turn AND actual keys found
+        # This ensures we capture all turns even if beta_current_turn is out of sync
+        max_turn_from_keys = 0
+        for key in beta_keys:
+            # Extract turn number from 'beta_turn_X_data'
+            try:
+                turn_num_str = key.replace('beta_turn_', '').replace('_data', '')
+                turn_num_from_key = int(turn_num_str)
+                max_turn_from_keys = max(max_turn_from_keys, turn_num_from_key)
+            except (ValueError, AttributeError):
+                pass
+
+        # Use the larger of: completed_turns from counter, or max turn number found in keys
+        actual_completed_turns = max(completed_turns, max_turn_from_keys)
+        logger.info(f"🔍 STEWARD CONTEXT: Using actual_completed_turns={actual_completed_turns} (from counter: {completed_turns}, from keys: {max_turn_from_keys})")
+
+        for turn_num in range(1, actual_completed_turns + 1):
             turn_data = st.session_state.get(f'beta_turn_{turn_num}_data', {})
+            logger.info(f"   Checking turn {turn_num}: turn_data exists={bool(turn_data)}, keys={list(turn_data.keys()) if turn_data else []}")
             if turn_data:
                 telos_analysis = turn_data.get('telos_analysis', {})
 
@@ -383,6 +412,11 @@ class BetaStewardPanel:
 
         # Add full turn history to context
         context['turn_history'] = turn_history
+
+        # DEBUG: Log what we collected
+        logger.info(f"🔍 STEWARD CONTEXT: Collected {len(turn_history)} turns in history")
+        for i, turn in enumerate(turn_history):
+            logger.info(f"   Turn {turn.get('turn')}: user_input={turn.get('user_input', '')[:50]}..., ai_response={turn.get('ai_response', '')[:50]}...")
 
         # ============================================================
         # LATEST TURN DATA: For backward compatibility with existing code
@@ -673,23 +707,47 @@ class BetaStewardPanel:
                 })
 
                 # Clear ALL cached PA embeddings - we'll recompute with dual attractor
+                # CRITICAL: Must include ALL embedding keys including SentenceTransformer centroid
                 cached_keys_to_clear = [
                     'cached_user_pa_embedding',
                     'cached_ai_pa_embedding',
                     'cached_mpnet_user_pa_embedding',
                     'cached_mpnet_ai_pa_embedding',
                     'user_pa_embedding',
+                    # CRITICAL: SentenceTransformer centroid used for Template Mode fidelity
+                    'cached_st_user_pa_embedding',
+                    # Fidelity mode flags
+                    'use_rescaled_fidelity_mode',
+                    # Stale fidelity cache
+                    'last_telos_calibration_values',
                 ]
                 for key in cached_keys_to_clear:
                     if key in st.session_state:
                         del st.session_state[key]
+
+                # CRITICAL: Update PA identity hash to match new PA
+                # Without this, _initialize_telos_engine will detect a mismatch and
+                # invalidate the cache we just updated, causing fallback to hardcoded values
+                import hashlib
+                purpose_str = user_pa.get('purpose', '')
+                if isinstance(purpose_str, list):
+                    purpose_str = ' '.join(purpose_str)
+                scope_str = user_pa.get('scope', '')
+                if isinstance(scope_str, list):
+                    scope_str = ' '.join(scope_str)
+                new_pa_identity = hashlib.md5(f"{purpose_str}|{scope_str}".encode()).hexdigest()[:16]
+                st.session_state.cached_pa_identity = new_pa_identity
+                import logging
+                logging.info(f"🔄 Shift Focus: Updated PA identity hash: {new_pa_identity}")
 
                 # Invalidate response manager so it rebuilds with new PA
                 if 'beta_response_manager' in st.session_state:
                     del st.session_state['beta_response_manager']
 
                 # Compute both embeddings using dual attractor system
-                self._rebuild_pa_embeddings_dual(user_pa, ai_pa)
+                # This rebuilds MiniLM embeddings AND the SentenceTransformer centroid
+                # Pass enriched_pa which contains example_queries for centroid generation
+                self._rebuild_pa_embeddings_dual(user_pa, ai_pa, enriched_pa)
 
                 # Set flag so observation deck knows to show "Focus shifted"
                 st.session_state.pa_just_shifted = True
@@ -700,17 +758,21 @@ class BetaStewardPanel:
         except Exception as e:
             st.error(f"Error shifting focus: {str(e)}")
 
-    def _rebuild_pa_embeddings_dual(self, user_pa: dict, ai_pa: dict):
+    def _rebuild_pa_embeddings_dual(self, user_pa: dict, ai_pa: dict, enriched_pa: dict = None):
         """Rebuild both PA embeddings after a focus shift using dual attractor.
 
         Uses compute_pa_embeddings() for mathematically coupled embeddings.
+        CRITICAL: Also rebuilds the SentenceTransformer centroid from example_queries.
 
         Args:
             user_pa: The new user PA structure
             ai_pa: The derived AI PA structure
+            enriched_pa: The enriched PA dict from PA enrichment (contains example_queries)
         """
         try:
             from telos_purpose.core.embedding_provider import get_cached_minilm_provider
+            import numpy as np
+            import logging
 
             # Get or create embedding provider (use cached to avoid model reload)
             if 'embedding_provider' not in st.session_state:
@@ -726,12 +788,40 @@ class BetaStewardPanel:
             st.session_state.cached_ai_pa_embedding = ai_embedding
             st.session_state.user_pa_embedding = user_embedding  # Legacy key
 
-            import logging
-            logging.info(f"Dual attractor embeddings computed at focus shift time")
+            logging.info(f"🔄 Dual attractor embeddings computed at focus shift time")
+
+            # CRITICAL: Rebuild SentenceTransformer centroid from example queries
+            # This is what Template Mode fidelity uses for calculation
+            if enriched_pa and 'example_queries' in enriched_pa:
+                example_queries = enriched_pa['example_queries']
+                if example_queries:
+                    logging.info(f"📊 Regenerating ST centroid from {len(example_queries)} example queries...")
+
+                    # Generate embeddings for each example query
+                    example_embeddings = [np.array(provider.encode(ex)) for ex in example_queries]
+
+                    # Compute centroid (mean of all example embeddings)
+                    domain_centroid = np.mean(example_embeddings, axis=0)
+
+                    # Normalize the centroid
+                    st_user_pa_embedding = domain_centroid / np.linalg.norm(domain_centroid)
+
+                    # Cache in session state - this is what Template Mode fidelity uses
+                    st.session_state.cached_st_user_pa_embedding = st_user_pa_embedding
+
+                    # Enable template mode (SentenceTransformer thresholds)
+                    st.session_state.use_rescaled_fidelity_mode = True
+
+                    logging.info(f"✅ ST centroid regenerated: {len(st_user_pa_embedding)} dims")
+                else:
+                    logging.warning("⚠️ enriched_pa has empty example_queries - ST centroid not updated")
+            else:
+                logging.warning("⚠️ No enriched_pa or example_queries provided - ST centroid not updated")
 
         except Exception as e:
             # Log but don't fail - the PA text update is still useful
-            print(f"Warning: Could not rebuild PA embeddings: {e}")
+            import logging
+            logging.error(f"⚠️ Could not rebuild PA embeddings: {e}")
 
 
 def render_beta_steward_button():

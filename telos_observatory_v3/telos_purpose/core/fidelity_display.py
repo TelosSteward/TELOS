@@ -5,29 +5,34 @@ Fidelity Display Normalization
 Maps SentenceTransformer raw scores to a normalized display scale that matches
 user expectations (0.70+ = GREEN, 0.60+ = YELLOW, 0.50+ = ORANGE, <0.50 = RED).
 
-MATHEMATICAL DERIVATION (DISCRIMINATIVE CALIBRATION):
-------------------------------------------------------
-We have three constraint points that must map exactly:
+CALIBRATION (2025-12-27):
+-------------------------
+Based on empirical testing with "Learn a Concept" PA template, actual raw
+similarity scores from SentenceTransformer (all-MiniLM-L6-v2) are:
 
-    ST Raw    Display
-    ------    -------
-    0.32  →   0.70  (GREEN threshold)
-    0.28  →   0.60  (YELLOW threshold)
-    0.24  →   0.50  (ORANGE threshold)
+    Query Type                              Raw Score   Expected Zone
+    ---------                               ---------   -------------
+    "What is recursion?" (direct)           0.762       GREEN (100%)
+    "Recursive functions" (highly relevant) 0.726       GREEN (95%)
+    "Base cases in recursion"               0.647       GREEN (85%)
+    "Recursion vs iteration" (tangent)      0.676       GREEN (88%)
+    "Loops in programming" (related)        0.430       YELLOW (65%)
+    "Function calls in Python"              0.364       ORANGE (55%)
+    "What language to learn?"               0.391       ORANGE (58%)
+    "How do I debug code?"                  0.206       RED (35%)
+    "Pizza recipe?" (off-topic)             0.097       RED (15%)
+    "Weather today?" (completely off)       -0.002      RED (0%)
 
-CALIBRATION RATIONALE:
-Empirically tuned with UNIVERSAL_EXPANSION_WEIGHT = 0.0 (pure domain PA):
-- TELOS queries (~0.337 raw) → 0.74 display (GREEN - no intervention)
-- PB&J sandwich (~0.274 raw) → 0.585 display (ORANGE - appropriate drift)
+NEW ANCHOR POINTS (collinear):
+    Raw 0.62 → Display 0.70 (GREEN threshold)
+    Raw 0.50 → Display 0.60 (YELLOW threshold)
+    Raw 0.38 → Display 0.50 (ORANGE threshold)
 
-SOLUTION: Single linear transformation (anchor points are collinear)
+Formula: display = (0.70 - 0.50) / (0.62 - 0.38) × (raw - 0.38) + 0.50
+       = 0.833 × raw + 0.183
 
-    m = (0.70 - 0.50) / (0.32 - 0.24) = 0.20 / 0.08 = 2.5
-    b = 0.70 - 2.5 × 0.32 = -0.10
-
-    Formula: display = 2.5 × raw - 0.10
-
-This linear function passes through all three anchor points exactly.
+This spreads the useful range (0.35-0.75 raw) across the full display scale,
+preventing the previous "all 100% or all <50%" binary distribution.
 """
 
 from telos_purpose.core.constants import (
@@ -39,21 +44,27 @@ DISPLAY_GREEN = 0.70
 DISPLAY_YELLOW = 0.60
 DISPLAY_ORANGE = 0.50
 
-# Linear transformation coefficients (derived mathematically)
-# All anchor points are collinear, so a single linear function works
-LINEAR_SLOPE = 2.5  # (0.70 - 0.50) / (0.32 - 0.24)
-LINEAR_INTERCEPT = -0.10  # 0.70 - 2.5 × 0.32
+# NEW Linear transformation coefficients (2025-12-27 recalibration)
+# Anchor points: raw 0.62→0.70, raw 0.50→0.60, raw 0.38→0.50
+# m = (0.70 - 0.50) / (0.62 - 0.38) = 0.20 / 0.24 = 0.833
+# b = 0.70 - 0.833 × 0.62 = 0.183
+LINEAR_SLOPE = 0.833
+LINEAR_INTERCEPT = 0.183
 
 
 def normalize_st_fidelity(raw_fidelity: float) -> float:
     """
     Transform SentenceTransformer raw fidelity to display scale.
 
-    Uses linear transformation to map (RECALIBRATED):
-        ST 0.50 → Display 0.70 (GREEN)
-        ST 0.45 → Display 0.60 (YELLOW)
-        ST 0.40 → Display 0.50 (ORANGE)
-        ST 0.35 → Display 0.40 (RED - off-topic)
+    Uses linear transformation calibrated 2025-12-27 based on empirical testing:
+        Raw 0.76 → Display 0.82 (direct on-topic)
+        Raw 0.65 → Display 0.72 (clearly aligned - GREEN)
+        Raw 0.62 → Display 0.70 (GREEN threshold)
+        Raw 0.50 → Display 0.60 (YELLOW threshold)
+        Raw 0.43 → Display 0.54 (tangentially related)
+        Raw 0.38 → Display 0.50 (ORANGE threshold)
+        Raw 0.20 → Display 0.35 (off-topic programming)
+        Raw 0.10 → Display 0.27 (clearly off-topic - RED)
 
     Args:
         raw_fidelity: Raw cosine similarity from SentenceTransformer
@@ -62,12 +73,12 @@ def normalize_st_fidelity(raw_fidelity: float) -> float:
         Normalized fidelity on display scale (0.0 to 1.0)
 
     Examples:
-        >>> normalize_st_fidelity(0.55)   # On-topic TELOS query
-        0.80  # GREEN zone - aligned
-        >>> normalize_st_fidelity(0.35)   # PB&J vs TELOS PA
-        0.40  # RED zone - off-topic, triggers intervention
-        >>> normalize_st_fidelity(0.45)
-        0.60  # YELLOW zone - minor drift
+        >>> normalize_st_fidelity(0.76)   # "What is recursion?" - direct on-topic
+        0.82  # GREEN zone - aligned
+        >>> normalize_st_fidelity(0.43)   # "Loops in programming" - related
+        0.54  # ORANGE zone - minor drift
+        >>> normalize_st_fidelity(0.10)   # "Pizza recipe" - off-topic
+        0.27  # RED zone - triggers intervention
     """
     display = LINEAR_SLOPE * raw_fidelity + LINEAR_INTERCEPT
     return max(0.0, min(1.0, display))  # Clamp to [0, 1]
@@ -116,13 +127,14 @@ def raw_to_display_mapping_table() -> str:
     Generate a mapping table for verification.
     """
     lines = [
-        "SentenceTransformer Raw → Display Mapping (RECALIBRATED 2025-12-26)",
+        "SentenceTransformer Raw → Display Mapping (RECALIBRATED 2025-12-27)",
         "=" * 60,
         f"{'Raw':<10} {'Display':<10} {'Zone':<10}",
         "-" * 60,
     ]
 
-    test_values = [0.60, 0.55, 0.50, 0.48, 0.45, 0.42, 0.40, 0.38, 0.35, 0.30, 0.25, 0.20, 0.15, 0.10]
+    # Test values spanning the realistic range based on empirical testing
+    test_values = [0.76, 0.72, 0.68, 0.65, 0.62, 0.55, 0.50, 0.45, 0.43, 0.38, 0.35, 0.30, 0.20, 0.10, 0.00]
 
     for raw in test_values:
         display = normalize_st_fidelity(raw)
@@ -137,14 +149,14 @@ def raw_to_display_mapping_table() -> str:
         lines.append(f"{raw:<10.3f} {display:<10.3f} {zone:<10}")
 
     lines.append("-" * 60)
-    lines.append("Anchor points verified (RECALIBRATED):")
-    lines.append(f"  ST 0.50 → {normalize_st_fidelity(0.50):.2f} (expect 0.70 GREEN)")
-    lines.append(f"  ST 0.45 → {normalize_st_fidelity(0.45):.2f} (expect 0.60 YELLOW)")
-    lines.append(f"  ST 0.40 → {normalize_st_fidelity(0.40):.2f} (expect 0.50 ORANGE)")
-    lines.append(f"  ST 0.35 → {normalize_st_fidelity(0.35):.2f} (expect 0.40 RED)")
-    lines.append("Test cases:")
-    lines.append(f"  ST 0.55 → {normalize_st_fidelity(0.55):.2f} (on-topic TELOS query - should be GREEN)")
-    lines.append(f"  ST 0.35 → {normalize_st_fidelity(0.35):.2f} (PB&J off-topic - should be RED)")
+    lines.append("Anchor points verified (2025-12-27):")
+    lines.append(f"  ST 0.62 → {normalize_st_fidelity(0.62):.2f} (expect 0.70 GREEN threshold)")
+    lines.append(f"  ST 0.50 → {normalize_st_fidelity(0.50):.2f} (expect 0.60 YELLOW threshold)")
+    lines.append(f"  ST 0.38 → {normalize_st_fidelity(0.38):.2f} (expect 0.50 ORANGE threshold)")
+    lines.append("Test cases from empirical data:")
+    lines.append(f"  ST 0.76 → {normalize_st_fidelity(0.76):.2f} ('What is recursion?' - direct on-topic)")
+    lines.append(f"  ST 0.43 → {normalize_st_fidelity(0.43):.2f} ('Loops in programming' - related)")
+    lines.append(f"  ST 0.10 → {normalize_st_fidelity(0.10):.2f} ('Pizza recipe' - off-topic)")
 
     return "\n".join(lines)
 

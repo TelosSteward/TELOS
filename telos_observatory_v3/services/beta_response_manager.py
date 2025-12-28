@@ -273,11 +273,19 @@ class BetaResponseManager:
         # ============================================================
         # START FRESH MODE: Derive PA from first message
         # ============================================================
+        # ============================================================
+        # PA ESTABLISHMENT TURN DETECTION
+        # ============================================================
+        # Track if this turn is the PA establishment turn - fidelity should be 100%
+        # because the user's message IS the PA definition itself.
+        is_pa_establishment_turn = False
+
         if st.session_state.get('pa_pending_derivation', False) and turn_number == 1:
             logger.info("🎯 START FRESH MODE: Deriving PA from first message...")
             self._derive_pa_from_first_message(user_input)
             st.session_state.pa_pending_derivation = False
-            logger.info("✅ PA derived from first message - continuing with governed response")
+            is_pa_establishment_turn = True  # Mark this turn as PA establishment
+            logger.info("✅ PA derived from first message - all fidelity values = 100% (PA establishment turn)")
 
         # Capture the "PA just shifted" flag for use in this turn
         # If true, this is the first turn after a PA shift - skip intervention openers
@@ -309,27 +317,38 @@ class BetaResponseManager:
         # ============================================================
         # STEP 1: Calculate User Fidelity with TWO-LAYER Architecture
         # ============================================================
-        # FIDELITY PIPELINE (documented for clarity):
-        #
-        # 1. RAW SIMILARITY: cosine(user_embedding, PA_embedding)
-        #    - This is the raw output from the embedding model
-        #    - Range varies by model: ST (0.15-0.45), Mistral (0.40-0.75)
-        #
-        # 2. LAYER 1 CHECK: raw_similarity < SIMILARITY_BASELINE (0.20)?
-        #    - If yes: extreme off-topic → baseline_hard_block = True
-        #
-        # 3. ADAPTIVE CONTEXT (if enabled):
-        #    - Classifies message type (ANAPHORA, FOLLOW_UP, etc.)
-        #    - Applies context boost based on MAX similarity to prior turns
-        #    - Returns adjusted_fidelity (can be higher than raw due to context)
-        #
-        # 4. INTERVENTION DECISION: baseline_hard_block OR fidelity < FIDELITY_GREEN (0.70)
-        #    - Uses adjusted fidelity for decision
-        #    - GREEN zone (>= 0.70): No intervention
-        #    - YELLOW/ORANGE/RED (< 0.70): Steward intervention
-        #
-        # Returns: (fidelity, raw_similarity, baseline_hard_block)
-        user_fidelity, raw_similarity, baseline_hard_block = self._calculate_user_fidelity(user_input)
+        # PA ESTABLISHMENT TURN: Skip fidelity calculation - user's message IS the PA
+        # The user's first message defines their purpose, so fidelity = 100% by definition
+        if is_pa_establishment_turn:
+            logger.info("🎯 PA ESTABLISHMENT TURN: Setting fidelity to 100% (message = PA definition)")
+            user_fidelity = 1.0  # Perfect alignment - message IS the PA
+            raw_similarity = 1.0
+            baseline_hard_block = False
+        else:
+            # FIDELITY PIPELINE (documented for clarity):
+            #
+            # 1. RAW SIMILARITY: cosine(user_embedding, PA_embedding)
+            #    - This is the raw output from the embedding model
+            #    - Range varies by model: ST (0.15-0.45), Mistral (0.40-0.75)
+            #
+            # 2. LAYER 1 CHECK: raw_similarity < SIMILARITY_BASELINE (0.20)?
+            #    - If yes: extreme off-topic → baseline_hard_block = True
+            #
+            # 3. ADAPTIVE CONTEXT (if enabled):
+            #    - Classifies message type (ANAPHORA, FOLLOW_UP, etc.)
+            #    - Applies context boost based on MAX similarity to prior turns
+            #    - Returns adjusted_fidelity (can be higher than raw due to context)
+            #
+            # 4. INTERVENTION DECISION: baseline_hard_block OR fidelity < FIDELITY_GREEN (0.70)
+            #    - Uses adjusted fidelity for decision
+            #    - GREEN zone (>= 0.70): No intervention
+            #    - YELLOW/ORANGE/RED (< 0.70): Steward intervention
+            #
+            # Returns: (fidelity, raw_similarity, baseline_hard_block)
+            user_fidelity, raw_similarity, baseline_hard_block = self._calculate_user_fidelity(user_input)
+
+        # DEBUG: Print fidelity to console for visibility
+        print(f"🔍 FIDELITY DEBUG Turn {turn_number}: user_fidelity={user_fidelity:.3f}, raw_sim={raw_similarity:.3f}, baseline_block={baseline_hard_block}")
 
         # Store all metrics in response_data
         response_data['user_fidelity'] = user_fidelity  # Raw value for calculations
@@ -423,36 +442,127 @@ class BetaResponseManager:
 
             # Generate native response
             native_response = self._generate_native_response(user_input)
-            response_data['shown_response'] = native_response
             response_data['native_response'] = native_response
 
             # ================================================================
-            # FAST PATH: GREEN zone skips AI fidelity calculation entirely
+            # AI RESPONSE FIDELITY CHECK (Critical TELOS governance)
             # ================================================================
-            # In GREEN zone we ONLY need:
-            # 1. User fidelity (already computed via SentenceTransformer - instant)
-            # 2. LLM response (single API call - 15-20s)
-            # NO AI fidelity computation needed - saves embedding call and PS math
+            # Even when user is aligned (GREEN), the AI response may drift.
+            # TELOS must verify AI response alignment BEFORE showing to user.
+            # If AI drifts, regenerate with alignment context injection.
+
+            ai_fidelity = None
+            ai_response_intervened = False
+            final_response = native_response
+
+            # ============================================================
+            # CRITICAL: Ensure ST PA embedding is loaded BEFORE AI fidelity check
+            # The embedding may be cached in session state from a prior path
+            # ============================================================
+            if not hasattr(self, 'st_user_pa_embedding') or self.st_user_pa_embedding is None:
+                if 'cached_st_user_pa_embedding' in st.session_state:
+                    self.st_user_pa_embedding = st.session_state.cached_st_user_pa_embedding
+                    logger.info(f"📦 Loaded ST PA embedding from session cache for AI fidelity check")
+                elif self.st_embedding_provider is not None:
+                    # Generate it now from the user's PA text
+                    if 'user_pa' in st.session_state and hasattr(st.session_state.user_pa, 'purpose'):
+                        pa_text = f"{st.session_state.user_pa.purpose} {st.session_state.user_pa.scope}"
+                        self.st_user_pa_embedding = np.array(self.st_embedding_provider.encode(pa_text))
+                        st.session_state.cached_st_user_pa_embedding = self.st_user_pa_embedding
+                        logger.info(f"🔧 Generated ST PA embedding for AI fidelity check: {len(self.st_user_pa_embedding)} dims")
+
+            # DEBUG: Check conditions for AI fidelity check
+            has_st_provider = self.st_embedding_provider is not None
+            has_st_embedding = hasattr(self, 'st_user_pa_embedding')
+            st_embedding_not_none = getattr(self, 'st_user_pa_embedding', None) is not None
+            logger.warning(f"🔬 AI FIDELITY CHECK CONDITIONS: st_provider={has_st_provider}, has_attr={has_st_embedding}, not_none={st_embedding_not_none}")
+
+            if self.st_embedding_provider and hasattr(self, 'st_user_pa_embedding') and self.st_user_pa_embedding is not None:
+                try:
+                    # Compute AI fidelity via SentenceTransformer (fast, local)
+                    response_embedding = np.array(self.st_embedding_provider.encode(native_response))
+                    raw_ai_fidelity = self._cosine_similarity(response_embedding, self.st_user_pa_embedding)
+                    ai_fidelity = rescale_sentence_transformer_fidelity(raw_ai_fidelity)
+
+                    # IMPORTANT: Use display-range threshold (0.70) since ai_fidelity is rescaled
+                    # The rescaling maps raw ST scores to 0-1 display range where 0.70 = GREEN
+                    # Do NOT use threshold_green here which is 0.32 for raw ST scores
+                    DISPLAY_GREEN_THRESHOLD = 0.70
+
+                    logger.warning(f"🔍 AI Response Fidelity Check: raw={raw_ai_fidelity:.3f} → rescaled={ai_fidelity:.3f}, display_threshold={DISPLAY_GREEN_THRESHOLD}")
+                    logger.warning(f"🔍 WILL INTERVENE? ai_fidelity({ai_fidelity:.3f}) < {DISPLAY_GREEN_THRESHOLD} = {ai_fidelity < DISPLAY_GREEN_THRESHOLD}")
+
+                    # ============================================================
+                    # AI RESPONSE DRIFT INTERVENTION
+                    # ============================================================
+                    # If user is GREEN but AI response is below GREEN threshold,
+                    # the AI has drifted from user's purpose. Regenerate with
+                    # alignment context to bring AI back on track.
+                    #
+                    # This is the core TELOS promise: Keep AI aligned with user purpose.
+                    # ============================================================
+                    if ai_fidelity < DISPLAY_GREEN_THRESHOLD:
+                        logger.warning(f"⚠️ AI RESPONSE DRIFT DETECTED: AI fidelity {ai_fidelity:.3f} < {DISPLAY_GREEN_THRESHOLD:.2f}")
+                        logger.info("🔄 Triggering AI response realignment...")
+
+                        # Generate aligned response with explicit alignment context
+                        aligned_response = self._regenerate_aligned_response(
+                            user_input=user_input,
+                            drifted_response=native_response,
+                            ai_fidelity=ai_fidelity,
+                            user_fidelity=user_fidelity
+                        )
+
+                        if aligned_response:
+                            # Verify the new response is better
+                            new_embedding = np.array(self.st_embedding_provider.encode(aligned_response))
+                            new_raw_ai_fidelity = self._cosine_similarity(new_embedding, self.st_user_pa_embedding)
+                            new_ai_fidelity = rescale_sentence_transformer_fidelity(new_raw_ai_fidelity)
+
+                            logger.info(f"🔄 Realigned AI Fidelity: {ai_fidelity:.3f} → {new_ai_fidelity:.3f}")
+
+                            # Use realigned response if it's better (or at least attempted)
+                            final_response = aligned_response
+                            ai_fidelity = new_ai_fidelity
+                            ai_response_intervened = True
+                            response_data['ai_response_realigned'] = True
+                            response_data['original_ai_fidelity'] = ai_fidelity
+                            logger.info(f"✅ AI response realigned successfully")
+                        else:
+                            logger.warning("⚠️ AI realignment failed, using original response")
+
+                except Exception as e:
+                    logger.error(f"❌ AI fidelity check failed: {e}")
+                    # Continue with native response if check fails
+
+            response_data['shown_response'] = final_response
+
+            # Compute Primacy State if we have both fidelities
+            primacy_state = None
+            if ai_fidelity is not None:
+                epsilon = 1e-8
+                primacy_state = (2 * user_fidelity * ai_fidelity) / (user_fidelity + ai_fidelity + epsilon)
+                logger.info(f"📊 GREEN Zone PS: F_user={user_fidelity:.3f}, F_ai={ai_fidelity:.3f}, PS={primacy_state:.3f}")
 
             telos_data = {
-                'response': native_response,
+                'response': final_response,
                 'fidelity_score': None,
                 'distance_from_pa': 1.0 - user_fidelity,
-                'intervention_triggered': False,
-                'intervention_type': None,
-                'intervention_reason': None,
-                'drift_detected': False,
+                'intervention_triggered': ai_response_intervened,
+                'intervention_type': 'ai_response_realignment' if ai_response_intervened else None,
+                'intervention_reason': 'AI response drifted from user purpose' if ai_response_intervened else None,
+                'drift_detected': ai_response_intervened,
                 'in_basin': True,
-                # Skip AI fidelity in GREEN zone for speed - show "---" in UI
-                'ai_pa_fidelity': None,
-                'primacy_state_score': None,
-                'display_primacy_state': None,
-                'primacy_state_condition': 'skipped_green_zone',
+                'ai_pa_fidelity': ai_fidelity,
+                'primacy_state_score': primacy_state,
+                'display_primacy_state': f"{primacy_state * 100:.0f}%" if primacy_state else None,
+                'primacy_state_condition': 'computed',
                 'pa_correlation': None,
-                'lightweight_path': True,
+                'lightweight_path': not ai_response_intervened,
                 'user_pa_fidelity': user_fidelity,
                 'display_user_pa_fidelity': response_data['display_fidelity'],
                 'fidelity_level': response_data['fidelity_level'],
+                'ai_response_intervened': ai_response_intervened,
             }
 
             response_data['telos_analysis'] = telos_data
@@ -1138,6 +1248,93 @@ RESPONSE GUIDELINES:
 
         return system_prompt
 
+    def _regenerate_aligned_response(
+        self,
+        user_input: str,
+        drifted_response: str,
+        ai_fidelity: float,
+        user_fidelity: float
+    ) -> Optional[str]:
+        """
+        Regenerate AI response when the native response drifted from user's purpose.
+
+        This is triggered when:
+        - User is aligned (GREEN zone, fidelity >= 0.70)
+        - AI response is NOT aligned (fidelity < 0.70)
+
+        The regeneration uses explicit alignment context to guide the LLM
+        back toward the user's stated purpose.
+
+        Args:
+            user_input: User's message
+            drifted_response: The native response that was off-topic
+            ai_fidelity: The fidelity score of the drifted response
+            user_fidelity: The user's fidelity score (for context)
+
+        Returns:
+            Aligned response string, or None if regeneration fails
+        """
+        try:
+            from telos_purpose.llm_clients.mistral_client import get_cached_mistral_client
+
+            client = get_cached_mistral_client()
+
+            # Get PA context
+            pa_data = st.session_state.get('primacy_attractor', {})
+            purpose_raw = pa_data.get('purpose', 'General assistance')
+            scope_raw = pa_data.get('scope', 'Open discussion')
+            purpose = ' '.join(purpose_raw) if isinstance(purpose_raw, list) else purpose_raw
+            scope = ' '.join(scope_raw) if isinstance(scope_raw, list) else scope_raw
+
+            # Build alignment-focused system prompt
+            # This explicitly tells the LLM about the drift and how to correct it
+            alignment_system_prompt = f"""You are a helpful AI assistant. The user has a SPECIFIC PURPOSE for this conversation that you MUST honor.
+
+USER'S PURPOSE: {purpose}
+CONVERSATION SCOPE: {scope}
+
+CRITICAL ALIGNMENT INSTRUCTION:
+Your previous response drifted from the user's stated purpose. The user is asking something directly relevant to their goal,
+but your response went off-topic. You need to generate a response that:
+
+1. DIRECTLY addresses what the user asked
+2. Stays FOCUSED on their stated purpose: "{purpose}"
+3. Does NOT include tangential information or generic explanations
+4. Uses language and examples relevant to their specific goal
+
+The user's fidelity to their purpose is {user_fidelity*100:.0f}% - they are staying on track.
+Your response should match their focus.
+
+RESPONSE GUIDELINES:
+- Be conversational and natural
+- Keep responses brief and focused (2-3 short paragraphs maximum)
+- Address the user's question in the context of their stated purpose
+- Do NOT use lists, bullet points, or headers unless explicitly asked
+- Avoid verbose explanations or unnecessary elaboration"""
+
+            # Build conversation with alignment context
+            conversation = [{'role': 'system', 'content': alignment_system_prompt}]
+
+            # Add conversation history
+            conversation.extend(self._get_conversation_history())
+
+            # Add user input
+            conversation.append({'role': 'user', 'content': user_input})
+
+            # Generate aligned response
+            aligned_response = client.generate(
+                messages=conversation,
+                max_tokens=MAX_TOKENS_GREEN,
+                temperature=0.5  # Lower temperature for more focused response
+            )
+
+            logger.info(f"✅ Generated aligned response ({len(aligned_response)} chars)")
+            return aligned_response
+
+        except Exception as e:
+            logger.error(f"❌ Failed to regenerate aligned response: {e}")
+            return None
+
     def _generate_redirect_response(
         self,
         user_input: str,
@@ -1421,6 +1618,9 @@ CRITICAL INSTRUCTIONS:
         # Calculate display-normalized user fidelity for UI consistency
         model_type = 'sentence_transformer' if self.use_rescaled_fidelity else 'mistral'
         display_user_fidelity_value = normalize_fidelity_for_display(user_fidelity, model_type) if user_fidelity is not None else None
+
+        # DEBUG: Trace user fidelity normalization
+        print(f"🔍 NATIVE TELOS DATA: user_fidelity={user_fidelity}, model_type={model_type}, display_user_fidelity={display_user_fidelity_value}")
 
         telos_data = {
             'response': response,
@@ -1738,15 +1938,55 @@ CRITICAL INSTRUCTIONS:
                 logger.warning(f"⚠️ PA CHANGED: Invalidating cached embeddings")
                 logger.warning(f"   Old PA hash: {cached_pa_identity}")
                 logger.warning(f"   New PA hash: {current_pa_identity}")
-                # Clear all cached PA embeddings
+                # Clear all cached PA embeddings EXCEPT identity
                 for key in ['cached_user_pa_embedding', 'cached_ai_pa_embedding',
                             'cached_st_user_pa_embedding', 'cached_mpnet_user_pa_embedding',
-                            'cached_mpnet_ai_pa_embedding', 'cached_pa_identity']:
+                            'cached_mpnet_ai_pa_embedding']:
                     if key in st.session_state:
                         del st.session_state[key]
+                # CRITICAL: Set new PA identity IMMEDIATELY so subsequent checks pass
+                # Without this, the next check at line ~1754 would fail (None != current_pa_identity)
+                st.session_state.cached_pa_identity = current_pa_identity
+                logger.info(f"   🔑 Set new PA identity: {current_pa_identity}")
+
+            # =================================================================
+            # TEMPLATE MODE FAST PATH: Check for ST embeddings FIRST
+            # After a TELOS pivot, _regenerate_pa_centroid() creates ST embedding
+            # but deletes Mistral embeddings. This fast path handles that case.
+            # =================================================================
+            template_mode_ready = (
+                self.use_rescaled_fidelity and
+                'cached_st_user_pa_embedding' in st.session_state and
+                'cached_mpnet_user_pa_embedding' in st.session_state and
+                'cached_mpnet_ai_pa_embedding' in st.session_state and
+                st.session_state.get('cached_pa_identity') == current_pa_identity
+            )
+
+            if template_mode_ready:
+                # FAST PATH: Template mode with all required embeddings cached
+                logger.info("   🚀 TEMPLATE MODE FAST PATH: Using cached ST/MPNet embeddings")
+                self.st_user_pa_embedding = st.session_state.cached_st_user_pa_embedding
+                self.mpnet_user_pa_embedding = st.session_state.cached_mpnet_user_pa_embedding
+                self.mpnet_ai_pa_embedding = st.session_state.cached_mpnet_ai_pa_embedding
+                logger.info(f"   ✅ ST PA centroid: {len(self.st_user_pa_embedding)} dims (cached)")
+                logger.info(f"   ✅ MPNet User PA: {len(self.mpnet_user_pa_embedding)} dims (cached)")
+                logger.info(f"   ✅ MPNet AI PA: {len(self.mpnet_ai_pa_embedding)} dims (cached)")
+
+                # Create dummy Mistral embeddings (not used in template mode but required by some code paths)
+                if 'cached_user_pa_embedding' in st.session_state:
+                    self.user_pa_embedding = st.session_state.cached_user_pa_embedding
+                    self.ai_pa_embedding = st.session_state.get('cached_ai_pa_embedding', self.user_pa_embedding)
+                else:
+                    # Create placeholder - won't be used in template mode fidelity calculation
+                    user_pa_text = f"Purpose: {purpose_str}. Scope: {scope_str}."
+                    self.user_pa_embedding = np.array(embedding_provider.encode(user_pa_text))
+                    self.ai_pa_embedding = self.user_pa_embedding  # Placeholder
+                    st.session_state.cached_user_pa_embedding = self.user_pa_embedding
+                    st.session_state.cached_ai_pa_embedding = self.ai_pa_embedding
+                    logger.info(f"   📦 Created placeholder Mistral embeddings for compatibility")
 
             # Check if PA embeddings are already cached in session state AND match current PA
-            if ('cached_user_pa_embedding' in st.session_state and
+            elif ('cached_user_pa_embedding' in st.session_state and
                 'cached_ai_pa_embedding' in st.session_state and
                 st.session_state.get('cached_pa_identity') == current_pa_identity):
                 # Use cached embeddings for deterministic fidelity calculations
@@ -2293,6 +2533,37 @@ CRITICAL INSTRUCTIONS:
             self.use_rescaled_fidelity = True
             # Cache in session state so subsequent requests use same mode
             st.session_state.use_rescaled_fidelity_mode = True
+
+            # CRITICAL: Update PA identity hash to match new PA
+            # Without this, _initialize_telos_engine will detect a mismatch and
+            # invalidate the cache we just updated, causing fallback to hardcoded values
+            import hashlib
+            new_pa_data = st.session_state.get('primacy_attractor', {})
+            purpose_str = new_pa_data.get('purpose', '')
+            if isinstance(purpose_str, list):
+                purpose_str = ' '.join(purpose_str)
+            scope_str = new_pa_data.get('scope', '')
+            if isinstance(scope_str, list):
+                scope_str = ' '.join(scope_str)
+            new_pa_identity = hashlib.md5(f"{purpose_str}|{scope_str}".encode()).hexdigest()[:16]
+            st.session_state.cached_pa_identity = new_pa_identity
+            logger.info(f"   🔑 Updated PA identity hash: {new_pa_identity}")
+
+            # Regenerate MPNet User PA embedding for AI fidelity calculation
+            if self.mpnet_embedding_provider:
+                user_pa_text = f"Purpose: {purpose_str}. Scope: {scope_str}."
+                self.mpnet_user_pa_embedding = np.array(self.mpnet_embedding_provider.encode(user_pa_text))
+                st.session_state.cached_mpnet_user_pa_embedding = self.mpnet_user_pa_embedding
+                logger.info(f"   📦 Regenerated MPNet User PA: {len(self.mpnet_user_pa_embedding)} dims")
+
+                # Regenerate MPNet AI PA embedding
+                detected_intent = self._detect_intent_from_purpose(purpose_str)
+                role_action = INTENT_TO_ROLE_MAP.get(detected_intent, 'help')
+                ai_purpose = f"{role_action.capitalize()} the user as they work to: {purpose_str}"
+                ai_pa_text = f"AI Role: {ai_purpose}. Supporting scope: {scope_str}."
+                self.mpnet_ai_pa_embedding = np.array(self.mpnet_embedding_provider.encode(ai_pa_text))
+                st.session_state.cached_mpnet_ai_pa_embedding = self.mpnet_ai_pa_embedding
+                logger.info(f"   📦 Regenerated MPNet AI PA: {len(self.mpnet_ai_pa_embedding)} dims")
 
             # Clear any stale Mistral PA embeddings to force recalculation
             if 'cached_user_pa_embedding' in st.session_state:

@@ -11,7 +11,7 @@ Ported from DEMO observation deck with:
 import streamlit as st
 from config.colors import (
     GOLD, get_fidelity_color, format_fidelity_percent, get_letter_grade,
-    format_fidelity_display, ZONE_LEGEND_HTML
+    format_fidelity_display, ZONE_LEGEND_HTML, get_zone_name
 )
 from config.steward_pa import STEWARD_PA
 import html
@@ -337,8 +337,21 @@ class BetaObservationDeck:
         pa_shifted = st.session_state.get('pa_just_shifted', False)
         cache_key = f"{current_turn}_{pa_shifted}"
 
+        # DEBUG: Log what we're about to check BEFORE cache check
+        print(f"🔍 UI FIDELITY CHECK: current_turn={current_turn}, cache_key={cache_key}")
+
+        # Check what's in the current turn's data
+        debug_turn_data = st.session_state.get(f'beta_turn_{current_turn}_data', {})
+        debug_telos = debug_turn_data.get('telos_analysis', {})
+        print(f"   turn_data exists: {bool(debug_turn_data)}, telos_analysis exists: {bool(debug_telos)}")
+        if debug_telos:
+            print(f"   display_user_pa_fidelity: {debug_telos.get('display_user_pa_fidelity')}")
+            print(f"   user_pa_fidelity: {debug_telos.get('user_pa_fidelity')}")
+        print(f"   turn_data.display_fidelity: {debug_turn_data.get('display_fidelity')}")
+
         if hasattr(self, '_fidelity_cache_key') and self._fidelity_cache_key == cache_key:
             if hasattr(self, '_fidelity_cache'):
+                print(f"   RETURNING CACHED: {self._fidelity_cache}")
                 return self._fidelity_cache
 
         # NOTE: Removed pa_just_shifted short-circuit (2025-12-26)
@@ -361,6 +374,14 @@ class BetaObservationDeck:
                 continue
 
             telos_analysis = turn_data.get('telos_analysis', {})
+
+            # DEBUG: Print what we find in turn_data for visibility
+            print(f"🔍 UI FIDELITY READ Turn {turn_num}:")
+            print(f"   turn_data keys: {list(turn_data.keys())[:10]}")  # First 10 keys
+            print(f"   telos_analysis keys: {list(telos_analysis.keys())[:10]}")
+            print(f"   display_fidelity: {turn_data.get('display_fidelity')}")
+            print(f"   display_user_pa_fidelity: {telos_analysis.get('display_user_pa_fidelity')}")
+            print(f"   user_pa_fidelity: {telos_analysis.get('user_pa_fidelity')}")
             ps_metrics = turn_data.get('ps_metrics', {})
             beta_data = turn_data.get('beta_data', {})
 
@@ -661,17 +682,14 @@ class BetaObservationDeck:
         ps_grade = get_letter_grade(primacy_state)
 
         # Determine zone labels for fidelity display (using canonical colors)
+        # Uses get_zone_name/get_fidelity_color from colors.py which handles string percentages
         def get_zone_label(fidelity):
             if fidelity is None:
                 return ("---", "#888")
-            if fidelity >= 0.70:
-                return ("Aligned", "#27ae60")
-            elif fidelity >= 0.60:
-                return ("Minor Drift", "#f39c12")
-            elif fidelity >= 0.50:
-                return ("Drift Detected", "#e67e22")
-            else:
-                return ("Significant Drift", "#e74c3c")
+            # Use the centralized functions that handle both floats and strings
+            zone = get_zone_name(fidelity)
+            color = get_fidelity_color(fidelity)
+            return (zone, color)
 
         user_zone, user_zone_color = get_zone_label(user_fidelity)
         ai_zone, ai_zone_color = get_zone_label(ai_fidelity)
