@@ -11,6 +11,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Open source infrastructure (CONTRIBUTING.md, CODE_OF_CONDUCT.md, SECURITY.md)
 - GitHub Actions CI/CD workflow
 
+## [3.1.0] - 2025-12-27
+
+### Added
+- **Steward Context Awareness**: Full session visibility for Steward explanations
+  - AI responses added to turn history (previously only user input)
+  - Session summary statistics (total turns, average fidelity, intervention count)
+  - TELOS_IMPLEMENTATION.md RAG corpus with exact implementation details
+- **Adaptive Context System (v3.1)**: Intelligent follow-up message handling
+  - Message type classification (ANAPHORA, CLARIFICATION, FOLLOW_UP, DIRECT)
+  - Context-aware fidelity boosting with type-specific multipliers
+  - Multi-tier context buffer with phase detection
+- **SB 243 Child Safety Validation Dataset**: California child safety compliance
+- **EU AI Act Compliance Documentation**: Positioning document for Article 72
+
+### Changed
+- **Refactored beta_response_manager.py**: Decomposed into single-responsibility modules
+  - Separated embedding, fidelity calculation, and intervention logic
+  - Improved maintainability and testability
+- **Architectural cleanup**: Threshold consolidation to single source of truth
+- **Fidelity display**: Switched from decimals to percentages for better UX
+- **Threshold recalibration**: Relaxed thresholds to reduce false positives
+  - Improved accuracy for natural conversation flow
+
+### Performance
+- **Cold start optimization**: Reduced Railway startup from 60s to <10s
+  - Cached embedding provider instances
+  - Pre-downloaded SentenceTransformer models during build
+  - Removed MPNet pre-warming overhead
+- **Response speed**: Skip AI fidelity calculation in GREEN zone
+- **Streaming display**: True token-by-token rendering for better perceived performance
+
+### Fixed
+- Conversation history now included in redirect responses for PA context
+- Checkbox styling and percentage formatting in UI
+- Demo navigation flow improvements
+- Railway deployment configuration for Streamlit
+
+### Removed
+- Redundant module files (bloat cleanup)
+
 ## [3.0.0] - 2025-12-22
 
 ### Added

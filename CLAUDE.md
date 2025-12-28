@@ -396,6 +396,7 @@ python3 telos_observatory_v3/telos_purpose/validation/run_internal_test0.py
 | Document | Location | Purpose |
 |----------|----------|---------|
 | This file | `CLAUDE.md` | Development guide |
+| Changelog | `CHANGELOG.md` | Version history and release notes |
 | Whitepaper | `docs/TELOS_Whitepaper_v2.3.md` | Mathematical specification |
 | Lexicon | `docs/TELOS_Lexicon_V1.1.md` | Terminology definitions |
 | Grant Roadmap | `docs/GRANT_ROADMAP.md` | Funding phases, consortium architecture |
@@ -423,5 +424,5 @@ python3 telos_observatory_v3/telos_purpose/validation/run_internal_test0.py
 
 ---
 
-*Last updated: 2025-12-26*
-*For grant language and research roadmap, see `docs/GRANT_ROADMAP.md`*
+*Last updated: 2025-12-28*
+*For version history, see `CHANGELOG.md`. For grant language and research roadmap, see `docs/GRANT_ROADMAP.md`*
