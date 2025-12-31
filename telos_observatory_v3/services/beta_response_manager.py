@@ -34,7 +34,11 @@ from telos_purpose.core.constants import (
 
 # Import display normalization for SentenceTransformer scores
 # This maps raw ST scores to user-expected display values (0.70+ = GREEN, etc.)
-from telos_purpose.core.fidelity_display import normalize_fidelity_for_display
+from telos_purpose.core.fidelity_display import (
+    normalize_fidelity_for_display,
+    normalize_st_fidelity,
+    normalize_ai_response_fidelity,  # AI responses vs USER_PA need different calibration
+)
 
 # Import rescaling for SentenceTransformer-based fidelity (including MPNet for AI fidelity)
 from telos_purpose.core.embedding_provider import rescale_sentence_transformer_fidelity
@@ -95,8 +99,10 @@ try:
 except ImportError:
     ADAPTIVE_CONTEXT_AVAILABLE = False
 
-# Feature flag for adaptive context system
-# Set to True to enable full adaptive context, False to use legacy context-aware fidelity
+# Feature flag for Semantic Continuity Inheritance (SCI) system
+# SCI is the CANONICAL fidelity measurement approach as of 2025-12-30.
+# It uses measurement-based semantic similarity to the previous turn for inheritance.
+# Legacy context-aware fidelity is DEPRECATED and only kept as exception fallback.
 ADAPTIVE_CONTEXT_ENABLED = True
 
 logger = logging.getLogger(__name__)
@@ -182,6 +188,7 @@ class BetaResponseManager:
         # Template mode: SentenceTransformer with rescaling for better discrimination
         self.use_rescaled_fidelity = False  # Set True when using templates
         self.st_embedding_provider = None   # SentenceTransformer provider for templates
+        self.st_ai_pa_embedding = None      # SentenceTransformer AI PA embedding for AI fidelity checks
 
         # MPNet provider for AI fidelity (768-dim local, replaces Mistral API for speed)
         self.mpnet_embedding_provider = None  # all-mpnet-base-v2 for AI fidelity
@@ -462,78 +469,164 @@ class BetaResponseManager:
             if not hasattr(self, 'st_user_pa_embedding') or self.st_user_pa_embedding is None:
                 if 'cached_st_user_pa_embedding' in st.session_state:
                     self.st_user_pa_embedding = st.session_state.cached_st_user_pa_embedding
-                    logger.info(f"📦 Loaded ST PA embedding from session cache for AI fidelity check")
+                    logger.info(f"📦 Loaded ST User PA embedding from session cache for AI fidelity check")
                 elif self.st_embedding_provider is not None:
                     # Generate it now from the user's PA text
                     if 'user_pa' in st.session_state and hasattr(st.session_state.user_pa, 'purpose'):
                         pa_text = f"{st.session_state.user_pa.purpose} {st.session_state.user_pa.scope}"
                         self.st_user_pa_embedding = np.array(self.st_embedding_provider.encode(pa_text))
                         st.session_state.cached_st_user_pa_embedding = self.st_user_pa_embedding
-                        logger.info(f"🔧 Generated ST PA embedding for AI fidelity check: {len(self.st_user_pa_embedding)} dims")
+                        logger.info(f"🔧 Generated ST User PA embedding for AI fidelity check: {len(self.st_user_pa_embedding)} dims")
+
+            # CRITICAL: Also load AI PA embedding from cache (for comparing AI responses)
+            # This is the CORRECT embedding for AI fidelity - designed for teaching responses
+            if not hasattr(self, 'st_ai_pa_embedding') or self.st_ai_pa_embedding is None:
+                if 'cached_st_ai_pa_embedding' in st.session_state:
+                    self.st_ai_pa_embedding = st.session_state.cached_st_ai_pa_embedding
+                    logger.info(f"📦 Loaded ST AI PA embedding from session cache for AI fidelity check")
 
             # DEBUG: Check conditions for AI fidelity check
             has_st_provider = self.st_embedding_provider is not None
-            has_st_embedding = hasattr(self, 'st_user_pa_embedding')
-            st_embedding_not_none = getattr(self, 'st_user_pa_embedding', None) is not None
-            logger.warning(f"🔬 AI FIDELITY CHECK CONDITIONS: st_provider={has_st_provider}, has_attr={has_st_embedding}, not_none={st_embedding_not_none}")
+            has_st_user_embedding = getattr(self, 'st_user_pa_embedding', None) is not None
+            has_st_ai_embedding = getattr(self, 'st_ai_pa_embedding', None) is not None
+            logger.warning(f"🔬 AI FIDELITY CHECK CONDITIONS: st_provider={has_st_provider}, st_user_pa={has_st_user_embedding}, st_ai_pa={has_st_ai_embedding}")
 
-            if self.st_embedding_provider and hasattr(self, 'st_user_pa_embedding') and self.st_user_pa_embedding is not None:
+            # ================================================================
+            # ZONE-BASED AI FIDELITY (2025-12-29): COSINE SIMILARITY
+            # ================================================================
+            # AI fidelity measurement depends on user's alignment zone:
+            #
+            # GREEN ZONE (user >= 0.70): cosine(AI_response, USER_PA)
+            #   - Measures: Is the AI response topically aligned with user's purpose?
+            #   - Reference: USER_PA embedding (st_user_pa_embedding)
+            #   - Purpose: Verify AI stayed on-topic when user is on-topic
+            #
+            # INTERVENTION ZONE (user < 0.70): cosine(AI_response, AI_PA)
+            #   - Measures: Is the AI response behaviorally aligned with steward purpose?
+            #   - Reference: AI_PA embedding (st_ai_pa_embedding)
+            #   - Purpose: Verify AI is correctly redirecting when user drifts
+            # ================================================================
+
+            DISPLAY_GREEN_THRESHOLD = 0.70
+
+            if self.st_embedding_provider:
                 try:
-                    # Compute AI fidelity via SentenceTransformer (fast, local)
+                    # Embed the AI response (used in both zones)
                     response_embedding = np.array(self.st_embedding_provider.encode(native_response))
-                    raw_ai_fidelity = self._cosine_similarity(response_embedding, self.st_user_pa_embedding)
-                    ai_fidelity = rescale_sentence_transformer_fidelity(raw_ai_fidelity)
+                    response_embedding = response_embedding / (np.linalg.norm(response_embedding) + 1e-10)  # Normalize
 
-                    # IMPORTANT: Use display-range threshold (0.70) since ai_fidelity is rescaled
-                    # The rescaling maps raw ST scores to 0-1 display range where 0.70 = GREEN
-                    # Do NOT use threshold_green here which is 0.32 for raw ST scores
-                    DISPLAY_GREEN_THRESHOLD = 0.70
+                    # Store AI response in context buffer for future context matching (2025-12-29)
+                    # This allows follow-up queries that reference AI response content to be recognized
+                    if self.adaptive_context_manager and hasattr(self.adaptive_context_manager, 'context_buffer'):
+                        self.adaptive_context_manager.context_buffer.add_ai_response(native_response, response_embedding)
 
-                    logger.warning(f"🔍 AI Response Fidelity Check: raw={raw_ai_fidelity:.3f} → rescaled={ai_fidelity:.3f}, display_threshold={DISPLAY_GREEN_THRESHOLD}")
-                    logger.warning(f"🔍 WILL INTERVENE? ai_fidelity({ai_fidelity:.3f}) < {DISPLAY_GREEN_THRESHOLD} = {ai_fidelity < DISPLAY_GREEN_THRESHOLD}")
+                    # Check user's alignment zone
+                    if user_fidelity >= DISPLAY_GREEN_THRESHOLD:
+                        # GREEN ZONE: AI response topical alignment with USER_PA
+                        # cosine(AI_response, USER_PA) - measures topical alignment
+                        # Use normalize_ai_response_fidelity() because AI responses achieve
+                        # lower raw similarity (~0.40) than queries (~0.57) against USER_PA
+                        raw_ai_fidelity = self._cosine_similarity(response_embedding, self.st_user_pa_embedding)
+                        ai_fidelity = normalize_ai_response_fidelity(raw_ai_fidelity)
+                        logger.warning(f"🔍 GREEN ZONE AI Fidelity: raw={raw_ai_fidelity:.3f} → display={ai_fidelity:.3f} (measured against USER_PA for topical alignment)")
+                    else:
+                        # INTERVENTION ZONE: AI response behavioral alignment with AI_PA
+                        # cosine(AI_response, AI_PA) - measures behavioral alignment
+                        # (embedding already computed above, reuse it)
+                        pa_embedding_for_ai = getattr(self, 'st_ai_pa_embedding', None)
+                        if pa_embedding_for_ai is None:
+                            # Fallback to user PA if no AI PA
+                            pa_embedding_for_ai = getattr(self, 'st_user_pa_embedding', None)
+
+                        if pa_embedding_for_ai is not None:
+                            raw_ai_fidelity = self._cosine_similarity(response_embedding, pa_embedding_for_ai)
+                            ai_fidelity = normalize_st_fidelity(raw_ai_fidelity)
+                            logger.warning(f"🔍 INTERVENTION ZONE AI Fidelity: raw={raw_ai_fidelity:.3f} → display={ai_fidelity:.3f} (measured against AI_PA for behavioral alignment)")
+                        else:
+                            ai_fidelity = 0.50  # Default fallback if no PA available
+                            logger.warning(f"🔍 INTERVENTION ZONE AI Fidelity: No PA available, using default ({ai_fidelity:.3f})")
+
+                    logger.warning(f"🔍 AI REALIGNMENT NEEDED? ai_fidelity({ai_fidelity:.3f}) < {DISPLAY_GREEN_THRESHOLD} = {ai_fidelity < DISPLAY_GREEN_THRESHOLD}")
 
                     # ============================================================
-                    # AI RESPONSE DRIFT INTERVENTION
+                    # AI RESPONSE DRIFT INTERVENTION (Robust Safeguard v2)
                     # ============================================================
                     # If user is GREEN but AI response is below GREEN threshold,
                     # the AI has drifted from user's purpose. Regenerate with
                     # alignment context to bring AI back on track.
                     #
                     # This is the core TELOS promise: Keep AI aligned with user purpose.
+                    # When user is on-topic, AI MUST also be on-topic.
                     # ============================================================
+                    MAX_REALIGNMENT_ATTEMPTS = 2
+
                     if ai_fidelity < DISPLAY_GREEN_THRESHOLD:
+                        original_ai_fidelity = ai_fidelity  # FIXED: Save BEFORE updating
                         logger.warning(f"⚠️ AI RESPONSE DRIFT DETECTED: AI fidelity {ai_fidelity:.3f} < {DISPLAY_GREEN_THRESHOLD:.2f}")
                         logger.info("🔄 Triggering AI response realignment...")
 
-                        # Generate aligned response with explicit alignment context
-                        aligned_response = self._regenerate_aligned_response(
-                            user_input=user_input,
-                            drifted_response=native_response,
-                            ai_fidelity=ai_fidelity,
-                            user_fidelity=user_fidelity
-                        )
+                        # Retry loop: Attempt realignment up to MAX_REALIGNMENT_ATTEMPTS times
+                        current_response = native_response
+                        attempt = 0
 
-                        if aligned_response:
-                            # Verify the new response is better
-                            new_embedding = np.array(self.st_embedding_provider.encode(aligned_response))
-                            new_raw_ai_fidelity = self._cosine_similarity(new_embedding, self.st_user_pa_embedding)
-                            new_ai_fidelity = rescale_sentence_transformer_fidelity(new_raw_ai_fidelity)
+                        while ai_fidelity < DISPLAY_GREEN_THRESHOLD and attempt < MAX_REALIGNMENT_ATTEMPTS:
+                            attempt += 1
+                            logger.info(f"🔄 Realignment attempt {attempt}/{MAX_REALIGNMENT_ATTEMPTS}...")
 
-                            logger.info(f"🔄 Realigned AI Fidelity: {ai_fidelity:.3f} → {new_ai_fidelity:.3f}")
+                            # Generate aligned response with explicit alignment context
+                            aligned_response = self._regenerate_aligned_response(
+                                user_input=user_input,
+                                drifted_response=current_response,
+                                ai_fidelity=ai_fidelity,
+                                user_fidelity=user_fidelity
+                            )
 
-                            # Use realigned response if it's better (or at least attempted)
-                            final_response = aligned_response
-                            ai_fidelity = new_ai_fidelity
-                            ai_response_intervened = True
+                            if aligned_response:
+                                # Verify the new response is better
+                                new_embedding = np.array(self.st_embedding_provider.encode(aligned_response))
+                                # FIX: Use pa_embedding_for_ai (consistent with initial check) and normalize_st_fidelity (centroid-calibrated)
+                                new_raw_ai_fidelity = self._cosine_similarity(new_embedding, pa_embedding_for_ai)
+                                new_ai_fidelity = normalize_st_fidelity(new_raw_ai_fidelity)
+
+                                logger.info(f"🔄 Realigned AI Fidelity: {ai_fidelity:.3f} → {new_ai_fidelity:.3f} (attempt {attempt})")
+
+                                # Use the new response if it's better
+                                if new_ai_fidelity > ai_fidelity:
+                                    current_response = aligned_response
+                                    ai_fidelity = new_ai_fidelity
+                                    final_response = aligned_response
+                                    ai_response_intervened = True
+                                else:
+                                    logger.warning(f"⚠️ Realignment didn't improve fidelity ({new_ai_fidelity:.3f} <= {ai_fidelity:.3f})")
+                                    break  # Stop if not improving
+                            else:
+                                logger.warning(f"⚠️ AI realignment attempt {attempt} failed to generate response")
+                                break
+
+                        # Record realignment metadata
+                        if ai_response_intervened:
                             response_data['ai_response_realigned'] = True
-                            response_data['original_ai_fidelity'] = ai_fidelity
-                            logger.info(f"✅ AI response realigned successfully")
-                        else:
-                            logger.warning("⚠️ AI realignment failed, using original response")
+                            response_data['original_ai_fidelity'] = original_ai_fidelity
+                            response_data['realignment_attempts'] = attempt
+                            logger.info(f"✅ AI response realigned: {original_ai_fidelity:.3f} → {ai_fidelity:.3f} (after {attempt} attempts)")
+
+                        # Final warning if still below threshold after all attempts
+                        if ai_fidelity < DISPLAY_GREEN_THRESHOLD:
+                            logger.error(f"🚨 AI FIDELITY STILL BELOW GREEN after {attempt} attempts: {ai_fidelity:.3f} < {DISPLAY_GREEN_THRESHOLD}")
+                            response_data['ai_realignment_failed'] = True
 
                 except Exception as e:
                     logger.error(f"❌ AI fidelity check failed: {e}")
+                    import traceback
+                    logger.error(f"   Traceback: {traceback.format_exc()}")
                     # Continue with native response if check fails
+
+            else:
+                # AI fidelity check was SKIPPED due to missing provider/embedding
+                logger.warning(f"⚠️ AI FIDELITY CHECK SKIPPED - Missing ST provider or PA embedding")
+                logger.warning(f"   st_embedding_provider={self.st_embedding_provider is not None}")
+                logger.warning(f"   st_user_pa_embedding={getattr(self, 'st_user_pa_embedding', None) is not None}")
+                response_data['ai_fidelity_check_skipped'] = True
 
             response_data['shown_response'] = final_response
 
@@ -544,6 +637,8 @@ class BetaResponseManager:
                 primacy_state = (2 * user_fidelity * ai_fidelity) / (user_fidelity + ai_fidelity + epsilon)
                 logger.info(f"📊 GREEN Zone PS: F_user={user_fidelity:.3f}, F_ai={ai_fidelity:.3f}, PS={primacy_state:.3f}")
 
+            # GREEN ZONE: AI fidelity computed using USER PA (topic alignment, not behavioral)
+            logger.info(f"📊 GREEN ZONE AI Fidelity: {ai_fidelity:.3f} (computed against USER PA for topic alignment)")
             telos_data = {
                 'response': final_response,
                 'fidelity_score': None,
@@ -785,6 +880,36 @@ class BetaResponseManager:
         # ============================================================
         self._store_turn_data(turn_number, response_data)
 
+        # ============================================================
+        # SCI INTEGRATION: Set previous turn data for Semantic Continuity Inheritance
+        # ============================================================
+        # This enables the next turn's fidelity calculation to inherit from this turn
+        # when there's high semantic continuity (e.g., follow-up questions).
+        # The "previous turn" becomes a temporal attractor that pulls continuous
+        # follow-ups toward inherited fidelity with appropriate decay.
+        try:
+            if self.adaptive_context_manager and hasattr(self.adaptive_context_manager, 'context_buffer'):
+                user_embedding = getattr(self, 'last_user_input_embedding', None)
+
+                # Get AI response embedding from the last stored AI response in context buffer
+                ai_embedding = None
+                if hasattr(self.adaptive_context_manager.context_buffer, '_last_ai_embedding'):
+                    ai_embedding = self.adaptive_context_manager.context_buffer._last_ai_embedding
+
+                # Get the final fidelity for this turn
+                turn_fidelity = response_data.get('user_fidelity', 0.0)
+
+                if user_embedding is not None:
+                    self.adaptive_context_manager.context_buffer.set_previous_turn(
+                        user_embedding=user_embedding,
+                        ai_embedding=ai_embedding,  # May be None if AI didn't respond
+                        fidelity=turn_fidelity
+                    )
+                    logger.info(f"🔗 SCI: Set previous turn (fidelity={turn_fidelity:.3f}, "
+                               f"has_ai_embed={ai_embedding is not None})")
+        except Exception as e:
+            logger.debug(f"SCI set_previous_turn skipped: {e}")
+
         return response_data
 
     def _calculate_user_fidelity(self, user_input: str, use_context: bool = True) -> tuple:
@@ -850,7 +975,19 @@ class BetaResponseManager:
             # - Multi-tier context buffer with weighted embeddings
             # - Conversation phase detection (EXPLORATION, FOCUS, DRIFT, RECOVERY)
             # - Adaptive threshold calculation with governance bounds
-            if self.adaptive_context_enabled and self.adaptive_context_manager and hasattr(self, 'st_user_pa_embedding'):
+            # FIX (2025-12-30): Check for ANY PA embedding, not just ST
+            # This ensures SCI works with both ST and Mistral embedding modes
+            has_st_pa = hasattr(self, 'st_user_pa_embedding') and self.st_user_pa_embedding is not None
+            has_mistral_pa = hasattr(self, 'user_pa_embedding') and self.user_pa_embedding is not None
+            has_pa_embedding = has_st_pa or has_mistral_pa
+
+            # DEBUG: Log condition states
+            logger.warning(f"[SCI DEBUG] adaptive_context_enabled={self.adaptive_context_enabled}, "
+                          f"adaptive_context_manager={self.adaptive_context_manager is not None}, "
+                          f"has_st_pa={has_st_pa}, has_mistral_pa={has_mistral_pa}, "
+                          f"has_pa_embedding={has_pa_embedding}")
+
+            if self.adaptive_context_enabled and self.adaptive_context_manager and has_pa_embedding:
                 try:
                     # Get PA embedding (use ST embedding if available)
                     pa_embedding = getattr(self, 'st_user_pa_embedding', None)
@@ -892,6 +1029,9 @@ class BetaResponseManager:
                     raw_similarity = raw_fidelity  # Keep original for logging
                     baseline_hard_block = adaptive_result.should_intervene and adaptive_result.drift_detected
 
+                    # SCI INTEGRATION: Store user input embedding for set_previous_turn()
+                    self.last_user_input_embedding = input_embedding
+
                     return (fidelity, raw_similarity, baseline_hard_block)
 
                 except Exception as e:
@@ -899,10 +1039,13 @@ class BetaResponseManager:
                     # Fall through to legacy context-aware fidelity
 
             # ================================================================
-            # LEGACY CONTEXT-AWARE FIDELITY: Prepend recent conversation for context
+            # DEPRECATED: LEGACY CONTEXT-AWARE FIDELITY (Exception Fallback Only)
             # ================================================================
-            # This allows queries like "EU AI Act compliance" to inherit context
-            # from Turn 1 about TELOS governance, preventing false interventions.
+            # This code path is DEPRECATED as of 2025-12-30. SCI (Semantic Continuity
+            # Inheritance) is now the canonical fidelity measurement approach.
+            # This fallback only executes if the AdaptiveContextManager throws an
+            # exception. It uses string-based context prepending rather than
+            # measurement-based semantic similarity inheritance.
             contextual_input = user_input
             if use_context:
                 recent_context = self._get_recent_context_for_fidelity()
@@ -1427,14 +1570,42 @@ RESPONSE GUIDELINES:
                 # Embed the intervention response using SentenceTransformer MiniLM
                 response_embedding = np.array(self.st_embedding_provider.encode(response))
 
-                # AI Fidelity = cosine similarity to User PA (same as GREEN zone calculation)
-                raw_ai_fidelity = self._cosine_similarity(response_embedding, self.st_user_pa_embedding)
+                # Store AI response in context buffer for future context matching (2025-12-29)
+                # This allows follow-up queries that reference AI response content to be recognized
+                if self.adaptive_context_manager and hasattr(self.adaptive_context_manager, 'context_buffer'):
+                    self.adaptive_context_manager.context_buffer.add_ai_response(response, response_embedding)
 
-                # Rescale using same formula as GREEN zone
-                from telos_purpose.core.embedding_provider import rescale_sentence_transformer_fidelity
-                ai_fidelity = rescale_sentence_transformer_fidelity(raw_ai_fidelity)
+                # DUAL-REFERENCE AI FIDELITY (2025-12-28)
+                # AI is considered aligned if response matches EITHER:
+                #   1. PA centroid (topic space alignment), OR
+                #   2. User query (direct response relevance)
 
-                logger.info(f"🔧 Intervention AI Fidelity: raw={raw_ai_fidelity:.3f} → rescaled={ai_fidelity:.3f}")
+                # Reference 1: Similarity to AI PA (behavioral role embedding - NOT centroid)
+                # AI PA is derived from User PA with role transformation (e.g., "learn" → "teach")
+                # This should produce HIGHER similarity than User PA centroid
+                ai_pa_embedding = getattr(self, 'st_ai_pa_embedding', None)
+                if ai_pa_embedding is None:
+                    ai_pa_embedding = self.st_user_pa_embedding  # Fallback to User PA if AI PA not available
+                raw_ai_fidelity_to_pa = self._cosine_similarity(response_embedding, ai_pa_embedding)
+
+                # Reference 2: Similarity to user query (direct response relevance)
+                user_query_embedding = np.array(self.st_embedding_provider.encode(user_input))
+                raw_ai_fidelity_to_query = self._cosine_similarity(response_embedding, user_query_embedding)
+
+                # Use MAX: AI is aligned if it matches AI PA OR user query
+                # Apply appropriate normalization based on which reference wins:
+                # - AI_PA: Use normalize_st_fidelity (AI_PA centroids include example_ai_responses)
+                # - Query: Use normalize_ai_response_fidelity (AI response vs short query text)
+                if raw_ai_fidelity_to_pa >= raw_ai_fidelity_to_query:
+                    # AI PA reference won - use standard normalization
+                    ai_fidelity = normalize_st_fidelity(raw_ai_fidelity_to_pa)
+                    winning_ref = "AI_PA"
+                else:
+                    # Query reference won - use AI response calibration
+                    ai_fidelity = normalize_ai_response_fidelity(raw_ai_fidelity_to_query)
+                    winning_ref = "Query"
+
+                logger.info(f"🔧 Intervention AI Fidelity (dual-ref): AI_PA={raw_ai_fidelity_to_pa:.3f}, Query={raw_ai_fidelity_to_query:.3f}, Winner={winning_ref} → {ai_fidelity:.3f}")
 
                 # Calculate Primacy State using harmonic mean
                 epsilon = 1e-10
@@ -1582,14 +1753,48 @@ CRITICAL INSTRUCTIONS:
                 # Embed the response using SentenceTransformer MiniLM (same as User Fidelity)
                 response_embedding = np.array(self.st_embedding_provider.encode(response))
 
-                # AI Fidelity = cosine similarity of response to USER PA (both in MiniLM space)
-                # This measures: "How well does this response serve the user's stated purpose?"
-                raw_ai_fidelity = self._cosine_similarity(response_embedding, self.st_user_pa_embedding)
+                # Store AI response in context buffer for future context matching (2025-12-29)
+                # This allows follow-up queries that reference AI response content to be recognized
+                if self.adaptive_context_manager and hasattr(self.adaptive_context_manager, 'context_buffer'):
+                    self.adaptive_context_manager.context_buffer.add_ai_response(response, response_embedding)
 
-                # RESCALE: SentenceTransformer MiniLM produces low raw scores
-                # that need rescaling to match expected display range (0.70+ = GREEN)
-                ai_fidelity = rescale_sentence_transformer_fidelity(raw_ai_fidelity)
-                logger.info(f"🔧 AI Fidelity: raw={raw_ai_fidelity:.3f} → rescaled={ai_fidelity:.3f}")
+                # AI FIDELITY: BEHAVIORAL ALIGNMENT (2025-12-29)
+                # AI fidelity measures how well the AI response aligns with the AI's
+                # behavioral role. The AI PA is derived from User purpose but represents
+                # the AI's supportive role (e.g., "teach", "help solve", "guide").
+                #
+                # The AI PA is its OWN centroid for determining behavioral fidelity.
+                # Semantic alignment is already baked into the derived AI PA.
+                #
+                # Formula: F_ai = MAX(similarity_to_ai_pa, similarity_to_user_query)
+                # - Reference 1: Behavioral alignment via AI PA centroid
+                # - Reference 2: Direct response relevance to user query
+
+                # Reference 1: Similarity to AI PA (BEHAVIORAL alignment)
+                # AI PA represents the supportive role derived from user purpose
+                ai_pa_embedding = getattr(self, 'st_ai_pa_embedding', None)
+                if ai_pa_embedding is None:
+                    ai_pa_embedding = self.st_user_pa_embedding  # Fallback if not available
+                raw_ai_fidelity_to_pa = self._cosine_similarity(response_embedding, ai_pa_embedding)
+
+                # Reference 2: Similarity to user query (direct response relevance)
+                user_input_embedding = np.array(self.st_embedding_provider.encode(user_input))
+                raw_ai_fidelity_to_query = self._cosine_similarity(response_embedding, user_input_embedding)
+
+                # Use MAX: AI is aligned if it matches topic space OR user query
+                # Apply appropriate normalization based on which reference wins:
+                # - AI_PA: Use normalize_st_fidelity (AI_PA centroids include example_ai_responses)
+                # - Query: Use normalize_ai_response_fidelity (AI response vs short query text)
+                if raw_ai_fidelity_to_pa >= raw_ai_fidelity_to_query:
+                    # AI PA reference won - use standard normalization
+                    ai_fidelity = normalize_st_fidelity(raw_ai_fidelity_to_pa)
+                    winning_ref = "AI_PA"
+                else:
+                    # Query reference won - use AI response calibration
+                    ai_fidelity = normalize_ai_response_fidelity(raw_ai_fidelity_to_query)
+                    winning_ref = "Query"
+
+                logger.info(f"📊 AI Fidelity (behavioral): AI_PA={raw_ai_fidelity_to_pa:.3f}, Query={raw_ai_fidelity_to_query:.3f}, Winner={winning_ref} → {ai_fidelity:.2%}")
 
                 # Calculate Primacy State using harmonic mean formula
                 # PS = (2 * F_user * F_ai) / (F_user + F_ai)
@@ -2502,15 +2707,16 @@ CRITICAL INSTRUCTIONS:
 
     def _regenerate_pa_centroid(self, example_queries: list):
         """
-        Regenerate PA centroid from new example queries.
+        Regenerate PA centroid from purpose/scope + example queries.
+
+        Matches the centroid computation in regenerate_pa_embeddings.py:
+        centroid = mean of [purpose/scope embedding] + [example_query embeddings]
+
+        This ensures shift-focus PAs have the same semantic coverage as template PAs.
 
         Args:
             example_queries: List of example queries for centroid construction
         """
-        if not example_queries:
-            logger.warning("⚠️ No example queries provided for centroid regeneration")
-            return
-
         try:
             # Ensure SentenceTransformer provider is initialized - uses cached version
             if not self.st_embedding_provider:
@@ -2518,13 +2724,37 @@ CRITICAL INSTRUCTIONS:
                 self.st_embedding_provider = get_cached_minilm_provider()
                 logger.info(f"   SentenceTransformer (cached): {self.st_embedding_provider.dimension} dims")
 
-            # Create centroid from example query embeddings
-            logger.info(f"📊 Regenerating PA centroid from {len(example_queries)} example queries...")
-            example_embeddings = [np.array(self.st_embedding_provider.encode(ex)) for ex in example_queries]
-            domain_centroid = np.mean(example_embeddings, axis=0)
+            # Get purpose/scope from current PA
+            new_pa_data = st.session_state.get('primacy_attractor', {})
+            purpose_str = new_pa_data.get('purpose', '')
+            if isinstance(purpose_str, list):
+                purpose_str = ' '.join(purpose_str)
+            scope_str = new_pa_data.get('scope', '')
+            if isinstance(scope_str, list):
+                scope_str = ' '.join(scope_str)
+            user_pa_text = f"Purpose: {purpose_str} Scope: {scope_str}"
 
-            # Normalize the centroid
-            self.st_user_pa_embedding = domain_centroid / np.linalg.norm(domain_centroid)
+            # Build list of all texts for centroid: purpose/scope + example_queries
+            # This matches regenerate_pa_embeddings.py behavior
+            if example_queries:
+                all_texts = [user_pa_text] + list(example_queries)
+            else:
+                all_texts = [user_pa_text]
+
+            # Embed all texts and normalize each before averaging
+            logger.info(f"📊 Regenerating PA centroid from {len(all_texts)} texts (1 purpose/scope + {len(example_queries) if example_queries else 0} examples)...")
+            all_embeddings = []
+            for text in all_texts:
+                emb = np.array(self.st_embedding_provider.encode(text))
+                # Normalize each embedding before averaging
+                emb = emb / (np.linalg.norm(emb) + 1e-10)
+                all_embeddings.append(emb)
+
+            # Compute centroid as mean of all normalized embeddings
+            domain_centroid = np.mean(all_embeddings, axis=0)
+
+            # Re-normalize the centroid
+            self.st_user_pa_embedding = domain_centroid / (np.linalg.norm(domain_centroid) + 1e-10)
 
             # Cache in session state
             st.session_state.cached_st_user_pa_embedding = self.st_user_pa_embedding

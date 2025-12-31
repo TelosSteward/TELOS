@@ -75,7 +75,7 @@ def _normalize_score(score) -> float:
     """Convert score to float, handling string percentages like '100%'.
 
     Args:
-        score: Float (0.75), int (75), or string ('75%', '0.75')
+        score: Float (0.75), int (75), string ('75%', '0.75'), or numpy scalar
 
     Returns:
         Float in 0.0-1.0 range
@@ -99,12 +99,17 @@ def _normalize_score(score) -> float:
             return val
         except ValueError:
             return 0.0
-    if isinstance(score, (int, float)):
+    # Handle any numeric type (int, float, numpy scalars like np.float64)
+    # Using try/except with float() is more robust than isinstance() checks
+    # because isinstance(np.float64(0.65), (int, float)) returns False
+    try:
+        val = float(score)
         # If it's > 1, assume it's a percentage (e.g., 75 instead of 0.75)
-        if score > 1.0:
-            return float(score) / 100.0
-        return float(score)
-    return 0.0
+        if val > 1.0:
+            return val / 100.0
+        return val
+    except (TypeError, ValueError):
+        return 0.0
 
 
 def get_fidelity_color(score) -> str:

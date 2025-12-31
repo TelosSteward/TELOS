@@ -37,6 +37,180 @@ from telos_purpose.core.constants import (
 HARD_FLOOR = 0.20  # Never boost fidelity below this threshold
 MAX_BOOST = 0.20   # Threshold can never be reduced by more than this
 
+# =============================================================================
+# SEMANTIC CONTINUITY INHERITANCE (SCI) - v4.0 (2025-12-30)
+# =============================================================================
+# A measurement-based approach to handling follow-up messages that replaces
+# arbitrary syntax boosts with actual semantic similarity measurement.
+#
+# PHILOSOPHY: Instead of adding +0.20 to messages matching syntactic patterns
+# like "yes", "sure", "that" - we MEASURE how semantically similar the current
+# message is to the previous turn (user query + AI response combined).
+#
+# If high continuity is detected, we INHERIT the previous fidelity with decay.
+# This maps to attractor physics: orbits that stay in the basin inherit the
+# parent trajectory's stability rather than being re-measured from scratch.
+#
+# KEY INSIGHT: "Yes, show me an example" has low direct PA similarity (~0.32)
+# but HIGH continuity with the previous turn about recursion. By measuring
+# this continuity, we can inherit the previous 78% fidelity with decay → ~74%.
+
+# Continuity thresholds (cosine similarity to previous turn)
+SCI_STRONG_CONTINUITY = 0.70    # Clear semantic continuation
+SCI_MODERATE_CONTINUITY = 0.50  # Moderate connection
+SCI_WEAK_CONTINUITY = 0.30      # Minimal connection
+
+# Decay factors (how much of previous fidelity is inherited)
+# Strong continuity: nearly full inheritance (orbit remains stable)
+# Moderate continuity: standard decay (orbit slightly perturbed)
+# Weak continuity: noticeable decay (orbit significantly perturbed)
+SCI_STRONG_DECAY = 0.99    # Nearly full inheritance
+SCI_MODERATE_DECAY = 0.95  # Standard decay
+SCI_WEAK_DECAY = 0.90      # Noticeable decay
+
+# SCI feature flag - enables/disables the new approach
+SCI_ENABLED = True
+
+
+# =============================================================================
+# SCI HELPER FUNCTIONS
+# =============================================================================
+
+def calculate_semantic_continuity(
+    current_embedding: np.ndarray,
+    previous_turn_embeddings: List[np.ndarray]
+) -> Tuple[float, int]:
+    """
+    Calculate semantic continuity between current message and previous turn.
+
+    Uses MAX similarity to the previous turn's embeddings (user query + AI response)
+    rather than arbitrary pattern matching. This is measurement-based alignment
+    detection that uses the same cosine math as PA fidelity.
+
+    Args:
+        current_embedding: Embedding of current user input (normalized)
+        previous_turn_embeddings: List of embeddings from previous turn
+                                  (user query embedding + AI response embedding)
+
+    Returns:
+        Tuple of (max_continuity_score, best_embedding_index)
+    """
+    if not previous_turn_embeddings or len(previous_turn_embeddings) == 0:
+        return 0.0, -1
+
+    # Normalize current embedding
+    current_norm = current_embedding / np.linalg.norm(current_embedding)
+
+    # Compute similarity to each previous turn embedding
+    similarities = []
+    for emb in previous_turn_embeddings:
+        emb_norm = emb / np.linalg.norm(emb)
+        sim = float(np.dot(current_norm, emb_norm))
+        similarities.append(sim)
+
+    # Return MAX similarity and its index
+    max_sim = max(similarities)
+    best_idx = similarities.index(max_sim)
+
+    return max_sim, best_idx
+
+
+def get_decay_factor(continuity_score: float) -> float:
+    """
+    Get the appropriate decay factor based on continuity strength.
+
+    Higher continuity = less decay (more of previous fidelity inherited).
+    Uses variable decay model as selected by user:
+    - Strong (>0.70): 0.99 decay (nearly full inheritance)
+    - Moderate (0.50-0.70): 0.95 decay (standard decay)
+    - Weak (<0.50): 0.90 decay (noticeable decay)
+
+    Args:
+        continuity_score: Cosine similarity to previous turn (0.0-1.0)
+
+    Returns:
+        Decay factor (0.90-0.99)
+    """
+    if continuity_score >= SCI_STRONG_CONTINUITY:
+        return SCI_STRONG_DECAY
+    elif continuity_score >= SCI_MODERATE_CONTINUITY:
+        return SCI_MODERATE_DECAY
+    else:
+        return SCI_WEAK_DECAY
+
+
+def apply_continuity_inheritance(
+    direct_fidelity: float,
+    continuity_score: float,
+    previous_fidelity: float
+) -> Tuple[float, str]:
+    """
+    Apply Semantic Continuity Inheritance to compute adjusted fidelity.
+
+    Uses max(direct, inherited) approach so semantically rich follow-ups
+    that also have high direct PA similarity are never punished.
+
+    The key insight is that "Yes, show me an example" should inherit the
+    previous 78% fidelity because it's clearly continuing that topic,
+    even though its direct PA similarity is only ~0.32.
+
+    Args:
+        direct_fidelity: Raw fidelity computed directly against PA
+        continuity_score: Semantic similarity to previous turn (0.0-1.0)
+        previous_fidelity: Fidelity score from the previous turn
+
+    Returns:
+        Tuple of (adjusted_fidelity, method_used)
+    """
+    # Below minimum continuity threshold = no inheritance
+    if continuity_score < SCI_WEAK_CONTINUITY:
+        logger.info(
+            f"🔗 SCI: continuity={continuity_score:.3f} < threshold={SCI_WEAK_CONTINUITY:.2f}, "
+            f"no inheritance, using direct={direct_fidelity:.3f}"
+        )
+        print(
+            f"🔗 SCI: continuity={continuity_score:.3f} < threshold={SCI_WEAK_CONTINUITY:.2f}, "
+            f"no inheritance, using direct={direct_fidelity:.3f}"
+        )
+        return direct_fidelity, "direct_only"
+
+    # Get decay factor based on continuity strength
+    decay = get_decay_factor(continuity_score)
+
+    # Calculate inherited fidelity
+    inherited_fidelity = previous_fidelity * decay
+
+    # Use MAX of direct and inherited (never punish semantically rich follow-ups)
+    if direct_fidelity >= inherited_fidelity:
+        adjusted = direct_fidelity
+        method = "direct_preferred"
+        logger.info(
+            f"🔗 SCI: continuity={continuity_score:.3f}, decay={decay:.2f}, "
+            f"direct={direct_fidelity:.3f} >= inherited={inherited_fidelity:.3f}, "
+            f"using direct"
+        )
+        print(
+            f"🔗 SCI: continuity={continuity_score:.3f}, decay={decay:.2f}, "
+            f"direct={direct_fidelity:.3f} >= inherited={inherited_fidelity:.3f}, "
+            f"using direct"
+        )
+    else:
+        adjusted = inherited_fidelity
+        method = "inherited"
+        logger.info(
+            f"🔗 SCI: continuity={continuity_score:.3f}, decay={decay:.2f}, "
+            f"inherited={inherited_fidelity:.3f} > direct={direct_fidelity:.3f}, "
+            f"using inherited from previous={previous_fidelity:.3f}"
+        )
+        print(
+            f"🔗 SCI: continuity={continuity_score:.3f}, decay={decay:.2f}, "
+            f"inherited={inherited_fidelity:.3f} > direct={direct_fidelity:.3f}, "
+            f"using inherited from previous={previous_fidelity:.3f}"
+        )
+
+    return adjusted, method
+
+
 # Base intervention threshold - imported from constants.py
 BASE_THRESHOLD = INTERVENTION_THRESHOLD  # 0.48
 
@@ -109,6 +283,9 @@ MESSAGE_PATTERNS = {
         r'^(can you also|also|additionally|furthermore)',
         r'^(and|but|so|however)',
         r'^(what else|anything else|is there more)',
+        # Short continuation phrases (v4.1 - 2025-12-30)
+        r'^(tell me more|go on|continue|keep going|more|please continue)',
+        r'^(explain more|elaborate|more details|more info)',
     ],
 }
 
@@ -283,12 +460,29 @@ class MultiTierContextBuffer:
     Tier 3: Low fidelity (0.25-0.35) - 2 messages, weight 0.1
 
     Messages below 0.25 are not stored (too off-topic).
+
+    AI Response Buffer (2025-12-29):
+    Also stores recent AI responses to capture full conversational context.
+    When user says "walk me through the factorial example", they're referencing
+    the AI's previous response, not their own query. Without this, context
+    similarity would be low, causing false positive drift detection.
     """
 
     def __init__(self):
         self.tier1: deque = deque(maxlen=TIER1_CAPACITY)
         self.tier2: deque = deque(maxlen=TIER2_CAPACITY)
         self.tier3: deque = deque(maxlen=TIER3_CAPACITY)
+        # AI response buffer (2025-12-29) - stores recent AI responses for context matching
+        self.ai_response_buffer: deque = deque(maxlen=5)  # Store last 5 AI responses
+
+        # =======================================================================
+        # SCI: Previous Turn Tracking (2025-12-30)
+        # =======================================================================
+        # Stores the embeddings and fidelity from the previous turn to enable
+        # Semantic Continuity Inheritance. When user says "Yes, show me example",
+        # we measure similarity to this previous turn to decide on inheritance.
+        self.previous_turn_embeddings: List[np.ndarray] = []  # User + AI embeddings
+        self.previous_turn_fidelity: Optional[float] = None   # Fidelity of previous turn
 
     def add_message(
         self,
@@ -424,14 +618,124 @@ class MultiTierContextBuffer:
         all_msgs = self.get_all_messages()
         return [msg.embedding for msg in all_msgs]
 
+    def add_ai_response(self, text: str, embedding: np.ndarray) -> None:
+        """
+        Add an AI response to the AI response buffer (2025-12-29).
+
+        This enables context matching against AI responses, fixing false
+        positive drift detection when users reference AI content like
+        "walk me through the factorial example".
+
+        Args:
+            text: AI response text (for debugging/logging)
+            embedding: AI response embedding vector
+        """
+        # Normalize the embedding before storing
+        if isinstance(embedding, list):
+            embedding = np.array(embedding)
+        norm = np.linalg.norm(embedding)
+        if norm > 0:
+            embedding = embedding / norm
+        self.ai_response_buffer.append({
+            'text': text[:200],  # Truncate for logging only
+            'embedding': embedding,
+            'timestamp': datetime.now()
+        })
+        logger.debug(f"Added AI response to buffer (total: {len(self.ai_response_buffer)})")
+
+    def get_ai_response_embeddings(self) -> List[np.ndarray]:
+        """
+        Get all AI response embeddings from the buffer.
+
+        Returns:
+            List of normalized AI response embedding vectors
+        """
+        return [resp['embedding'] for resp in self.ai_response_buffer]
+
+    def get_all_context_embeddings(self) -> List[np.ndarray]:
+        """
+        Get all embeddings (user messages + AI responses) for MAX similarity.
+
+        This is the key method for Context Attractor v3.1 - includes both
+        user turns AND AI responses for comprehensive context matching.
+
+        Returns:
+            List of all normalized embedding vectors
+        """
+        user_embeddings = self.get_all_embeddings()
+        ai_embeddings = self.get_ai_response_embeddings()
+        return user_embeddings + ai_embeddings
+
     def clear(self):
-        """Clear all tiers."""
+        """Clear all tiers and AI response buffer."""
         self.tier1.clear()
         self.tier2.clear()
         self.tier3.clear()
+        self.ai_response_buffer.clear()
+        # Also clear SCI state
+        self.previous_turn_embeddings = []
+        self.previous_turn_fidelity = None
 
     def __len__(self) -> int:
         return len(self.tier1) + len(self.tier2) + len(self.tier3)
+
+    # =========================================================================
+    # SCI: Previous Turn Management (2025-12-30)
+    # =========================================================================
+
+    def set_previous_turn(
+        self,
+        user_embedding: np.ndarray,
+        ai_embedding: Optional[np.ndarray],
+        fidelity: float
+    ) -> None:
+        """
+        Set the previous turn data for SCI.
+
+        Called after each turn to store the embeddings and fidelity so that
+        the next message can compute continuity and potentially inherit.
+
+        Args:
+            user_embedding: Embedding of the user's query for this turn
+            ai_embedding: Embedding of the AI's response (optional)
+            fidelity: Adjusted fidelity score for this turn
+        """
+        self.previous_turn_embeddings = []
+
+        # Normalize and store user embedding
+        if isinstance(user_embedding, list):
+            user_embedding = np.array(user_embedding)
+        user_norm = np.linalg.norm(user_embedding)
+        if user_norm > 0:
+            self.previous_turn_embeddings.append(user_embedding / user_norm)
+
+        # Normalize and store AI embedding if provided
+        if ai_embedding is not None:
+            if isinstance(ai_embedding, list):
+                ai_embedding = np.array(ai_embedding)
+            ai_norm = np.linalg.norm(ai_embedding)
+            if ai_norm > 0:
+                self.previous_turn_embeddings.append(ai_embedding / ai_norm)
+
+        self.previous_turn_fidelity = fidelity
+
+        logger.debug(
+            f"SCI: Set previous turn with {len(self.previous_turn_embeddings)} embeddings, "
+            f"fidelity={fidelity:.3f}"
+        )
+
+    def get_previous_turn_data(self) -> Tuple[List[np.ndarray], Optional[float]]:
+        """
+        Get the previous turn data for SCI computation.
+
+        Returns:
+            Tuple of (list of embeddings, previous fidelity score)
+        """
+        return self.previous_turn_embeddings, self.previous_turn_fidelity
+
+    def has_previous_turn(self) -> bool:
+        """Check if we have previous turn data for SCI."""
+        return len(self.previous_turn_embeddings) > 0 and self.previous_turn_fidelity is not None
 
 
 # =============================================================================
@@ -614,14 +918,17 @@ class AdaptiveContextManager:
 
         # Step 4: Compute contextualized fidelity
         context_embedding = self.context_buffer.get_weighted_context_embedding()
-        context_embeddings = self.context_buffer.get_all_embeddings()  # For MAX similarity
+        # (2025-12-29) Use get_all_context_embeddings which includes AI responses
+        # This fixes false positive drift when user references AI content like
+        # "walk me through the factorial example" - the AI response contains "factorial"
+        context_embeddings = self.context_buffer.get_all_context_embeddings()  # Includes AI responses
         adjusted_fidelity = self._compute_adjusted_fidelity(
             input_embedding=input_embedding,
             pa_embedding=pa_embedding,
             context_embedding=context_embedding,
             raw_fidelity=raw_fidelity,
             message_type=message_type,
-            context_embeddings=context_embeddings  # Context Attractor v3: MAX similarity
+            context_embeddings=context_embeddings  # Context Attractor v3.1: MAX similarity with AI responses
         )
 
         # Step 5: Determine if intervention should occur
@@ -739,6 +1046,10 @@ class AdaptiveContextManager:
             context_similarity = max(similarities)
             best_turn_idx = similarities.index(context_similarity)
 
+            # DEBUG: Print to stdout for visibility (logger.info may not appear)
+            print(f"🔎 CONTEXT BUFFER: {len(context_embeddings)} embeddings, sims={[f'{s:.3f}' for s in similarities]}, MAX={context_similarity:.3f} (idx={best_turn_idx})")
+            logger.info(f"🔎 CONTEXT BUFFER: {len(context_embeddings)} embeddings, sims={[f'{s:.3f}' for s in similarities]}, MAX={context_similarity:.3f} (idx={best_turn_idx})")
+
         elif context_embedding is not None:
             # Fallback to centroid if no individual embeddings available
             context_norm = context_embedding / np.linalg.norm(context_embedding)
@@ -749,14 +1060,11 @@ class AdaptiveContextManager:
             return raw_fidelity
 
         # =======================================================================
-        # CONTEXT BOOST CALCULATION (v3.1 - MAX + Message Type Multipliers)
+        # CONTEXT BOOST CALCULATION (v3.2 - Type-Aware Thresholds + Multipliers)
         # =======================================================================
-        # Combines MAX similarity (best signal) with message-type-aware boosting.
-        # This restores the nuanced handling where ANAPHORA ("that", "it") gets
-        # stronger context pulls than DIRECT statements.
-
-        # Minimum context similarity to trigger boost
-        CONTEXT_RELEVANCE_THRESHOLD = 0.35
+        # Uses message-type-aware thresholds because short follow-ups like
+        # "Yes, show me an example" have low cosine similarity to prior turns
+        # even though they're clearly conversational continuations.
 
         # Maximum boost from context (governance safeguard)
         MAX_CONTEXT_BOOST = 0.30
@@ -773,36 +1081,160 @@ class AdaptiveContextManager:
             MessageType.DIRECT: 0.7,         # New statements - weakest pull
         }
 
-        type_multiplier = MESSAGE_TYPE_MULTIPLIERS.get(message_type, 1.0)
+        # TYPE-AWARE THRESHOLDS (v3.2): Lower threshold for messages that
+        # syntactically indicate conversational continuity. Short follow-ups
+        # like "Yes, show me an example" may have low semantic similarity
+        # to prior context but are clearly part of the conversation.
+        MESSAGE_TYPE_THRESHOLDS = {
+            MessageType.ANAPHORA: 0.15,      # Very low - depends entirely on context
+            MessageType.CLARIFICATION: 0.20, # Low - asking about prior content
+            MessageType.FOLLOW_UP: 0.20,     # Low - syntactically a continuation
+            MessageType.DIRECT: 0.35,        # Standard - new topic statements
+        }
 
-        if context_similarity < CONTEXT_RELEVANCE_THRESHOLD:
-            # Query is semantically unrelated to conversation context - no boost
-            logger.debug(
-                f"Context not relevant: max_context_sim={context_similarity:.3f} < {CONTEXT_RELEVANCE_THRESHOLD}"
-            )
-            return raw_fidelity
+        type_multiplier = MESSAGE_TYPE_MULTIPLIERS.get(message_type, 1.0)
+        context_threshold = MESSAGE_TYPE_THRESHOLDS.get(message_type, 0.35)
+
+        # =======================================================================
+        # SEMANTIC CONTINUITY INHERITANCE (v4.0 - 2025-12-30)
+        # =======================================================================
+        # Instead of arbitrary syntax-based boosts, we MEASURE semantic continuity
+        # to the previous turn (user query + AI response) and INHERIT fidelity
+        # with decay if high continuity is detected.
+        #
+        # This is measurement-based, not pattern-based. A message like
+        # "Yes, show me an example" will have high continuity with the previous
+        # turn about recursion (~0.65+), allowing inheritance of the 78% fidelity.
+        #
+        # The philosophy: orbits that stay in the basin inherit the parent
+        # trajectory's stability rather than being re-measured from scratch.
+
+        # Check if SCI is enabled and we have previous turn data
+        has_prev = self.context_buffer.has_previous_turn()
+        print(f"🔗 SCI GATE CHECK: SCI_ENABLED={SCI_ENABLED}, has_previous_turn={has_prev}")
+        logger.info(f"🔗 SCI GATE CHECK: SCI_ENABLED={SCI_ENABLED}, has_previous_turn={has_prev}")
+
+        if SCI_ENABLED and has_prev:
+            prev_embeddings, prev_fidelity = self.context_buffer.get_previous_turn_data()
+
+            if prev_embeddings and prev_fidelity is not None:
+                # =================================================================
+                # SHORT PHRASE OVERRIDE (v4.1 - 2025-12-30)
+                # =================================================================
+                # Short generic phrases like "Tell me more", "Yes", "Go on" have
+                # inherently LOW cosine similarity to specific domain content.
+                # The SCI continuity threshold (0.30) will never be reached.
+                #
+                # SOLUTION: If message type is FOLLOW_UP or ANAPHORA (syntactic
+                # indicators of continuation), AND previous turn had high fidelity,
+                # force inherit with moderate decay - bypass the continuity check.
+                #
+                # This preserves measurement-based philosophy for substantive
+                # messages while handling the edge case of short generic phrases.
+                SHORT_PHRASE_TYPES = {MessageType.FOLLOW_UP, MessageType.ANAPHORA}
+                SHORT_PHRASE_MIN_PREV_FIDELITY = 0.50  # Only inherit from stable orbits
+                SHORT_PHRASE_DECAY = 0.95  # Moderate decay for pattern-based inheritance
+
+                if message_type in SHORT_PHRASE_TYPES and prev_fidelity >= SHORT_PHRASE_MIN_PREV_FIDELITY:
+                    # Short generic phrase following a high-fidelity turn
+                    inherited = prev_fidelity * SHORT_PHRASE_DECAY
+                    print(f"🔗 SHORT PHRASE OVERRIDE: type={message_type.name}, "
+                          f"prev_fidelity={prev_fidelity:.3f} -> inherited={inherited:.3f} "
+                          f"(bypassing continuity check)")
+                    logger.info(
+                        f"🔗 SHORT PHRASE OVERRIDE: type={message_type.name}, "
+                        f"prev_fidelity={prev_fidelity:.3f} -> inherited={inherited:.3f} "
+                        f"(bypassing continuity check)"
+                    )
+                    # Return inherited fidelity if it's better than raw
+                    if inherited > raw_fidelity:
+                        return min(inherited, 1.0)
+
+                # Calculate semantic continuity to previous turn
+                continuity_score, best_idx = calculate_semantic_continuity(
+                    input_embedding, prev_embeddings
+                )
+
+                print(f"🔗 SCI CHECK: continuity={continuity_score:.3f} to prev_turn (idx={best_idx}), "
+                      f"prev_fidelity={prev_fidelity:.3f}, raw={raw_fidelity:.3f}")
+                logger.info(
+                    f"🔗 SCI CHECK: continuity={continuity_score:.3f} to prev_turn (idx={best_idx}), "
+                    f"prev_fidelity={prev_fidelity:.3f}, raw={raw_fidelity:.3f}"
+                )
+
+                # Apply continuity inheritance
+                inherited_result, method = apply_continuity_inheritance(
+                    raw_fidelity, continuity_score, prev_fidelity
+                )
+
+                # If SCI produced a result, use max(SCI result, context attractor result)
+                # This ensures both mechanisms work together, never against each other
+                if method != "direct_only":
+                    # SCI inheritance triggered - but also compute context attractor boost
+                    # and use whichever is higher (belt AND suspenders)
+                    print(f"🔗 SCI INHERITANCE: method={method}, result={inherited_result:.3f}")
+                    logger.info(f"🔗 SCI INHERITANCE: method={method}, result={inherited_result:.3f}")
+
+                    # Store SCI result for later comparison
+                    sci_adjusted = inherited_result
+
+        # If SCI didn't trigger or didn't produce inheritance, fall back to context threshold check
+        if context_similarity < context_threshold:
+            # Below semantic threshold for context attractor
+            # Check if SCI produced an inheritance result we should use
+            if SCI_ENABLED and 'sci_adjusted' in dir() and sci_adjusted > raw_fidelity:
+                # SCI inheritance provides better fidelity than raw
+                adjusted = sci_adjusted
+                adjusted = min(adjusted, 1.0)  # Cap at 100%
+                print(f"🔗 SCI FALLBACK: context_sim={context_similarity:.3f} < threshold={context_threshold:.2f}, "
+                      f"using SCI result={adjusted:.3f} instead of raw={raw_fidelity:.3f}")
+                logger.info(
+                    f"🔗 SCI FALLBACK: context_sim={context_similarity:.3f} < threshold={context_threshold:.2f}, "
+                    f"using SCI result={adjusted:.3f} instead of raw={raw_fidelity:.3f}"
+                )
+                return adjusted
+            else:
+                # No SCI inheritance available - no boost
+                print(f"❌ CONTEXT BOOST SKIPPED: type={message_type.name}, max_sim={context_similarity:.3f} < threshold={context_threshold:.2f}, returning raw_fidelity={raw_fidelity:.3f}")
+                logger.info(
+                    f"❌ CONTEXT BOOST SKIPPED: type={message_type.name}, max_sim={context_similarity:.3f} < threshold={context_threshold:.2f}, returning raw_fidelity={raw_fidelity:.3f}"
+                )
+                return raw_fidelity
 
         # Calculate boost proportional to similarity above threshold
-        excess_similarity = context_similarity - CONTEXT_RELEVANCE_THRESHOLD
-        max_excess = 1.0 - CONTEXT_RELEVANCE_THRESHOLD
+        excess_similarity = context_similarity - context_threshold
+        max_excess = 1.0 - context_threshold
         normalized_excess = excess_similarity / max_excess
 
         # Calculate boost: proportional to normalized excess × type multiplier
         # ANAPHORA gets 1.5x boost, DIRECT gets 0.7x boost
-        context_boost = normalized_excess * MAX_CONTEXT_BOOST * BASE_CONTEXT_WEIGHT * type_multiplier
+        semantic_boost = normalized_excess * MAX_CONTEXT_BOOST * BASE_CONTEXT_WEIGHT * type_multiplier
 
-        # Apply boost
-        adjusted = raw_fidelity + context_boost
+        # Apply context attractor boost
+        context_attractor_result = raw_fidelity + semantic_boost
 
-        # Governance: Cap at MAX_CONTEXT_BOOST (even with multiplier)
-        if adjusted - raw_fidelity > MAX_CONTEXT_BOOST:
-            adjusted = raw_fidelity + MAX_CONTEXT_BOOST
+        # Governance: Cap at MAX_CONTEXT_BOOST
+        if context_attractor_result - raw_fidelity > MAX_CONTEXT_BOOST:
+            context_attractor_result = raw_fidelity + MAX_CONTEXT_BOOST
 
         # Cap at 1.0 (fidelity can't exceed 100%)
-        adjusted = min(adjusted, 1.0)
+        context_attractor_result = min(context_attractor_result, 1.0)
+
+        # SCI Integration: Use MAX of context attractor and SCI inheritance
+        # This ensures both mechanisms work together, never against each other
+        if SCI_ENABLED and 'sci_adjusted' in dir() and sci_adjusted > 0:
+            adjusted = max(context_attractor_result, sci_adjusted)
+            if adjusted == sci_adjusted:
+                print(f"🔗 SCI+CONTEXT: SCI wins! context={context_attractor_result:.3f}, sci={sci_adjusted:.3f}")
+                logger.info(f"🔗 SCI+CONTEXT: SCI wins! context={context_attractor_result:.3f}, sci={sci_adjusted:.3f}")
+            else:
+                print(f"🧲 SCI+CONTEXT: Context attractor wins! context={context_attractor_result:.3f}, sci={sci_adjusted:.3f}")
+                logger.info(f"🧲 SCI+CONTEXT: Context attractor wins! context={context_attractor_result:.3f}, sci={sci_adjusted:.3f}")
+        else:
+            adjusted = context_attractor_result
 
         logger.info(
-            f"🧲 CONTEXT ATTRACTOR (v3.1-MAX): type={message_type.name}, mult={type_multiplier:.1f}, "
+            f"🧲 CONTEXT ATTRACTOR (v4.0-SCI): type={message_type.name}, mult={type_multiplier:.1f}, "
             f"max_sim={context_similarity:.3f} (turn {best_turn_idx}), "
             f"raw={raw_fidelity:.3f} → adjusted={adjusted:.3f}, boost={adjusted - raw_fidelity:+.3f}"
         )

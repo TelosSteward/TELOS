@@ -55,6 +55,36 @@ TELOS (Telemetric Localization of Semantic Intent) is a privacy-preserving AI go
 3. **Continuous Alignment**: Real-time monitoring and correction of AI drift
 4. **Transparent**: Users can observe the governance process in real-time
 
+## How Fidelity is Computed (Technical Details)
+
+Fidelity measures alignment using **cosine similarity** between text embeddings and Primacy Attractor (PA) centroids. Raw cosine similarity values are normalized to a 0-100% display scale.
+
+### User Fidelity (How aligned is the user's query?)
+- **Measurement**: cosine(user_query_embedding, USER_PA_centroid)
+- **Calibration**: display = 1.167 × raw + 0.117
+- **Anchor points**: raw 0.50 → 70% GREEN, raw 0.41 → 60% YELLOW, raw 0.33 → 50% ORANGE, raw 0.20 → 35% RED
+
+### AI Fidelity (How aligned is the AI response?)
+Two different calibrations are used depending on the zone:
+
+**GREEN Zone (user fidelity >= 70%):**
+- **Measurement**: cosine(AI_response_embedding, USER_PA_centroid)
+- **Purpose**: Measures topical alignment - is the AI staying on the user's topic?
+- **Calibration**: display = 1.4 × raw + 0.14 (steeper slope because AI responses are longer explanatory text vs short queries)
+- **Anchor points**: raw 0.40 → 70% GREEN, raw 0.33 → 60% YELLOW, raw 0.26 → 50% ORANGE, raw 0.15 → 35% RED
+
+**Intervention Zone (user fidelity < 70%):**
+- **Measurement**: cosine(AI_response_embedding, AI_PA_centroid)
+- **Purpose**: Measures behavioral alignment - is the AI acting as a good teacher/helper?
+- **Calibration**: display = 1.167 × raw + 0.117 (same as user queries because AI_PA centroids include example_ai_responses)
+
+### Primacy State (Overall System Alignment)
+- **Formula**: PS = (2 × F_user × F_ai) / (F_user + F_ai)
+- **Meaning**: Harmonic mean of user and AI fidelity - both must be high for high PS
+
+### Why Two Calibrations?
+AI responses achieve lower raw cosine similarity (~0.40) than user queries (~0.50) when measured against the same PA centroid. This is because AI responses are longer explanatory paragraphs while user queries are short questions. The steeper calibration (slope 1.4 vs 1.167) compensates for this text length difference.
+
 ## Observatory Interface
 
 The Observatory has three main tabs:

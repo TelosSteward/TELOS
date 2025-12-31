@@ -250,6 +250,9 @@ class BetaPAEstablishment:
             # CRITICAL: Also cache as cached_st_user_pa_embedding - this is the key
             # that beta_response_manager.py line 535 looks for when computing User Fidelity
             st.session_state.cached_st_user_pa_embedding = user_pa_embedding
+            # CRITICAL: Also cache AI PA for AI fidelity checks
+            # This is used by beta_response_manager.py to compare AI responses to AI PA
+            st.session_state.cached_st_ai_pa_embedding = ai_pa_embedding
 
             # CRITICAL: Enable rescaled fidelity mode for adaptive context to work
             # Without this flag, the adaptive context system is bypassed entirely

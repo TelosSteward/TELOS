@@ -455,6 +455,7 @@ class PAOnboarding:
         pa_data = template_to_pa(template)
 
         # Create User PA structure (format for dual attractor: purpose as list)
+        # NEW (2025-12-28): Include example_queries for centroid embedding computation
         user_pa = {
             "purpose": [pa_data.get('purpose', [template['purpose']])[0] if isinstance(pa_data.get('purpose'), list) else template['purpose']],
             "scope": pa_data.get('scope', template['scope']),
@@ -462,7 +463,9 @@ class PAOnboarding:
             "success_criteria": f"Accomplish: {template['purpose']}",
             "style": pa_data.get('style', template.get('style', 'Adaptive')),
             "established_turn": 0,
-            "establishment_method": f"template_{template['id']}"
+            "establishment_method": f"template_{template['id']}",
+            # NEW: Include example_queries for PA centroid computation
+            "example_queries": pa_data.get('example_queries', template.get('example_queries', [])),
         }
 
         # DUAL ATTRACTOR: Derive AI PA from User PA using intent-to-role mapping

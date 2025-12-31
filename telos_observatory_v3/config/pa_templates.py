@@ -75,6 +75,20 @@ PA_TEMPLATES = [
             "Can you help me write a professional bio?",
             "Draft a creative social media caption",
             "Help me improve the flow of this essay",
+        ],
+        # Example AI responses demonstrating the BEHAVIORAL role (help write)
+        # These capture what "helping write" looks like behaviorally
+        "example_ai_responses": [
+            "Here's a draft that opens with a hook to capture attention. Notice how the first sentence creates curiosity.",
+            "I've structured this with a clear flow: introduction, main points, and a strong call to action.",
+            "This version uses active voice and concrete details to make the writing more engaging.",
+            "Let me suggest some word choices that will strengthen the emotional impact.",
+            "I've revised the paragraph to improve rhythm and readability. Here's what I changed.",
+            "Here's an alternative approach that might resonate better with your target audience.",
+            "I've crafted this opening to establish your voice while drawing readers in.",
+            "This revision tightens the prose and eliminates redundancy while preserving your message.",
+            "Consider this structure - it builds momentum toward your conclusion.",
+            "I've drafted several options so you can choose the tone that fits best.",
         ]
     },
     {
@@ -113,6 +127,20 @@ PA_TEMPLATES = [
             "What's the intuition behind derivatives in calculus?",
             "Help me understand how encryption works",
             "Explain object-oriented programming concepts",
+        ],
+        # Example AI responses demonstrating the BEHAVIORAL role (teach)
+        # These capture what "teaching" looks like behaviorally
+        "example_ai_responses": [
+            "Let me break this down step by step so it's easier to understand.",
+            "Think of it like this - imagine you have a recipe that calls itself to make smaller versions of the same dish.",
+            "The key insight here is that the concept works by taking complex problems and dividing them into simpler parts.",
+            "Here's an analogy that might help: it's similar to how a library organizes books into sections.",
+            "Let me explain the core principle first, then we'll build up to the more complex aspects.",
+            "A common misconception is that this is complicated - but at its heart, it's actually quite simple.",
+            "The intuition behind this is that each step builds on the previous one.",
+            "To make sure you've got it, let me give you a concrete example you can relate to.",
+            "Now that we've covered the basics, let me show you how this applies in practice.",
+            "Does that make sense so far? Let me know if you'd like me to explain any part differently.",
         ]
     },
     {
@@ -151,6 +179,20 @@ PA_TEMPLATES = [
             "Help me find evidence about the effectiveness of CBT",
             "What are the pros and cons of different database systems?",
             "Synthesize the research on team collaboration tools",
+        ],
+        # Example AI responses demonstrating the BEHAVIORAL role (help research)
+        # These capture what "helping research" looks like behaviorally
+        "example_ai_responses": [
+            "Based on the available evidence, here's what the research shows.",
+            "There are several perspectives on this topic - let me outline the main viewpoints.",
+            "The consensus in the field suggests this, though some studies have found different results.",
+            "Here's a synthesis of the key findings from multiple sources.",
+            "It's important to note that the evidence here is mixed - here's what we know for certain.",
+            "Let me break down the different approaches and their relative strengths.",
+            "The most recent studies indicate a shift in understanding - here's the current state.",
+            "To give you a balanced view, I'll present both the supporting and contradicting evidence.",
+            "There are some limitations to this research that are worth keeping in mind.",
+            "Based on this analysis, here are the key takeaways you can act on.",
         ]
     },
     {
@@ -189,6 +231,20 @@ PA_TEMPLATES = [
             "Create a database schema for an e-commerce site",
             "Write unit tests for this service class",
             "Build a file upload handler with validation",
+        ],
+        # Example AI responses demonstrating the BEHAVIORAL role (help build)
+        # These capture what "helping build" looks like behaviorally
+        "example_ai_responses": [
+            "Here's the implementation - I've added comments to explain the key parts.",
+            "This function handles the main logic. Let me walk you through it.",
+            "I've structured the code to be modular and easy to test.",
+            "Here's a working solution that follows best practices for this framework.",
+            "I've included error handling for the common edge cases.",
+            "This approach uses a well-established pattern that scales well.",
+            "I've added type hints to make the code more maintainable.",
+            "Here's the implementation along with the corresponding tests.",
+            "This code integrates with your existing architecture like this.",
+            "I've optimized this for readability - here's the reasoning behind the structure.",
         ]
     },
     {
@@ -227,6 +283,20 @@ PA_TEMPLATES = [
             "Help me estimate effort for these features",
             "What's a good structure for a 3-month project plan?",
             "Identify risks and contingencies for this project",
+        ],
+        # Example AI responses demonstrating the BEHAVIORAL role (help plan)
+        # These capture what "helping plan" looks like behaviorally
+        "example_ai_responses": [
+            "Let's break this down into manageable phases with clear milestones.",
+            "Here's a prioritized list based on dependencies and impact.",
+            "I've identified the critical path - these tasks need to be sequenced this way.",
+            "Here's a realistic timeline with buffer for unexpected issues.",
+            "These are the key risks to watch for, and here's how to mitigate them.",
+            "I've organized this into sprints with clear deliverables for each.",
+            "Let me help you estimate effort - here's what to consider for each task.",
+            "This structure gives you flexibility while maintaining clear progress markers.",
+            "Here are the dependencies you'll need to track carefully.",
+            "Based on the scope, here's a roadmap that balances ambition with feasibility.",
         ]
     },
     {
@@ -265,6 +335,20 @@ PA_TEMPLATES = [
             "Review my article draft for clarity",
             "What are the gaps in this project plan?",
             "Give feedback on my portfolio website design",
+        ],
+        # Example AI responses demonstrating the BEHAVIORAL role (help review)
+        # These capture what "helping review" looks like behaviorally
+        "example_ai_responses": [
+            "Here's what's working well, and here are the areas that need attention.",
+            "I've identified three main issues, ranked by their impact.",
+            "This section is strong, but consider revising the approach here.",
+            "The overall structure is solid - here are specific improvements for each part.",
+            "I notice a pattern that could cause problems - here's a better approach.",
+            "From a readability standpoint, consider making these changes.",
+            "This meets the requirements, but here's how to make it exceptional.",
+            "Let me highlight the gaps and suggest how to address each one.",
+            "The core logic is sound, but there are edge cases to handle.",
+            "Here's a prioritized list of changes from most to least impactful.",
         ]
     },
     {
@@ -303,6 +387,20 @@ PA_TEMPLATES = [
             "Help me come up with content ideas for my blog",
             "What unique approaches could we try?",
             "Generate alternatives to our current strategy",
+        ],
+        # Example AI responses demonstrating the BEHAVIORAL role (help brainstorm)
+        # These capture what "helping brainstorm" looks like behaviorally
+        "example_ai_responses": [
+            "Here are ten ideas to get us started - some conventional, some wild.",
+            "Let's explore this from multiple angles - what if we tried...",
+            "Building on that concept, what about combining it with...",
+            "Here's an unconventional approach that might spark something.",
+            "What if we flipped the assumption and considered the opposite?",
+            "Let me generate some variations on your core concept.",
+            "Here are options ranging from safe to bold - which direction appeals?",
+            "I'm seeing a theme here - let's push it further in this direction.",
+            "These ideas draw inspiration from different domains.",
+            "Now that we have options, let's evaluate which have the most potential.",
         ]
     },
     {
@@ -341,6 +439,20 @@ PA_TEMPLATES = [
             "Getting a null pointer exception in my Java code",
             "My CSS styles aren't applying to the component",
             "The form validation is failing but I don't see why",
+        ],
+        # Example AI responses demonstrating the BEHAVIORAL role (help debug)
+        # These capture what "helping debug" looks like behaviorally
+        "example_ai_responses": [
+            "I see the issue - the error is occurring because of this specific line.",
+            "Let's trace through the execution to find where things go wrong.",
+            "The root cause appears to be this - here's why and how to fix it.",
+            "I notice the condition here is never being met - here's why.",
+            "This is a common pitfall - the fix is straightforward.",
+            "The error message tells us the problem is with this data type.",
+            "Let me add some diagnostic logging to narrow down the issue.",
+            "The bug is in the logic here - here's a corrected version.",
+            "I've found the issue and tested the fix - here's what to change.",
+            "This should prevent the error, and here's why it was happening.",
         ]
     },
 ]
@@ -431,7 +543,12 @@ def get_templates_by_category(category: str) -> list:
 
 
 def template_to_pa(template: dict) -> dict:
-    """Convert a template to a full PA structure."""
+    """Convert a template to a full PA structure.
+
+    NEW (2025-12-28): Includes example_queries for centroid computation.
+    The example_queries are used by compute_pa_embeddings() to create
+    a centroid embedding that covers the semantic space of aligned queries.
+    """
     return {
         "purpose": [template["purpose"]],
         "scope": template["scope"],
@@ -439,4 +556,6 @@ def template_to_pa(template: dict) -> dict:
         "style": template.get("style", "Adaptive"),
         "template_id": template["id"],
         "template_title": template["title"],
+        # NEW: Include example_queries for centroid embedding computation
+        "example_queries": template.get("example_queries", []),
     }

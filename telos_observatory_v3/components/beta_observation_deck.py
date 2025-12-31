@@ -351,8 +351,12 @@ class BetaObservationDeck:
 
         if hasattr(self, '_fidelity_cache_key') and self._fidelity_cache_key == cache_key:
             if hasattr(self, '_fidelity_cache'):
-                print(f"   RETURNING CACHED: {self._fidelity_cache}")
-                return self._fidelity_cache
+                cached = self._fidelity_cache
+                # ONLY use cache if it contains valid data (not all None)
+                # This prevents stale cache from streaming phase before data is stored
+                if cached[0] is not None or cached[1] is not None:
+                    return cached
+                # Otherwise fall through to re-fetch (data may have been stored since caching)
 
         # NOTE: Removed pa_just_shifted short-circuit (2025-12-26)
         # Previously this returned hardcoded (1.0, 1.0, 1.0, None) when PA was shifted,
@@ -472,9 +476,11 @@ class BetaObservationDeck:
                 primacy_state = (2 * user_fidelity * ai_fidelity) / (user_fidelity + ai_fidelity + epsilon)
 
         # Cache result for this render cycle (avoids 80+ session_state lookups on repeat calls)
+        # Only cache if we found valid data - prevents caching empty results during streaming
         result = (user_fidelity, ai_fidelity, primacy_state, intervention_type)
-        self._fidelity_cache_key = cache_key
-        self._fidelity_cache = result
+        if user_fidelity is not None or ai_fidelity is not None:
+            self._fidelity_cache_key = cache_key
+            self._fidelity_cache = result
         return result
 
     def _handle_direct_pa_shift(self, new_direction: str):

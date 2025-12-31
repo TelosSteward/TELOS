@@ -275,8 +275,12 @@ def compute_pa_embeddings(
 
     Creates the actual mathematical attractors from text representations.
 
+    NEW (2025-12-28): If user_pa contains 'example_queries', computes a centroid
+    embedding that averages the purpose/scope embedding with each example query
+    embedding. This creates a PA that covers the semantic space of aligned queries.
+
     Args:
-        user_pa: User's PA configuration
+        user_pa: User's PA configuration (may include 'example_queries' list)
         ai_pa: AI's derived PA configuration
         embedding_provider: SentenceTransformer or similar embedding provider
 
@@ -291,6 +295,33 @@ def compute_pa_embeddings(
     user_scope_text = ' '.join(user_scope) if isinstance(user_scope, list) else str(user_scope)
     user_pa_text = f"{user_purpose_text} {user_scope_text}"
 
+    # Check for example_queries - if present, compute centroid embedding
+    example_queries = user_pa.get('example_queries', [])
+
+    if example_queries and len(example_queries) > 0:
+        # NEW: Compute centroid embedding from purpose/scope + example queries
+        # This ensures the PA covers the semantic space of aligned queries
+        all_texts = [user_pa_text] + list(example_queries)
+
+        # Embed all texts
+        all_embeddings = []
+        for text in all_texts:
+            emb = np.array(embedding_provider.encode(text))
+            # Normalize each embedding before averaging
+            emb = emb / (np.linalg.norm(emb) + 1e-10)
+            all_embeddings.append(emb)
+
+        # Compute centroid as mean of all embeddings
+        user_embedding = np.mean(all_embeddings, axis=0)
+        # Re-normalize the centroid
+        user_embedding = user_embedding / (np.linalg.norm(user_embedding) + 1e-10)
+
+        logger.info(f"PA centroid computed from {len(all_texts)} texts (1 purpose/scope + {len(example_queries)} examples)")
+    else:
+        # Original behavior: single embedding from purpose/scope
+        user_embedding = np.array(embedding_provider.encode(user_pa_text))
+        user_embedding = user_embedding / (np.linalg.norm(user_embedding) + 1e-10)
+
     # Build AI PA text for embedding
     ai_purpose = ai_pa.get('purpose', [])
     ai_scope = ai_pa.get('scope', [])
@@ -299,12 +330,8 @@ def compute_pa_embeddings(
     ai_scope_text = ' '.join(ai_scope) if isinstance(ai_scope, list) else str(ai_scope)
     ai_pa_text = f"{ai_purpose_text} {ai_scope_text}"
 
-    # Compute embeddings
-    user_embedding = np.array(embedding_provider.encode(user_pa_text))
+    # Compute AI embedding (no example queries for AI PA)
     ai_embedding = np.array(embedding_provider.encode(ai_pa_text))
-
-    # Normalize embeddings (unit vectors for cosine similarity)
-    user_embedding = user_embedding / (np.linalg.norm(user_embedding) + 1e-10)
     ai_embedding = ai_embedding / (np.linalg.norm(ai_embedding) + 1e-10)
 
     # Compute and log rho_PA (correlation between attractors)
