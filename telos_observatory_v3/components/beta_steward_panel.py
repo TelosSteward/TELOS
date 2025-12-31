@@ -645,13 +645,19 @@ class BetaStewardPanel:
         Args:
             new_direction: The user input to pivot to
         """
+        import logging
+        logging.warning(f"🔄 SHIFT FOCUS CALLED with: '{new_direction[:50]}...'")
+        print(f"🔄 SHIFT FOCUS CALLED with: '{new_direction[:50]}...'")
+
         if not new_direction:
+            logging.warning("🔄 SHIFT FOCUS: Empty direction, returning")
             return
 
         try:
             from services.pa_enrichment import PAEnrichmentService
             from mistralai import Mistral
             import os
+            logging.warning("🔄 SHIFT FOCUS: Imports successful")
 
             # Get API key
             try:
@@ -661,13 +667,18 @@ class BetaStewardPanel:
 
             if not api_key:
                 st.error("Cannot shift focus: MISTRAL_API_KEY not configured")
+                logging.warning("🔄 SHIFT FOCUS: No API key!")
                 return
+
+            logging.warning(f"🔄 SHIFT FOCUS: API key found, creating Mistral client")
 
             # Create enrichment service and generate new PA
             client = Mistral(api_key=api_key)
             enrichment_service = PAEnrichmentService(client)
 
+            logging.warning(f"🔄 SHIFT FOCUS: Calling enrich_direction...")
             enriched_pa = enrichment_service.enrich_direction(new_direction)
+            logging.warning(f"🔄 SHIFT FOCUS: enriched_pa = {enriched_pa is not None}")
 
             if enriched_pa:
                 # Build User PA structure

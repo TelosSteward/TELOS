@@ -493,7 +493,12 @@ class BetaObservationDeck:
         Args:
             new_direction: The user input to pivot to
         """
+        import logging
+        logging.warning(f"🔄 DIRECT PA SHIFT CALLED with: '{new_direction[:50] if new_direction else 'EMPTY'}...'")
+        print(f"🔄 DIRECT PA SHIFT CALLED with: '{new_direction[:50] if new_direction else 'EMPTY'}...'")
+
         if not new_direction:
+            logging.warning("🔄 DIRECT PA SHIFT: Empty direction, returning")
             return
 
         try:
@@ -501,6 +506,7 @@ class BetaObservationDeck:
             from mistralai import Mistral
             import os
             import numpy as np
+            logging.warning("🔄 DIRECT PA SHIFT: Imports successful")
 
             # Get API key
             try:
