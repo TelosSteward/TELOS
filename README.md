@@ -169,6 +169,46 @@ For the SB 243 child safety validation:
 
 ---
 
+## For Researchers & Institutions
+
+TELOS is an **open research project** seeking academic collaboration and institutional partnerships.
+
+### How to Collaborate
+
+**Academic Researchers:**
+- Access published datasets via DOIs (Zenodo)
+- Reproduce validation results using [REPRODUCTION_GUIDE.md](docs/REPRODUCTION_GUIDE.md)
+- Extend benchmarks with domain-specific attacks
+- Co-author publications on governance validation
+
+**Institutional Partners:**
+- Joint validation projects (healthcare, education, finance)
+- Domain-specific governance studies
+- Regulatory compliance research (EU AI Act, SB 243)
+- Distributed governance testing at scale
+
+**Contributing Research:**
+- Mathematical contributions require proofs or empirical validation
+- New governance mechanisms require adversarial testing
+- See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
+
+**Contact for Collaboration:**
+- Research partnerships: JB@telos-labs.ai
+- General questions: contact@telos-labs.ai
+- Issues/bugs: [GitHub Issues](https://github.com/TelosSteward/TELOS/issues)
+
+### Open Research Commitment
+
+TELOS operates under explicit commitments:
+- All governance research published openly (arXiv, peer-reviewed venues)
+- All methodologies documented for reproducibility
+- No "too dangerous to publish" exceptions for governance research
+- Privacy-preserving governance telemetry shared with research community
+
+**We are building public governance infrastructure, not proprietary solutions.**
+
+---
+
 ## License
 
 MIT License - See LICENSE file
@@ -181,5 +221,5 @@ See [HARDWARE_REQUIREMENTS.md](HARDWARE_REQUIREMENTS.md) for system specificatio
 
 ---
 
-**Last Updated**: December 22, 2025
+**Last Updated**: December 31, 2025
 
