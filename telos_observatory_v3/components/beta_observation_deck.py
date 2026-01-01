@@ -10,7 +10,7 @@ Ported from DEMO observation deck with:
 
 import streamlit as st
 from config.colors import (
-    GOLD, get_fidelity_color, format_fidelity_percent, get_letter_grade,
+    GOLD, get_fidelity_color, format_fidelity_percent,
     format_fidelity_display, ZONE_LEGEND_HTML, get_zone_name
 )
 from config.steward_pa import STEWARD_PA
@@ -494,8 +494,12 @@ class BetaObservationDeck:
             new_direction: The user input to pivot to
         """
         import logging
+        # DEBUG: Track active_tab before PA shift
+        active_tab_before = st.session_state.get('active_tab', 'NOT_SET')
         logging.warning(f"🔄 DIRECT PA SHIFT CALLED with: '{new_direction[:50] if new_direction else 'EMPTY'}...'")
+        logging.warning(f"🔄 ACTIVE_TAB BEFORE PA SHIFT: '{active_tab_before}'")
         print(f"🔄 DIRECT PA SHIFT CALLED with: '{new_direction[:50] if new_direction else 'EMPTY'}...'")
+        print(f"🔄 ACTIVE_TAB BEFORE PA SHIFT: '{active_tab_before}'")
 
         if not new_direction:
             logging.warning("🔄 DIRECT PA SHIFT: Empty direction, returning")
@@ -580,6 +584,11 @@ class BetaObservationDeck:
                 # This also triggers fidelity display to show 1.00 (perfect alignment)
                 st.session_state.pa_just_shifted = True
 
+                # DEBUG: Track active_tab AFTER PA shift completes
+                active_tab_after = st.session_state.get('active_tab', 'NOT_SET')
+                logging.warning(f"🔄 PA SHIFT COMPLETE - active_tab AFTER: '{active_tab_after}'")
+                print(f"🔄 PA SHIFT COMPLETE - active_tab AFTER: '{active_tab_after}'")
+
             else:
                 st.error("Could not generate new focus. Please try again.")
 
@@ -663,6 +672,14 @@ class BetaObservationDeck:
             st.session_state.cached_st_user_pa_embedding = user_embedding  # Template mode key
             st.session_state.user_pa_embedding = user_embedding  # Legacy key
 
+            # CRITICAL FIX: Update cached_pa_identity to match the new PA
+            # Without this, BetaResponseManager._setup_embedding_provider() will detect a mismatch
+            # and DELETE the embeddings we just cached (see beta_response_manager.py line ~2142)
+            import hashlib
+            new_pa_identity = hashlib.md5(f"{user_purpose_text}|{user_scope_text}".encode()).hexdigest()[:16]
+            st.session_state.cached_pa_identity = new_pa_identity
+            logging.info(f"   🔑 Updated cached_pa_identity to: {new_pa_identity}")
+
             logging.info(f"Dual attractor embeddings computed at focus shift time (MiniLM {len(user_embedding)}d)")
 
         except Exception as e:
@@ -688,10 +705,6 @@ class BetaObservationDeck:
         user_pct = format_fidelity_percent(user_fidelity)
         ai_pct = format_fidelity_percent(ai_fidelity)
         ps_pct = format_fidelity_percent(primacy_state)
-
-        user_grade = get_letter_grade(user_fidelity)
-        ai_grade = get_letter_grade(ai_fidelity)
-        ps_grade = get_letter_grade(primacy_state)
 
         # Determine zone labels for fidelity display (using canonical colors)
         # Uses get_zone_name/get_fidelity_color from colors.py which handles string percentages
@@ -722,26 +735,23 @@ class BetaObservationDeck:
         # Zone legend - helps first-time users understand the system
         st.markdown(ZONE_LEGEND_HTML, unsafe_allow_html=True)
 
-        # Full-width fidelity boxes with percentage + grade display
+        # Full-width fidelity boxes with percentage display
         st.markdown(f"""
 <div style="display: flex; justify-content: center; gap: 10px; margin: 15px auto; max-width: 100%;">
     <div style="background-color: #1a1a1a; border: 2px solid {user_color}; border-radius: 10px; padding: 20px; text-align: center; flex: 1; box-shadow: 0 4px 20px {user_glow};">
         <div style="color: {user_color}; font-size: 16px; font-weight: bold; margin-bottom: 10px;">User Fidelity</div>
         <div style="color: {user_color}; font-size: 38px; font-weight: bold;">{user_pct}</div>
-        <div style="color: {user_color}; font-size: 20px; font-weight: 600; margin-top: 4px;">{user_grade}</div>
         <div style="color: {user_zone_color}; font-size: 13px; margin-top: 8px;">{user_zone}</div>
     </div>
     <div style="background-color: #1a1a1a; border: 2px solid {ai_color}; border-radius: 10px; padding: 20px; text-align: center; flex: 1; box-shadow: 0 4px 20px {ai_glow};">
         <div style="color: {ai_color}; font-size: 16px; font-weight: bold; margin-bottom: 10px;">AI Fidelity</div>
         <div style="color: {ai_color}; font-size: 38px; font-weight: bold;">{ai_pct}</div>
-        <div style="color: {ai_color}; font-size: 20px; font-weight: 600; margin-top: 4px;">{ai_grade}</div>
         <div style="color: {ai_zone_color}; font-size: 13px; margin-top: 8px;">{ai_zone}</div>
     </div>
     <div style="background-color: #1a1a1a; border: 2px solid {ps_color}; border-radius: 10px; padding: 20px; text-align: center; flex: 1; box-shadow: 0 4px 20px {ps_glow};">
         <div style="color: {ps_color}; font-size: 16px; font-weight: bold; margin-bottom: 10px;">Primacy State</div>
         <div style="color: {ps_color}; font-size: 38px; font-weight: bold;">{ps_pct}</div>
-        <div style="color: {ps_color}; font-size: 20px; font-weight: 600; margin-top: 4px;">{ps_grade}</div>
-        <div style="color: {ps_color}; font-size: 13px; margin-top: 8px;">{ps_zone}</div>
+        <div style="color: {ps_zone_color}; font-size: 13px; margin-top: 8px;">{ps_zone}</div>
     </div>
 </div>
 """, unsafe_allow_html=True)

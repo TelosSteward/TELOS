@@ -650,7 +650,7 @@ class BetaResponseManager:
                 'in_basin': True,
                 'ai_pa_fidelity': ai_fidelity,
                 'primacy_state_score': primacy_state,
-                'display_primacy_state': f"{primacy_state * 100:.0f}%" if primacy_state else None,
+                'display_primacy_state': primacy_state,  # Float, not string - UI formats display
                 'primacy_state_condition': 'computed',
                 'pa_correlation': None,
                 'lightweight_path': not ai_response_intervened,
@@ -1260,10 +1260,12 @@ class BetaResponseManager:
                         telos_data['primacy_state_condition'] = ps_metrics.condition
 
                         # Calculate display-normalized Primacy State for UI consistency
-                        # Raw user fidelity needs normalization for SentenceTransformer
+                        # BOTH fidelities need normalization for consistent display
                         model_type = 'sentence_transformer' if self.use_rescaled_fidelity else 'mistral'
                         display_user_fidelity = normalize_fidelity_for_display(displayed_f_user, model_type)
-                        display_primacy_state = (2 * display_user_fidelity * f_ai) / (display_user_fidelity + f_ai + epsilon)
+                        display_ai_fidelity = normalize_fidelity_for_display(f_ai, model_type)
+                        # Primacy State = harmonic mean of DISPLAY-normalized values
+                        display_primacy_state = (2 * display_user_fidelity * display_ai_fidelity) / (display_user_fidelity + display_ai_fidelity + epsilon)
                         telos_data['display_primacy_state'] = display_primacy_state
 
                         # Log Primacy State metrics
