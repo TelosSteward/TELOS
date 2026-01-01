@@ -558,7 +558,7 @@ class BetaResponseManager:
                     # This is the core TELOS promise: Keep AI aligned with user purpose.
                     # When user is on-topic, AI MUST also be on-topic.
                     # ============================================================
-                    MAX_REALIGNMENT_ATTEMPTS = 2
+                    MAX_REALIGNMENT_ATTEMPTS = 4
 
                     if ai_fidelity < DISPLAY_GREEN_THRESHOLD:
                         original_ai_fidelity = ai_fidelity  # FIXED: Save BEFORE updating
