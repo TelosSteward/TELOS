@@ -565,8 +565,26 @@ class BetaResponseManager:
                         logger.warning(f"⚠️ AI RESPONSE DRIFT DETECTED: AI fidelity {ai_fidelity:.3f} < {DISPLAY_GREEN_THRESHOLD:.2f}")
                         logger.info("🔄 Triggering AI response realignment...")
 
+                        # AI RESPONSE CONTEXT INHERITANCE:
+                        # Get the previous turn's AI response if it was high-fidelity
+                        # This provides "retrospective guidance" for realignment
+                        previous_aligned_response = None
+                        if turn_number > 1:
+                            turn_cache = st.session_state.get('turn_cache', {})
+                            prev_turn = turn_cache.get(turn_number - 1, {})
+                            prev_telos = prev_turn.get('telos_analysis', {})
+                            prev_ai_fidelity = prev_telos.get('ai_pa_fidelity', 0.0)
+                            if prev_ai_fidelity >= DISPLAY_GREEN_THRESHOLD:
+                                previous_aligned_response = prev_telos.get('response', None)
+                                if previous_aligned_response:
+                                    logger.info(f"🔄 Found previous aligned AI response (fidelity={prev_ai_fidelity:.3f}) for context inheritance")
+
                         # Retry loop: Attempt realignment up to MAX_REALIGNMENT_ATTEMPTS times
+                        # IMPORTANT: Try ALL attempts - don't break early on non-improvement
+                        # Each attempt uses context inheritance which may succeed where previous failed
                         current_response = native_response
+                        best_response = native_response
+                        best_fidelity = ai_fidelity
                         attempt = 0
 
                         while ai_fidelity < DISPLAY_GREEN_THRESHOLD and attempt < MAX_REALIGNMENT_ATTEMPTS:
@@ -578,7 +596,8 @@ class BetaResponseManager:
                                 user_input=user_input,
                                 drifted_response=current_response,
                                 ai_fidelity=ai_fidelity,
-                                user_fidelity=user_fidelity
+                                user_fidelity=user_fidelity,
+                                previous_aligned_response=previous_aligned_response
                             )
 
                             if aligned_response:
@@ -590,18 +609,36 @@ class BetaResponseManager:
 
                                 logger.info(f"🔄 Realigned AI Fidelity: {ai_fidelity:.3f} → {new_ai_fidelity:.3f} (attempt {attempt})")
 
-                                # Use the new response if it's better
+                                # Track the BEST response seen across all attempts
+                                if new_ai_fidelity > best_fidelity:
+                                    best_response = aligned_response
+                                    best_fidelity = new_ai_fidelity
+                                    logger.info(f"✨ New best fidelity: {best_fidelity:.3f} (attempt {attempt})")
+
+                                # Use the new response if it's better than current
                                 if new_ai_fidelity > ai_fidelity:
                                     current_response = aligned_response
                                     ai_fidelity = new_ai_fidelity
                                     final_response = aligned_response
                                     ai_response_intervened = True
+
+                                    # EXIT IMMEDIATELY once we hit green zone - no need for more attempts
+                                    if ai_fidelity >= DISPLAY_GREEN_THRESHOLD:
+                                        logger.info(f"✅ Hit green zone ({ai_fidelity:.3f} >= {DISPLAY_GREEN_THRESHOLD}) on attempt {attempt} - exiting realignment loop")
+                                        break
                                 else:
-                                    logger.warning(f"⚠️ Realignment didn't improve fidelity ({new_ai_fidelity:.3f} <= {ai_fidelity:.3f})")
-                                    break  # Stop if not improving
+                                    logger.warning(f"⚠️ Attempt {attempt} didn't improve fidelity ({new_ai_fidelity:.3f} <= {ai_fidelity:.3f}), continuing...")
+                                    # DON'T BREAK - keep trying! Context inheritance may help subsequent attempts
                             else:
-                                logger.warning(f"⚠️ AI realignment attempt {attempt} failed to generate response")
-                                break
+                                logger.warning(f"⚠️ AI realignment attempt {attempt} failed to generate response, continuing...")
+                                # DON'T BREAK - keep trying other attempts
+
+                        # After all attempts, use the best response we found
+                        if best_fidelity > original_ai_fidelity:
+                            final_response = best_response
+                            ai_fidelity = best_fidelity
+                            ai_response_intervened = True
+                            logger.info(f"📊 Using best response from attempts: fidelity {best_fidelity:.3f}")
 
                         # Record realignment metadata
                         if ai_response_intervened:
@@ -1398,7 +1435,8 @@ RESPONSE GUIDELINES:
         user_input: str,
         drifted_response: str,
         ai_fidelity: float,
-        user_fidelity: float
+        user_fidelity: float,
+        previous_aligned_response: Optional[str] = None
     ) -> Optional[str]:
         """
         Regenerate AI response when the native response drifted from user's purpose.
@@ -1410,11 +1448,18 @@ RESPONSE GUIDELINES:
         The regeneration uses explicit alignment context to guide the LLM
         back toward the user's stated purpose.
 
+        AI RESPONSE CONTEXT INHERITANCE:
+        If a previous turn's AI response was high-fidelity, we include it as
+        "retrospective guidance" to help the LLM understand what aligned
+        responses look like. This creates a cascading alignment effect where
+        good responses help guide future good responses.
+
         Args:
             user_input: User's message
             drifted_response: The native response that was off-topic
             ai_fidelity: The fidelity score of the drifted response
             user_fidelity: The user's fidelity score (for context)
+            previous_aligned_response: Optional high-fidelity AI response from previous turn
 
         Returns:
             Aligned response string, or None if regeneration fails
@@ -1433,6 +1478,23 @@ RESPONSE GUIDELINES:
 
             # Build alignment-focused system prompt
             # This explicitly tells the LLM about the drift and how to correct it
+
+            # AI RESPONSE CONTEXT INHERITANCE:
+            # If we have a previous aligned response, include it as retrospective guidance
+            # This creates a cascading alignment effect
+            retrospective_context = ""
+            if previous_aligned_response:
+                # Truncate if too long (use first 500 chars as representative sample)
+                sample = previous_aligned_response[:500] + "..." if len(previous_aligned_response) > 500 else previous_aligned_response
+                retrospective_context = f"""
+RETROSPECTIVE GUIDANCE:
+Your previous aligned response demonstrated good purpose-alignment. Use it as a model:
+---
+{sample}
+---
+Maintain this same focused, purpose-driven approach in your new response."""
+                logger.info(f"🔄 AI CONTEXT INHERITANCE: Using previous aligned response ({len(previous_aligned_response)} chars) as guidance")
+
             alignment_system_prompt = f"""You are a helpful AI assistant. The user has a SPECIFIC PURPOSE for this conversation that you MUST honor.
 
 USER'S PURPOSE: {purpose}
@@ -1449,6 +1511,7 @@ but your response went off-topic. You need to generate a response that:
 
 The user's fidelity to their purpose is {user_fidelity*100:.0f}% - they are staying on track.
 Your response should match their focus.
+{retrospective_context}
 
 RESPONSE GUIDELINES:
 - Be conversational and natural
@@ -1999,7 +2062,14 @@ CRITICAL INSTRUCTIONS:
                     'drift_detected': telos_data.get('drift_detected', False),
                     'test_type': data.get('test_type'),
                     'response_source': data.get('shown_source'),
-                    'mode': 'beta'
+                    'mode': 'beta',
+                    # New governance metrics (AI Context Inheritance & Realignment)
+                    'user_pa_fidelity': telos_data.get('user_pa_fidelity'),
+                    'ai_pa_fidelity': telos_data.get('ai_pa_fidelity'),
+                    'primacy_state_score': telos_data.get('primacy_state_score'),
+                    'raw_similarity': telos_data.get('raw_similarity'),
+                    'realignment_attempts': telos_data.get('realignment_attempts', 0),
+                    'ai_response_intervened': telos_data.get('ai_response_intervened', False)
                 }
 
                 self.backend.transmit_delta(delta_data)

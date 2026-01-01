@@ -86,6 +86,12 @@ class BackendService:
                 - intervention_reason: String (brief, NO content quotes)
                 - mode: String ('demo', 'beta', 'open')
                 - model_used: String
+                - user_pa_fidelity: Float (user input fidelity to PA)
+                - ai_pa_fidelity: Float (AI response fidelity to PA)
+                - primacy_state_score: Float (combined PS score)
+                - raw_similarity: Float (raw cosine before normalization)
+                - realignment_attempts: Integer (number of realignment attempts)
+                - ai_response_intervened: Boolean (whether AI was realigned)
 
         Returns:
             bool: True if transmission successful, False otherwise
