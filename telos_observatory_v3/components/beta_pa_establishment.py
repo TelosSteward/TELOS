@@ -551,6 +551,10 @@ class BetaPAEstablishment:
                 st.session_state.ai_pa = ai_pa
                 st.session_state.beta_pa_established = True
 
+                # CRITICAL: Sync primacy_attractor for UI display
+                # beta_observation_deck.py line 810 reads from this key
+                st.session_state.primacy_attractor = user_pa
+
                 # Create BETA session in backend storage
                 if self.backend:
                     try:
