@@ -551,20 +551,20 @@ class BetaResponseManager:
                     # ============================================================
                     # AI RESPONSE DRIFT INTERVENTION (Robust Safeguard v2)
                     # ============================================================
-                    # If user is GREEN but AI response is below GREEN threshold,
-                    # the AI has drifted from user's purpose. Regenerate with
-                    # alignment context to bring AI back on track.
+                    # CORRECT LOGIC (2025-01-02):
+                    # - Realign ONLY when user is GREEN (>=70%) AND AI drifted below GREEN (<70%)
+                    # - Do NOT realign when user is below 70% (intervention system handles that)
                     #
                     # This is the core TELOS promise: Keep AI aligned with user purpose.
                     # When user is on-topic, AI MUST also be on-topic.
                     # ============================================================
-                    # PERFORMANCE FIX (2025-01-02): Disable AI realignment retries
-                    # The retry loop was causing up to 4 extra LLM calls per turn (25-75s latency)
-                    # GREEN zone should have 1 LLM call maximum for acceptable response times
-                    # Re-enable this later with async/streaming optimization
-                    MAX_REALIGNMENT_ATTEMPTS = 0  # DISABLED - was causing 1+ minute response times
+                    # PERFORMANCE: Limit retries to avoid excessive latency
+                    # 2 retries max = up to 3 LLM calls total (1 native + 2 realignment)
+                    MAX_REALIGNMENT_ATTEMPTS = 2
 
-                    if ai_fidelity < DISPLAY_GREEN_THRESHOLD and MAX_REALIGNMENT_ATTEMPTS > 0:
+                    # CRITICAL: Only realign when USER is GREEN but AI drifted
+                    # If user is NOT GREEN, the intervention system handles it - no realignment needed
+                    if user_fidelity >= DISPLAY_GREEN_THRESHOLD and ai_fidelity < DISPLAY_GREEN_THRESHOLD and MAX_REALIGNMENT_ATTEMPTS > 0:
                         original_ai_fidelity = ai_fidelity  # FIXED: Save BEFORE updating
                         logger.warning(f"⚠️ AI RESPONSE DRIFT DETECTED: AI fidelity {ai_fidelity:.3f} < {DISPLAY_GREEN_THRESHOLD:.2f}")
                         logger.info("🔄 Triggering AI response realignment...")
