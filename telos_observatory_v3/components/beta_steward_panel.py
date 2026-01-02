@@ -550,40 +550,40 @@ class BetaStewardPanel:
                 lines.append("If your focus has genuinely shifted, you can update it anytime.")
 
         elif spec.strength < 0.75:
-            # MODERATE - clear drift
-            lines.append("I noticed your question drifted from your stated goal.")
+            # MODERATE - clear drift (conversational, not robotic)
+            lines.append("Hmm, that's drifting a bit from what we set out to do.")
             lines.append("")
-            lines.append(f"**What you asked:** \"{short_input}\"")
+            lines.append(f"**You asked:** \"{short_input}\"")
             lines.append("")
-            lines.append(f"**What this session is about:** {session_topic}")
+            lines.append(f"**But you said you wanted to focus on:** {session_topic}")
             lines.append("")
-            lines.append("These don't quite match up, so I guided things back on track.")
+            lines.append("I nudged things back toward your goal, but if your interests have shifted, no worries.")
             lines.append("")
-            lines.append("**Want to explore this instead?** Click **Shift Focus to This** and I'll update the session.")
+            lines.append("Just click **Shift Focus to This** if you'd rather explore this direction.")
 
         elif spec.strength < 0.85:
-            # FIRM - significant drift
-            lines.append("That's a notable departure from your stated purpose.")
+            # FIRM - significant drift (conversational, not robotic)
+            lines.append("That's pretty far from what you wanted to work on.")
             lines.append("")
-            lines.append(f"**What you asked:** \"{short_input}\"")
+            lines.append(f"**Your question:** \"{short_input}\"")
             lines.append("")
-            lines.append(f"**Your stated goal:** {session_topic}")
+            lines.append(f"**What you said you wanted:** {session_topic}")
             lines.append("")
-            lines.append("I stepped in to redirect us back. If your priorities have genuinely changed, that's fine.")
+            lines.append("I brought us back on track, but if you've changed your mind about what you want to explore, that's completely okay.")
             lines.append("")
-            lines.append("**Ready to switch?** Click **Shift Focus to This** below.")
+            lines.append("Click **Shift Focus to This** to go with your new direction.")
 
         else:
-            # STRONG - far from purpose
-            lines.append("This is far from what you said you wanted to do.")
+            # STRONG - far from purpose (more conversational, less robotic)
+            lines.append("Okay, that's a pretty big departure from what we set up.")
             lines.append("")
-            lines.append(f"**What you asked:** \"{short_input}\"")
+            lines.append(f"**Your question:** \"{short_input}\"")
             lines.append("")
-            lines.append(f"**Your stated purpose:** {session_topic}")
+            lines.append(f"**What you said you wanted to work on:** {session_topic}")
             lines.append("")
-            lines.append("I intervened because these are quite far apart.")
+            lines.append("These two things don't really connect, so I stepped in to check.")
             lines.append("")
-            lines.append("**Want to switch topics?** No problem - click **Shift Focus to This** and I'll update the session to match your new direction.")
+            lines.append("If you'd genuinely rather explore this new direction, that's totally fine! Just click **Shift Focus to This** and we'll go with it.")
 
         return "\n".join(lines)
 
