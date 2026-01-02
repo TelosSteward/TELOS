@@ -56,7 +56,7 @@ class BetaStewardLLM:
             )
 
         self.client = Mistral(api_key=self.api_key)
-        self.model = "mistral-large-latest"
+        self.model = "mistral-small-latest"  # PERFORMANCE: small is 5-15s vs 30-60s for large
 
         # RAG components - initialized lazily on first use
         self._corpus_loader = None

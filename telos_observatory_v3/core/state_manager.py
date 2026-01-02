@@ -561,7 +561,7 @@ class StateManager:
 
                     mistral_client = MistralClient(
                         api_key=mistral_api_key,
-                        model="mistral-large-latest"
+                        model="mistral-small-latest"  # PERFORMANCE: small is 5-15s vs 30-60s for large
                     )
 
                     self._telos_steward = UnifiedGovernanceSteward(
@@ -1202,7 +1202,7 @@ Be informative, conversational, and adapt to what the user wants to discuss."""
 
                 mistral_client = MistralClient(
                     api_key=mistral_api_key,
-                    model="mistral-large-latest"
+                    model="mistral-small-latest"  # PERFORMANCE: small is 5-15s vs 30-60s for large
                 )
 
                 self._telos_steward = UnifiedGovernanceSteward(

@@ -26,7 +26,7 @@ class StewardLLM:
             )
 
         self.client = Mistral(api_key=self.api_key)
-        self.model = "mistral-large-latest"  # Best Mistral model for complex tasks
+        self.model = "mistral-small-latest"  # PERFORMANCE: small is 5-15s vs 30-60s for large
 
     def _get_system_prompt(self, context: Optional[dict] = None) -> str:
         """Generate system prompt with TELOS framework knowledge and current context.
