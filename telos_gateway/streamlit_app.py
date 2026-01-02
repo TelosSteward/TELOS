@@ -12,66 +12,125 @@ Usage:
 import streamlit as st
 import requests
 import json
-from typing import Optional, Dict, Any
+import random
+from typing import Optional, Dict, Any, List
 
 # =============================================================================
 # Agent Purpose Templates (Pre-configured PAs for Gateway)
 # =============================================================================
 
+# Agent templates sorted alphabetically with domain mapping (no emojis for professional appearance)
 AGENT_TEMPLATES = {
-    "custom": {
-        "icon": "✏️",
-        "title": "Custom Agent",
-        "purpose": "",
-        "description": "Write your own agent purpose statement",
-    },
-    "financial_advisor": {
-        "icon": "💰",
-        "title": "Financial Advisor",
-        "purpose": "You are a financial assistant specialized in investment analysis, portfolio management, and market research for stocks, bonds, and ETFs. You help users make informed investment decisions by analyzing market trends, evaluating risk profiles, and providing data-driven recommendations aligned with their financial goals.",
-        "description": "Investment analysis, portfolio management, market research",
-    },
     "code_assistant": {
-        "icon": "💻",
         "title": "Code Assistant",
         "purpose": "You are a software development assistant specialized in writing clean, maintainable code, debugging issues, and implementing best practices. You help developers build reliable software by providing code reviews, architectural guidance, and implementation support across multiple programming languages and frameworks.",
         "description": "Code generation, debugging, best practices",
-    },
-    "research_analyst": {
-        "icon": "🔬",
-        "title": "Research Analyst",
-        "purpose": "You are a research assistant specialized in gathering, analyzing, and synthesizing information from multiple sources. You help users conduct thorough investigations by evaluating evidence quality, identifying patterns, and presenting balanced findings with clear citations and methodology.",
-        "description": "Information gathering, analysis, synthesis",
-    },
-    "customer_support": {
-        "icon": "🎧",
-        "title": "Customer Support",
-        "purpose": "You are a customer support agent specialized in resolving user issues, answering product questions, and ensuring customer satisfaction. You help users by troubleshooting problems, explaining features, processing requests, and escalating complex issues when needed.",
-        "description": "Issue resolution, product help, user assistance",
+        "domain": "technology",
+        "example_queries": [
+            "Help me write a Python function to validate email addresses.",
+            "How do I implement a REST API endpoint with authentication?",
+            "What's the best way to handle errors in async JavaScript?",
+            "Can you review this function and suggest improvements?",
+            "How should I structure a React component for reusability?",
+        ],
     },
     "content_writer": {
-        "icon": "✍️",
         "title": "Content Writer",
         "purpose": "You are a content creation assistant specialized in writing engaging, well-structured content for various formats including blogs, emails, social media, and documentation. You help users communicate effectively by crafting clear messaging, maintaining consistent voice, and optimizing content for target audiences.",
         "description": "Blogs, emails, social media, documentation",
+        "domain": "general",
+        "example_queries": [
+            "Write a compelling introduction for a blog post about AI governance.",
+            "Help me craft a professional email to follow up with a client.",
+            "Create a social media post announcing our new product launch.",
+            "How should I structure this technical documentation?",
+            "Write a headline that will grab readers' attention.",
+        ],
+    },
+    "customer_support": {
+        "title": "Customer Support",
+        "purpose": "You are a customer support agent specialized in resolving user issues, answering product questions, and ensuring customer satisfaction. You help users by troubleshooting problems, explaining features, processing requests, and escalating complex issues when needed.",
+        "description": "Issue resolution, product help, user assistance",
+        "domain": "general",
+        "example_queries": [
+            "I'm having trouble logging into my account. Can you help?",
+            "How do I reset my password?",
+            "The app keeps crashing when I try to upload files.",
+            "Can you explain how the premium features work?",
+            "I was charged twice for my subscription. What should I do?",
+        ],
+    },
+    "custom": {
+        "title": "Custom Agent",
+        "purpose": "",
+        "description": "Write your own agent purpose statement",
+        "domain": "general",
+        "example_queries": ["Ask your custom agent a question..."],
     },
     "data_analyst": {
-        "icon": "📊",
         "title": "Data Analyst",
         "purpose": "You are a data analysis assistant specialized in interpreting datasets, creating visualizations, and extracting actionable insights. You help users understand their data by performing statistical analysis, identifying trends, and presenting findings in clear, understandable formats.",
         "description": "Data interpretation, visualization, insights",
+        "domain": "technology",
+        "example_queries": [
+            "How do I analyze customer churn patterns in my sales data?",
+            "What statistical test should I use to compare these two groups?",
+            "Help me identify trends in this quarterly revenue data.",
+            "What's the best way to visualize time series data?",
+            "How do I calculate correlation between these variables?",
+        ],
     },
-    "legal_assistant": {
-        "icon": "⚖️",
-        "title": "Legal Assistant",
-        "purpose": "You are a legal research assistant specialized in reviewing documents, summarizing legal concepts, and identifying relevant precedents. You help users navigate legal information by explaining terminology, analyzing contracts, and providing research support while always recommending professional legal counsel for specific advice.",
-        "description": "Document review, legal research, contract analysis",
+    "financial_advisor": {
+        "title": "Financial Advisor",
+        "purpose": "You are a financial assistant specialized in investment analysis, portfolio management, and market research for stocks, bonds, and ETFs. You help users make informed investment decisions by analyzing market trends, evaluating risk profiles, and providing data-driven recommendations aligned with their financial goals.",
+        "description": "Investment analysis, portfolio management, market research",
+        "domain": "finance",
+        "example_queries": [
+            "What is the best strategy for diversifying my portfolio?",
+            "Should I invest in index funds or individual stocks?",
+            "How do I evaluate the risk profile of a bond investment?",
+            "What market indicators should I watch for recession signals?",
+            "Can you explain dollar-cost averaging and its benefits?",
+        ],
     },
     "healthcare_assistant": {
-        "icon": "🏥",
         "title": "Healthcare Assistant",
         "purpose": "You are a healthcare information assistant specialized in explaining medical concepts, medication information, and wellness guidance. You help users understand health topics by providing evidence-based information while always recommending consultation with qualified healthcare providers for diagnosis and treatment.",
         "description": "Health information, wellness guidance, medical concepts",
+        "domain": "healthcare",
+        "example_queries": [
+            "What are the common side effects of ibuprofen?",
+            "Can you explain how blood pressure is measured?",
+            "What lifestyle changes can help manage cholesterol?",
+            "How does the immune system fight infections?",
+            "What are the symptoms of vitamin D deficiency?",
+        ],
+    },
+    "legal_assistant": {
+        "title": "Legal Assistant",
+        "purpose": "You are a legal research assistant specialized in reviewing documents, summarizing legal concepts, and identifying relevant precedents. You help users navigate legal information by explaining terminology, analyzing contracts, and providing research support while always recommending professional legal counsel for specific advice.",
+        "description": "Document review, legal research, contract analysis",
+        "domain": "legal",
+        "example_queries": [
+            "Can you explain what an indemnification clause means in a contract?",
+            "What are the key elements of a non-disclosure agreement?",
+            "Help me understand the difference between liability and negligence.",
+            "What should I look for when reviewing a lease agreement?",
+            "Explain the concept of intellectual property rights.",
+        ],
+    },
+    "research_analyst": {
+        "title": "Research Analyst",
+        "purpose": "You are a research assistant specialized in gathering, analyzing, and synthesizing information from multiple sources. You help users conduct thorough investigations by evaluating evidence quality, identifying patterns, and presenting balanced findings with clear citations and methodology.",
+        "description": "Information gathering, analysis, synthesis",
+        "domain": "education",
+        "example_queries": [
+            "What are the key findings on renewable energy adoption in 2024?",
+            "Summarize the latest research on remote work productivity.",
+            "What are the competing theories on climate change mitigation?",
+            "Help me analyze the pros and cons of electric vehicles.",
+            "What does current research say about AI safety?",
+        ],
     },
 }
 
@@ -128,18 +187,49 @@ def get_decision_description(decision: str) -> str:
     return descriptions.get(decision.lower(), 'Unknown decision')
 
 
+def map_fidelity_to_display(raw_fidelity: float) -> tuple:
+    """
+    Map raw fidelity (0-1 scale) to intuitive display percentage.
+
+    Raw thresholds → Display percentages:
+    - EXECUTE (≥0.45) → 90-100%
+    - CLARIFY (0.35-0.44) → 80-89%
+    - SUGGEST (0.25-0.34) → 70-79%
+    - INERT/ESCALATE (<0.25) → Below 70%
+
+    Returns: (display_percentage, grade_label)
+    """
+    if raw_fidelity >= 0.45:
+        # Map 0.45-1.0 to 90-100
+        display_pct = 90 + int((raw_fidelity - 0.45) / 0.55 * 10)
+        return min(display_pct, 100), "A"
+    elif raw_fidelity >= 0.35:
+        # Map 0.35-0.44 to 80-89
+        display_pct = 80 + int((raw_fidelity - 0.35) / 0.10 * 9)
+        return min(display_pct, 89), "B"
+    elif raw_fidelity >= 0.25:
+        # Map 0.25-0.34 to 70-79
+        display_pct = 70 + int((raw_fidelity - 0.25) / 0.10 * 9)
+        return min(display_pct, 79), "C"
+    else:
+        # Map 0-0.24 to 0-69
+        display_pct = int(raw_fidelity / 0.25 * 69)
+        return max(display_pct, 0), "F"
+
+
 # =============================================================================
 # Global CSS (matching Observatory design system)
 # =============================================================================
 
 GLOBAL_CSS = f"""
 <style>
-/* Base page styling */
+/* Base page styling - glassmorphism background like Observatory */
 .stApp {{
     background:
-        radial-gradient(ellipse 80% 50% at 20% 40%, rgba(180, 140, 20, 0.15), transparent 50%),
-        radial-gradient(ellipse 60% 40% at 70% 60%, rgba(160, 120, 20, 0.12), transparent 45%),
-        radial-gradient(ellipse 50% 35% at 85% 80%, rgba(140, 100, 20, 0.10), transparent 40%),
+        radial-gradient(ellipse 120% 80% at 50% 0%, rgba(244, 208, 63, 0.12), transparent 50%),
+        radial-gradient(ellipse 100% 60% at 20% 30%, rgba(244, 208, 63, 0.08), transparent 45%),
+        radial-gradient(ellipse 80% 50% at 80% 70%, rgba(244, 208, 63, 0.06), transparent 40%),
+        radial-gradient(ellipse 60% 40% at 10% 90%, rgba(244, 208, 63, 0.05), transparent 35%),
         {BG_BASE};
     color: {TEXT_PRIMARY};
 }}
@@ -149,24 +239,28 @@ GLOBAL_CSS = f"""
 footer {{visibility: hidden;}}
 header {{visibility: hidden;}}
 
-/* Main container - fixed max-width, shrinks freely */
+/* Force centering - override Streamlit wide layout */
+.main {{
+    display: flex !important;
+    justify-content: center !important;
+    overflow-x: hidden !important;
+}}
+
+/* Main container - centered with max-width */
 .main .block-container {{
-    max-width: 900px !important;
-    min-width: 0 !important;
+    max-width: 800px !important;
     width: 100% !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    padding: 20px 40px !important;
-    box-sizing: border-box !important;
+    padding: 20px 30px !important;
+    margin: 0 auto !important;
+}}
+
+/* Override any Streamlit horizontal rules */
+[data-testid="stHorizontalBlock"] {{
+    justify-content: center !important;
 }}
 
 .stApp > header {{
     background: transparent !important;
-}}
-
-/* Prevent horizontal overflow */
-.main {{
-    overflow-x: hidden !important;
 }}
 
 /* Ensure elements respect container width */
@@ -300,9 +394,9 @@ def glassmorphic_card(content: str, border_color: str = GOLD) -> str:
 
 
 def decision_badge(decision: str, fidelity: float) -> str:
-    """Create a decision badge with color coding."""
+    """Create a decision badge with color coding and intuitive percentage."""
     color = get_decision_color(decision)
-    pct = f"{int(fidelity * 100)}%"
+    display_pct, grade = map_fidelity_to_display(fidelity)
     return f"""
     <div style="display: flex; align-items: center; gap: 15px; margin: 10px 0;">
         <span style="
@@ -321,7 +415,7 @@ def decision_badge(decision: str, fidelity: float) -> str:
             color: {TEXT_SECONDARY};
             font-size: 14px;
         ">
-            Fidelity: <span style="color: {color}; font-weight: 600;">{pct}</span>
+            Alignment: <span style="color: {color}; font-weight: 600;">{display_pct}%</span>
         </span>
     </div>
     """
@@ -484,32 +578,31 @@ def render_governance_test():
     """
     st.markdown(card_html, unsafe_allow_html=True)
 
-    # Agent template selector with dynamic prompt update
+    # Agent template selector with dynamic prompt update (alphabetically sorted, no emojis)
     template_options = {
-        k: f"{v['icon']} {v['title']}" for k, v in AGENT_TEMPLATES.items()
+        k: v['title'] for k, v in AGENT_TEMPLATES.items()
     }
 
-    # Initialize session state for prompt if not exists
-    if "current_system_prompt" not in st.session_state:
-        st.session_state.current_system_prompt = AGENT_TEMPLATES["financial_advisor"]["purpose"]
-    if "last_selected_template" not in st.session_state:
-        st.session_state.last_selected_template = "financial_advisor"
+    # Initialize session state
+    if "selected_agent" not in st.session_state:
+        st.session_state.selected_agent = "financial_advisor"
+
+    def on_template_change():
+        """Callback when template selection changes."""
+        new_template = st.session_state.agent_template_selector
+        st.session_state.selected_agent = new_template
 
     selected_template = st.selectbox(
         "Select Agent Type",
         options=list(template_options.keys()),
         format_func=lambda x: template_options[x],
-        key="agent_template",
-        index=1,  # Default to financial_advisor
+        key="agent_template_selector",
+        index=list(template_options.keys()).index(st.session_state.selected_agent),
+        on_change=on_template_change,
     )
 
-    # Update system prompt when template changes
+    # Get current template data
     template = AGENT_TEMPLATES[selected_template]
-    if selected_template != st.session_state.last_selected_template:
-        if selected_template != "custom":
-            st.session_state.current_system_prompt = template["purpose"]
-        st.session_state.last_selected_template = selected_template
-        st.rerun()
 
     # Show template description
     if selected_template != "custom":
@@ -522,22 +615,27 @@ def render_governance_test():
     col1, col2 = st.columns([2, 1])
 
     with col1:
-        # Text area with session state binding
+        # System prompt - directly uses template purpose (taller box)
         system_prompt = st.text_area(
             "System Prompt (Agent Purpose)",
-            value=st.session_state.current_system_prompt,
-            height=120,
-            key="system_prompt_input",
+            value=template["purpose"],
+            height=180,
+            key=f"system_prompt_{selected_template}",  # Unique key per template
             placeholder="Define the agent's purpose and capabilities..." if selected_template == "custom" else None,
         )
-        # Update session state when user edits
-        st.session_state.current_system_prompt = system_prompt
+
+        # User message - randomly selected from example_queries
+        # Use session state to store the random selection per template
+        query_key = f"random_query_{selected_template}"
+        if query_key not in st.session_state:
+            queries = template.get("example_queries", [""])
+            st.session_state[query_key] = random.choice(queries)
 
         user_message = st.text_area(
             "User Message",
-            value="What is the best strategy for diversifying my portfolio?",
+            value=st.session_state[query_key],
             height=80,
-            key="user_message",
+            key=f"user_message_{selected_template}",  # Unique key per template
         )
 
     with col2:
@@ -665,22 +763,79 @@ def render_agent_registration():
     """
     st.markdown(card_html, unsafe_allow_html=True)
 
-    col1, col2 = st.columns(2)
+    # Agent template selector (same as governance test, no emojis)
+    template_options = {
+        k: v['title'] for k, v in AGENT_TEMPLATES.items()
+    }
 
-    with col1:
-        name = st.text_input("Agent Name", placeholder="My Financial Assistant")
-        domain = st.selectbox("Domain", ["finance", "healthcare", "education", "general"])
+    # Initialize session state for registration
+    if "reg_selected_agent" not in st.session_state:
+        st.session_state.reg_selected_agent = "financial_advisor"
 
-    with col2:
-        risk_level = st.selectbox("Risk Level", ["low", "medium", "high", "critical"])
+    def on_reg_template_change():
+        """Callback when registration template changes."""
+        st.session_state.reg_selected_agent = st.session_state.reg_template_selector
 
-    purpose = st.text_area(
-        "Purpose Statement (Primacy Attractor)",
-        placeholder="I am a financial assistant designed to help users with...",
-        height=100,
+    selected_template = st.selectbox(
+        "Agent Type Template",
+        options=list(template_options.keys()),
+        format_func=lambda x: template_options[x],
+        key="reg_template_selector",
+        index=list(template_options.keys()).index(st.session_state.reg_selected_agent),
+        on_change=on_reg_template_change,
     )
 
-    if st.button("Register Agent", use_container_width=True):
+    template = AGENT_TEMPLATES[selected_template]
+
+    # Show template description
+    if selected_template != "custom":
+        st.markdown(f"""
+        <p style="color: {TEXT_MUTED}; font-size: 13px; margin: -10px 0 15px 0;">
+            {template['description']}
+        </p>
+        """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+
+    # Domain options list
+    domain_options = ["finance", "healthcare", "education", "legal", "technology", "general"]
+
+    with col1:
+        # Auto-generate agent name from template
+        default_name = template['title'] if selected_template != "custom" else ""
+        name = st.text_input(
+            "Agent Name",
+            value=default_name,
+            key=f"reg_name_{selected_template}",
+            placeholder="My Custom Agent" if selected_template == "custom" else None,
+        )
+        # Auto-select domain based on template
+        template_domain = template.get('domain', 'general')
+        domain_index = domain_options.index(template_domain) if template_domain in domain_options else 5
+        domain = st.selectbox(
+            "Domain",
+            domain_options,
+            index=domain_index,
+            key=f"reg_domain_{selected_template}",
+        )
+
+    with col2:
+        risk_level = st.selectbox(
+            "Risk Level",
+            ["low", "medium", "high", "critical"],
+            key=f"reg_risk_{selected_template}",
+        )
+
+    # Purpose statement auto-filled from template
+    purpose = st.text_area(
+        "Purpose Statement (Primacy Attractor)",
+        value=template["purpose"],
+        height=150,
+        key=f"reg_purpose_{selected_template}",
+        placeholder="Define the agent's purpose and constraints..." if selected_template == "custom" else None,
+    )
+
+    if st.button("Register Agent", use_container_width=True, key="reg_submit"):
         if not name or not purpose:
             st.error("Please provide agent name and purpose")
             return
@@ -703,7 +858,7 @@ def render_agent_registration():
 
 
 def render_decision_legend():
-    """Render the governance decision legend."""
+    """Render the governance decision legend with intuitive percentages."""
     st.markdown(f"""
     <div style="
         display: flex;
@@ -716,19 +871,19 @@ def render_decision_legend():
         margin: 20px 0;
     ">
         <span style="color: {STATUS_EXECUTE}; font-size: 13px;">
-            <strong>EXECUTE</strong> (>=0.45)
+            <strong>EXECUTE</strong> 90-100%
         </span>
         <span style="color: {STATUS_CLARIFY}; font-size: 13px;">
-            <strong>CLARIFY</strong> (0.35-0.44)
+            <strong>CLARIFY</strong> 80-89%
         </span>
         <span style="color: {STATUS_SUGGEST}; font-size: 13px;">
-            <strong>SUGGEST</strong> (0.25-0.34)
+            <strong>SUGGEST</strong> 70-79%
         </span>
         <span style="color: {STATUS_INERT}; font-size: 13px;">
-            <strong>INERT</strong> (&lt;0.25)
+            <strong>INERT</strong> &lt;70%
         </span>
         <span style="color: {STATUS_ESCALATE}; font-size: 13px;">
-            <strong>ESCALATE</strong> (high-risk)
+            <strong>ESCALATE</strong> high-risk
         </span>
     </div>
     """, unsafe_allow_html=True)
@@ -752,13 +907,7 @@ def main():
     # Render header
     render_header()
 
-    # Status bar
-    render_status_bar()
-
-    # Decision legend
-    render_decision_legend()
-
-    # Tabs for different sections
+    # Tabs for different sections (status bar removed - redundant)
     tab1, tab2 = st.tabs(["Governance Test", "Agent Registration"])
 
     with tab1:
@@ -767,11 +916,15 @@ def main():
     with tab2:
         render_agent_registration()
 
+    # Decision legend at bottom - keeps interaction area clean
+    st.markdown("<br>", unsafe_allow_html=True)
+    render_decision_legend()
+
     # Footer
     st.markdown(f"""
     <div style="
         text-align: center;
-        padding: 30px 0 10px 0;
+        padding: 20px 0 10px 0;
         color: {TEXT_MUTED};
         font-size: 12px;
     ">
