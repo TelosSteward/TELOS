@@ -1,0 +1,780 @@
+================================================================================
+COMPREHENSIVE SUPABASE AUDIT REPORT
+TELOS Observatory V3 Codebase
+================================================================================
+
+EXECUTIVE SUMMARY
+================================================================================
+
+The TELOS Observatory V3 codebase has a well-architected backend client 
+implementation for Supabase integration, primarily focused on telemetry and 
+governance metrics collection. The system is designed with privacy preservation 
+as a core principle - only deltas/metrics are sent, never conversation content.
+
+Current Status: FUNCTIONAL but PARTIALLY INTEGRATED
+- Backend client exists and is initialized: YES
+- Methods defined: 14 methods across 6 operations
+- Actual usage in codebase: MINIMAL (only a few call points)
+- Data flow: Governance metrics captured but not consistently transmitted
+
+================================================================================
+1. SUPABASE-RELATED FILES
+================================================================================
+
+PRIMARY FILE:
+  /Users/brunnerjf/Desktop/TELOS_Master/telos_observatory_v3/services/backend_client.py
+  - Lines: 506
+  - Purpose: Abstract interface for backend service (Supabase by default)
+  - Status: COMPLETE and DOCUMENTED
+
+IMPORT LOCATIONS:
+  1. /Users/brunnerjf/Desktop/TELOS_Master/telos_observatory_v3/main.py (line 37)
+     - Calls: get_backend_service()
+     - Usage: Initialize backend at app startup
+  
+  2. /Users/brunnerjf/Desktop/TELOS_Master/telos_observatory_v3/components/beta_pa_establishment.py (line 26)
+     - Calls: BackendService (direct import)
+     - Usage: Log PA config on establishment
+  
+  3. /Users/brunnerjf/Desktop/TELOS_Master/telos_observatory_v3/components/beta_ab_testing.py (line 22)
+     - Calls: BackendService (direct import)
+     - Usage: Log turn data during A/B testing
+  
+  4. /Users/brunnerjf/Desktop/TELOS_Master/telos_observatory_v3/components/beta_review.py
+     - Calls: backend.get_beta_session(), backend.get_beta_turns()
+     - Usage: Retrieve beta session data for review
+  
+  5. /Users/brunnerjf/Desktop/TELOS_Master/telos_observatory_v3/services/turn_tracker.py (line 11)
+     - Calls: get_backend_service()
+     - Usage: Track turn lifecycle
+  
+  6. /Users/brunnerjf/Desktop/TELOS_Master/telos_observatory_v3/core/state_manager.py
+     - Calls: backend.transmit_delta()
+     - Usage: Send delta data for turns
+  
+  7. /Users/brunnerjf/Desktop/TELOS_Master/telos_observatory_v3/services/beta_response_manager.py
+     - Calls: backend.transmit_delta()
+     - Usage: Store turn data in _store_turn_data() method
+
+================================================================================
+2. SUPABASE INITIALIZATION
+================================================================================
+
+Location: backend_client.py, lines 28-69 (_initialize_client method)
+
+Method:
+  1. Checks for credentials in Streamlit secrets (preferred)
+  2. Falls back to environment variables if secrets unavailable
+  3. Looks for either BACKEND_URL/BACKEND_KEY or SUPABASE_URL/SUPABASE_KEY
+  4. Dynamically imports supabase library (ImportError handled)
+  5. Creates Supabase client if credentials present
+
+Status Check:
+  - self.enabled flag indicates if client is available
+  - Graceful degradation: prints warnings if unavailable
+  - NO conversation content is ever sent (by design)
+
+Environment Variables Expected:
+  - SUPABASE_URL (or BACKEND_URL)
+  - SUPABASE_KEY (or BACKEND_KEY)
+
+================================================================================
+3. DATABASE OPERATIONS & TABLES
+================================================================================
+
+INSERT OPERATIONS:
+┌────────────────────────────────────────────────────────────────────────┐
+│ Table: governance_deltas (PRIMARY)                                     │
+├────────────────────────────────────────────────────────────────────────┤
+│ Method: transmit_delta() [line 105]                                   │
+│ Fields Required:                                                       │
+│   - session_id (UUID)                                                 │
+│   - turn_number (int)                                                 │
+│   - fidelity_score (float, 0.0-1.0)                                  │
+│   - distance_from_pa (float, >= 0.0)                                 │
+│ Fields Optional:                                                       │
+│   - delta_from_previous (float)                                       │
+│   - intervention_triggered (bool)                                     │
+│   - intervention_type (string)                                        │
+│   - intervention_reason (string, NO content)                          │
+│   - mode (string: 'demo', 'beta', 'open')                            │
+│   - model_used (string)                                              │
+│ Frequency: Per turn in BETA mode (with consent)                      │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────┐
+│ Table: beta_consent_log (AUDIT TRAIL)                                 │
+├────────────────────────────────────────────────────────────────────────┤
+│ Method: log_consent() [line 141]                                      │
+│ Fields:                                                                │
+│   - session_id (str)                                                  │
+│   - consent_statement (string)                                        │
+│   - consent_version (string)                                          │
+│   - consent_timestamp (ISO datetime)                                  │
+│ Frequency: Once per beta session (when user consents)                │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────┐
+│ Table: primacy_attractor_configs (PA METADATA)                        │
+├────────────────────────────────────────────────────────────────────────┤
+│ Method: log_pa_config() [line 214]                                    │
+│ Fields:                                                                │
+│   - session_id (str)                                                  │
+│   - purpose_elements (int - count, not content)                      │
+│   - scope_elements (int - count)                                      │
+│   - boundary_elements (int - count)                                   │
+│   - constraint_tolerance (float)                                      │
+│   - mode (string)                                                     │
+│   - created_at (ISO datetime)                                         │
+│ Frequency: Once per PA establishment                                  │
+│ NOTE: Stores METADATA ONLY (counts), never actual purpose/scope text │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────┐
+│ Table: beta_sessions (SESSION MANAGEMENT)                             │
+├────────────────────────────────────────────────────────────────────────┤
+│ Method: insert_beta_session() [line 345]                              │
+│ Expected Fields (from turn_tracker.py semantics):                     │
+│   - session_id (str)                                                  │
+│   - user_id (str, optional)                                           │
+│   - mode (string: 'beta')                                             │
+│   - pa_established (bool)                                             │
+│   - pa_template (string, optional)                                    │
+│   - created_at (ISO datetime)                                         │
+│ Frequency: Once per beta session start                                │
+│ NOTE: Called from beta_pa_establishment.py (not visible in grep)      │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────┐
+│ Table: beta_turns (TURN-LEVEL TELEMETRY)                              │
+├────────────────────────────────────────────────────────────────────────┤
+│ Method: insert_beta_turn() [line 364]                                 │
+│ Fields Expected:                                                      │
+│   - session_id (str)                                                  │
+│   - turn_number (int)                                                 │
+│   - fidelity_score (float)                                            │
+│   - intervention_triggered (bool)                                     │
+│   - intervention_type (string, optional)                              │
+│   - response_source ('native' or 'telos')                             │
+│   - created_at (ISO datetime)                                         │
+│ Frequency: Once per turn                                              │
+│ Called from: beta_ab_testing.py for tracking responses                │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────┐
+│ Table: session_summaries (SESSION AGGREGATES)                         │
+├────────────────────────────────────────────────────────────────────────┤
+│ Method: update_session_summary() [line 175]                           │
+│ Operation: UPSERT (create or update)                                  │
+│ Key Fields:                                                            │
+│   - session_id (str, primary key)                                     │
+│   - total_turns (int)                                                 │
+│   - avg_fidelity (float)                                              │
+│   - total_interventions (int)                                         │
+│   - updated_at (ISO datetime)                                         │
+│ Frequency: At session end or periodic updates                         │
+└────────────────────────────────────────────────────────────────────────┘
+
+UPSERT OPERATIONS:
+┌────────────────────────────────────────────────────────────────────────┐
+│ Table: governance_deltas (LIFECYCLE TRACKING)                         │
+├────────────────────────────────────────────────────────────────────────┤
+│ Method: update_turn_lifecycle() [line 262-264]                        │
+│ Conflict Key: (session_id, turn_number)                               │
+│ Fields Updated:                                                        │
+│   - turn_status ('initiated', 'calculating_pa', 'evaluating',        │
+│                  'completed', 'failed')                                │
+│   - processing_stage (human-readable description)                     │
+│   - stage_timestamp (ISO datetime)                                    │
+│   - error_message (optional, for failed turns)                        │
+│ Plus: Any delta_data merged in                                        │
+│ Frequency: Multiple times per turn (lifecycle events)                 │
+└────────────────────────────────────────────────────────────────────────┘
+
+UPDATE OPERATIONS:
+┌────────────────────────────────────────────────────────────────────────┐
+│ Table: beta_turns                                                      │
+├────────────────────────────────────────────────────────────────────────┤
+│ Method: update_beta_turn() [line 384-388]                             │
+│ Filters: session_id, turn_number (WHERE clause)                       │
+│ Usage: Update turn with feedback or metrics                           │
+│ Called from: beta_ab_testing.py for feedback collection               │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────┐
+│ Table: beta_sessions                                                   │
+├────────────────────────────────────────────────────────────────────────┤
+│ Method: complete_beta_session() [line 459-462]                        │
+│ Filters: session_id (WHERE clause)                                    │
+│ Fields Updated:                                                        │
+│   - completed_at (ISO datetime)                                       │
+│   - total_turns (int)                                                 │
+│   - phase_1_complete (bool)                                           │
+│ Frequency: Once at session end                                        │
+└────────────────────────────────────────────────────────────────────────┘
+
+QUERY OPERATIONS:
+┌────────────────────────────────────────────────────────────────────────┐
+│ Table: session_summaries                                               │
+├────────────────────────────────────────────────────────────────────────┤
+│ Method: test_connection() [line 482]                                  │
+│ Operation: SELECT session_id LIMIT 1                                  │
+│ Purpose: Health check for backend connectivity                        │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────┐
+│ Table: beta_sessions                                                   │
+├────────────────────────────────────────────────────────────────────────┤
+│ Method: get_beta_session() [line 407-410]                             │
+│ Operation: SELECT * WHERE session_id = ?                              │
+│ Single: .single() - expects one result                                │
+│ Called from: beta_review.py                                           │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────┐
+│ Table: beta_turns                                                      │
+├────────────────────────────────────────────────────────────────────────┤
+│ Method: get_beta_turns() [line 430-434]                               │
+│ Operation: SELECT * WHERE session_id = ? ORDER BY turn_number        │
+│ Called from: beta_review.py                                           │
+└────────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+4. LIFECYCLE TRACKING METHODS
+================================================================================
+
+Turn Progression Flow:
+  
+  1. initiate_turn() [line 277]
+     - Sets: status='initiated', fidelity=1.0, distance=0.0
+     - Purpose: Mark turn as starting
+  
+  2. mark_calculating_pa() [line 291]
+     - Sets: status='calculating_pa'
+     - Purpose: Signal PA distance computation in progress
+  
+  3. mark_evaluating() [line 304]
+     - Sets: status='evaluating'
+     - Purpose: Signal governance evaluation in progress
+  
+  4. complete_turn() [line 317]
+     - Sets: status='completed'
+     - Merges: final_delta with complete metrics
+     - Purpose: Record turn completion with final fidelity
+  
+  5. fail_turn() [line 328]
+     - Sets: status='failed', includes error_message
+     - Purpose: Record turn failure with diagnostic info
+
+Usage: Called from turn_tracker.py during turn execution
+
+================================================================================
+5. CURRENT CALL SITES & DATA FLOW
+================================================================================
+
+FOUND CALL SITES:
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 1. main.py (line ~133)                                                 │
+│    - Call: transmit_delta()                                            │
+│    - Context: A/B test completion                                      │
+│    - Data: ab_test_data + metrics                                      │
+│    - Frequency: Once per beta session                                  │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 2. core/state_manager.py                                               │
+│    - Call: backend.transmit_delta()                                    │
+│    - Context: store_turn_data() method                                 │
+│    - Data: delta_data with fidelity + intervention metrics             │
+│    - Frequency: Per turn (if backend enabled + conditions met)         │
+│    - CONDITIONS: backend.enabled == True                               │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 3. services/beta_response_manager.py (line ~X)                        │
+│    - Call: backend.transmit_delta()                                    │
+│    - Context: _store_turn_data() method                                │
+│    - Data: Fidelity + intervention data                                │
+│    - Frequency: Per turn                                               │
+│    - CONDITIONS: backend.enabled == True                               │
+│    - NOTE: This is the main call site during conversations             │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 4. services/turn_tracker.py                                            │
+│    - Calls: initiate_turn(), mark_calculating_pa(), mark_evaluating(), │
+│             complete_turn(), fail_turn()                               │
+│    - Context: TurnTracker class wraps turn lifecycle                   │
+│    - Frequency: Multiple per turn (lifecycle events)                   │
+│    - CONDITIONS: should_track flag (mode=='beta' AND consent_given)   │
+│    - PRIVACY: Only tracks if all conditions met                        │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 5. components/beta_pa_establishment.py                                  │
+│    - Call: insert_beta_session() [implied in code path]                │
+│    - Context: PA confirmed and established                             │
+│    - Data: session metadata + pa template info                         │
+│    - Frequency: Once per beta session                                  │
+│    - NOTE: Not visible in grep - must be in _render_confirmation_step │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 6. components/beta_ab_testing.py                                        │
+│    - Calls: insert_beta_turn(), update_beta_turn()                     │
+│    - Context: A/B testing response evaluation                          │
+│    - Data: turn_number + fidelity + response source                    │
+│    - Frequency: Per turn                                               │
+│    - NOTE: Backend calls may be unused (component may not be active)  │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 7. components/beta_review.py                                            │
+│    - Calls: get_beta_session(), get_beta_turns()                       │
+│    - Context: Review historical beta session data                      │
+│    - Frequency: When user opens beta review panel                      │
+│    - NOTE: READ operations - retrieves data from Supabase              │
+└─────────────────────────────────────────────────────────────────────────┘
+
+ACTIVE vs INACTIVE:
+  Active:    transmit_delta() - called in main flow
+  Active:    turn_tracker methods - if TurnTracker is used
+  Possible:  insert_beta_session() - depends on component flow
+  Possible:  insert_beta_turn() - depends on A/B testing activation
+  Inactive:  get_beta_turns() - review component not in main flow
+  Inactive:  get_beta_session() - review component not in main flow
+
+================================================================================
+6. DATA STRUCTURES & WHAT'S BEING SAVED
+================================================================================
+
+Per-Turn Data Saved (governance_deltas table):
+┌──────────────────────────────────────┐
+│ FROM backend_client.transmit_delta()  │
+├──────────────────────────────────────┤
+│ ✓ session_id                         │
+│ ✓ turn_number                        │
+│ ✓ fidelity_score                     │
+│ ✓ distance_from_pa                   │
+│ ✓ delta_from_previous (optional)     │
+│ ✓ intervention_triggered             │
+│ ✓ intervention_type                  │
+│ ✓ intervention_reason (NO CONTENT)   │
+│ ✓ mode ('demo', 'beta', 'open')      │
+│ ✓ model_used (optional)              │
+└──────────────────────────────────────┘
+
+Session-Level Data Saved:
+┌──────────────────────────────────────┐
+│ FROM session_summaries               │
+├──────────────────────────────────────┤
+│ ✓ session_id (primary key)           │
+│ ✓ total_turns                        │
+│ ✓ avg_fidelity                       │
+│ ✓ total_interventions                │
+│ ✓ updated_at                         │
+│ ... (any additional fields passed)   │
+└──────────────────────────────────────┘
+
+PA Configuration Metadata Saved:
+┌──────────────────────────────────────┐
+│ FROM log_pa_config()                 │
+├──────────────────────────────────────┤
+│ ✓ session_id                         │
+│ ✓ purpose_elements (COUNT ONLY)      │
+│ ✓ scope_elements (COUNT ONLY)        │
+│ ✓ boundary_elements (COUNT ONLY)     │
+│ ✓ constraint_tolerance               │
+│ ✓ mode                               │
+│ ✓ created_at                         │
+│ NOTE: NEVER stores actual text       │
+└──────────────────────────────────────┘
+
+Consent Audit Trail:
+┌──────────────────────────────────────┐
+│ FROM log_consent()                   │
+├──────────────────────────────────────┤
+│ ✓ session_id                         │
+│ ✓ consent_statement (FULL TEXT)      │
+│ ✓ consent_version                    │
+│ ✓ consent_timestamp                  │
+│ NOTE: Immutable audit trail          │
+└──────────────────────────────────────┘
+
+================================================================================
+7. CRITICAL GAPS - WHAT'S MISSING
+================================================================================
+
+MAJOR GAPS:
+
+1. MISSING: Turn Cache / Session State Persistence
+   ├─ Problem: turn_cache is built dynamically but never stored to Supabase
+   ├─ Location: Exists in st.session_state in beta_response_manager.py
+   ├─ Should Save: 
+   │   - Turn embeddings (user_embedding, response_embedding)
+   │   - User fidelity (normalized and raw)
+   │   - AI fidelity metrics
+   │   - Adaptive context results
+   │   - Intervention details
+   │   - Response comparisons (native vs telos)
+   ├─ Frequency: Every turn
+   └─ Impact: Can't reconstruct full governance context from Supabase alone
+
+2. MISSING: Governance Trace Events (Evidence Schema)
+   ├─ Problem: Evidence schema exists (evidence_schema.py) but not integrated
+   │           with backend client
+   ├─ Event Types NOT saved to Supabase:
+   │   - FidelityCalculatedEvent (raw similarity, normalized fidelity, zone)
+   │   - InterventionTriggeredEvent (reason, strength, semantic band)
+   │   - ResponseGeneratedEvent (source, length, generation time)
+   │   - SSETokenEvent (streaming token tracking)
+   │   - TurnCompleteEvent (comprehensive turn summary)
+   ├─ Location: governance_trace_collector.py logs to JSONL locally
+   │           but has NO connection to backend_client
+   ├─ Missing: transmit_governance_events() method in BackendService
+   └─ Impact: Governance trace data only available locally
+
+3. MISSING: Intervention Semantic Details
+   ├─ Problem: Semantic interpreter results not saved
+   ├─ Should Save:
+   │   - Semantic band (minimal, light, moderate, firm, strong)
+   │   - Behavioral specifications (no hedging, use directives, etc.)
+   │   - Context injection prompts used
+   │   - Steward interpretation reasoning
+   ├─ Location: computed in beta_response_manager.py but stored locally only
+   └─ Impact: Can't analyze intervention effectiveness patterns
+
+4. MISSING: Adaptive Context Decisions
+   ├─ Problem: Adaptive context manager processes every message
+   ├─ Should Save:
+   │   - Message type classification (DIRECT, FOLLOW_UP, CLARIFICATION, ANAPHORA)
+   │   - Conversation phase (EXPLORATION, FOCUS, DRIFT, RECOVERY)
+   │   - Tier classification (Tier 1/2/3)
+   │   - Threshold adjustments applied
+   │   - Context buffer state
+   ├─ Location: adaptive_context.py manager object, not persisted
+   └─ Impact: Lost valuable context patterns for analysis
+
+5. MISSING: AI PA Fidelity & Response Analysis
+   ├─ Problem: AI response fidelity calculated but not stored systematically
+   ├─ Should Save:
+   │   - AI response raw similarity (before normalization)
+   │   - AI response normalized fidelity
+   │   - Intervention applied to AI response (yes/no)
+   │   - Regeneration attempts and outcomes
+   │   - Response realignment metrics
+   ├─ Location: computed in beta_response_manager.py line 542-549+
+   │           stored in response_data but not transmitted
+   └─ Impact: Can't measure AI response quality independently
+
+6. MISSING: Semantic Continuity Inheritance (SCI) Data
+   ├─ Problem: SCI is the canonical fidelity measurement but not logged
+   ├─ Should Save:
+   │   - Previous turn context match score
+   │   - Semantic inheritance applied (yes/no)
+   │   - Adjustment magnitude
+   │   - Inherited fidelity source turn
+   ├─ Location: adaptive_context.py, not persisted
+   └─ Impact: Can't validate SCI effectiveness
+
+7. MISSING: Failure & Error Events
+   ├─ Problem: fail_turn() exists but rarely called
+   ├─ Missing:
+   │   - LLM generation failures
+   │   - Embedding provider errors
+   │   - Intervention execution failures
+   │   - Context injection failures
+   ├─ Impact: Incomplete error tracking for reliability analysis
+
+8. MISSING: User Engagement & Feedback
+   ├─ Problem: User feedback collected locally but not systematized
+   ├─ Should Save:
+   │   - Thumbs up/down ratings
+   │   - Regenerate requests
+   │   - Steward panel interactions
+   │   - User PA refinements
+   │   - Conversation goal accomplishment rating
+   ├─ Location: components/beta_session_manager.py local storage
+   └─ Impact: Feedback data isolated from governance metrics
+
+9. MISSING: A/B Test Result Integration
+   ├─ Problem: A/B test manager has separate export path
+   ├─ Issue: transmit_delta() called for A/B results in main.py
+   │         but with special turn_number=999 marker
+   ├─ Missing: Structured A/B test schema in Supabase
+   │           instead of nested ab_test_data field
+   └─ Impact: A/B results not queryable as first-class data
+
+10. MISSING: Session Metadata & Lineage
+    ├─ Problem: No systematic logging of session configuration
+    ├─ Should Save:
+    │   - Embedding model used (ST vs Mistral vs mixed)
+    │   - PA establishment method (template vs custom vs fresh_start)
+    │   - TELOS features enabled (adaptive context, SCI, etc.)
+    │   - Browser/environment info
+    │   - Session duration
+    │   - Network latency metrics
+    └─ Impact: Can't correlate session parameters with outcomes
+
+================================================================================
+8. DATA FLOW DIAGRAM
+================================================================================
+
+CURRENT (INCOMPLETE):
+
+  User Input
+      │
+      ├─→ BetaResponseManager.generate_turn_responses()
+      │       ├─→ Calculate Fidelity
+      │       ├─→ (MISSING: Save fidelity_calculated_event)
+      │       ├─→ Decide Intervention
+      │       ├─→ (MISSING: Save intervention_triggered_event)
+      │       ├─→ Generate Response
+      │       ├─→ (MISSING: Save response_generated_event)
+      │       └─→ _store_turn_data()
+      │           └─→ backend.transmit_delta()
+      │               └─→ INSERT governance_deltas
+      │
+      ├─→ TurnTracker (if enabled)
+      │       ├─→ mark_calculating_pa()
+      │       │   └─→ UPDATE governance_deltas
+      │       ├─→ mark_evaluating()
+      │       │   └─→ UPDATE governance_deltas
+      │       └─→ complete_turn()
+      │           └─→ UPDATE governance_deltas
+      │
+      ├─→ GovernanceTraceCollector (LOCAL ONLY)
+      │       ├─→ record_fidelity()
+      │       ├─→ record_intervention()
+      │       ├─→ record_response()
+      │       └─→ Write to JSONL (not to Supabase)
+      │
+      └─→ SessionStateManager (LOCAL ONLY)
+          └─→ save_turn_snapshot()
+              └─→ Store TurnSnapshot (immutable, local only)
+
+DESIRED (COMPLETE):
+
+  User Input
+      │
+      ├─→ BetaResponseManager.generate_turn_responses()
+      │       ├─→ Calculate Fidelity
+      │       ├─→ backend.record_fidelity() [NEW]
+      │       ├─→ Decide Intervention
+      │       ├─→ backend.record_intervention() [NEW]
+      │       ├─→ Generate Response
+      │       ├─→ backend.record_response() [NEW]
+      │       ├─→ Analyze Adaptive Context
+      │       ├─→ backend.record_context_decision() [NEW]
+      │       └─→ backend.transmit_delta()
+      │           └─→ governance_deltas + all events
+      │
+      └─→ TurnTracker
+          ├─→ initiate_turn() → INSERT governance_deltas
+          ├─→ mark_calculating_pa() → UPDATE governance_deltas
+          ├─→ mark_evaluating() → UPDATE governance_deltas
+          ├─→ complete_turn() → UPDATE governance_deltas
+          └─→ All governance data available for analysis
+
+================================================================================
+9. RECOMMENDED ACTIONS
+================================================================================
+
+HIGH PRIORITY:
+
+1. Create backend_client extension methods:
+   - record_fidelity_event() - logs FidelityCalculatedEvent
+   - record_intervention_event() - logs InterventionTriggeredEvent
+   - record_response_event() - logs ResponseGeneratedEvent
+   - record_context_decision() - logs adaptive context decisions
+   - batch_transmit_events() - efficient event persistence
+
+2. Integrate governance_trace_collector with backend_client:
+   - Make GovernanceTraceCollector optional backend exporter
+   - Sync JSONL events to Supabase on session end
+   - Query interface for session_id
+
+3. Extend turn_cache schema:
+   - Define complete schema for turn_cache entries
+   - Persist full turn snapshots (not just deltas)
+   - Include embeddings (as serialized arrays)
+
+4. Create governance_trace table in Supabase:
+   - Schema matching evidence_schema.py models
+   - Partition by session_id + turn_number
+   - Event type indexes for efficient queries
+
+MEDIUM PRIORITY:
+
+5. Add A/B test result schema:
+   - Replace turn_number=999 marker pattern
+   - Create dedicated ab_test_results table
+   - Link to session and individual turns
+
+6. Implement session context logging:
+   - Capture session configuration at startup
+   - Log feature flags and versions
+   - Store environment metadata
+
+7. Add feedback integration:
+   - Sync user feedback from local storage to Supabase
+   - Create user_feedback table with turn reference
+   - Link to governance metrics for correlation analysis
+
+LOW PRIORITY:
+
+8. Add streaming metrics:
+   - Optional SSE token tracking (privacy-respecting)
+   - Token latency analysis
+   - Streaming quality metrics
+
+9. Performance monitoring:
+   - Embedding generation latency
+   - LLM inference time
+   - Network latency to Supabase
+   - Response generation overhead per component
+
+================================================================================
+10. SCHEMA RECOMMENDATIONS FOR SUPABASE
+================================================================================
+
+TABLES THAT EXIST (confirmed):
+  1. governance_deltas
+  2. beta_consent_log
+  3. primacy_attractor_configs
+  4. beta_sessions
+  5. beta_turns
+  6. session_summaries
+
+TABLES THAT SHOULD EXIST (for complete data):
+  1. governance_trace_events
+     Columns:
+       - id (uuid, pk)
+       - session_id (uuid, fk → beta_sessions)
+       - turn_number (int)
+       - event_type (enum: session_start, pa_established, turn_start, 
+                            fidelity_calculated, intervention_triggered,
+                            response_generated, sse_token, turn_complete, etc.)
+       - event_data (jsonb - full event payload)
+       - timestamp (timestamp)
+       - privacy_mode (enum: full, hashed, deltas_only)
+     Indexes: (session_id, turn_number), event_type, timestamp
+
+  2. turn_snapshots
+     Columns:
+       - id (uuid, pk)
+       - session_id (uuid, fk → beta_sessions)
+       - turn_number (int)
+       - user_input_length (int)
+       - user_fidelity_raw (float)
+       - user_fidelity_normalized (float)
+       - ai_fidelity_raw (float, nullable)
+       - ai_fidelity_normalized (float, nullable)
+       - adaptive_context_result (jsonb)
+       - intervention_applied (bool)
+       - intervention_semantic_band (text, nullable)
+       - response_source (enum: native, governed, steward)
+       - response_length (int)
+       - timestamp (timestamp)
+     Indexes: (session_id, turn_number)
+
+  3. adaptive_context_decisions
+     Columns:
+       - id (uuid, pk)
+       - session_id (uuid, fk)
+       - turn_number (int)
+       - message_type (enum: DIRECT, FOLLOW_UP, CLARIFICATION, ANAPHORA)
+       - conversation_phase (enum: EXPLORATION, FOCUS, DRIFT, RECOVERY)
+       - tier (int, 1-3)
+       - threshold_adjustment (float)
+       - confidence (float)
+       - timestamp (timestamp)
+     Indexes: (session_id, turn_number)
+
+  4. user_feedback
+     Columns:
+       - id (uuid, pk)
+       - session_id (uuid, fk)
+       - turn_number (int)
+       - feedback_type (enum: thumbs_up, thumbs_down, regenerate_requested)
+       - feedback_text (text, nullable)
+       - timestamp (timestamp)
+     Indexes: (session_id, turn_number)
+
+  5. ab_test_results
+     Columns:
+       - id (uuid, pk)
+       - session_id (uuid, fk)
+       - test_condition (enum: single_blind_baseline, single_blind_telos, head_to_head)
+       - total_turns (int)
+       - baseline_avg_fidelity (float)
+       - telos_avg_fidelity (float)
+       - user_preference (enum: baseline, telos, no_preference)
+       - completion_time_seconds (int)
+       - timestamp (timestamp)
+     Indexes: test_condition, timestamp
+
+================================================================================
+11. PRIVACY CONSIDERATIONS
+================================================================================
+
+CURRENT PRIVACY PROTECTION:
+  ✓ No conversation content ever sent (enforced at transmit_delta)
+  ✓ Consent logging for audit trail
+  ✓ Session-specific tracking (no cross-session correlation assumed)
+  ✓ Optional privacy modes (full, hashed, deltas_only)
+  ✓ Graceful degradation (backend not required)
+
+AREAS OF CONCERN:
+  ⚠ Intervention_reason field could accidentally leak content
+    → Ensure only brief, contextual descriptions (not quotes)
+  
+  ⚠ Feedback text in user_feedback table may contain sensitive info
+    → Should apply hashing/redaction or exclude by default
+  
+  ⚠ PA purpose/scope_elements counts might reveal user intent
+    → Consider whether counts are too informative
+  
+  ⚠ Embeddings not stored (good), but semantic interpretation results stored
+    → Ensure no content reconstruction possible from bands + decisions
+
+RECOMMENDATION:
+  - Add DATA_CLASSIFICATION field to all tables (public, internal, sensitive)
+  - Implement row-level security (RLS) policies in Supabase
+  - Regular privacy audit of stored field values
+
+================================================================================
+12. FINDINGS SUMMARY
+================================================================================
+
+Files with Supabase Code:        1 (backend_client.py)
+Files that Import Backend:       6 main files
+Actual Active Call Sites:        2-3 (transmit_delta in critical paths)
+Supabase Methods Defined:        14 methods (6 operations)
+Supabase Methods Actually Used:  ~5-7 (uncertain for some)
+
+Database Tables:
+  Confirmed: 6 (governance_deltas, beta_consent_log, primacy_attractor_configs,
+                beta_sessions, beta_turns, session_summaries)
+  Missing:   5+ (governance_trace_events, turn_snapshots, adaptive_context_decisions,
+                 user_feedback, ab_test_results)
+
+Data Saved:
+  ✓ Per-turn governance metrics (fidelity, interventions)
+  ✓ Session summaries (totals, averages)
+  ✓ PA metadata (counts, not content)
+  ✓ Consent audit trail
+  
+  Missing:
+  ✗ Governance trace events (fidelity details, intervention reasoning)
+  ✗ Turn snapshots (embeddings, normalized scores, adaptive context)
+  ✗ Semantic interpretation details
+  ✗ Adaptive context decisions
+  ✗ A/B test results (only as marker in deltas)
+  ✗ User feedback integration
+
+Implementation Status: FOUNDATION LAYER COMPLETE, SURFACE LAYER SPARSE
+
+================================================================================
+END OF AUDIT
+================================================================================

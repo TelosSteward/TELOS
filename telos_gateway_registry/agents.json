@@ -1,0 +1,53 @@
+{
+  "agents": [
+    {
+      "agent_id": "agent-a1b9010431cd",
+      "name": "Test Financial Assistant",
+      "owner": "TELOS Labs",
+      "api_key_hash": "7f15dad171b8238e385344bc6499beb6ff0c92e20073c1c65caa33e4673ff685",
+      "purpose_statement": "I am a financial assistant designed to help users with investment analysis, portfolio management, and market research. I provide insights on stocks, bonds, and ETFs.",
+      "domain": "finance",
+      "domain_keywords": [
+        "stocks",
+        "bonds",
+        "investment",
+        "portfolio",
+        "market"
+      ],
+      "domain_description": "",
+      "authorized_tools": [
+        {
+          "name": "get_stock_price",
+          "description": "Get current stock price",
+          "risk_level": "low",
+          "requires_approval": false,
+          "min_fidelity_threshold": 0.45
+        },
+        {
+          "name": "analyze_portfolio",
+          "description": "Analyze investment portfolio",
+          "risk_level": "medium",
+          "requires_approval": false,
+          "min_fidelity_threshold": 0.45
+        },
+        {
+          "name": "execute_trade",
+          "description": "Execute a stock trade",
+          "risk_level": "critical",
+          "requires_approval": true,
+          "min_fidelity_threshold": 0.45
+        }
+      ],
+      "overall_risk_level": "medium",
+      "high_risk_mode": false,
+      "custom_execute_threshold": null,
+      "custom_clarify_threshold": null,
+      "custom_suggest_threshold": null,
+      "created_at": "2026-01-02T04:41:21.061398",
+      "is_active": true,
+      "is_verified": false,
+      "request_count": 3,
+      "blocked_count": 2
+    }
+  ]
+}
