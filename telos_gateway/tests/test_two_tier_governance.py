@@ -167,19 +167,37 @@ class TwoTierGovernor:
         )
 
     def _calculate_fidelity(self, text: str, pa: str) -> float:
-        """Calculate fidelity between text and PA."""
+        """Calculate fidelity between text and PA.
+
+        Mistral embeddings produce narrow discriminative range:
+        - Off-topic content: 0.55-0.65 raw similarity
+        - On-topic content: 0.70-0.80 raw similarity
+
+        We map this to TELOS fidelity zones:
+        - < 0.55: Clearly off-topic → RED (0.0-0.30)
+        - 0.55-0.70: Ambiguous/drift → YELLOW/ORANGE (0.30-0.70)
+        - > 0.70: On-topic → GREEN (0.70-1.0)
+        """
         text_emb = self.embed_fn(text)
         pa_emb = self.embed_fn(pa)
 
-        # Cosine similarity
+        # Raw cosine similarity
         similarity = np.dot(text_emb, pa_emb) / (np.linalg.norm(text_emb) * np.linalg.norm(pa_emb))
 
-        # Normalize to fidelity (same as other modules)
-        baseline = 0.20
-        if similarity < baseline:
-            fidelity = similarity / baseline * 0.3
+        # Mistral-calibrated normalization
+        # Empirically: off-topic floor ~0.55, on-topic threshold ~0.70
+        MISTRAL_FLOOR = 0.55      # Below this = clearly unrelated
+        MISTRAL_ALIGNED = 0.70    # Above this = clearly on-topic
+
+        if similarity < MISTRAL_FLOOR:
+            # Map 0.0-0.55 → 0.0-0.30 (RED zone)
+            fidelity = (similarity / MISTRAL_FLOOR) * 0.30
+        elif similarity < MISTRAL_ALIGNED:
+            # Map 0.55-0.70 → 0.30-0.70 (YELLOW/ORANGE zone)
+            fidelity = 0.30 + ((similarity - MISTRAL_FLOOR) / (MISTRAL_ALIGNED - MISTRAL_FLOOR)) * 0.40
         else:
-            fidelity = 0.3 + (similarity - baseline) / (1 - baseline) * 0.7
+            # Map 0.70-1.0 → 0.70-1.0 (GREEN zone)
+            fidelity = 0.70 + ((similarity - MISTRAL_ALIGNED) / (1.0 - MISTRAL_ALIGNED)) * 0.30
 
         return float(min(1.0, max(0.0, fidelity)))
 

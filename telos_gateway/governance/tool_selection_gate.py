@@ -214,12 +214,27 @@ class ToolSelectionGate:
         """
         Normalize raw similarity to fidelity score.
 
-        Uses same normalization as Tier 1 for consistency.
+        Mistral embeddings produce narrow discriminative range:
+        - Off-topic content: 0.55-0.65 raw similarity
+        - On-topic content: 0.70-0.80 raw similarity
+
+        We map this to TELOS fidelity zones:
+        - < 0.55: Clearly off-topic → RED (0.0-0.30)
+        - 0.55-0.70: Ambiguous/drift → YELLOW/ORANGE (0.30-0.70)
+        - > 0.70: On-topic → GREEN (0.70-1.0)
         """
-        if raw_similarity < self.baseline_threshold:
-            fidelity = raw_similarity / self.baseline_threshold * 0.3
+        MISTRAL_FLOOR = 0.55      # Below this = clearly unrelated
+        MISTRAL_ALIGNED = 0.70    # Above this = clearly on-topic
+
+        if raw_similarity < MISTRAL_FLOOR:
+            # Map 0.0-0.55 → 0.0-0.30 (RED zone)
+            fidelity = (raw_similarity / MISTRAL_FLOOR) * 0.30
+        elif raw_similarity < MISTRAL_ALIGNED:
+            # Map 0.55-0.70 → 0.30-0.70 (YELLOW/ORANGE zone)
+            fidelity = 0.30 + ((raw_similarity - MISTRAL_FLOOR) / (MISTRAL_ALIGNED - MISTRAL_FLOOR)) * 0.40
         else:
-            fidelity = 0.3 + (raw_similarity - self.baseline_threshold) / (1 - self.baseline_threshold) * 0.7
+            # Map 0.70-1.0 → 0.70-1.0 (GREEN zone)
+            fidelity = 0.70 + ((raw_similarity - MISTRAL_ALIGNED) / (1.0 - MISTRAL_ALIGNED)) * 0.30
 
         return float(min(1.0, max(0.0, fidelity)))
 
