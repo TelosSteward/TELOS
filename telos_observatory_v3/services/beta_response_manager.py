@@ -319,6 +319,7 @@ class BetaResponseManager:
             'timestamp': datetime.now().isoformat(),
             'user_input': user_input,
             'governance_mode': 'fidelity_first',  # Mark as new mode
+            'focus_shifted': pa_was_just_shifted,  # Track if PA was shifted before this turn
         }
 
         # ============================================================
@@ -912,7 +913,8 @@ class BetaResponseManager:
             response_data['steward_interpretation'] = self._generate_steward_interpretation(
                 telos_data,
                 'telos',
-                turn_number
+                turn_number,
+                focus_shifted=pa_was_just_shifted
             )
             response_data['has_steward_interpretation'] = True
 
@@ -1921,7 +1923,8 @@ CRITICAL INSTRUCTIONS:
     def _generate_steward_interpretation(self,
                                         telos_data: Dict,
                                         shown_source: str,
-                                        turn_number: int) -> str:
+                                        turn_number: int,
+                                        focus_shifted: bool = False) -> str:
         """
         Generate Steward's human-readable interpretation.
 
@@ -1929,6 +1932,7 @@ CRITICAL INSTRUCTIONS:
             telos_data: TELOS analysis data
             shown_source: What was actually shown ('telos', 'native', 'both')
             turn_number: Current turn
+            focus_shifted: Whether the PA was shifted just before this turn
 
         Returns:
             Human-readable interpretation
@@ -1940,6 +1944,11 @@ CRITICAL INSTRUCTIONS:
 
         # Build interpretation based on what happened
         interpretation = f"**Turn {turn_number} Analysis:**\n\n"
+
+        # Check if focus was shifted at this turn
+        if focus_shifted:
+            interpretation += "**Focus Changed:** You shifted your focus to a new topic at this turn. "
+            interpretation += "The conversation is now being measured against your new purpose.\n\n"
 
         # Explain response source
         if shown_source == 'native':
