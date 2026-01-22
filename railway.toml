@@ -1,6 +1,7 @@
 # Railway configuration for TELOS Observatory
 # This downloads SentenceTransformer models during BUILD phase (not startup)
 # so they're baked into the container image for instant availability.
+# Cache bust: 2026-01-22-v2
 
 [build]
 # Run pip install first, then download models
