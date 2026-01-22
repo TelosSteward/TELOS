@@ -1639,6 +1639,11 @@ RESPONSE GUIDELINES:
             # This measures: "How well does this intervention serve the user's stated purpose?"
             ai_fidelity = None
             primacy_state = None
+            # Initialize realignment tracking variables (used even if embedding provider unavailable)
+            ai_response_realigned = False
+            original_ai_fidelity = None
+            realignment_attempts = 0
+
             if self.st_embedding_provider and self.st_user_pa_embedding is not None:
                 # Embed the intervention response using SentenceTransformer MiniLM
                 response_embedding = np.array(self.st_embedding_provider.encode(response))
@@ -1680,6 +1685,81 @@ RESPONSE GUIDELINES:
 
                 logger.info(f"🔧 Intervention AI Fidelity (dual-ref): AI_PA={raw_ai_fidelity_to_pa:.3f}, Query={raw_ai_fidelity_to_query:.3f}, Winner={winning_ref} → {ai_fidelity:.3f}")
 
+                # =================================================================
+                # AI RESPONSE FIDELITY CHECK & REGENERATION (Intervention Zone)
+                # =================================================================
+                # CRITICAL: The AI must stay aligned with the user's purpose even
+                # during interventions. If the AI response drifts, regenerate it.
+                # This prevents the AI from pulling the user away from their goal.
+                # =================================================================
+                INTERVENTION_MAX_REALIGNMENT_ATTEMPTS = 2
+                ai_response_realigned = False
+                original_ai_fidelity = ai_fidelity
+                realignment_attempts = 0
+
+                if ai_fidelity is not None and ai_fidelity < DISPLAY_GREEN_THRESHOLD:
+                    logger.warning(f"⚠️ INTERVENTION AI DRIFT DETECTED: AI fidelity {ai_fidelity:.3f} < {DISPLAY_GREEN_THRESHOLD:.2f}")
+                    logger.info("🔄 Triggering AI response realignment in intervention zone...")
+
+                    # Track best response across attempts
+                    best_response = response
+                    best_embedding = response_embedding
+                    best_fidelity = ai_fidelity
+
+                    while ai_fidelity < DISPLAY_GREEN_THRESHOLD and realignment_attempts < INTERVENTION_MAX_REALIGNMENT_ATTEMPTS:
+                        realignment_attempts += 1
+                        logger.info(f"🔄 Intervention realignment attempt {realignment_attempts}/{INTERVENTION_MAX_REALIGNMENT_ATTEMPTS}...")
+
+                        # Use the same regeneration method as green zone
+                        aligned_response = self._regenerate_aligned_response(
+                            user_input=user_input,
+                            drifted_response=response,
+                            ai_fidelity=ai_fidelity,
+                            user_fidelity=user_input_fidelity,
+                            previous_aligned_response=None  # Could add context inheritance later
+                        )
+
+                        if aligned_response:
+                            # Re-compute fidelity for the new response
+                            new_embedding = np.array(self.st_embedding_provider.encode(aligned_response))
+                            new_raw_ai_fidelity = self._cosine_similarity(new_embedding, ai_pa_embedding)
+                            new_ai_fidelity = normalize_st_fidelity(new_raw_ai_fidelity)
+
+                            logger.info(f"🔄 Intervention realigned AI Fidelity: {ai_fidelity:.3f} → {new_ai_fidelity:.3f} (attempt {realignment_attempts})")
+
+                            # Track best result
+                            if new_ai_fidelity > best_fidelity:
+                                best_response = aligned_response
+                                best_embedding = new_embedding
+                                best_fidelity = new_ai_fidelity
+
+                            # Update if improved
+                            if new_ai_fidelity > ai_fidelity:
+                                response = aligned_response
+                                response_embedding = new_embedding
+                                ai_fidelity = new_ai_fidelity
+                                ai_response_realigned = True
+
+                                if ai_fidelity >= DISPLAY_GREEN_THRESHOLD:
+                                    logger.info(f"✅ Intervention hit green zone ({ai_fidelity:.3f} >= {DISPLAY_GREEN_THRESHOLD}) on attempt {realignment_attempts}")
+                                    break
+                            else:
+                                logger.warning(f"⚠️ Intervention attempt {realignment_attempts} didn't improve fidelity ({new_ai_fidelity:.3f} <= {ai_fidelity:.3f})")
+                        else:
+                            logger.warning(f"⚠️ Intervention realignment attempt {realignment_attempts} failed to generate response")
+
+                    # Use best result if it improved over original
+                    if best_fidelity > original_ai_fidelity:
+                        response = best_response
+                        response_embedding = best_embedding
+                        ai_fidelity = best_fidelity
+                        ai_response_realigned = True
+
+                    if ai_fidelity >= DISPLAY_GREEN_THRESHOLD:
+                        logger.info(f"✅ Intervention AI response realigned: {original_ai_fidelity:.3f} → {ai_fidelity:.3f} (after {realignment_attempts} attempts)")
+                    else:
+                        logger.warning(f"⚠️ Intervention AI fidelity still below green after {realignment_attempts} attempts: {ai_fidelity:.3f} < {DISPLAY_GREEN_THRESHOLD}")
+
                 # Calculate Primacy State using harmonic mean
                 epsilon = 1e-10
                 primacy_state = (2 * user_input_fidelity * ai_fidelity) / (user_input_fidelity + ai_fidelity + epsilon)
@@ -1691,7 +1771,7 @@ RESPONSE GUIDELINES:
                 'fidelity_score': user_input_fidelity,
                 'distance_from_pa': error_signal,
                 'intervention_triggered': True,
-                'intervention_type': f'proportional_redirect',
+                'intervention_type': f'proportional_redirect' + ('_realigned' if ai_response_realigned else ''),
                 'intervention_reason': f'Strength {intervention_strength:.2f} redirect ({zone} zone)',
                 'drift_detected': True,
                 'in_basin': False,
@@ -1702,6 +1782,10 @@ RESPONSE GUIDELINES:
                 'intervention_strength': intervention_strength,  # NEW: Track proportional strength
                 'error_signal': error_signal,  # NEW: Track error signal
                 'max_tokens_used': max_tokens,
+                # AI Response Realignment metadata (intervention zone)
+                'ai_response_realigned': ai_response_realigned,
+                'original_ai_fidelity': original_ai_fidelity if ai_response_realigned else None,
+                'realignment_attempts': realignment_attempts if ai_response_realigned else 0,
             }
 
             return telos_data
