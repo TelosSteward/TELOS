@@ -1309,9 +1309,11 @@ class BetaResponseManager:
 
                         # Calculate display-normalized Primacy State for UI consistency
                         # BOTH fidelities need normalization for consistent display
+                        # FIX: User fidelity uses normalize_fidelity_for_display (calibrated for queries)
+                        #      AI fidelity uses normalize_ai_response_fidelity (calibrated for AI responses)
                         model_type = 'sentence_transformer' if self.use_rescaled_fidelity else 'mistral'
                         display_user_fidelity = normalize_fidelity_for_display(displayed_f_user, model_type)
-                        display_ai_fidelity = normalize_fidelity_for_display(f_ai, model_type)
+                        display_ai_fidelity = normalize_ai_response_fidelity(f_ai)
                         # Primacy State = harmonic mean of DISPLAY-normalized values
                         display_primacy_state = (2 * display_user_fidelity * display_ai_fidelity) / (display_user_fidelity + display_ai_fidelity + epsilon)
                         telos_data['display_primacy_state'] = display_primacy_state
@@ -1967,11 +1969,12 @@ CRITICAL INSTRUCTIONS:
 
                     # Calculate display-normalized Primacy State for UI consistency
                     # Both fidelities now use same model (MiniLM 384d) for consistent measurements
-                    # and have already been rescaled, so use the rescaled values directly
+                    # FIX: User fidelity uses normalize_fidelity_for_display (calibrated for queries)
+                    #      AI fidelity uses normalize_ai_response_fidelity (calibrated for AI responses)
                     model_type = 'sentence_transformer' if self.use_rescaled_fidelity else 'mistral'
                     display_user_fidelity = normalize_fidelity_for_display(user_fidelity, model_type)
-                    # AI fidelity is already rescaled from MiniLM, use directly
-                    display_primacy_state = (2 * display_user_fidelity * ai_fidelity) / (display_user_fidelity + ai_fidelity + epsilon)
+                    display_ai_fidelity = normalize_ai_response_fidelity(ai_fidelity)
+                    display_primacy_state = (2 * display_user_fidelity * display_ai_fidelity) / (display_user_fidelity + display_ai_fidelity + epsilon)
 
                 # NOTE: AI Fidelity now uses consistent MiniLM embeddings (384d)
                 # matching User Fidelity for comparable cosine similarity measurements
