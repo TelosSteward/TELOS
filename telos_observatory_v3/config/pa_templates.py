@@ -117,16 +117,27 @@ PA_TEMPLATES = [
         "style": "Patient teacher adapting to your current understanding",
         "category": "learning",
         "example_queries": [
+            # Core learning intent phrases
             "Explain how machine learning works in simple terms",
             "I want to understand quantum computing basics",
             "Help me grasp the concept of recursion",
+            "Teach me about database design principles",
+            # Comparison/difference questions (diverse topics)
             "What is the difference between REST and GraphQL?",
+            "What is the difference between supervised and unsupervised learning?",
+            "How do TCP and UDP differ?",
+            "Compare functional and object-oriented programming",
+            # Clarification/deeper understanding
             "Explain blockchain like I'm a beginner",
             "I don't understand why we need async/await",
             "Can you break down how neural networks learn?",
             "What's the intuition behind derivatives in calculus?",
             "Help me understand how encryption works",
             "Explain object-oriented programming concepts",
+            # Generic learning patterns
+            "What are the fundamentals of X?",
+            "How does Y work under the hood?",
+            "Walk me through the basics of Z",
         ],
         # Example AI responses demonstrating the BEHAVIORAL role (teach)
         # These capture what "teaching" looks like behaviorally
