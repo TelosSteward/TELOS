@@ -676,11 +676,20 @@ class BetaResponseManager:
             response_data['shown_response'] = final_response
 
             # Compute Primacy State if we have both fidelities
+            # FIX: Use DISPLAY-NORMALIZED values for BOTH fidelities to avoid mixing raw and normalized
+            # - user_fidelity is RAW (e.g., 0.50)
+            # - ai_fidelity is already DISPLAY-NORMALIZED (e.g., 0.72)
+            # - response_data['display_fidelity'] is the DISPLAY-NORMALIZED user fidelity (e.g., 0.70)
             primacy_state = None
+            display_primacy_state = None
             if ai_fidelity is not None:
                 epsilon = 1e-8
+                # Raw PS for internal tracking
                 primacy_state = (2 * user_fidelity * ai_fidelity) / (user_fidelity + ai_fidelity + epsilon)
-                logger.info(f"📊 GREEN Zone PS: F_user={user_fidelity:.3f}, F_ai={ai_fidelity:.3f}, PS={primacy_state:.3f}")
+                # Display PS uses display-normalized user fidelity for consistency
+                display_user_fidelity = response_data['display_fidelity']
+                display_primacy_state = (2 * display_user_fidelity * ai_fidelity) / (display_user_fidelity + ai_fidelity + epsilon)
+                logger.info(f"📊 GREEN Zone PS: F_user={user_fidelity:.3f}→{display_user_fidelity:.3f}, F_ai={ai_fidelity:.3f}, PS={primacy_state:.3f}→{display_primacy_state:.3f}")
 
             # GREEN ZONE: AI fidelity computed using USER PA (topic alignment, not behavioral)
             logger.info(f"📊 GREEN ZONE AI Fidelity: {ai_fidelity:.3f} (computed against USER PA for topic alignment)")
@@ -695,7 +704,7 @@ class BetaResponseManager:
                 'in_basin': True,
                 'ai_pa_fidelity': ai_fidelity,
                 'primacy_state_score': primacy_state,
-                'display_primacy_state': primacy_state,  # Float, not string - UI formats display
+                'display_primacy_state': display_primacy_state,  # FIX: Use display-normalized PS for UI
                 'primacy_state_condition': 'computed',
                 'pa_correlation': None,
                 'lightweight_path': not ai_response_intervened,
