@@ -410,10 +410,8 @@ def compute_behavioral_fidelity(ai_response: str, user_fidelity: float, embeddin
         Higher values indicate better alignment with expected intervention behavior.
     """
     import numpy as np
-    from telos_purpose.core.embedding_provider import (
-        get_cached_mpnet_provider,
-        rescale_sentence_transformer_fidelity
-    )
+    from telos_purpose.core.embedding_provider import get_cached_mpnet_provider
+    from telos_purpose.core.fidelity_display import normalize_ai_response_fidelity
 
     # Get embedding provider
     if embedding_provider is None:
@@ -453,11 +451,12 @@ def compute_behavioral_fidelity(ai_response: str, user_fidelity: float, embeddin
         )
         max_similarity = max(max_similarity, float(similarity))
 
-    # Rescale to display range (SentenceTransformer/MPNet produces narrow raw scores)
-    # Using same rescaling as other fidelity calculations for consistency
+    # Rescale to display range using AI response calibration
+    # FIX: Use normalize_ai_response_fidelity (calibrated for longer AI text, raw 0.40 → 0.70)
+    # instead of rescale_sentence_transformer_fidelity (calibrated for short queries, raw 0.25 → 0.70)
     print(f"🎯 BEHAVIORAL FIDELITY DEBUG: raw_similarity={max_similarity:.4f} (band={band})")
-    behavioral_fidelity = rescale_sentence_transformer_fidelity(max_similarity)
-    print(f"🎯 BEHAVIORAL FIDELITY DEBUG: rescaled={behavioral_fidelity:.4f}")
+    behavioral_fidelity = normalize_ai_response_fidelity(max_similarity)
+    print(f"🎯 BEHAVIORAL FIDELITY DEBUG: normalized={behavioral_fidelity:.4f}")
 
     return behavioral_fidelity
 
