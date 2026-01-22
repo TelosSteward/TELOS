@@ -541,7 +541,10 @@ class BetaResponseManager:
 
                         if pa_embedding_for_ai is not None:
                             raw_ai_fidelity = self._cosine_similarity(response_embedding, pa_embedding_for_ai)
-                            ai_fidelity = normalize_st_fidelity(raw_ai_fidelity)
+                            # FIX: Use normalize_ai_response_fidelity for AI responses (not normalize_st_fidelity)
+                            # AI responses achieve lower raw similarity (~0.40) than queries (~0.50)
+                            # Using the wrong normalizer caused AI fidelity to show ~50% for on-topic responses
+                            ai_fidelity = normalize_ai_response_fidelity(raw_ai_fidelity)
                             logger.warning(f"🔍 INTERVENTION ZONE AI Fidelity: raw={raw_ai_fidelity:.3f} → display={ai_fidelity:.3f} (measured against AI_PA for behavioral alignment)")
                         else:
                             ai_fidelity = 0.50  # Default fallback if no PA available
@@ -608,9 +611,9 @@ class BetaResponseManager:
                             if aligned_response:
                                 # Verify the new response is better
                                 new_embedding = np.array(self.st_embedding_provider.encode(aligned_response))
-                                # FIX: Use pa_embedding_for_ai (consistent with initial check) and normalize_st_fidelity (centroid-calibrated)
+                                # FIX: Use normalize_ai_response_fidelity for AI responses (not normalize_st_fidelity)
                                 new_raw_ai_fidelity = self._cosine_similarity(new_embedding, pa_embedding_for_ai)
-                                new_ai_fidelity = normalize_st_fidelity(new_raw_ai_fidelity)
+                                new_ai_fidelity = normalize_ai_response_fidelity(new_raw_ai_fidelity)
 
                                 logger.info(f"🔄 Realigned AI Fidelity: {ai_fidelity:.3f} → {new_ai_fidelity:.3f} (attempt {attempt})")
 
@@ -1671,15 +1674,15 @@ RESPONSE GUIDELINES:
                 raw_ai_fidelity_to_query = self._cosine_similarity(response_embedding, user_query_embedding)
 
                 # Use MAX: AI is aligned if it matches AI PA OR user query
-                # Apply appropriate normalization based on which reference wins:
-                # - AI_PA: Use normalize_st_fidelity (AI_PA centroids include example_ai_responses)
-                # - Query: Use normalize_ai_response_fidelity (AI response vs short query text)
+                # FIX: Always use normalize_ai_response_fidelity for AI responses
+                # AI responses achieve lower raw similarity (~0.40) than queries (~0.50)
+                # regardless of which reference embedding is used
                 if raw_ai_fidelity_to_pa >= raw_ai_fidelity_to_query:
-                    # AI PA reference won - use standard normalization
-                    ai_fidelity = normalize_st_fidelity(raw_ai_fidelity_to_pa)
+                    # AI PA reference won
+                    ai_fidelity = normalize_ai_response_fidelity(raw_ai_fidelity_to_pa)
                     winning_ref = "AI_PA"
                 else:
-                    # Query reference won - use AI response calibration
+                    # Query reference won
                     ai_fidelity = normalize_ai_response_fidelity(raw_ai_fidelity_to_query)
                     winning_ref = "Query"
 
@@ -1723,7 +1726,8 @@ RESPONSE GUIDELINES:
                             # Re-compute fidelity for the new response
                             new_embedding = np.array(self.st_embedding_provider.encode(aligned_response))
                             new_raw_ai_fidelity = self._cosine_similarity(new_embedding, ai_pa_embedding)
-                            new_ai_fidelity = normalize_st_fidelity(new_raw_ai_fidelity)
+                            # FIX: Use normalize_ai_response_fidelity for AI responses
+                            new_ai_fidelity = normalize_ai_response_fidelity(new_raw_ai_fidelity)
 
                             logger.info(f"🔄 Intervention realigned AI Fidelity: {ai_fidelity:.3f} → {new_ai_fidelity:.3f} (attempt {realignment_attempts})")
 
@@ -1939,15 +1943,14 @@ CRITICAL INSTRUCTIONS:
                 raw_ai_fidelity_to_query = self._cosine_similarity(response_embedding, user_input_embedding)
 
                 # Use MAX: AI is aligned if it matches topic space OR user query
-                # Apply appropriate normalization based on which reference wins:
-                # - AI_PA: Use normalize_st_fidelity (AI_PA centroids include example_ai_responses)
-                # - Query: Use normalize_ai_response_fidelity (AI response vs short query text)
+                # FIX: Always use normalize_ai_response_fidelity for AI responses
+                # AI responses achieve lower raw similarity (~0.40) than queries (~0.50)
                 if raw_ai_fidelity_to_pa >= raw_ai_fidelity_to_query:
-                    # AI PA reference won - use standard normalization
-                    ai_fidelity = normalize_st_fidelity(raw_ai_fidelity_to_pa)
+                    # AI PA reference won
+                    ai_fidelity = normalize_ai_response_fidelity(raw_ai_fidelity_to_pa)
                     winning_ref = "AI_PA"
                 else:
-                    # Query reference won - use AI response calibration
+                    # Query reference won
                     ai_fidelity = normalize_ai_response_fidelity(raw_ai_fidelity_to_query)
                     winning_ref = "Query"
 

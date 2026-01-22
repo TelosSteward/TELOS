@@ -27,18 +27,19 @@ class GatewayConfig:
     mistral_api_key: Optional[str] = field(default_factory=lambda: os.getenv("MISTRAL_API_KEY"))
 
     # Embedding settings (for fidelity calculation)
-    # Use local SentenceTransformer for speed, or Mistral API for quality
-    embedding_provider: str = "sentence_transformer"  # or "mistral"
-    embedding_model: str = "all-MiniLM-L6-v2"
+    # Use Mistral API for quality embeddings (required for accurate governance)
+    # SentenceTransformer is NOT suitable for comparing long PAs to short queries
+    embedding_provider: str = "mistral"  # Changed from sentence_transformer - see bug fix note
+    embedding_model: str = "mistral-embed"  # 1024-dim embeddings
 
-    # Governance thresholds (calibrated for embedding space)
-    # SentenceTransformer (all-MiniLM-L6-v2) range: ~0.15-0.55
-    # Mistral embeddings range: ~0.40-0.75
-    # These thresholds are for SentenceTransformer - adjust if using Mistral
-    agentic_execute_threshold: float = 0.45   # High fidelity - forward to LLM
-    agentic_clarify_threshold: float = 0.35   # Medium fidelity - ask clarification
-    agentic_suggest_threshold: float = 0.25   # Low fidelity - suggest alternatives
-    similarity_baseline: float = 0.15          # Hard block below this (off-topic noise)
+    # Governance thresholds (calibrated for NORMALIZED fidelity 0-1)
+    # The fidelity normalization maps raw_similarity < baseline to fidelity < 0.30
+    # These thresholds work for both SentenceTransformer and Mistral embeddings
+    # because they operate on normalized fidelity, not raw similarity
+    agentic_execute_threshold: float = 0.45   # High fidelity - forward to LLM (display: 90%+)
+    agentic_clarify_threshold: float = 0.35   # Medium fidelity - ask clarification (display: 80-89%)
+    agentic_suggest_threshold: float = 0.30   # Low fidelity - suggest alternatives (display: 70-79%)
+    similarity_baseline: float = 0.15          # Raw similarity baseline for normalization
 
     # Governance behavior
     block_on_low_fidelity: bool = True

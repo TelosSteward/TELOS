@@ -1,0 +1,49 @@
+{
+  "timestamp": "2025-12-20T15:18:26.453901",
+  "dataset": "clinc_oos (HuggingFace official)",
+  "train_size": 15250,
+  "test_size": 5500,
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "method": "k-NN classification with cosine similarity",
+  "results_by_k": {
+    "1": {
+      "overall_accuracy": 0.7498181818181818,
+      "in_scope_accuracy": 0.8786666666666667,
+      "oos_accuracy": 0.17,
+      "total_correct": 4124,
+      "total_samples": 5500
+    },
+    "3": {
+      "overall_accuracy": 0.7578181818181818,
+      "in_scope_accuracy": 0.8924444444444445,
+      "oos_accuracy": 0.152,
+      "total_correct": 4168,
+      "total_samples": 5500
+    },
+    "5": {
+      "overall_accuracy": 0.7550909090909091,
+      "in_scope_accuracy": 0.8957777777777778,
+      "oos_accuracy": 0.122,
+      "total_correct": 4153,
+      "total_samples": 5500
+    },
+    "7": {
+      "overall_accuracy": 0.7569090909090909,
+      "in_scope_accuracy": 0.9026666666666666,
+      "oos_accuracy": 0.101,
+      "total_correct": 4163,
+      "total_samples": 5500
+    },
+    "10": {
+      "overall_accuracy": 0.7532727272727273,
+      "in_scope_accuracy": 0.9031111111111111,
+      "oos_accuracy": 0.079,
+      "total_correct": 4143,
+      "total_samples": 5500
+    }
+  },
+  "best_k": 3,
+  "best_overall_accuracy": 0.7578181818181818,
+  "bert_baseline": 0.962,
+  "roberta_baseline": 0.967
+}

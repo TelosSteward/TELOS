@@ -1,0 +1,168 @@
+{
+  "run_id": "20251220_200644",
+  "timestamp": "2025-12-20T20:06:44.600031",
+  "methodology": "Two-Stage Pipeline: OOS gating (max k-NN sim) + k-NN classification",
+  "dataset": {
+    "name": "clinc_oos (plus)",
+    "train_total": 15250,
+    "train_in_scope": 15000,
+    "test_total": 5500,
+    "oos_intent_id": 42
+  },
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "test_samples": [
+    {
+      "text": "how would you say fly in italian",
+      "intent": 61
+    },
+    {
+      "text": "what does assiduous mean",
+      "intent": 139
+    },
+    {
+      "text": "let me know the status of my american airlines flight",
+      "intent": 80
+    },
+    {
+      "text": "skip ahead one song",
+      "intent": 118
+    },
+    {
+      "text": "roll a die please",
+      "intent": 92
+    },
+    {
+      "text": "what was the date of my last car appointment",
+      "intent": 37
+    },
+    {
+      "text": "is it true your a real person",
+      "intent": 117
+    },
+    {
+      "text": "how to get the right medicine",
+      "intent": 42
+    }
+  ],
+  "test_composition": {
+    "oos": 1000,
+    "in_scope": 4500
+  },
+  "baseline": {
+    "overall": 0.732909090909091,
+    "in_scope": 0.8957777777777778,
+    "oos": 0.0,
+    "raw_counts": {
+      "correct": 4031,
+      "oos_correct": 0,
+      "in_scope_correct": 4031
+    }
+  },
+  "threshold_results": {
+    "0.5": {
+      "overall": 0.8383636363636363,
+      "in_scope": 0.8828888888888888,
+      "oos": 0.638,
+      "false_positive_rate": 0.02022222222222222,
+      "gated_count": 729,
+      "raw_counts": {
+        "correct": 4611,
+        "oos_correct": 638,
+        "in_scope_correct": 3973,
+        "false_positives": 91
+      }
+    },
+    "0.55": {
+      "overall": 0.8503636363636363,
+      "in_scope": 0.866,
+      "oos": 0.78,
+      "false_positive_rate": 0.04488888888888889,
+      "gated_count": 982,
+      "raw_counts": {
+        "correct": 4677,
+        "oos_correct": 780,
+        "in_scope_correct": 3897,
+        "false_positives": 202
+      }
+    },
+    "0.6": {
+      "overall": 0.844,
+      "in_scope": 0.84,
+      "oos": 0.862,
+      "false_positive_rate": 0.082,
+      "gated_count": 1231,
+      "raw_counts": {
+        "correct": 4642,
+        "oos_correct": 862,
+        "in_scope_correct": 3780,
+        "false_positives": 369
+      }
+    },
+    "0.65": {
+      "overall": 0.8210909090909091,
+      "in_scope": 0.7937777777777778,
+      "oos": 0.944,
+      "false_positive_rate": 0.1411111111111111,
+      "gated_count": 1579,
+      "raw_counts": {
+        "correct": 4516,
+        "oos_correct": 944,
+        "in_scope_correct": 3572,
+        "false_positives": 635
+      }
+    },
+    "0.7": {
+      "overall": 0.7727272727272727,
+      "in_scope": 0.7293333333333333,
+      "oos": 0.968,
+      "false_positive_rate": 0.22022222222222224,
+      "gated_count": 1959,
+      "raw_counts": {
+        "correct": 4250,
+        "oos_correct": 968,
+        "in_scope_correct": 3282,
+        "false_positives": 991
+      }
+    },
+    "0.75": {
+      "overall": 0.718,
+      "in_scope": 0.6586666666666666,
+      "oos": 0.985,
+      "false_positive_rate": 0.3042222222222222,
+      "gated_count": 2354,
+      "raw_counts": {
+        "correct": 3949,
+        "oos_correct": 985,
+        "in_scope_correct": 2964,
+        "false_positives": 1369
+      }
+    },
+    "0.8": {
+      "overall": 0.6481818181818182,
+      "in_scope": 0.5711111111111111,
+      "oos": 0.995,
+      "false_positive_rate": 0.4028888888888889,
+      "gated_count": 2808,
+      "raw_counts": {
+        "correct": 3565,
+        "oos_correct": 995,
+        "in_scope_correct": 2570,
+        "false_positives": 1813
+      }
+    }
+  },
+  "best_threshold": 0.55,
+  "best_results": {
+    "overall": 0.8503636363636363,
+    "in_scope": 0.866,
+    "oos": 0.78,
+    "false_positive_rate": 0.04488888888888889,
+    "gated_count": 982,
+    "raw_counts": {
+      "correct": 4677,
+      "oos_correct": 780,
+      "in_scope_correct": 3897,
+      "false_positives": 202
+    }
+  }
+}

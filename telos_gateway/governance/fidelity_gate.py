@@ -226,6 +226,15 @@ class FidelityGate:
 
         Returns:
             (raw_similarity, normalized_fidelity)
+
+        Mistral embeddings produce a narrow discriminative range:
+        - Off-topic content: 0.55-0.65 raw similarity
+        - On-topic content: 0.70-0.80 raw similarity
+
+        We map this to TELOS fidelity zones:
+        - < 0.55: Clearly off-topic → RED (0.0-0.30)
+        - 0.55-0.70: Ambiguous/drift → YELLOW/ORANGE (0.30-0.70)
+        - > 0.70: On-topic → GREEN (0.70-1.0)
         """
         # Embed the text
         text_embedding = self.embed_fn(text)
@@ -233,13 +242,19 @@ class FidelityGate:
         # Calculate cosine similarity
         raw_similarity = self._cosine_similarity(text_embedding, pa.embedding)
 
-        # Normalize to fidelity score
-        # Using the same normalization as telos_core
-        # Maps raw similarity to [0, 1] range with baseline adjustment
-        if raw_similarity < self.baseline_threshold:
-            fidelity = raw_similarity / self.baseline_threshold * 0.3
+        # Mistral-calibrated normalization
+        MISTRAL_FLOOR = 0.55      # Below this = clearly unrelated
+        MISTRAL_ALIGNED = 0.70    # Above this = clearly on-topic
+
+        if raw_similarity < MISTRAL_FLOOR:
+            # Map 0.0-0.55 → 0.0-0.30 (RED zone)
+            fidelity = (raw_similarity / MISTRAL_FLOOR) * 0.30
+        elif raw_similarity < MISTRAL_ALIGNED:
+            # Map 0.55-0.70 → 0.30-0.70 (YELLOW/ORANGE zone)
+            fidelity = 0.30 + ((raw_similarity - MISTRAL_FLOOR) / (MISTRAL_ALIGNED - MISTRAL_FLOOR)) * 0.40
         else:
-            fidelity = 0.3 + (raw_similarity - self.baseline_threshold) / (1 - self.baseline_threshold) * 0.7
+            # Map 0.70-1.0 → 0.70-1.0 (GREEN zone)
+            fidelity = 0.70 + ((raw_similarity - MISTRAL_ALIGNED) / (1.0 - MISTRAL_ALIGNED)) * 0.30
 
         return float(raw_similarity), float(min(1.0, max(0.0, fidelity)))
 
@@ -260,19 +275,21 @@ class FidelityGate:
         high_risk: bool = False,
     ) -> ActionDecision:
         """
-        Make governance decision based on fidelity.
+        Make governance decision based on normalized fidelity.
 
-        Agentic thresholds:
-        - EXECUTE: >= 0.85 (high confidence)
-        - CLARIFY: 0.70-0.84 (verify first)
-        - SUGGEST: 0.50-0.69 (offer alternatives)
-        - INERT/ESCALATE: < 0.50 (no match)
+        Agentic thresholds (calibrated for normalized fidelity 0-1):
+        - EXECUTE: >= 0.45 (high confidence, proceed without intervention)
+        - CLARIFY: 0.35-0.44 (verify intent before proceeding)
+        - SUGGEST: 0.30-0.34 (offer purpose-aligned alternatives)
+        - INERT/ESCALATE: < 0.30 (outside agent's purpose)
+
+        Note: The fidelity normalization already maps raw_similarity < baseline
+        to fidelity < 0.30, so we don't need a separate raw_similarity check.
+        This ensures display percentages align with decisions.
         """
-        # Hard block for baseline violations
-        if raw_similarity < self.baseline_threshold:
-            return ActionDecision.ESCALATE if high_risk else ActionDecision.INERT
-
-        # Threshold-based decisions
+        # Threshold-based decisions using normalized fidelity
+        # Note: Removed raw_similarity baseline check since fidelity normalization
+        # already handles it (raw < baseline → fidelity < 0.30 → INERT)
         if fidelity >= self.execute_threshold:
             return ActionDecision.EXECUTE
         elif fidelity >= self.clarify_threshold:
