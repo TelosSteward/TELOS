@@ -1070,7 +1070,9 @@ class BetaResponseManager:
                     # Use adaptive result values
                     fidelity = adaptive_result.adjusted_fidelity
                     raw_similarity = raw_fidelity  # Keep original for logging
-                    baseline_hard_block = adaptive_result.should_intervene and adaptive_result.drift_detected
+                    # LAYER 1: baseline_hard_block is ONLY for extreme off-topic (raw < 0.20)
+                    # NOT for general drift detection - that's Layer 2's job
+                    baseline_hard_block = raw_fidelity < SIMILARITY_BASELINE
 
                     # SCI INTEGRATION: Store user input embedding for set_previous_turn()
                     self.last_user_input_embedding = input_embedding
