@@ -79,3 +79,10 @@ coverage.xml
 scratch/
 temp/
 tmp/
+
+# Draft directories
+draft/
+drafts/
+*_draft/
+*_drafts/
+.tmp.driveupload/
