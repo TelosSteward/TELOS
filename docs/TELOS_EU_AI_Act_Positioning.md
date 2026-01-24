@@ -306,7 +306,7 @@ When the Commission publishes Article 6 implementation guidelines on February 2,
 ### Open Science Approach
 
 All validation methodology is publicly available:
-- DOI: 10.5281/zenodo.17702890 (Adversarial Testing)
+- DOI: 10.5281/zenodo.18013104 (Adversarial Testing)
 - DOI: 10.5281/zenodo.18009153 (Governance Benchmark)
 - DOI: 10.5281/zenodo.18027446 (Child Safety)
 

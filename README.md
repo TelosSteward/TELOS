@@ -7,7 +7,7 @@
 [![Attacks](https://img.shields.io/badge/attacks-1%2C300-blue)](https://github.com/TelosSteward/TELOS-Validation)
 [![ASR](https://img.shields.io/badge/attack%20success%20rate-0%25-brightgreen)](https://github.com/TelosSteward/TELOS-Validation)
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17702890.svg)](https://doi.org/10.5281/zenodo.17702890)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18013104.svg)](https://doi.org/10.5281/zenodo.18013104)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18009153.svg)](https://doi.org/10.5281/zenodo.18009153)
 [![SB 243 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18027446.svg)](https://doi.org/10.5281/zenodo.18027446)
 
@@ -20,7 +20,7 @@
 - **Attack Success Rate**: 0.00%
 - **Statistical Confidence**: 99.9% CI [0%, 0.28%]
 - **Autonomous Blocking**: 95.8% (Tier 1)
-- **DOI**: [10.5281/zenodo.17702890](https://doi.org/10.5281/zenodo.17702890)
+- **DOI**: [10.5281/zenodo.18013104](https://doi.org/10.5281/zenodo.18013104)
 
 | Benchmark | Attacks | Blocked | Source |
 |-----------|---------|---------|--------|
@@ -132,8 +132,8 @@ For the adversarial validation dataset:
   year         = 2025,
   publisher    = {Zenodo},
   version      = {1.0},
-  doi          = {10.5281/zenodo.17702890},
-  url          = {https://doi.org/10.5281/zenodo.17702890}
+  doi          = {10.5281/zenodo.18013104},
+  url          = {https://doi.org/10.5281/zenodo.18013104}
 }
 ```
 

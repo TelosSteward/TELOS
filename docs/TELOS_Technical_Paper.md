@@ -46,7 +46,7 @@ A two-layer fidelity detection system:
 
 | Dataset | DOI | Description |
 |---------|-----|-------------|
-| Adversarial Validation | [10.5281/zenodo.17702890](https://doi.org/10.5281/zenodo.17702890) | 1,300 attacks, 100% harm prevention |
+| Adversarial Validation | [10.5281/zenodo.18013104](https://doi.org/10.5281/zenodo.18013104) | 1,300 attacks, 100% harm prevention |
 | Governance Benchmark | [10.5281/zenodo.18009153](https://doi.org/10.5281/zenodo.18009153) | 46 multi-session governance evaluations |
 
 ---
@@ -572,7 +572,7 @@ For full governance details, see: `docs/TELOS_PBC_GOVERNANCE.md`
 
 ## Appendix A: Validation Dataset
 
-**DOI**: [10.5281/zenodo.17702890](https://doi.org/10.5281/zenodo.17702890)
+**DOI**: [10.5281/zenodo.18013104](https://doi.org/10.5281/zenodo.18013104)
 
 ### Dataset Metadata
 
@@ -729,8 +729,8 @@ H2_SUPREMACY_THRESHOLD = 0.01
   year         = 2025,
   publisher    = {Zenodo},
   version      = {1.0},
-  doi          = {10.5281/zenodo.17702890},
-  url          = {https://doi.org/10.5281/zenodo.17702890}
+  doi          = {10.5281/zenodo.18013104},
+  url          = {https://doi.org/10.5281/zenodo.18013104}
 }
 
 @dataset{brunner_2025_telos_governance,
