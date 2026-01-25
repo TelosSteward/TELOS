@@ -2,7 +2,7 @@
 
 **Technical Report v1.0**
 **Date:** 2025-12-20
-**DOI:** [To be assigned upon Zenodo submission]
+**DOI:** [10.5281/zenodo.18009153](https://doi.org/10.5281/zenodo.18009153)
 **License:** CC-BY 4.0
 
 ---

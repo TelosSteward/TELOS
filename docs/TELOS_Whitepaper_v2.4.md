@@ -1972,14 +1972,27 @@ The Constitutional Filter maintained 0% ASR across both model sizes, demonstrati
 
 ### Data Availability
 
-**Published Validation Results** (included in repository):
+**Zenodo Validation Datasets** (with forensic audit trails):
+
+*Safety Benchmarks (Adversarial Attack Testing):*
+- **AILuminate (MLCommons)**: DOI [10.5281/zenodo.18370263](https://doi.org/10.5281/zenodo.18370263) - 1,200 prompts, 0% ASR
+- **Adversarial Validation (HarmBench + MedSafetyBench)**: DOI [10.5281/zenodo.18013104](https://doi.org/10.5281/zenodo.18013104) - 1,300 attacks, 0% ASR
+- **SB 243 Child Safety**: DOI [10.5281/zenodo.18027446](https://doi.org/10.5281/zenodo.18027446) - 50 attacks, 0% ASR
+- **XSTest Calibration**: DOI [10.5281/zenodo.18370603](https://doi.org/10.5281/zenodo.18370603) - Threshold calibration
+
+*Academic Benchmarks (OOS Detection Proof-of-Concept):*
+- **Governance Benchmark (CLINC150/MultiWOZ)**: DOI [10.5281/zenodo.18009153](https://doi.org/10.5281/zenodo.18009153) - OOS: 78% detection, Drift: 100% detection
+
+**Total Safety Validated**: 2,800+ adversarial prompts | **Combined ASR**: 0.00%
+
+**Repository Files** (included locally):
 - `validation/telos_complete_validation_dataset.json` - Complete 1,300 attack results
-- `validation/medsafetybench_validation_results.json` - 900 healthcare attacks (NeurIPS 2024)
+- `validation/medsafetybench_validation_results.json` - 900 healthcare attacks
 - `validation/harmbench_validation_results_summary.json` - 400 HarmBench attacks
 
 **Reproducibility**:
-- Internal validation: `telos_observatory_v3/telos_purpose/validation/run_internal_test0.py`
-- See `docs/REPRODUCTION_GUIDE.md` for step-by-step instructions
+- Forensic validation: `validation/run_forensic_validation.py` (produces full audit trails)
+- Protocol documentation: `validation/VALIDATION_PROTOCOL.md`
 - TELOS configuration: Dual PA architecture with Layer 2 fidelity measurement
 
 ### What This Validates
