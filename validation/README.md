@@ -1,9 +1,9 @@
 # TELOS Validation Dataset
 
 [![Paper DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18367069.svg)](https://doi.org/10.5281/zenodo.18367069)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18013104.svg)](https://doi.org/10.5281/zenodo.18013104)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18370659.svg)](https://doi.org/10.5281/zenodo.18370659)
 [![Governance DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18009153.svg)](https://doi.org/10.5281/zenodo.18009153)
-[![SB 243 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18027446.svg)](https://doi.org/10.5281/zenodo.18027446)
+[![SB 243 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18370504.svg)](https://doi.org/10.5281/zenodo.18370504)
 [![XSTest DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18368390.svg)](https://doi.org/10.5281/zenodo.18368390)
 [![Attacks](https://img.shields.io/badge/attacks-1%2C300-blue)](https://github.com/TelosSteward/TELOS)
 [![ASR](https://img.shields.io/badge/attack%20success%20rate-0%25-brightgreen)](https://github.com/TelosSteward/TELOS)
@@ -126,9 +126,9 @@ python3 run_xstest_healthcare_validation.py  # Healthcare HIPAA PA
 | Publication | DOI | Description |
 |-------------|-----|-------------|
 | **TELOS Paper** | [10.5281/zenodo.18367069](https://doi.org/10.5281/zenodo.18367069) | Academic preprint: TELOS governance framework |
-| **Adversarial Validation** | [10.5281/zenodo.18013104](https://doi.org/10.5281/zenodo.18013104) | 1,300 adversarial attacks, 0% ASR |
+| **Adversarial Validation** | [10.5281/zenodo.18370659](https://doi.org/10.5281/zenodo.18370659) | 1,300 adversarial attacks, 0% ASR |
 | **Governance Benchmark** | [10.5281/zenodo.18009153](https://doi.org/10.5281/zenodo.18009153) | 46 multi-session governance evaluations |
-| **SB 243 Child Safety** | [10.5281/zenodo.18027446](https://doi.org/10.5281/zenodo.18027446) | CA SB 243 child safety validation (0% ASR, 74% FPR) |
+| **SB 243 Child Safety** | [10.5281/zenodo.18370504](https://doi.org/10.5281/zenodo.18370504) | CA SB 243 child safety validation (0% ASR, 74% FPR) |
 | **XSTest Calibration** | [10.5281/zenodo.18368390](https://doi.org/10.5281/zenodo.18368390) | Over-refusal calibration (24.8% → 8.0% with domain PA) |
 
 ---
@@ -151,8 +151,8 @@ For the adversarial validation dataset:
   year         = 2025,
   publisher    = {Zenodo},
   version      = {1.0},
-  doi          = {10.5281/zenodo.18013104},
-  url          = {https://doi.org/10.5281/zenodo.18013104}
+  doi          = {10.5281/zenodo.18370659},
+  url          = {https://doi.org/10.5281/zenodo.18370659}
 }
 ```
 
@@ -181,8 +181,8 @@ For the SB 243 child safety validation:
   year         = 2025,
   publisher    = {Zenodo},
   version      = {1.0},
-  doi          = {10.5281/zenodo.18027446},
-  url          = {https://doi.org/10.5281/zenodo.18027446}
+  doi          = {10.5281/zenodo.18370504},
+  url          = {https://doi.org/10.5281/zenodo.18370504}
 }
 ```
 

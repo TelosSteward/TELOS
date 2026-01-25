@@ -643,11 +643,11 @@ We invite the research community to reproduce our results, extend to new domains
 
 ### TELOS Validation Datasets (Zenodo)
 
-[35] TELOS Research Team. "TELOS SB 243 Child Safety Attack Patterns." Zenodo, 2025. https://doi.org/10.5281/zenodo.18027446
+[35] TELOS Research Team. "TELOS SB 243 Child Safety Attack Patterns." Zenodo, 2025. https://doi.org/10.5281/zenodo.18370504
 
 [36] TELOS Research Team. "TELOS Governance Benchmark Dataset." Zenodo, 2025. https://doi.org/10.5281/zenodo.18009153
 
-[37] TELOS Research Team. "TELOS Adversarial Validation Suite." Zenodo, 2025. https://doi.org/10.5281/zenodo.18013104
+[37] TELOS Research Team. "TELOS Adversarial Validation Suite." Zenodo, 2025. https://doi.org/10.5281/zenodo.18370659
 
 ---
 

@@ -8,9 +8,9 @@
 [![ASR](https://img.shields.io/badge/attack%20success%20rate-0%25-brightgreen)](https://github.com/TelosSteward/TELOS-Validation)
 
 [![AILuminate DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18370263.svg)](https://doi.org/10.5281/zenodo.18370263)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18013104.svg)](https://doi.org/10.5281/zenodo.18013104)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18370659.svg)](https://doi.org/10.5281/zenodo.18370659)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18009153.svg)](https://doi.org/10.5281/zenodo.18009153)
-[![SB 243 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18027446.svg)](https://doi.org/10.5281/zenodo.18027446)
+[![SB 243 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18370504.svg)](https://doi.org/10.5281/zenodo.18370504)
 [![XSTest DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18370603.svg)](https://doi.org/10.5281/zenodo.18370603)
 
 ---
@@ -26,9 +26,9 @@
 | Benchmark | Attacks | Blocked | DOI |
 |-----------|---------|---------|-----|
 | AILuminate (MLCommons) | 1,200 | 1,200 (100%) | [10.5281/zenodo.18370263](https://doi.org/10.5281/zenodo.18370263) |
-| MedSafetyBench (NeurIPS 2024) | 900 | 900 (100%) | [10.5281/zenodo.18013104](https://doi.org/10.5281/zenodo.18013104) |
-| HarmBench (CAIS) | 400 | 400 (100%) | [10.5281/zenodo.18013104](https://doi.org/10.5281/zenodo.18013104) |
-| SB 243 Child Safety | 50 | 50 (100%) | [10.5281/zenodo.18027446](https://doi.org/10.5281/zenodo.18027446) |
+| MedSafetyBench (NeurIPS 2024) | 900 | 900 (100%) | [10.5281/zenodo.18370659](https://doi.org/10.5281/zenodo.18370659) |
+| HarmBench (CAIS) | 400 | 400 (100%) | [10.5281/zenodo.18370659](https://doi.org/10.5281/zenodo.18370659) |
+| SB 243 Child Safety | 50 | 50 (100%) | [10.5281/zenodo.18370504](https://doi.org/10.5281/zenodo.18370504) |
 
 ### XSTest Over-Refusal Calibration
 - **False Positive Rate**: 8.0% (Healthcare PA) vs 24.8% (Generic PA)
@@ -154,8 +154,8 @@ For the adversarial validation dataset:
   year         = 2025,
   publisher    = {Zenodo},
   version      = {1.0},
-  doi          = {10.5281/zenodo.18013104},
-  url          = {https://doi.org/10.5281/zenodo.18013104}
+  doi          = {10.5281/zenodo.18370659},
+  url          = {https://doi.org/10.5281/zenodo.18370659}
 }
 ```
 
@@ -184,8 +184,8 @@ For the SB 243 child safety validation:
   year         = 2025,
   publisher    = {Zenodo},
   version      = {1.0},
-  doi          = {10.5281/zenodo.18027446},
-  url          = {https://doi.org/10.5281/zenodo.18027446}
+  doi          = {10.5281/zenodo.18370504},
+  url          = {https://doi.org/10.5281/zenodo.18370504}
 }
 ```
 

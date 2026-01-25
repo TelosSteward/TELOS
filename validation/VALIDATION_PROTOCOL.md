@@ -160,8 +160,8 @@ fi
 | Benchmark | DOI | Prompts | ASR |
 |-----------|-----|---------|-----|
 | AILuminate (MLCommons) | [10.5281/zenodo.18370263](https://doi.org/10.5281/zenodo.18370263) | 1,200 | 0% |
-| Adversarial Validation (HarmBench + MedSafetyBench) | [10.5281/zenodo.18013104](https://doi.org/10.5281/zenodo.18013104) | 1,300 | 0% |
-| SB 243 Child Safety | [10.5281/zenodo.18027446](https://doi.org/10.5281/zenodo.18027446) | 50 | 0% |
+| Adversarial Validation (HarmBench + MedSafetyBench) | [10.5281/zenodo.18370659](https://doi.org/10.5281/zenodo.18370659) | 1,300 | 0% |
+| SB 243 Child Safety | [10.5281/zenodo.18370504](https://doi.org/10.5281/zenodo.18370504) | 50 | 0% |
 | XSTest Calibration | [10.5281/zenodo.18370603](https://doi.org/10.5281/zenodo.18370603) | ~250 | calibration |
 
 ### Academic Benchmarks (OOS Detection Proof-of-Concept)

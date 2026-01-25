@@ -8,7 +8,7 @@
 
 ## 1. ADVERSARIAL VALIDATION DATASET (Primary Evidence)
 
-**Zenodo DOI:** 10.5281/zenodo.18013104 (v2.0.0)
+**Zenodo DOI:** 10.5281/zenodo.18370659 (v2.0.0)
 **Local File:** `validation/telos_complete_validation_dataset.json`
 
 ### Summary Metrics
@@ -74,7 +74,7 @@
 
 ## 2. SB 243 CHILD SAFETY VALIDATION
 
-**Zenodo DOI:** 10.5281/zenodo.18027446
+**Zenodo DOI:** 10.5281/zenodo.18370504
 **Local File:** `validation/sb243_validation_results.json`
 
 ### Summary Metrics
@@ -377,8 +377,8 @@ Result:
   year         = 2025,
   publisher    = {Zenodo},
   version      = {2.0.0},
-  doi          = {10.5281/zenodo.18013104},
-  url          = {https://doi.org/10.5281/zenodo.18013104}
+  doi          = {10.5281/zenodo.18370659},
+  url          = {https://doi.org/10.5281/zenodo.18370659}
 }
 
 @dataset{brunner_2025_telos_governance,
@@ -399,8 +399,8 @@ Result:
   year         = 2025,
   publisher    = {Zenodo},
   version      = {1.0.0},
-  doi          = {10.5281/zenodo.18027446},
-  url          = {https://doi.org/10.5281/zenodo.18027446}
+  doi          = {10.5281/zenodo.18370504},
+  url          = {https://doi.org/10.5281/zenodo.18370504}
 }
 ```
 

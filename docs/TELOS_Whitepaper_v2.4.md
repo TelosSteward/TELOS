@@ -2009,8 +2009,8 @@ The Constitutional Filter maintained 0% ASR across both model sizes, demonstrati
 
 *Safety Benchmarks (Adversarial Attack Testing):*
 - **AILuminate (MLCommons)**: DOI [10.5281/zenodo.18370263](https://doi.org/10.5281/zenodo.18370263) - 1,200 prompts, 0% ASR
-- **Adversarial Validation (HarmBench + MedSafetyBench)**: DOI [10.5281/zenodo.18013104](https://doi.org/10.5281/zenodo.18013104) - 1,300 attacks, 0% ASR
-- **SB 243 Child Safety**: DOI [10.5281/zenodo.18027446](https://doi.org/10.5281/zenodo.18027446) - 50 attacks, 0% ASR
+- **Adversarial Validation (HarmBench + MedSafetyBench)**: DOI [10.5281/zenodo.18370659](https://doi.org/10.5281/zenodo.18370659) - 1,300 attacks, 0% ASR
+- **SB 243 Child Safety**: DOI [10.5281/zenodo.18370504](https://doi.org/10.5281/zenodo.18370504) - 50 attacks, 0% ASR
 - **XSTest Calibration**: DOI [10.5281/zenodo.18370603](https://doi.org/10.5281/zenodo.18370603) - Threshold calibration
 
 *Academic Benchmarks (OOS Detection Proof-of-Concept):*
