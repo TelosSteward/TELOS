@@ -1,10 +1,13 @@
 # TELOS Validation Dataset
 
+[![Paper DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18367069.svg)](https://doi.org/10.5281/zenodo.18367069)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18013104.svg)](https://doi.org/10.5281/zenodo.18013104)
 [![Governance DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18009153.svg)](https://doi.org/10.5281/zenodo.18009153)
-[![Attacks](https://img.shields.io/badge/attacks-1%2C300-blue)](https://github.com/TelosSteward/TELOS-Validation)
-[![ASR](https://img.shields.io/badge/attack%20success%20rate-0%25-brightgreen)](https://github.com/TelosSteward/TELOS-Validation)
-[![License](https://img.shields.io/badge/license-CC%20BY%204.0-orange)](https://creativecommons.org/licenses/by/4.0/)
+[![SB 243 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18027446.svg)](https://doi.org/10.5281/zenodo.18027446)
+[![XSTest DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18368390.svg)](https://doi.org/10.5281/zenodo.18368390)
+[![Attacks](https://img.shields.io/badge/attacks-1%2C300-blue)](https://github.com/TelosSteward/TELOS)
+[![ASR](https://img.shields.io/badge/attack%20success%20rate-0%25-brightgreen)](https://github.com/TelosSteward/TELOS)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue)](https://www.apache.org/licenses/LICENSE-2.0)
 
 Official validation data for TELOS AI governance framework.
 
@@ -30,6 +33,21 @@ Official validation data for TELOS AI governance framework.
 - **Attacks**: 400
 - **Blocked**: 400 (100%)
 - **Source**: [centerforaisafety/HarmBench](https://github.com/centerforaisafety/HarmBench)
+
+### SB 243 Child Safety (California Regulation)
+- **Attacks**: 50 (suicide, self-harm, sexual content, eating disorders)
+- **Benign Contrastive**: 50 (helper/educational queries)
+- **Attack Success Rate**: 0.00%
+- **False Positive Rate**: 74.00%
+- **Note**: High FPR is intentional for child safety contexts
+
+### XSTest Over-Refusal Calibration (NAACL 2024)
+- **Safe Prompts**: 250 (benign queries that should be allowed)
+- **Generic Safety PA**: 24.80% over-refusal rate
+- **Healthcare HIPAA PA**: 8.00% over-refusal rate
+- **Calibration Improvement**: 16.80 percentage points
+- **Source**: [paul-rottger/exaggerated-safety](https://github.com/paul-rottger/exaggerated-safety)
+- **Note**: Demonstrates domain-specific PA calibration reduces false positives
 
 ---
 
@@ -78,12 +96,18 @@ python3 run_harmbench_validation.py
 # Quick test mode (10 attacks each)
 python3 run_medsafetybench_validation.py --quick
 python3 run_harmbench_validation.py --quick
+
+# Run XSTest over-refusal calibration
+python3 run_xstest_validation.py  # Generic Safety PA
+python3 run_xstest_healthcare_validation.py  # Healthcare HIPAA PA
 ```
 
 ### Expected Output
 
 - `medsafetybench_validation_results.json` - Per-attack forensic traces
 - `harmbench_validation_results.json` - Per-attack forensic traces
+- `xstest_validation_results.json` - Generic PA over-refusal results
+- `xstest_healthcare_validation_results.json` - Healthcare PA over-refusal results
 - Console output showing 0% ASR, 100% VDR
 
 ---
@@ -97,12 +121,15 @@ python3 run_harmbench_validation.py --quick
 
 ---
 
-## Zenodo Datasets
+## Zenodo Publications
 
-| Dataset | DOI | Description |
-|---------|-----|-------------|
+| Publication | DOI | Description |
+|-------------|-----|-------------|
+| **TELOS Paper** | [10.5281/zenodo.18367069](https://doi.org/10.5281/zenodo.18367069) | Academic preprint: TELOS governance framework |
 | **Adversarial Validation** | [10.5281/zenodo.18013104](https://doi.org/10.5281/zenodo.18013104) | 1,300 adversarial attacks, 0% ASR |
 | **Governance Benchmark** | [10.5281/zenodo.18009153](https://doi.org/10.5281/zenodo.18009153) | 46 multi-session governance evaluations |
+| **SB 243 Child Safety** | [10.5281/zenodo.18027446](https://doi.org/10.5281/zenodo.18027446) | CA SB 243 child safety validation (0% ASR, 74% FPR) |
+| **XSTest Calibration** | [10.5281/zenodo.18368390](https://doi.org/10.5281/zenodo.18368390) | Over-refusal calibration (24.8% → 8.0% with domain PA) |
 
 ---
 
@@ -144,13 +171,43 @@ For the governance benchmark dataset:
 }
 ```
 
+For the SB 243 child safety validation:
+
+```bibtex
+@dataset{brunner_2025_telos_sb243,
+  author       = {Brunner, Jeffrey},
+  title        = {{TELOS SB 243 Child Safety Validation Dataset}},
+  month        = dec,
+  year         = 2025,
+  publisher    = {Zenodo},
+  version      = {1.0},
+  doi          = {10.5281/zenodo.18027446},
+  url          = {https://doi.org/10.5281/zenodo.18027446}
+}
+```
+
+For the XSTest over-refusal calibration:
+
+```bibtex
+@dataset{brunner_2026_telos_xstest,
+  author       = {Brunner, Jeffrey},
+  title        = {{TELOS XSTest Over-Refusal Calibration Dataset}},
+  month        = jan,
+  year         = 2026,
+  publisher    = {Zenodo},
+  version      = {1.0},
+  doi          = {10.5281/zenodo.18368390},
+  url          = {https://doi.org/10.5281/zenodo.18368390}
+}
+```
+
 ---
 
 ## License
 
-**Creative Commons Attribution 4.0 International (CC BY 4.0)**
+**Apache License 2.0**
 
 ---
 
-**Last Updated**: December 21, 2025
-**Dataset Version**: 1.0
+**Last Updated**: January 25, 2026
+**Dataset Version**: 1.2
