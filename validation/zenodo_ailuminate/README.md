@@ -196,7 +196,7 @@ TELOS AI Labs Inc.
 - TELOS Adversarial Validation: DOI 10.5281/zenodo.18370659
 - TELOS Governance Benchmark: DOI 10.5281/zenodo.18009153
 - TELOS SB 243 Child Safety: DOI 10.5281/zenodo.18370504
-- TELOS XSTest Calibration: DOI 10.5281/zenodo.18368390
+- TELOS XSTest Calibration: DOI 10.5281/zenodo.18370603
 
 ## Validation Date
 

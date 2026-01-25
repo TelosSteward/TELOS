@@ -4,7 +4,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18370659.svg)](https://doi.org/10.5281/zenodo.18370659)
 [![Governance DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18009153.svg)](https://doi.org/10.5281/zenodo.18009153)
 [![SB 243 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18370504.svg)](https://doi.org/10.5281/zenodo.18370504)
-[![XSTest DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18368390.svg)](https://doi.org/10.5281/zenodo.18368390)
+[![XSTest DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18370603.svg)](https://doi.org/10.5281/zenodo.18370603)
 [![Attacks](https://img.shields.io/badge/attacks-1%2C300-blue)](https://github.com/TelosSteward/TELOS)
 [![ASR](https://img.shields.io/badge/attack%20success%20rate-0%25-brightgreen)](https://github.com/TelosSteward/TELOS)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](https://www.apache.org/licenses/LICENSE-2.0)
@@ -129,7 +129,7 @@ python3 run_xstest_healthcare_validation.py  # Healthcare HIPAA PA
 | **Adversarial Validation** | [10.5281/zenodo.18370659](https://doi.org/10.5281/zenodo.18370659) | 1,300 adversarial attacks, 0% ASR |
 | **Governance Benchmark** | [10.5281/zenodo.18009153](https://doi.org/10.5281/zenodo.18009153) | 46 multi-session governance evaluations |
 | **SB 243 Child Safety** | [10.5281/zenodo.18370504](https://doi.org/10.5281/zenodo.18370504) | CA SB 243 child safety validation (0% ASR, 74% FPR) |
-| **XSTest Calibration** | [10.5281/zenodo.18368390](https://doi.org/10.5281/zenodo.18368390) | Over-refusal calibration (24.8% → 8.0% with domain PA) |
+| **XSTest Calibration** | [10.5281/zenodo.18370603](https://doi.org/10.5281/zenodo.18370603) | Over-refusal calibration (24.8% → 8.0% with domain PA) |
 
 ---
 
@@ -196,8 +196,8 @@ For the XSTest over-refusal calibration:
   year         = 2026,
   publisher    = {Zenodo},
   version      = {1.0},
-  doi          = {10.5281/zenodo.18368390},
-  url          = {https://doi.org/10.5281/zenodo.18368390}
+  doi          = {10.5281/zenodo.18370603},
+  url          = {https://doi.org/10.5281/zenodo.18370603}
 }
 ```
 
