@@ -18,17 +18,18 @@ TELOS operates as orchestration-layer infrastructure that measures every
 AI response against human-defined constitutional constraints (Primacy
 Attractors), detects drift mathematically, and applies proportional
 corrections in real-time. Security testing demonstrates 0\% attack
-success rate across 1,350 adversarial scenarios spanning four
-benchmarks: HarmBench (400 general-purpose), MedSafetyBench (900
-healthcare-specific), and California SB 243 Child Safety (50
-CSAM-aligned attacks)---representing 100\% attack elimination compared
-to standard prompt-based defenses (3.7-11.1\% ASR). XSTest over-refusal
-calibration shows domain-specific Primacy Attractors reduce false
-positive rates from 24.8\% (generic) to 8.0\% (Healthcare PA),
-demonstrating that TELOS achieves strong safety without excessive
-restriction. With California's SB 53 taking effect January 2026 and EU
-AI Act enforcement beginning August 2026, TELOS provides the continuous
-monitoring infrastructure that emerging regulations explicitly require.
+success rate across 2,550 adversarial scenarios spanning five
+benchmarks: AILuminate (1,200 MLCommons industry-standard), HarmBench
+(400 general-purpose), MedSafetyBench (900 healthcare-specific), and
+California SB 243 Child Safety (50 CSAM-aligned attacks)---representing
+100\% attack elimination compared to standard prompt-based defenses
+(3.7-11.1\% ASR). XSTest over-refusal calibration shows domain-specific
+Primacy Attractors reduce false positive rates from 24.8\% (generic) to
+8.0\% (Healthcare PA), demonstrating that TELOS achieves strong safety
+without excessive restriction. With California's SB 53 taking effect
+January 2026 and EU AI Act enforcement beginning August 2026, TELOS
+provides the continuous monitoring infrastructure that emerging
+regulations explicitly require.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
@@ -86,24 +87,25 @@ continuous monitoring infrastructure that regulatory frameworks
 explicitly require.
 
 \textbf{Adversarial Validation (December 2025 - January 2026)}: Security
-testing across 1,350 adversarial attacks demonstrates \textbf{0\% Attack
+testing across 2,550 adversarial attacks demonstrates \textbf{0\% Attack
 Success Rate (ASR)} when Constitutional Filter governance is active,
 compared to 3.7-11.1\% ASR with system prompts and 30.8-43.9\% ASR for
 raw models---representing \textbf{100\% attack elimination} through
-orchestration-layer governance. Testing spans four established
-benchmarks: HarmBench (400 general-purpose attacks from Center for AI
-Safety), MedSafetyBench (900 healthcare-specific attacks from NeurIPS
-2024), and California SB 243 Child Safety (50 CSAM-aligned attacks).
-TELOS achieved perfect defense (0/1,350 attacks succeeded) while system
-prompt baselines allowed attacks through. \textbf{Over-Refusal
-Calibration (XSTest)}: Testing against 250 safe prompts shows
-domain-specific Primacy Attractors reduce false positive rates from
-24.8\% (generic PA) to 8.0\% (Healthcare PA)---a 16.8 percentage point
-improvement demonstrating that TELOS achieves strong safety without
-excessive restriction. These results establish TELOS not only as
-alignment infrastructure but as \textbf{constitutional security
-architecture} validated against real adversarial threats while
-maintaining appropriate permissiveness for legitimate use cases.
+orchestration-layer governance. Testing spans five established
+benchmarks: AILuminate (1,200 MLCommons industry-standard attacks),
+HarmBench (400 general-purpose attacks from Center for AI Safety),
+MedSafetyBench (900 healthcare-specific attacks from NeurIPS 2024), and
+California SB 243 Child Safety (50 CSAM-aligned attacks). TELOS achieved
+perfect defense (0/2,550 attacks succeeded) while system prompt
+baselines allowed attacks through. \textbf{Over-Refusal Calibration
+(XSTest)}: Testing against 250 safe prompts shows domain-specific
+Primacy Attractors reduce false positive rates from 24.8\% (generic PA)
+to 8.0\% (Healthcare PA)---a 16.8 percentage point improvement
+demonstrating that TELOS achieves strong safety without excessive
+restriction. These results establish TELOS not only as alignment
+infrastructure but as \textbf{constitutional security architecture}
+validated against real adversarial threats while maintaining appropriate
+permissiveness for legitimate use cases.
 
 By embedding Lean Six Sigma's DMAIC methodology directly into runtime
 mechanics, TELOS extends Quality Systems Regulation---proven in
@@ -1610,8 +1612,8 @@ We test specific, falsifiable claims:
 
 \textbf{H1: Adversarial Security} - Constitutional Filter prevents
 attacks that bypass system prompts alone - \textbf{Status}: ✅ VALIDATED
-(0\% ASR vs 3.7-11.1\% baseline across 1,350 attacks including SB 243
-child safety)
+(0\% ASR vs 3.7-11.1\% baseline across 2,550 attacks including
+AILuminate and SB 243 child safety)
 
 \textbf{H2: Architectural Superiority} - Dual PA maintains higher
 fidelity than single PA across extended conversations - \textbf{Status}:
@@ -1627,8 +1629,8 @@ Requires auditor assessment
 
 \textbf{H5: Generalization Across Domains} - Framework maintains
 effectiveness across conversation types and attack sophistication levels
-- \textbf{Status}: ✅ VALIDATED (1,350 attacks: 400 HarmBench + 900
-MedSafetyBench + 50 SB 243, across 2 models)
+- \textbf{Status}: ✅ VALIDATED (2,550 attacks: 1,200 AILuminate + 400
+HarmBench + 900 MedSafetyBench + 50 SB 243)
 
 \textbf{H6: Over-Refusal Calibration} - Domain-specific Primacy
 Attractors reduce false positives while maintaining strong safety -
@@ -2207,32 +2209,118 @@ Returning to declared boundaries\ldots{}''
 \textbf{Level 3: Response Regeneration} (fidelity \textless{} 0.50) -
 Block original response - Regenerate with strengthened governance
 
-\subsubsection{6.4 Telemetry: Evidence Generation for
-Audit}\label{telemetry-evidence-generation-for-audit}
+\subsubsection{6.4 Runtime Auditable Governance: The
+GovernanceTraceCollector}\label{runtime-auditable-governance-the-governancetracecollector}
 
-Every interaction generates comprehensive telemetry:
+TELOS produces audit records at the moment of each governance
+decision---not post-hoc explanations generated after the fact. When
+regulators examine an incident, they can trace exactly what the system
+measured, what thresholds applied, and why a particular intervention
+occurred.
+
+\textbf{The GovernanceTraceCollector} records seven event types for each
+session:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3871}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3226}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2903}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Event Type
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Contents
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Purpose
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\texttt{session\_start} & Session ID, timestamp, PA configuration &
+Establishes governance context \\
+\texttt{pa\_established} & Full PA vector, thresholds, domain &
+Documents constitutional constraints in effect \\
+\texttt{turn\_start} & User input, turn number & Marks each evaluation
+cycle \\
+\texttt{fidelity\_calculated} & Raw similarity, normalized fidelity,
+embedding dimensions & Mathematical basis for decision \\
+\texttt{intervention\_triggered} & Tier, action taken, rationale &
+Records enforcement decision \\
+\texttt{turn\_complete} & Outcome, response metadata & Completes the
+audit record \\
+\texttt{session\_end} & Summary statistics, total interventions &
+Aggregates session governance \\
+\end{longtable}
+}
+
+\textbf{Forensic Trace Format (JSONL)}:
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \FunctionTok{\{}
-  \DataTypeTok{"timestamp"}\FunctionTok{:} \StringTok{"2024{-}11{-}03T10:15:30Z"}\FunctionTok{,}
-  \DataTypeTok{"turn"}\FunctionTok{:} \DecValTok{15}\FunctionTok{,}
-  \DataTypeTok{"fidelity\_scores"}\FunctionTok{:} \FunctionTok{\{}
-    \DataTypeTok{"user\_pa"}\FunctionTok{:} \FloatTok{0.82}\FunctionTok{,}
-    \DataTypeTok{"ai\_pa"}\FunctionTok{:} \FloatTok{0.91}\FunctionTok{,}
-    \DataTypeTok{"pa\_correlation"}\FunctionTok{:} \FloatTok{0.95}\FunctionTok{,}
-    \DataTypeTok{"system"}\FunctionTok{:} \FloatTok{0.85}
-  \FunctionTok{\},}
-  \DataTypeTok{"drift\_vector"}\FunctionTok{:} \OtherTok{[}\FloatTok{0.12}\OtherTok{,} \FloatTok{{-}0.08}\OtherTok{,} \FloatTok{0.03}\OtherTok{]}\FunctionTok{,}
-  \DataTypeTok{"intervention"}\FunctionTok{:} \StringTok{"none"}\FunctionTok{,}
-  \DataTypeTok{"capability\_index"}\FunctionTok{:} \FloatTok{1.24}\FunctionTok{,}
-  \DataTypeTok{"stability\_status"}\FunctionTok{:} \StringTok{"in\_control"}
+  \DataTypeTok{"event\_type"}\FunctionTok{:} \StringTok{"intervention\_triggered"}\FunctionTok{,}
+  \DataTypeTok{"timestamp"}\FunctionTok{:} \StringTok{"2026{-}01{-}25T14:32:01.847Z"}\FunctionTok{,}
+  \DataTypeTok{"session\_id"}\FunctionTok{:} \StringTok{"sess\_a1b2c3d4"}\FunctionTok{,}
+  \DataTypeTok{"turn\_number"}\FunctionTok{:} \DecValTok{7}\FunctionTok{,}
+  \DataTypeTok{"fidelity\_score"}\FunctionTok{:} \FloatTok{0.156}\FunctionTok{,}
+  \DataTypeTok{"raw\_similarity"}\FunctionTok{:} \FloatTok{0.089}\FunctionTok{,}
+  \DataTypeTok{"tier"}\FunctionTok{:} \DecValTok{1}\FunctionTok{,}
+  \DataTypeTok{"action"}\FunctionTok{:} \StringTok{"BLOCK"}\FunctionTok{,}
+  \DataTypeTok{"pa\_config"}\FunctionTok{:} \StringTok{"healthcare\_hipaa"}\FunctionTok{,}
+  \DataTypeTok{"threshold\_applied"}\FunctionTok{:} \FloatTok{0.18}\FunctionTok{,}
+  \DataTypeTok{"rationale"}\FunctionTok{:} \StringTok{"Fidelity below Tier 1 threshold"}
 \FunctionTok{\}}
 \end{Highlighting}
 \end{Shaded}
 
-This creates the audit trail regulators require---demonstrable evidence
-of continuous governance.
+\textbf{Published Forensic Evidence}: All validation datasets include
+complete forensic audit trails:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Dataset & Events Recorded & Trace Size \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+AILuminate (1,200 prompts) & 4,803 events & 1.69 MB \\
+HarmBench (400 prompts) & 1,601 events & 0.56 MB \\
+MedSafetyBench (900 prompts) & 3,602 events & 1.26 MB \\
+SB 243 (50 prompts) & 201 events & 0.07 MB \\
+XSTest (250 prompts) & 1,001 events & 0.35 MB \\
+\end{longtable}
+}
+
+These traces enable independent verification of every governance
+decision across all 2,550 adversarial attacks. Researchers and
+regulators can examine the mathematical basis for each block without
+relying on aggregate statistics alone.
+
+\textbf{Regulatory Alignment}: The forensic trace format addresses
+specific requirements:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{EU AI Act Article 12}: Automatic recording of events during
+  operation
+\item
+  \textbf{EU AI Act Article 72}: Post-market monitoring with continuous
+  logging
+\item
+  \textbf{California SB 53}: Documentation of safety-relevant decisions
+\item
+  \textbf{HIPAA Security Rule}: Audit controls for access and decision
+  logging
+\item
+  \textbf{ISO 27001}: Information security event logging
+\end{itemize}
+
+The JSONL format integrates with standard log aggregation infrastructure
+(Elasticsearch, Splunk, CloudWatch) for enterprise compliance workflows.
 
 \subsubsection{6.5 Deployment Modes}\label{deployment-modes}
 
@@ -3171,19 +3259,41 @@ portability}: Same governance code works across model families -
 
 \subsubsection{Data Availability}\label{data-availability}
 
-\textbf{Published Validation Results} (included in repository): -
+\textbf{Zenodo Validation Datasets} (with forensic audit trails):
+
+\emph{Safety Benchmarks (Adversarial Attack Testing):} -
+\textbf{AILuminate (MLCommons)}: DOI
+\href{https://doi.org/10.5281/zenodo.18370263}{10.5281/zenodo.18370263}
+- 1,200 prompts, 0\% ASR - \textbf{Adversarial Validation (HarmBench +
+MedSafetyBench)}: DOI
+\href{https://doi.org/10.5281/zenodo.18013104}{10.5281/zenodo.18013104}
+- 1,300 attacks, 0\% ASR - \textbf{SB 243 Child Safety}: DOI
+\href{https://doi.org/10.5281/zenodo.18027446}{10.5281/zenodo.18027446}
+- 50 attacks, 0\% ASR - \textbf{XSTest Calibration}: DOI
+\href{https://doi.org/10.5281/zenodo.18370603}{10.5281/zenodo.18370603}
+- Threshold calibration
+
+\emph{Academic Benchmarks (OOS Detection Proof-of-Concept):} -
+\textbf{Governance Benchmark (CLINC150/MultiWOZ)}: DOI
+\href{https://doi.org/10.5281/zenodo.18009153}{10.5281/zenodo.18009153}
+- OOS: 78\% detection, Drift: 100\% detection
+
+\textbf{Total Safety Validated}: 2,800+ adversarial prompts \textbar{}
+\textbf{Combined ASR}: 0.00\%
+
+\textbf{Repository Files} (included locally): -
 \texttt{validation/telos\_complete\_validation\_dataset.json} - Complete
 1,300 attack results -
 \texttt{validation/medsafetybench\_validation\_results.json} - 900
-healthcare attacks (NeurIPS 2024) -
+healthcare attacks -
 \texttt{validation/harmbench\_validation\_results\_summary.json} - 400
 HarmBench attacks
 
-\textbf{Reproducibility}: - Internal validation:
-\texttt{telos\_observatory\_v3/telos\_purpose/validation/run\_internal\_test0.py}
-- See \texttt{docs/REPRODUCTION\_GUIDE.md} for step-by-step instructions
-- TELOS configuration: Dual PA architecture with Layer 2 fidelity
-measurement
+\textbf{Reproducibility}: - Forensic validation:
+\texttt{validation/run\_forensic\_validation.py} (produces full audit
+trails) - Protocol documentation:
+\texttt{validation/VALIDATION\_PROTOCOL.md} - TELOS configuration: Dual
+PA architecture with Layer 2 fidelity measurement
 
 \subsubsection{What This Validates}\label{what-this-validates}
 

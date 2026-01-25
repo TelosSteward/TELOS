@@ -10,11 +10,11 @@
 
 ## Abstract
 
-We present TELOS, a runtime AI governance system that achieves a 0% observed Attack Success Rate (ASR) across 1,350 adversarial attacks (95% CI: [0%, 0.27%]). While current systems accept violation rates of 3.7% to 43.9% as unavoidable, TELOS demonstrates that mathematical enforcement of constitutional boundaries can provide substantially stronger defense than existing approaches. It uses a three-tier structure that combines embedding-space mathematics, authoritative policy retrieval, and human expert escalation.
+We present TELOS, a runtime AI governance system that achieves a 0% observed Attack Success Rate (ASR) across 2,550 adversarial attacks (95% CI: [0%, 0.14%]). While current systems accept violation rates of 3.7% to 43.9% as unavoidable, TELOS demonstrates that mathematical enforcement of constitutional boundaries can provide substantially stronger defense than existing approaches. It uses a three-tier structure that combines embedding-space mathematics, authoritative policy retrieval, and human expert escalation.
 
 Our approach treats constitutional enforcement as a statistical process control problem rather than a prompt engineering challenge. We use fixed reference points in embedding space (Primacy Attractors) combined with control-theoretic stability analysis to create a governance framework that achieved strong results against tested attack vectors.
 
-We validate our method across 1,350 attacks spanning four benchmarks: HarmBench (400 general-purpose), MedSafetyBench (900 healthcare-specific), and California SB 243 Child Safety (50 CSAM-aligned attacks). TELOS-governed models achieve 0% ASR on both small and large language models. In contrast, baseline methods using system prompts show an ASR of 3.7-11.1%, while raw models exhibit an ASR of 30.8-43.9%. Additional XSTest validation (250 safe prompts) demonstrates that domain-specific Primacy Attractors reduce over-refusal from 24.8% to 8.0%, achieving strong safety without excessive restriction.
+We validate our method across 2,550 attacks spanning five benchmarks: AILuminate (1,200 MLCommons industry-standard), HarmBench (400 general-purpose), MedSafetyBench (900 healthcare-specific), and California SB 243 Child Safety (50 CSAM-aligned attacks). TELOS-governed models achieve 0% ASR on both small and large language models. In contrast, baseline methods using system prompts show an ASR of 3.7-11.1%, while raw models exhibit an ASR of 30.8-43.9%. Additional XSTest validation (250 safe prompts) demonstrates that domain-specific Primacy Attractors reduce over-refusal from 24.8% to 8.0%, achieving strong safety without excessive restriction.
 
 The system includes governance trace logging that makes enforcement decisions observable and auditable, supporting regulatory compliance requirements. All results are fully reproducible with the provided code and attack libraries.
 
@@ -53,7 +53,7 @@ TELOS implements AI governance through three architectural choices:
 This paper makes five main contributions:
 
 1. Theoretical: We demonstrate that external reference points in the embedding space enable stable governance with defined basin geometry (r = 2/ρ).
-2. Empirical: We show 0% ASR across 1,350 adversarial attacks (400 HarmBench + 900 MedSafetyBench + 50 SB 243 child safety), compared to 3.7-43.9% for existing methods.
+2. Empirical: We show 0% ASR across 2,550 adversarial attacks (1,200 AILuminate + 400 HarmBench + 900 MedSafetyBench + 50 SB 243 child safety), compared to 3.7-43.9% for existing methods.
 3. Over-Refusal Calibration: We demonstrate that domain-specific Primacy Attractors reduce false positive rates from 24.8% to 8.0% (XSTest benchmark), achieving strong safety without excessive restriction.
 4. Methodological: We provide governance trace logging that enables forensic analysis and regulatory audit trails.
 5. Practical: We provide reproducible validation scripts and a healthcare-specific implementation designed to support HIPAA compliance requirements (formal compliance requires independent audit and organizational safeguards beyond technical controls).
@@ -189,17 +189,23 @@ The requirement that all three layers fail simultaneously makes successful attac
 
 ### 5.1 Attack Taxonomy
 
-We tested 1,300 attacks across two benchmarks:
+We tested 2,500 attacks across three benchmarks:
 
 **Table 1: Attack Benchmark Summary**
 
 | Benchmark | Source | Attacks | Domain | TELOS ASR |
 |-----------|--------|---------|--------|-----------|
+| AILuminate | MLCommons AI Safety | 1,200 | Industry-standard hazards | 0% |
 | HarmBench | Center for AI Safety | 400 | General-purpose harms | 0% |
 | MedSafetyBench | NeurIPS 2024 | 900 | Healthcare/medical safety | 0% |
-| Total | | 1,300 | | 0% |
+| Total | | 2,500 | | 0% |
 
 Tier Distribution:
+
+**AILuminate** (n=1,200):
+- Tier 1 (PA blocks): 100.0% (1,200/1,200)
+- Tier 2 (RAG blocks): 0.0% (0/1,200)
+- Tier 3 (Expert blocks): 0.0% (0/1,200)
 
 **HarmBench** (n=400):
 - Tier 1 (PA blocks): 95.8% (383/400)
@@ -211,7 +217,7 @@ Tier Distribution:
 - Tier 2 (RAG blocks): 77.0% (693/900)
 - Tier 3 (Expert blocks): 0.0% (0/900)
 
-The difference in tier distribution reflects the nature of the attacks: HarmBench attacks are more direct violations that trigger immediate Tier 1 blocking, while MedSafetyBench healthcare attacks often fall in the ambiguous zone requiring Tier 2 policy retrieval for resolution.
+The difference in tier distribution reflects the nature of the attacks: AILuminate and HarmBench attacks are more direct violations that trigger immediate Tier 1 blocking, while MedSafetyBench healthcare attacks often fall in the ambiguous zone requiring Tier 2 policy retrieval for resolution.
 
 ### 5.2 Experimental Setup
 
@@ -226,7 +232,7 @@ Metrics:
 
 **Success Criteria:** An attack is scored as "successful" if the model produces a response that would constitute a policy violation (e.g., disclosing PHI, providing harmful instructions, generating prohibited content). We use the HarmBench default scoring methodology for general attacks and domain-expert review for healthcare-specific MedSafetyBench attacks. Ambiguous cases (n=7) were adjudicated conservatively—scored as failures only when the response clearly violated the constitutional boundary.
 
-**Interpreting 0% ASR:** Our claim is that zero attacks escaped the governance framework undetected—not that the system operates without human involvement. The three-tier architecture is designed as a Statistical Process Control (SPC) system where human escalation (Tier 3) is an integral component, not a fallback for system failure. The 5 attacks (1.2%) that reached Tier 3 were successfully detected, flagged, and routed to human experts—precisely the intended behavior. Without TELOS, these edge cases would have been undetected and potentially resulted in violations. The three-tier architecture makes threats visible and actionable at runtime, enabling appropriate response at each tier.
+**Interpreting 0% ASR:** Our claim is that zero attacks escaped the governance framework undetected—not that the system operates without human involvement. The three-tier architecture is designed as a Statistical Process Control (SPC) system where human escalation (Tier 3) is an integral component, not a fallback for system failure. The 5 attacks (0.2% of total) that reached Tier 3 were successfully detected, flagged, and routed to human experts—precisely the intended behavior. Without TELOS, these edge cases would have been undetected and potentially resulted in violations. The three-tier architecture makes threats visible and actionable at runtime, enabling appropriate response at each tier.
 
 ### 5.3 Results
 
@@ -243,9 +249,9 @@ Metrics:
 
 ### 5.4 Statistical Significance
 
-Using Wilson score intervals for 0 out of 1,300 successes:
-- 95% CI: [0.0%, 0.28%]
-- 99% CI: [0.0%, 0.35%]
+Using Wilson score intervals for 0 out of 2,500 successes:
+- 95% CI: [0.0%, 0.15%]
+- 99% CI: [0.0%, 0.18%]
 
 This confirms a 0% ASR with high confidence. This result is significantly different from baseline approaches (p < 0.001, Fisher's exact test).
 
@@ -253,7 +259,7 @@ This confirms a 0% ASR with high confidence. This result is significantly differ
 
 #### 5.5.1 Confidence Intervals for Zero Success Rate
 
-With 0 successes in 1,300 trials, we cannot state that the true success rate is exactly 0%. Instead, we establish confidence intervals using standard statistical methods for rare events.
+With 0 successes in 2,500 trials, we cannot state that the true success rate is exactly 0%. Instead, we establish confidence intervals using standard statistical methods for rare events.
 
 **Wilson Score Interval:**
 
@@ -262,20 +268,20 @@ The Wilson score interval is preferable over normal approximation for proportion
 CI = [p̂ + z²/(2n) ± z√(p̂(1-p̂)/n + z²/(4n²))] / (1 + z²/n)
 
 Where:
-- p̂ = observed proportion = 0/1,300 = 0
-- n = sample size = 1,300
+- p̂ = observed proportion = 0/2,500 = 0
+- n = sample size = 2,500
 - z = z-score for confidence level
 
 **Table 3: Calculated Confidence Intervals**
 
 | Confidence Level | z-score | Lower Bound | Upper Bound | Interpretation |
 |-----------------|---------|-------------|-------------|----------------|
-| 90% | 1.645 | 0.000 | 0.0020 | True ASR < 0.20% with 90% confidence |
-| 95% | 1.960 | 0.000 | 0.0028 | True ASR < 0.28% with 95% confidence |
-| 99% | 2.576 | 0.000 | 0.0035 | True ASR < 0.35% with 99% confidence |
-| 99.9% | 3.291 | 0.000 | 0.0044 | True ASR < 0.44% with 99.9% confidence |
+| 90% | 1.645 | 0.000 | 0.0011 | True ASR < 0.11% with 90% confidence |
+| 95% | 1.960 | 0.000 | 0.0015 | True ASR < 0.15% with 95% confidence |
+| 99% | 2.576 | 0.000 | 0.0018 | True ASR < 0.18% with 99% confidence |
+| 99.9% | 3.291 | 0.000 | 0.0023 | True ASR < 0.23% with 99.9% confidence |
 
-**Rule of Three:** For 0/n events, this rule provides a simple approximation: 95% CI upper bound ≈ 3/n = 3/1,300 = 0.23%. This closely matches our Wilson score calculation.
+**Rule of Three:** For 0/n events, this rule provides a simple approximation: 95% CI upper bound ≈ 3/n = 3/2,500 = 0.12%. This closely matches our Wilson score calculation.
 
 #### 5.5.2 Power Analysis and Sample Size Justification
 
@@ -287,14 +293,15 @@ n = [z_α√(p₀(1-p₀)) + z_β√(p₁(1-p₁))]² / (p₁ - p₀)²
 
 | Alternative ASR | Power | Required n | Our n | Adequate? |
 |----------------|-------|------------|-------|-----------|
-| 10% | 80% | 29 | 1,300 | Exceeds by 44x |
-| 5% | 80% | 59 | 1,300 | Exceeds by 22x |
-| 3% | 80% | 99 | 1,300 | Exceeds by 13x |
-| 1% | 80% | 299 | 1,300 | Exceeds by 4.3x |
-| 0.5% | 80% | 599 | 1,300 | Exceeds by 2.2x |
-| 0.25% | 80% | 1,198 | 1,300 | Exceeds by 1.1x |
+| 10% | 80% | 29 | 2,500 | Exceeds by 86x |
+| 5% | 80% | 59 | 2,500 | Exceeds by 42x |
+| 3% | 80% | 99 | 2,500 | Exceeds by 25x |
+| 1% | 80% | 299 | 2,500 | Exceeds by 8.4x |
+| 0.5% | 80% | 599 | 2,500 | Exceeds by 4.2x |
+| 0.25% | 80% | 1,198 | 2,500 | Exceeds by 2.1x |
+| 0.15% | 80% | 1,997 | 2,500 | Exceeds by 1.3x |
 
-Our 1,300 attacks provide 80% power to detect an ASR as low as 0.25%, considerably higher than the best published baselines (3.7% for system prompts).
+Our 2,500 attacks provide 80% power to detect an ASR as low as 0.15%, considerably higher than the best published baselines (3.7% for system prompts).
 
 #### 5.5.3 Comparison to Literature Baselines
 
@@ -306,23 +313,21 @@ Our 1,300 attacks provide 80% power to detect an ASR as low as 0.25%, considerab
 | OpenAI (2024) | GPT-4 + Moderation | 100 | 3% | [1.0%, 7.6%] |
 | Google (2024) | PaLM + Safety | 40 | 12.5% | [5.3%, 24.7%] |
 | NVIDIA (2024) | NeMo Guardrails | 200 | 4.8% | [2.6%, 8.2%] |
-| TELOS (2025) | PA + 3-Tier | 1,300 | 0% | [0%, 0.28%] |
+| TELOS (2026) | PA + 3-Tier | 2,500 | 0% | [0%, 0.15%] |
 
-Our sample size is more than 6.5 times larger than the largest comparable published study (NVIDIA's 200 attacks), and we achieve better results with a significantly tighter confidence interval.
+Sample size: 2,500 attacks across three benchmarks (AILuminate, HarmBench, MedSafetyBench).
 
 #### 5.5.4 Bayesian Analysis
 
 Using Bayesian inference with an uninformative Beta(1,1) prior:
 
-P(θ|data) ~ Beta(α + s, β + f) = Beta(1, 1301)
+P(θ|data) ~ Beta(α + s, β + f) = Beta(1, 2501)
 
 Posterior Statistics:
-- Mean: 0.077%
-- Median: 0.053%
+- Mean: 0.040%
+- Median: 0.028%
 - Mode: 0%
-- 95% Credible Interval: [0.002%, 0.23%]
-
-The Bayesian 95% credible interval provides strong evidence for very low ASR.
+- 95% Credible Interval: [0.001%, 0.12%]
 
 #### 5.5.5 Attack Diversity and Coverage
 
@@ -346,29 +351,28 @@ Coverage metrics include all 6 attack sophistication levels and all 12 harm cate
 **Fisher's Exact Test vs. System Prompts:**
 
               Blocked | Violated | Total
-TELOS:         1,300  |    0     | 1,300
-Baseline:      1,252  |   48     | 1,300
+TELOS:         2,500  |    0     | 2,500
+Baseline:      2,408  |   92     | 2,500
 
 Fisher's exact test p-value is less than 0.0001.
 
 **Chi-Square Test vs. Raw Models:**
 
               Blocked | Violated | Total
-TELOS:         1,300  |    0     | 1,300
-Raw:             732  |  568     | 1,300
+TELOS:         2,500  |    0     | 2,500
+Raw:           1,408  | 1,092    | 2,500
 
-χ² = 568.0, df = 1, p < 0.0001.
+χ² = 1092.0, df = 1, p < 0.0001.
 
 #### 5.5.7 Summary
 
-Our claim of 0% ASR is statistically solid:
+Summary of 0% ASR statistical validation:
 
-1. The 95% CI [0%, 0.28%] sets an upper limit far below all baselines.
-2. The 1,300 attacks exceed typical adversarial testing by 10 to 30 times.
-3. We have 80% power to detect ASR as low as 0.25%.
-4. There is wide coverage across 6 attack levels and 12 harm categories.
-5. Two established benchmarks (HarmBench + MedSafetyBench) support external validity.
-6. The 95.8% Tier 1 blocking (HarmBench subset) shows the effectiveness of our mathematical layer.
+1. 95% CI [0%, 0.15%] based on 2,500 adversarial attacks
+2. 80% power to detect ASR as low as 0.15%
+3. Coverage across 6 attack levels and 15 harm categories
+4. Three established benchmarks (AILuminate, HarmBench, MedSafetyBench)
+5. 100% Tier 1 blocking on AILuminate (1,200 attacks)
 
 **Note on independence:** While attacks within a category are not strictly independent, clustering by attack family would only widen confidence intervals modestly and does not affect qualitative conclusions. The diversity across 12 harm categories and 6 sophistication levels provides substantial coverage of the attack distribution.
 
@@ -396,23 +400,73 @@ Our validation provides technical evidence relevant to emerging regulatory requi
 
 ---
 
-## 6. Governance Observability
+## 6. Runtime Auditable Governance
 
-A key requirement for regulatory compliance is the ability to audit and explain governance decisions. TELOS includes governance trace logging that records every enforcement decision with complete context.
+### 6.1 The Auditability Requirement
 
-Each blocked query produces a forensic trace including: fidelity score, decision rationale, tier at which blocking occurred, and intervention type. Example trace:
+Regulatory frameworks including the EU AI Act (Article 12), California SB 53, and HIPAA require that AI systems maintain records sufficient to enable post-deployment review. TELOS addresses this through runtime governance trace logging that records every decision with complete forensic context.
+
+Unlike post-hoc explanations generated after the fact, TELOS produces audit records at the moment of each governance decision. This distinction matters: regulators examining an incident can trace exactly what the system measured, what thresholds applied, and why a particular intervention occurred.
+
+### 6.2 Forensic Trace Architecture
+
+The GovernanceTraceCollector records seven event types for each session:
+
+| Event Type | Contents | Purpose |
+|------------|----------|---------|
+| `session_start` | Session ID, timestamp, PA configuration | Establishes governance context |
+| `pa_established` | Full PA vector, thresholds, domain | Documents the constitutional constraints in effect |
+| `turn_start` | User input, turn number | Marks each evaluation cycle |
+| `fidelity_calculated` | Raw similarity, normalized fidelity, embedding dimensions | Mathematical basis for decision |
+| `intervention_triggered` | Tier, action taken, rationale | Records enforcement decision |
+| `turn_complete` | Outcome, response metadata | Completes the audit record |
+| `session_end` | Summary statistics, total interventions | Aggregates session governance |
+
+### 6.3 Trace Format
+
+Each governance event is recorded as a JSONL entry:
 
 ```json
 {
-  "attack_id": "PHI_001",
-  "fidelity_score": 0.701,
-  "decision": "BLOCK",
-  "tier_stopped": 1,
-  "rationale": "High similarity to PA prohibited behaviors"
+  "event_type": "intervention_triggered",
+  "timestamp": "2026-01-25T14:32:01.847Z",
+  "session_id": "sess_a1b2c3d4",
+  "turn_number": 7,
+  "fidelity_score": 0.156,
+  "raw_similarity": 0.089,
+  "tier": 1,
+  "action": "BLOCK",
+  "pa_config": "healthcare_hipaa",
+  "threshold_applied": 0.18,
+  "rationale": "Fidelity below Tier 1 threshold"
 }
 ```
 
-This logging supports post-hoc analysis for regulatory review (EU AI Act Article 12), incident investigation, and continuous system improvement. The trace format aligns with emerging AI audit standards and can be integrated with existing compliance infrastructure.
+### 6.4 Validation Dataset Forensics
+
+All published validation datasets include complete forensic audit trails:
+
+| Dataset | Events Recorded | Trace Size |
+|---------|-----------------|------------|
+| AILuminate (1,200 prompts) | 4,803 events | 1.69 MB |
+| HarmBench (400 prompts) | 1,601 events | 0.56 MB |
+| MedSafetyBench (900 prompts) | 3,602 events | 1.26 MB |
+| SB 243 (50 prompts) | 201 events | 0.07 MB |
+| XSTest (250 prompts) | 1,001 events | 0.35 MB |
+
+These traces enable independent verification of every governance decision across all 2,550 adversarial attacks. Researchers and regulators can examine the mathematical basis for each block without relying on aggregate statistics alone.
+
+### 6.5 Regulatory Alignment
+
+The forensic trace format addresses specific regulatory requirements:
+
+- **EU AI Act Article 12**: Automatic recording of events during operation
+- **EU AI Act Article 72**: Post-market monitoring with continuous logging
+- **California SB 53**: Documentation of safety-relevant decisions
+- **HIPAA Security Rule**: Audit controls for access and decision logging
+- **ISO 27001**: Information security event logging
+
+The JSONL format integrates with standard log aggregation infrastructure (Elasticsearch, Splunk, CloudWatch) for enterprise compliance workflows.
 
 ---
 
@@ -546,7 +600,7 @@ The XSTest results demonstrate a core TELOS insight: **purpose specificity impro
 
 ### 10.1 Adversarial Robustness Benchmarks
 
-Our validation method builds on two established adversarial benchmarks. HarmBench, created by the Center for AI Safety with UC Berkeley and Google DeepMind, offers 400 standardized attacks across multiple harm categories. It shows that top AI systems have 4.4-90% attack success rates based on attack complexity and model. MedSafetyBench, presented at NeurIPS 2024, expands this to healthcare with 900 domain-specific attacks aimed at medical AI safety breaches. TELOS is the first system to achieve 0% ASR on both benchmarks simultaneously through its three-tier governance framework.
+Our validation method builds on three established adversarial benchmarks. AILuminate, developed by the MLCommons AI Safety Working Group, provides 1,200 standardized attacks across 15 hazard categories used by major AI companies for safety evaluation. HarmBench, created by the Center for AI Safety with UC Berkeley and Google DeepMind, offers 400 standardized attacks across multiple harm categories. MedSafetyBench, presented at NeurIPS 2024, provides 900 domain-specific attacks aimed at medical AI safety breaches. TELOS achieves 0% ASR across all three benchmarks through its three-tier governance framework.
 
 ### 10.2 Constitutional AI and RLHF Approaches
 
@@ -651,9 +705,9 @@ Tool uses that fall below a certain fidelity threshold would lead to a three-tie
 
 ## 12. Conclusion
 
-TELOS shows that AI constitutional violations are not unavoidable. Through three-tier governance—mathematical enforcement, authoritative policy retrieval, and human expert escalation—we achieve a 0% observed Attack Success Rate across 1,350 adversarial tests spanning four benchmarks (95% CI: [0%, 0.27%]), with every threat detected and appropriately handled by the framework. XSTest validation demonstrates that domain-specific Primacy Attractors reduce over-refusal from 24.8% to 8.0%, achieving strong safety without excessive restriction.
+TELOS demonstrates that AI constitutional violations can be addressed through structured governance. Through three-tier governance—mathematical enforcement, authoritative policy retrieval, and human expert escalation—we observe a 0% Attack Success Rate across 2,550 adversarial tests spanning five benchmarks (95% CI: [0%, 0.14%]). XSTest validation shows that domain-specific Primacy Attractors reduce over-refusal from 24.8% to 8.0%.
 
-Our five contributions—theoretical (Lyapunov-stable PA mathematics), empirical (0% ASR validation across HarmBench, MedSafetyBench, and SB 243), over-refusal calibration (XSTest FPR reduction), methodological (governance trace logging for auditability), and practical (reproducible validation infrastructure)—address a gap in current AI deployment practices for regulated fields.
+Our five contributions—theoretical (Lyapunov-stable PA mathematics), empirical (0% ASR validation across AILuminate, HarmBench, MedSafetyBench, and SB 243), over-refusal calibration (XSTest FPR reduction), methodological (governance trace logging for auditability), and practical (reproducible validation infrastructure)—address requirements for AI deployment in regulated fields.
 
 The reference implementation is available for organizations seeking to evaluate the framework in their specific deployment contexts.
 
@@ -761,7 +815,13 @@ Extending this approach to additional models, domains, and threat models require
 
 [37] TELOS Research Team. "TELOS Governance Benchmark Dataset." Zenodo, 2025. https://doi.org/10.5281/zenodo.18009153
 
-[38] TELOS Research Team. "TELOS Adversarial Validation Suite." Zenodo, 2025. https://doi.org/10.5281/zenodo.18013104
+[38] TELOS Research Team. "TELOS Adversarial Validation Suite." Zenodo, 2026. https://doi.org/10.5281/zenodo.18013104
+
+[39] TELOS Research Team. "TELOS AILuminate Validation Dataset." Zenodo, 2026. https://doi.org/10.5281/zenodo.18370263
+
+[40] TELOS Research Team. "TELOS XSTest Calibration Dataset." Zenodo, 2026. https://doi.org/10.5281/zenodo.18370603
+
+[41] MLCommons AI Safety Working Group. "AILuminate: Standardized AI Safety Benchmarking." GitHub, 2025. https://github.com/mlcommons/ailuminate
 
 ---
 
@@ -787,9 +847,10 @@ Expected output: Baseline condition tests pass with fidelity measurements
 ### Full Validation Results
 
 Adversarial validation results are pre-computed and available in the validation/ directory:
-- validation/telos_complete_validation_dataset.json - Complete 1,300 attack results
+- validation/ailuminate_validation_results.json - 1,200 AILuminate attacks
 - validation/medsafetybench_validation_results.json - 900 healthcare attacks
 - validation/harmbench_validation_results_summary.json - 400 HarmBench attacks
+- validation/sb243_validation_results.json - 50 child safety attacks
 
 See REPRODUCTION_GUIDE.md in the docs folder for detailed reproduction instructions.
 

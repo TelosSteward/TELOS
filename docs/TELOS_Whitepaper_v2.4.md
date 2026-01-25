@@ -9,7 +9,7 @@
 
 AI systems drift from their intended purpose during extended conversations—a measured 20-40% reliability loss that creates compliance risk across healthcare, finance, and government deployments. TELOS proposes the solution of treating AI governance as a continuous quality control process, applying the same statistical methods that ensure manufacturing quality (Six Sigma, ISO 9001) to semantic systems.
 
-TELOS operates as orchestration-layer infrastructure that measures every AI response against human-defined constitutional constraints (Primacy Attractors), detects drift mathematically, and applies proportional corrections in real-time. Security testing demonstrates 0% attack success rate across 1,350 adversarial scenarios spanning four benchmarks: HarmBench (400 general-purpose), MedSafetyBench (900 healthcare-specific), and California SB 243 Child Safety (50 CSAM-aligned attacks)—representing 100% attack elimination compared to standard prompt-based defenses (3.7-11.1% ASR). XSTest over-refusal calibration shows domain-specific Primacy Attractors reduce false positive rates from 24.8% (generic) to 8.0% (Healthcare PA), demonstrating that TELOS achieves strong safety without excessive restriction. With California's SB 53 taking effect January 2026 and EU AI Act enforcement beginning August 2026, TELOS provides the continuous monitoring infrastructure that emerging regulations explicitly require.
+TELOS operates as orchestration-layer infrastructure that measures every AI response against human-defined constitutional constraints (Primacy Attractors), detects drift mathematically, and applies proportional corrections in real-time. Security testing demonstrates 0% attack success rate across 2,550 adversarial scenarios spanning five benchmarks: AILuminate (1,200 MLCommons industry-standard), HarmBench (400 general-purpose), MedSafetyBench (900 healthcare-specific), and California SB 243 Child Safety (50 CSAM-aligned attacks)—representing 100% attack elimination compared to standard prompt-based defenses (3.7-11.1% ASR). XSTest over-refusal calibration shows domain-specific Primacy Attractors reduce false positive rates from 24.8% (generic) to 8.0% (Healthcare PA), demonstrating that TELOS achieves strong safety without excessive restriction. With California's SB 53 taking effect January 2026 and EU AI Act enforcement beginning August 2026, TELOS provides the continuous monitoring infrastructure that emerging regulations explicitly require.
 
 ---
 
@@ -25,7 +25,7 @@ Mathematically, TELOS integrates proportional control (operational mechanism) wi
 
 **The Constitutional Filter for AI**: TELOS implements **session-level constitutional law** through the Primacy Attractor, which serves as instantiated constitutional requirements for ephemeral session state. Human governors author constitutional constraints (purpose, scope, boundaries), which are encoded as a fixed reference point in embedding space. Every AI response is measured against this constitutional reference, with deviations triggering proportional interventions—not through prompt engineering, but through **orchestration-layer governance** that operates architecturally above the model layer. This transforms AI alignment from subjective trust to **quantitative constitutional compliance**, providing the continuous monitoring infrastructure that regulatory frameworks explicitly require.
 
-**Adversarial Validation (December 2025 - January 2026)**: Security testing across 1,350 adversarial attacks demonstrates **0% Attack Success Rate (ASR)** when Constitutional Filter governance is active, compared to 3.7-11.1% ASR with system prompts and 30.8-43.9% ASR for raw models—representing **100% attack elimination** through orchestration-layer governance. Testing spans four established benchmarks: HarmBench (400 general-purpose attacks from Center for AI Safety), MedSafetyBench (900 healthcare-specific attacks from NeurIPS 2024), and California SB 243 Child Safety (50 CSAM-aligned attacks). TELOS achieved perfect defense (0/1,350 attacks succeeded) while system prompt baselines allowed attacks through. **Over-Refusal Calibration (XSTest)**: Testing against 250 safe prompts shows domain-specific Primacy Attractors reduce false positive rates from 24.8% (generic PA) to 8.0% (Healthcare PA)—a 16.8 percentage point improvement demonstrating that TELOS achieves strong safety without excessive restriction. These results establish TELOS not only as alignment infrastructure but as **constitutional security architecture** validated against real adversarial threats while maintaining appropriate permissiveness for legitimate use cases.
+**Adversarial Validation (December 2025 - January 2026)**: Security testing across 2,550 adversarial attacks demonstrates **0% Attack Success Rate (ASR)** when Constitutional Filter governance is active, compared to 3.7-11.1% ASR with system prompts and 30.8-43.9% ASR for raw models—representing **100% attack elimination** through orchestration-layer governance. Testing spans five established benchmarks: AILuminate (1,200 MLCommons industry-standard attacks), HarmBench (400 general-purpose attacks from Center for AI Safety), MedSafetyBench (900 healthcare-specific attacks from NeurIPS 2024), and California SB 243 Child Safety (50 CSAM-aligned attacks). TELOS achieved perfect defense (0/2,550 attacks succeeded) while system prompt baselines allowed attacks through. **Over-Refusal Calibration (XSTest)**: Testing against 250 safe prompts shows domain-specific Primacy Attractors reduce false positive rates from 24.8% (generic PA) to 8.0% (Healthcare PA)—a 16.8 percentage point improvement demonstrating that TELOS achieves strong safety without excessive restriction. These results establish TELOS not only as alignment infrastructure but as **constitutional security architecture** validated against real adversarial threats while maintaining appropriate permissiveness for legitimate use cases.
 
 By embedding Lean Six Sigma's DMAIC methodology directly into runtime mechanics, TELOS extends Quality Systems Regulation—proven in manufacturing (ISO 9001), medical devices (21 CFR Part 820), and process industries—into semantic systems. It demonstrates that alignment—the persistence of intended behavior over time—can be expressed as a quantitative property of a self-regulating system governed by the same continuous-improvement discipline that sustains industrial quality control.
 
@@ -910,7 +910,7 @@ We test specific, falsifiable claims:
 
 **H1: Adversarial Security**
 - Constitutional Filter prevents attacks that bypass system prompts alone
-- **Status**: ✅ VALIDATED (0% ASR vs 3.7-11.1% baseline across 1,350 attacks including SB 243 child safety)
+- **Status**: ✅ VALIDATED (0% ASR vs 3.7-11.1% baseline across 2,550 attacks including AILuminate and SB 243 child safety)
 
 **H2: Architectural Superiority**
 - Dual PA maintains higher fidelity than single PA across extended conversations
@@ -926,7 +926,7 @@ We test specific, falsifiable claims:
 
 **H5: Generalization Across Domains**
 - Framework maintains effectiveness across conversation types and attack sophistication levels
-- **Status**: ✅ VALIDATED (1,350 attacks: 400 HarmBench + 900 MedSafetyBench + 50 SB 243, across 2 models)
+- **Status**: ✅ VALIDATED (2,550 attacks: 1,200 AILuminate + 400 HarmBench + 900 MedSafetyBench + 50 SB 243)
 
 **H6: Over-Refusal Calibration**
 - Domain-specific Primacy Attractors reduce false positives while maintaining strong safety
@@ -1282,28 +1282,61 @@ Interventions scale with drift severity:
 - Block original response
 - Regenerate with strengthened governance
 
-### 6.4 Telemetry: Evidence Generation for Audit
+### 6.4 Runtime Auditable Governance: The GovernanceTraceCollector
 
-Every interaction generates comprehensive telemetry:
+TELOS produces audit records at the moment of each governance decision—not post-hoc explanations generated after the fact. When regulators examine an incident, they can trace exactly what the system measured, what thresholds applied, and why a particular intervention occurred.
+
+**The GovernanceTraceCollector** records seven event types for each session:
+
+| Event Type | Contents | Purpose |
+|------------|----------|---------|
+| `session_start` | Session ID, timestamp, PA configuration | Establishes governance context |
+| `pa_established` | Full PA vector, thresholds, domain | Documents constitutional constraints in effect |
+| `turn_start` | User input, turn number | Marks each evaluation cycle |
+| `fidelity_calculated` | Raw similarity, normalized fidelity, embedding dimensions | Mathematical basis for decision |
+| `intervention_triggered` | Tier, action taken, rationale | Records enforcement decision |
+| `turn_complete` | Outcome, response metadata | Completes the audit record |
+| `session_end` | Summary statistics, total interventions | Aggregates session governance |
+
+**Forensic Trace Format (JSONL)**:
 
 ```json
 {
-  "timestamp": "2024-11-03T10:15:30Z",
-  "turn": 15,
-  "fidelity_scores": {
-    "user_pa": 0.82,
-    "ai_pa": 0.91,
-    "pa_correlation": 0.95,
-    "system": 0.85
-  },
-  "drift_vector": [0.12, -0.08, 0.03],
-  "intervention": "none",
-  "capability_index": 1.24,
-  "stability_status": "in_control"
+  "event_type": "intervention_triggered",
+  "timestamp": "2026-01-25T14:32:01.847Z",
+  "session_id": "sess_a1b2c3d4",
+  "turn_number": 7,
+  "fidelity_score": 0.156,
+  "raw_similarity": 0.089,
+  "tier": 1,
+  "action": "BLOCK",
+  "pa_config": "healthcare_hipaa",
+  "threshold_applied": 0.18,
+  "rationale": "Fidelity below Tier 1 threshold"
 }
 ```
 
-This creates the audit trail regulators require—demonstrable evidence of continuous governance.
+**Published Forensic Evidence**: All validation datasets include complete forensic audit trails:
+
+| Dataset | Events Recorded | Trace Size |
+|---------|-----------------|------------|
+| AILuminate (1,200 prompts) | 4,803 events | 1.69 MB |
+| HarmBench (400 prompts) | 1,601 events | 0.56 MB |
+| MedSafetyBench (900 prompts) | 3,602 events | 1.26 MB |
+| SB 243 (50 prompts) | 201 events | 0.07 MB |
+| XSTest (250 prompts) | 1,001 events | 0.35 MB |
+
+These traces enable independent verification of every governance decision across all 2,550 adversarial attacks. Researchers and regulators can examine the mathematical basis for each block without relying on aggregate statistics alone.
+
+**Regulatory Alignment**: The forensic trace format addresses specific requirements:
+
+- **EU AI Act Article 12**: Automatic recording of events during operation
+- **EU AI Act Article 72**: Post-market monitoring with continuous logging
+- **California SB 53**: Documentation of safety-relevant decisions
+- **HIPAA Security Rule**: Audit controls for access and decision logging
+- **ISO 27001**: Information security event logging
+
+The JSONL format integrates with standard log aggregation infrastructure (Elasticsearch, Splunk, CloudWatch) for enterprise compliance workflows.
 
 ### 6.5 Deployment Modes
 

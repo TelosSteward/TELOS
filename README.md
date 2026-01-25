@@ -4,45 +4,67 @@
 
 ![Python](https://img.shields.io/badge/python-3.8+-green)
 ![License](https://img.shields.io/badge/license-MIT-orange)
-[![Attacks](https://img.shields.io/badge/attacks-1%2C300-blue)](https://github.com/TelosSteward/TELOS-Validation)
+[![Attacks](https://img.shields.io/badge/attacks-2%2C550-blue)](https://github.com/TelosSteward/TELOS-Validation)
 [![ASR](https://img.shields.io/badge/attack%20success%20rate-0%25-brightgreen)](https://github.com/TelosSteward/TELOS-Validation)
 
+[![AILuminate DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18370263.svg)](https://doi.org/10.5281/zenodo.18370263)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18013104.svg)](https://doi.org/10.5281/zenodo.18013104)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18009153.svg)](https://doi.org/10.5281/zenodo.18009153)
 [![SB 243 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18027446.svg)](https://doi.org/10.5281/zenodo.18027446)
+[![XSTest DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18370603.svg)](https://doi.org/10.5281/zenodo.18370603)
 
 ---
 
 ## Published Validation Results
 
-### Adversarial Validation Dataset
-- **Total Attacks**: 1,300
+### Adversarial Validation (2,550 attacks, 0% ASR)
+- **Total Attacks**: 2,550
 - **Attack Success Rate**: 0.00%
-- **Statistical Confidence**: 99.9% CI [0%, 0.28%]
-- **Autonomous Blocking**: 95.8% (Tier 1)
-- **DOI**: [10.5281/zenodo.18013104](https://doi.org/10.5281/zenodo.18013104)
+- **Statistical Confidence**: 99.9% CI [0%, 0.14%]
+- **Forensic Audit Trails**: Full JSONL traces for every governance decision
 
-| Benchmark | Attacks | Blocked | Source |
-|-----------|---------|---------|--------|
-| MedSafetyBench | 900 | 900 (100%) | [AI4LIFE-GROUP/med-safety-bench](https://github.com/AI4LIFE-GROUP/med-safety-bench) |
-| HarmBench | 400 | 400 (100%) | [centerforaisafety/HarmBench](https://github.com/centerforaisafety/HarmBench) |
+| Benchmark | Attacks | Blocked | DOI |
+|-----------|---------|---------|-----|
+| AILuminate (MLCommons) | 1,200 | 1,200 (100%) | [10.5281/zenodo.18370263](https://doi.org/10.5281/zenodo.18370263) |
+| MedSafetyBench (NeurIPS 2024) | 900 | 900 (100%) | [10.5281/zenodo.18013104](https://doi.org/10.5281/zenodo.18013104) |
+| HarmBench (CAIS) | 400 | 400 (100%) | [10.5281/zenodo.18013104](https://doi.org/10.5281/zenodo.18013104) |
+| SB 243 Child Safety | 50 | 50 (100%) | [10.5281/zenodo.18027446](https://doi.org/10.5281/zenodo.18027446) |
+
+### XSTest Over-Refusal Calibration
+- **False Positive Rate**: 8.0% (Healthcare PA) vs 24.8% (Generic PA)
+- **Improvement**: 16.8 percentage point reduction
+- **DOI**: [10.5281/zenodo.18370603](https://doi.org/10.5281/zenodo.18370603)
 
 ### Governance Benchmark Dataset
 - **Sessions**: 46 multi-session governance evaluations
 - **Domains**: 8 diverse application domains
 - **DOI**: [10.5281/zenodo.18009153](https://doi.org/10.5281/zenodo.18009153)
 
-### SB 243 Child Safety Validation
-- **Attack Success Rate**: 0.00%
-- **False Positive Rate**: 74.00% (intentional for child safety)
-- **Harm Categories**: Suicide, self-harm, sexual content, eating disorders
-- **DOI**: [10.5281/zenodo.18027446](https://doi.org/10.5281/zenodo.18027446)
+---
+
+## Runtime Auditable Governance
+
+TELOS produces audit records at the moment of each governance decision. When regulators examine an incident, they can trace exactly what the system measured, what thresholds applied, and why a particular intervention occurred.
+
+**Forensic Trace Contents:**
+- Session initialization with PA configuration
+- Per-turn fidelity calculations with raw similarity scores
+- Intervention decisions with tier classification and rationale
+- Complete JSONL format for log aggregation (Elasticsearch, Splunk, CloudWatch)
+
+**Published Evidence:** All validation datasets include complete forensic audit trails (11,208 governance events across 2,550 attacks).
+
+**Regulatory Alignment:**
+- EU AI Act Article 12: Automatic recording of events during operation
+- EU AI Act Article 72: Post-market monitoring with continuous logging
+- California SB 53: Documentation of safety-relevant decisions
+- HIPAA Security Rule: Audit controls for access and decision logging
 
 ---
 
 ## What is TELOS Observatory?
 
-TELOS  is a mathematical governance framework for AI alignment. It uses **Primacy Attractors** (embedding-space representations of user purpose) to detect and correct conversational drift in real-time.
+TELOS is a mathematical governance framework for AI alignment. It uses **Primacy Attractors** (embedding-space representations of user purpose) to detect and correct conversational drift in real-time.
 
 **Core Innovation**: Two-layer fidelity detection - baseline normalization catches extreme off-topic content, basin membership catches purpose drift.
 
@@ -181,5 +203,5 @@ See [HARDWARE_REQUIREMENTS.md](HARDWARE_REQUIREMENTS.md) for system specificatio
 
 ---
 
-**Last Updated**: December 22, 2025
+**Last Updated**: January 25, 2026
 
