@@ -647,7 +647,7 @@ We invite the research community to reproduce our results, extend to new domains
 
 [36] TELOS Research Team. "TELOS Governance Benchmark Dataset." Zenodo, 2025. https://doi.org/10.5281/zenodo.18009153
 
-[37] TELOS Research Team. "TELOS Adversarial Validation Suite." Zenodo, 2025. https://doi.org/10.5281/zenodo.17702890
+[37] TELOS Research Team. "TELOS Adversarial Validation Suite." Zenodo, 2025. https://doi.org/10.5281/zenodo.18013104
 
 ---
 

@@ -30,7 +30,7 @@ When drift is detected, a proportional controller applies graduated intervention
 
 *Drift Detection (MultiWOZ):* 100% detection across cross-domain, off-topic, and adversarial drift categories. Critically, **jailbreak attempts produce negative fidelity scores**—the mathematical structure of semantic similarity itself exposes the attack.
 
-Results published on Zenodo with DOIs (10.5281/zenodo.17702890, 10.5281/zenodo.18009153).
+Results published on Zenodo with DOIs (10.5281/zenodo.18013104, 10.5281/zenodo.18009153).
 
 **The Phase I Research Challenge:** Extending this validated framework from conversational AI to agentic AI systems. Agents execute action chains (API calls, database operations, transactions) where consequences are irreversible and error compounding creates cascade failures. Can Primacy Attractor fidelity govern action-space trajectories with the same rigor demonstrated in semantic space? This requires novel action-chain embeddings, sub-50ms intervention, and formal reversibility classification—genuine high-risk R&D on proven foundations.
 

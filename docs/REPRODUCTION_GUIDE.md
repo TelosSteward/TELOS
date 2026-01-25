@@ -10,7 +10,7 @@
 
 | Dataset | DOI | Description |
 |---------|-----|-------------|
-| **Adversarial Validation** | [10.5281/zenodo.17702890](https://doi.org/10.5281/zenodo.17702890) | 1,300 attacks, 100% harm prevention |
+| **Adversarial Validation** | [10.5281/zenodo.18013104](https://doi.org/10.5281/zenodo.18013104) | 1,300 attacks, 100% harm prevention |
 | **Governance Benchmark** | [10.5281/zenodo.18009153](https://doi.org/10.5281/zenodo.18009153) | 46 multi-session governance evaluations across 8 domains |
 | **SB 243 Child Safety** | [10.5281/zenodo.18027446](https://doi.org/10.5281/zenodo.18027446) | CA SB 243 child safety validation (0% ASR, 74% FPR) |
 

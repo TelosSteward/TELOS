@@ -40,7 +40,7 @@ This document specifies the hardware requirements for running TELOS Observatory 
 
 ## Validation Reproduction Requirements
 
-For reproducing the adversarial validation results from Zenodo (DOI: 10.5281/zenodo.17702890):
+For reproducing the adversarial validation results from Zenodo (DOI: 10.5281/zenodo.18013104):
 
 | Component | Requirement |
 |-----------|-------------|
@@ -173,7 +173,7 @@ ollama serve
 
 Validation datasets are available on Zenodo:
 
-- **Adversarial Validation Dataset**: [10.5281/zenodo.17702890](https://doi.org/10.5281/zenodo.17702890)
+- **Adversarial Validation Dataset**: [10.5281/zenodo.18013104](https://doi.org/10.5281/zenodo.18013104)
 - **Governance Benchmark Dataset**: [10.5281/zenodo.18009153](https://doi.org/10.5281/zenodo.18009153)
 
 ---

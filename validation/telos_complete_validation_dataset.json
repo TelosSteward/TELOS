@@ -3,7 +3,7 @@
     "title": "TELOS Adversarial Validation Dataset",
     "version": "1.0",
     "date": "2025-11-25",
-    "doi": "10.5281/zenodo.17702890",
+    "doi": "10.5281/zenodo.18013104",
     "authors": [
       "Jeffrey Brunner"
     ],
@@ -140,7 +140,7 @@
     ]
   },
   "citation": {
-    "bibtex": "@dataset{brunner_2025_telos,\n  author       = {Brunner, Jeffrey},\n  title        = {{TELOS Adversarial Validation Dataset}},\n  month        = nov,\n  year         = 2025,\n  publisher    = {Zenodo},\n  version      = {1.0},\n  doi          = {10.5281/zenodo.17702890},\n  url          = {https://doi.org/10.5281/zenodo.17702890}\n}",
-    "apa": "Brunner, J. (2025). TELOS Adversarial Validation Dataset (Version 1.0) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.17702890"
+    "bibtex": "@dataset{brunner_2025_telos,\n  author       = {Brunner, Jeffrey},\n  title        = {{TELOS Adversarial Validation Dataset}},\n  month        = nov,\n  year         = 2025,\n  publisher    = {Zenodo},\n  version      = {1.0},\n  doi          = {10.5281/zenodo.18013104},\n  url          = {https://doi.org/10.5281/zenodo.18013104}\n}",
+    "apa": "Brunner, J. (2025). TELOS Adversarial Validation Dataset (Version 1.0) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.18013104"
   }
 }
