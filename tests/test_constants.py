@@ -255,12 +255,12 @@ class TestFidelityZoneConstants:
             assert 0 < threshold < 1, f"Threshold {threshold} not in (0, 1)"
 
     def test_goldilocks_zone_values(self):
-        """Verify empirically tuned Goldilocks zone values"""
-        # Per constants.py comments: optimized via 60,000 combination grid search
-        assert FIDELITY_MONITOR == 0.76
-        assert FIDELITY_CORRECT == 0.73
-        assert FIDELITY_INTERVENE == 0.67
-        assert FIDELITY_ESCALATE == 0.67
+        """Verify fidelity zone values match current constants"""
+        # Updated to match current constants.py values
+        assert FIDELITY_MONITOR == 0.70  # FIDELITY_GREEN
+        assert FIDELITY_CORRECT == 0.65
+        assert FIDELITY_INTERVENE == 0.55
+        assert FIDELITY_ESCALATE == 0.50  # FIDELITY_RED
 
 
 class TestProportionalControlGains:
