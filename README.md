@@ -3,7 +3,7 @@
 **Runtime AI Governance Framework with Published Validation**
 
 ![Python](https://img.shields.io/badge/python-3.8+-green)
-![License](https://img.shields.io/badge/license-MIT-orange)
+![License](https://img.shields.io/badge/license-Apache%202.0-orange)
 [![Attacks](https://img.shields.io/badge/attacks-2%2C550-blue)](https://github.com/TelosSteward/TELOS-Validation)
 [![ASR](https://img.shields.io/badge/attack%20success%20rate-0%25-brightgreen)](https://github.com/TelosSteward/TELOS-Validation)
 
@@ -193,7 +193,7 @@ For the SB 243 child safety validation:
 
 ## License
 
-MIT License - See LICENSE file
+Apache License 2.0 - See LICENSE file
 
 ---
 
@@ -203,5 +203,5 @@ See [HARDWARE_REQUIREMENTS.md](HARDWARE_REQUIREMENTS.md) for system specificatio
 
 ---
 
-**Last Updated**: January 25, 2026
+**Last Updated**: January 26, 2026
 
