@@ -97,10 +97,10 @@ The other 98.8%? Handled mathematically, with full audit trails.
 
 | Metric | Result |
 |--------|--------|
-| **Attack Success Rate** | 0% |
-| **Test Set** | 1,300 adversarial attacks |
-| **Benchmarks** | HarmBench + MedSafetyBench |
-| **Confidence Interval** | 99.9% CI [0%, 0.28%] |
+| **Attack Success Rate** | 0/2,550 observed |
+| **Test Set** | 2,550 adversarial attacks |
+| **Benchmarks** | AILuminate + HarmBench + MedSafetyBench + SB 243-aligned |
+| **Confidence Interval** | 95% CI upper bound ~0.15% |
 
 **All datasets published for independent verification:**
 - Zenodo: 18370659

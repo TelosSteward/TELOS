@@ -152,7 +152,7 @@ From Accenture's super-agent framework:
 ## Technical Validation Status
 
 ### What We've Proven (Conversational AI)
-- 0% ASR on 1,300 adversarial attacks
+- 0/2,550 observed attack successes (95% CI upper bound ~0.15%)
 - 78% OOS detection on CLINC150
 - 100% drift detection on MultiWOZ
 - Published on Zenodo with DOIs

@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-This document outlines the research agenda for extending TELOS geometric governance from conversational AI to agentic AI systems. While TELOS has demonstrated 100% harm prevention against 1,300 adversarial attacks in the conversational domain (DOIs: 10.5281/zenodo.18370659, 18009153, 18370504), agentic AI presents fundamentally different governance challenges that require new research.
+This document outlines the research agenda for extending TELOS geometric governance from conversational AI to agentic AI systems. While TELOS has demonstrated 0/2,550 observed attack successes in the conversational domain (95% CI upper bound ~0.15%; DOIs: 10.5281/zenodo.18370659, 18009153, 18370504), agentic AI presents fundamentally different governance challenges that require new research.
 
 **Critical Distinction**: The conversational AI governance capabilities described in existing TELOS documentation are *validated*. The agentic AI extension described in this document is *aspirational research*—a hypothesis that TELOS's mathematical framework can be adapted to govern action-chains, not a claim of current capability.
 
@@ -73,7 +73,7 @@ TELOS governance for conversational AI has been empirically validated:
 
 | Validation | Result | DOI |
 |------------|--------|-----|
-| Adversarial Attacks | 1,300 attacks, 0% ASR | 10.5281/zenodo.18370659 |
+| Adversarial Attacks | 2,550 attacks, 0/2,550 observed | 10.5281/zenodo.18370659 |
 | Governance Benchmark | 46 multi-session evaluations | 10.5281/zenodo.18009153 |
 | SB 243 Child Safety | 0% ASR, 74% FPR (intentional) | 10.5281/zenodo.18370504 |
 

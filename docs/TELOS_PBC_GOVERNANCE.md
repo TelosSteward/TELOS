@@ -386,7 +386,7 @@ Founder equity vests over 4 years with:
 **What exists today:**
 - [x] Working governance-native platform (TELOSCOPE)
 - [x] Core IP (Primacy Attractor, fidelity metrics, Constitutional Filter)
-- [x] Adversarial validation (1,300 attacks, 0% ASR)
+- [x] Adversarial validation (2,550 attacks, 0/2,550 observed)
 - [x] Foundational documents (this stack)
 - [x] Delaware C-Corp incorporation
 - [ ] Grant applications submitted

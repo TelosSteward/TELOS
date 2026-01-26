@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-Agentic AI systems—autonomous agents that select tools, execute API calls, and take real-world actions—operate without runtime governance at the infrastructure layer. While the TELOS Framework (v2.3) establishes session-level constitutional law for conversational AI through the Primacy Attractor mechanism, agentic systems require governance at a different architectural point: the **API layer** where agent requests become model invocations.
+Agentic AI systems—autonomous agents that select tools, execute API calls, and take real-world actions—operate without runtime governance at the infrastructure layer. While the TELOS Framework (v2.5) establishes session-level constitutional law for conversational AI through the Primacy Attractor mechanism, agentic systems require governance at a different architectural point: the **API layer** where agent requests become model invocations.
 
 TELOS Gateway implements **Constitutional Filtering** as an OpenAI-compatible API proxy. Every request is intercepted, embedded, and measured against the agent's declared purpose (Primacy Attractor) using cosine similarity in embedding space. Based on semantic fidelity scores, requests receive graduated governance decisions: EXECUTE, CLARIFY, SUGGEST, INERT, or ESCALATE. This transforms purpose adherence from prompt-based hope to quantitative enforcement at infrastructure level.
 
@@ -19,7 +19,7 @@ TELOS Gateway implements **Constitutional Filtering** as an OpenAI-compatible AP
 
 ### 1.1 From Conversations to Actions
 
-The TELOS Framework Whitepaper (v2.3) documents the persistence problem in conversational AI: models drift 20-40% from declared purpose across extended sessions. The Constitutional Filter achieves 0% Attack Success Rate across 1,300 adversarial scenarios through session-level governance.
+The TELOS Framework Whitepaper (v2.5) documents the persistence problem in conversational AI: models drift 20-40% from declared purpose across extended sessions. The Constitutional Filter achieves 0/2,550 observed attack successes (95% CI upper bound ~0.15%) through session-level governance.
 
 Agentic systems introduce a fundamentally different challenge: **each API call is an independent action** rather than a turn in continuous conversation. There is no session drift to measure because there is no session—only discrete requests.
 
@@ -329,7 +329,7 @@ Gateway governance complements (not replaces) provider-level safety. An attack m
 
 ### 6.2 Relation to Adversarial Validation
 
-The TELOS Framework achieved **0% Attack Success Rate** across 1,300 adversarial attacks in session-level testing. Gateway extends this to API-level governance with the same mathematical foundations.
+The TELOS Framework achieved **0/2,550 observed attack successes** (95% CI upper bound ~0.15%) in session-level testing. Gateway extends this to API-level governance with the same mathematical foundations.
 
 Planned validation (Q2 2026):
 - API-level adversarial testing against Gateway
@@ -467,7 +467,7 @@ TELOS Gateway extends constitutional governance from session-level (TELOS Framew
 - Adding per-request governance logic
 - Trusting prompt-based constraints alone
 
-The same mathematical foundations proven in adversarial testing (0% ASR across 1,300 attacks) now apply to agentic systems. As AI agents gain tool access, database connectivity, and real-world action capability, infrastructure-level constitutional filtering becomes essential—not for safety theater, but for **quantitative governance** that can be measured, audited, and demonstrated to regulators.
+The same mathematical foundations validated in adversarial testing (0/2,550 observed under black-box threat model) now apply to agentic systems. As AI agents gain tool access, database connectivity, and real-world action capability, infrastructure-level constitutional filtering becomes essential—not for safety theater, but for **quantitative governance** that can be measured, audited, and demonstrated to regulators.
 
 We are not building governance as a feature. We are building governance as infrastructure.
 
@@ -475,11 +475,11 @@ We are not building governance as a feature. We are building governance as infra
 
 ## References
 
-1. TELOS Framework Whitepaper v2.3 (January 2026) - Session-level constitutional governance
+1. TELOS Framework Whitepaper v2.5 (January 2026) - Session-level constitutional governance
 2. Vaswani et al. (2017) - "Attention Is All You Need" - Transformer attention mechanics
 3. EU AI Act (2024) - Articles 52, 72 - AI governance requirements
 4. California SB 53 (2025) - Transparency in Frontier AI Act
-5. TELOS Adversarial Validation (November 2025) - 0% ASR security testing
+5. TELOS Adversarial Validation (January 2026) - 0/2,550 observed, 95% CI upper bound ~0.15%
 
 ---
 

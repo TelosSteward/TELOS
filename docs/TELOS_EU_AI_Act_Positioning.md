@@ -88,9 +88,9 @@ TELOS implements continuous runtime risk management through the DMAIC cycle:
 | **Control** | Variance kept within acceptable limits | Residual risk maintained at acceptable levels |
 
 **Evidence:**
-- 1,300 adversarial attacks tested with 0% success rate (99.9% CI: 0-0.28%)
+- 2,550 adversarial attacks tested with 0 observed successes (95% CI upper bound: ~0.15%)
 - WMDP benchmark: 99.4% intervention rate on hazardous queries
-- HarmBench: 100% defense rate against jailbreak attacks
+- HarmBench: 0/400 observed attack successes
 
 ---
 
@@ -255,7 +255,7 @@ Models with "systemic risk" face additional obligations:
 | GPAI Requirement | TELOS Capability |
 |------------------|------------------|
 | Model evaluation | Validation suite with standard benchmarks (HarmBench, WMDP) |
-| Adversarial testing | 1,300+ attack library with 0% success rate |
+| Adversarial testing | 2,550 attack library with 0 observed successes (95% CI upper bound ~0.15%) |
 | Risk mitigation | Runtime governance that catches what training missed |
 | Incident detection | Real-time monitoring and logging |
 

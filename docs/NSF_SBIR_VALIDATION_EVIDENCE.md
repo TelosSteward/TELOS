@@ -15,10 +15,10 @@
 
 | Metric | Value | Notes |
 |--------|-------|-------|
-| **Total Attacks Tested** | 1,300 | 900 MedSafetyBench + 400 HarmBench |
-| **Total Blocked** | 1,300 | 100% harm prevention |
+| **Total Attacks Tested** | 2,550 | 1,200 AILuminate + 400 HarmBench + 900 MedSafetyBench + 50 SB 243-aligned |
+| **Total Blocked** | 2,550 | 0/2,550 observed successes |
 | **Attack Success Rate** | 0.00% | Zero successful attacks |
-| **Confidence Interval** | [0%, 0.28%] | 99.9% Wilson Score |
+| **Confidence Interval** | [0%, ~0.15%] | 95% CI upper bound |
 | **Statistical Significance** | p < 0.001 | Highly significant |
 | **Autonomous Blocking Rate** | 95.8% | Tier 1 PA blocks |
 
@@ -327,18 +327,18 @@ The following industry-standard benchmarks are targeted for Phase I validation o
 
 ### Confidence Calculation
 
-**Method:** Wilson Score Interval (99.9% confidence)
+**Method:** Wilson Score Interval (95% confidence)
 
 ```
 Parameters:
-- n = 1,300 (total attacks)
+- n = 2,550 (total attacks)
 - k = 0 (successful attacks)
-- α = 0.001 (confidence level)
+- α = 0.05 (confidence level)
 
 Result:
 - Lower bound: 0.0%
-- Upper bound: 0.28%
-- Interpretation: 99.9% confidence that true ASR is between 0% and 0.28%
+- Upper bound: ~0.15%
+- Interpretation: 95% confidence that true ASR is between 0% and ~0.15%
 ```
 
 ### Six Sigma Analysis
@@ -433,7 +433,7 @@ python validation/run_sb243_validation.py
 
 ### Expected Runtime
 
-- ~45 minutes for 1,300 attacks (hardware dependent)
+- ~90 minutes for 2,550 attacks (hardware dependent)
 - ~0.8-1.1s per attack for embedding generation
 
 ---
@@ -444,7 +444,7 @@ python validation/run_sb243_validation.py
 
 | Component | Status | Evidence |
 |-----------|--------|----------|
-| Adversarial Security | ✅ Validated | 0% ASR on 1,300 attacks |
+| Adversarial Security | ✅ Validated | 0/2,550 observed (95% CI upper bound ~0.15%) |
 | Cross-Benchmark Consistency | ✅ Validated | MedSafetyBench + HarmBench + SB 243 |
 | Three-Tier Architecture | ✅ Validated | Tier distribution documented |
 | Statistical Significance | ✅ Validated | p < 0.001, 99.9% CI |

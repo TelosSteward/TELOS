@@ -201,7 +201,7 @@ Organizations preparing for EU AI Act compliance need solutions **NOW**. Arthur 
 ### Technical Moat
 - Primacy Attractor theory (embedding-space purpose representation)
 - Two-layer fidelity architecture (baseline + basin membership)
-- Validated 0% ASR across 1,300 adversarial attacks
+- Validated 0/2,550 observed attack successes (95% CI upper bound ~0.15%)
 - Statistical Process Control in semantic space
 
 ### Research Moat

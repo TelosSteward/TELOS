@@ -147,7 +147,7 @@ Not every case needs the same response.
 **When a human intervenes, it matters.**
 Not drowning in routine reviews — making real decisions on real edge cases.
 
-*Percentages validated across 1,300 adversarial attacks (HarmBench + MedSafetyBench)*
+*Validated across 2,550 adversarial attacks (AILuminate + HarmBench + MedSafetyBench + SB 243-aligned)*
 
 ---
 
@@ -218,10 +218,10 @@ TELOS implements runtime constraint enforcement using industrial-grade technique
 
 | Metric | Result |
 |--------|--------|
-| **Attack Success Rate** | 0% |
+| **Attack Success Rate** | 0/2,550 observed |
 | **Autonomous Handling** | 95.8% at Tier 1 |
-| **Confidence Interval** | 99.9% CI [0%, 0.28%] |
-| **Test Set** | 1,300 adversarial attacks (HarmBench + MedSafetyBench) |
+| **Confidence Interval** | 95% CI upper bound ~0.15% |
+| **Test Set** | 2,550 adversarial attacks (AILuminate + HarmBench + MedSafetyBench + SB 243-aligned) |
 
 **All datasets published for independent verification:**
 - https://zenodo.org/records/18370659
@@ -316,8 +316,8 @@ Effective January 1, 2026. Requires safety frameworks with active governance.
 ## Traction & Validation
 
 ### Technical Validation
-- 1,300 adversarial attacks tested (MedSafetyBench + HarmBench)
-- 0% attack success rate with 99.9% CI [0%, 0.28%]
+- 2,550 adversarial attacks tested (AILuminate + HarmBench + MedSafetyBench + SB 243-aligned)
+- 0/2,550 observed attack successes (95% CI upper bound ~0.15%)
 - Published datasets on Zenodo for independent verification
 
 ### Infrastructure

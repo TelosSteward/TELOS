@@ -114,7 +114,7 @@ User Input → Embed → Raw Similarity → Layer 1 Check (0.20)
 | `docs/TELOS_Academic_Paper.tex` | **Canonical academic paper** (LaTeX source, arXiv-ready) |
 | `docs/TELOS_Academic_Paper.pdf` | Academic paper PDF (14 pages, two-column, with figures) |
 | `docs/TELOS_Academic_Paper.md` | Academic paper markdown version |
-| `docs/TELOS_Whitepaper_v2.3.md` | Mathematical specification |
+| `docs/TELOS_Whitepaper_v2.5.md` | Mathematical specification |
 | `docs/TELOS_Lexicon_V1.1.md` | Terminology definitions |
 | `docs/GRANT_ROADMAP.md` | Funding phases, consortium architecture |
 

@@ -22,9 +22,9 @@ The two-layer fidelity architecture:
 
 When drift is detected, a proportional controller applies graduated intervention scaled to drift severity—extending proven industrial quality methodology (DMAIC, ISO 9001, FDA QSR) into semantic systems.
 
-**Validated Results Across Four Benchmarks:**
+**Validated Results Across Five Benchmarks:**
 
-*Adversarial Security:* 0% Attack Success Rate on 1,300 attacks (HarmBench + MedSafetyBench). 99.9% CI: [0%, 0.28%]. Compared to 3.7-11.1% for system prompts and 30.8-43.9% for undefended models.
+*Adversarial Security:* 0 observed successful attacks out of 2,550 (AILuminate + HarmBench + MedSafetyBench + SB 243-aligned). 95% CI upper bound: ~0.15%. Compared to 3.7-11.1% for system prompts and 30.8-43.9% for undefended models.
 
 *Out-of-Scope Detection (CLINC150):* Standard classifiers achieve 0% OOS detection—they must assign every input to some intent. TELOS governance achieves **78% OOS detection** with only 4.5% false positive rate by introducing fidelity-based gating before classification.
 
@@ -96,7 +96,7 @@ The AI governance market is projected to reach $15-25B by 2028, driven by regula
 **Founder:** Jeffrey Brunner developed the complete TELOS mathematical governance framework over 2+ years, including:
 - Primacy Attractor theory and two-layer fidelity architecture
 - Working production system (beta.telos-labs.ai) with Streamlit interface
-- Validation across 4 benchmarks: 0% ASR (1,300 attacks), 78% OOS detection (CLINC150), 100% drift detection (MultiWOZ), 100% child safety (SB 243)
+- Validation across 5 benchmarks: 0/2,550 observed attacks succeeded (AILuminate + HarmBench + MedSafetyBench + SB 243-aligned), 78% OOS detection (CLINC150), 100% drift detection (MultiWOZ)
 - Three published datasets on Zenodo with DOIs; NIST AI RMF alignment documented
 
 Technical expertise spans AI/ML systems, embedding architectures, control theory, and quality systems methodology. Background includes software engineering and systems design.
