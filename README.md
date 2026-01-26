@@ -199,7 +199,7 @@ Apache License 2.0 - See LICENSE file
 
 ## Hardware Requirements
 
-See [HARDWARE_REQUIREMENTS.md](HARDWARE_REQUIREMENTS.md) for system specifications.
+See [HARDWARE_REQUIREMENTS.md](docs/HARDWARE_REQUIREMENTS.md) for system specifications.
 
 ---
 
