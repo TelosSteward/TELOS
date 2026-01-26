@@ -7,11 +7,11 @@
 [![Attacks](https://img.shields.io/badge/attacks-2%2C550-blue)](https://github.com/TelosSteward/TELOS-Validation)
 [![ASR](https://img.shields.io/badge/attack%20success%20rate-0%25-brightgreen)](https://github.com/TelosSteward/TELOS-Validation)
 
-[![AILuminate DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18370263.svg)](https://doi.org/10.5281/zenodo.18370263)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18370659.svg)](https://doi.org/10.5281/zenodo.18370659)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18009153.svg)](https://doi.org/10.5281/zenodo.18009153)
-[![SB 243 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18370504.svg)](https://doi.org/10.5281/zenodo.18370504)
-[![XSTest DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18370603.svg)](https://doi.org/10.5281/zenodo.18370603)
+[![AILuminate](https://img.shields.io/badge/AILuminate-1%2C200-blue)](https://doi.org/10.5281/zenodo.18370263)
+[![Adversarial](https://img.shields.io/badge/Adversarial-2%2C550-blue)](https://doi.org/10.5281/zenodo.18370659)
+[![Governance](https://img.shields.io/badge/Governance-46_sessions-blue)](https://doi.org/10.5281/zenodo.18009153)
+[![SB 243](https://img.shields.io/badge/SB_243-50-blue)](https://doi.org/10.5281/zenodo.18370504)
+[![XSTest](https://img.shields.io/badge/XSTest-FPR_8%25-blue)](https://doi.org/10.5281/zenodo.18370603)
 
 ---
 
