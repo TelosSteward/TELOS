@@ -11,8 +11,10 @@
 | Dataset | DOI | Description |
 |---------|-----|-------------|
 | **Adversarial Validation** | [10.5281/zenodo.18370659](https://doi.org/10.5281/zenodo.18370659) | 2,550 attacks, 0/2,550 observed successes |
+| **AILuminate Benchmark** | [10.5281/zenodo.18370263](https://doi.org/10.5281/zenodo.18370263) | 1,200 MLCommons attacks across 12 harm categories |
 | **Governance Benchmark** | [10.5281/zenodo.18009153](https://doi.org/10.5281/zenodo.18009153) | 46 multi-session governance evaluations across 8 domains |
-| **SB 243 Child Safety** | [10.5281/zenodo.18370504](https://doi.org/10.5281/zenodo.18370504) | CA SB 243 child safety validation (0% ASR, 74% FPR) |
+| **SB 243 Child Safety** | [10.5281/zenodo.18370504](https://doi.org/10.5281/zenodo.18370504) | CA SB 243-aligned evaluation (0% ASR, 74% FPR) |
+| **XSTest Over-Refusal** | [10.5281/zenodo.18370603](https://doi.org/10.5281/zenodo.18370603) | False positive calibration (8% FPR with domain PA) |
 
 ### Adversarial Validation Dataset
 
@@ -149,7 +151,7 @@ python3 -m pytest tests/ -v
 python3 -m pytest tests/test_constants.py -v
 ```
 
-**What it tests** (38 tests):
+**What it tests** (78 tests):
 - Basin radius calculations (r = 2/max(ρ, 0.25))
 - Epsilon threshold functions (ε_min, ε_max)
 - Model-specific threshold lookups (SentenceTransformer vs Mistral)
@@ -157,7 +159,7 @@ python3 -m pytest tests/test_constants.py -v
 - Proportional control gains (K_ATTRACTOR, K_ANTIMETA)
 - Numerical edge cases and boundary conditions
 
-**Expected output**: All 38 tests should pass in < 1 second.
+**Expected output**: All 78 tests should pass in < 1 second.
 
 ---
 
@@ -453,6 +455,6 @@ TELOS/
 
 ---
 
-**Document Version**: 2.0
-**Last Updated**: December 2025
+**Document Version**: 2.1
+**Last Updated**: January 2026
 **Status**: Research Phase
