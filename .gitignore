@@ -86,3 +86,12 @@ drafts/
 *_draft/
 *_drafts/
 .tmp.driveupload/
+
+# Agentic AI components (in development, not ready for public release)
+# These modules are actively being developed for NSF SBIR Phase I
+# and will be released when validation is complete
+telos_gateway/
+telos_gateway_registry/
+telos_gateway_traces/
+telos_langgraph/
+screenshots/gateway_ui.png
