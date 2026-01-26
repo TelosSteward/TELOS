@@ -336,10 +336,37 @@ Results from `validation/` directory:
 | Dataset | Attacks | Result |
 |---------|---------|--------|
 | Complete Validation | 2,550 | 0/2,550 observed (95% CI upper bound ~0.15%) |
-| MedSafetyBench | 900 | 100% blocked |
-| HarmBench | 400 | 100% blocked |
+| AILuminate | 1,200 | 0/1,200 observed |
+| MedSafetyBench | 900 | 0/900 observed |
+| HarmBench | 400 | 0/400 observed |
+| SB 243-aligned | 50 | 0/50 observed |
 
-### SB 243 Child Safety Validation
+### AILuminate Benchmark Validation
+
+Industry-standard benchmark from MLCommons AI Safety Working Group covering 12 NIST AI RMF harm categories.
+
+| Metric | Value |
+|--------|-------|
+| Total Prompts | 1,200 |
+| Attack Success Rate | 0/1,200 observed |
+| Harm Categories | 12 (CBRNE, Child Safety, Hate, Self-Harm, etc.) |
+
+**Files** (in `validation/`):
+- `ailuminate_validation_results.json` - Per-prompt forensic traces
+- `ailuminate_forensic_summary.json` - Aggregate statistics
+
+**Run validation**:
+```bash
+cd validation/
+python3 run_ailuminate_validation.py
+
+# Quick test mode (10 prompts)
+python3 run_ailuminate_validation.py --quick
+```
+
+**DOI**: [10.5281/zenodo.18370263](https://doi.org/10.5281/zenodo.18370263)
+
+### SB 243-Aligned Child Safety Evaluation
 
 Domain-specific validation against California SB 243 child safety harm categories (suicide, self-harm, sexual content, eating disorders).
 
@@ -370,6 +397,34 @@ python3 run_false_positive_validation.py
 
 See `validation/FALSE_POSITIVE_ANALYSIS.md` for full analysis of the safety-utility tradeoff.
 
+### XSTest Over-Refusal Calibration
+
+Measures false positive rate using the XSTest benchmark (safe prompts that look unsafe). Demonstrates that domain-specific Primacy Attractors reduce over-refusal compared to generic safety filters.
+
+| Metric | Healthcare PA | Generic PA |
+|--------|---------------|------------|
+| False Positive Rate | 8.0% | 24.8% |
+| Improvement | 16.8 percentage points | - |
+
+**What XSTest Measures**: Safe prompts that contain sensitive keywords but are actually benign (e.g., "How do I kill a process in Linux?"). High FPR means blocking legitimate queries.
+
+**Files** (in `validation/`):
+- `xstest_validation_results.json` - Per-prompt classification results
+- `xstest_fpr_analysis.json` - False positive rate calculations
+
+**Run validation**:
+```bash
+cd validation/
+python3 run_xstest_validation.py
+
+# Compare domain PA vs generic PA
+python3 run_xstest_validation.py --compare
+```
+
+**Key Finding**: Domain-specific PAs (e.g., Healthcare PA) dramatically reduce false positives while maintaining attack blocking, because they understand context rather than just detecting sensitive keywords.
+
+**DOI**: [10.5281/zenodo.18370603](https://doi.org/10.5281/zenodo.18370603)
+
 ---
 
 ## Verification Checklist
@@ -380,10 +435,17 @@ See `validation/FALSE_POSITIVE_ANALYSIS.md` for full analysis of the safety-util
 - [ ] Set `MISTRAL_API_KEY`
 - [ ] Launched Streamlit dashboard successfully
 
-### Adversarial Validation (included in repo)
+### Adversarial Validation (2,550 attacks)
 - [ ] Reviewed `validation/telos_complete_validation_dataset.json`
 - [ ] Ran internal validation test (`run_internal_test0.py`)
 - [ ] Observed fidelity measurements in dashboard
+
+### Individual Benchmark Reproduction (optional)
+- [ ] AILuminate: Ran `run_ailuminate_validation.py` (1,200 prompts)
+- [ ] MedSafetyBench: Ran `run_medsafetybench_validation.py` (900 prompts)
+- [ ] HarmBench: Ran `run_harmbench_validation.py` (400 prompts)
+- [ ] SB 243: Ran `run_sb243_validation.py` (50 prompts)
+- [ ] XSTest: Ran `run_xstest_validation.py` (FPR calibration)
 
 ### Governance Benchmark (optional)
 - [ ] Downloaded governance benchmark from Zenodo (or)
