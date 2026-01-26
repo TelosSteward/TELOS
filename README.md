@@ -62,6 +62,16 @@ TELOS produces audit records at the moment of each governance decision. When reg
 
 ---
 
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| **[Academic Paper (PDF)](docs/TELOS_Academic_Paper.pdf)** | Peer-review ready paper with full methodology and results |
+| **[Technical Whitepaper v2.5](docs/TELOS_Whitepaper_v2.5.md)** | Complete mathematical specification and validation details |
+| **[Reproduction Guide](docs/REPRODUCTION_GUIDE.md)** | Step-by-step instructions to verify all results |
+
+---
+
 ## What is TELOS Observatory?
 
 TELOS is a mathematical governance framework for AI alignment. It uses **Primacy Attractors** (embedding-space representations of user purpose) to detect and correct conversational drift in real-time.
