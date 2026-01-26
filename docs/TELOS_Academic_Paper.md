@@ -1,88 +1,64 @@
----
-abstract: |
-  We introduce TELOS, a runtime AI governance system that achieves a 0% observed Attack Success Rate (ASR) across 2,550 adversarial attacks (95% CI: \[0%, 0.14%\]). While current systems accept violation rates of 3.7% to 43.9% as unavoidable, TELOS demonstrates that mathematical enforcement of constitutional boundaries can provide substantially stronger defense than existing approaches. It uses a three-tier structure that combines embedding-space mathematics, authoritative policy retrieval, and human expert escalation.
-
-  Our method treats constitutional enforcement as a statistical process control issue rather than a prompt engineering problem. We utilize fixed reference points in embedding space (Primacy Attractors) combined with control-theoretic stability analysis to create a governance framework that performs well against various attack types.
-
-  We validate our method across 2,550 attacks spanning five benchmarks: AILuminate (1,200 MLCommons industry-standard), HarmBench (400 general-purpose), MedSafetyBench (900 healthcare-specific), and California SB 243 Child Safety (50 CSAM-aligned attacks). TELOS-governed models achieve 0% ASR on both small and large language models. In contrast, baseline methods using system prompts show an ASR of 3.7--11.1%, while raw models exhibit an ASR of 30.8--43.9%. Additional XSTest validation (250 safe prompts) demonstrates that domain-specific Primacy Attractors reduce over-refusal from 24.8% to 8.0%, achieving strong safety without excessive restriction.
-
-  The system features governance trace logging, making enforcement decisions observable and auditable, which helps meet regulatory compliance needs. All results can be fully reproduced with the provided code and attack libraries.
-author:
-- |
-  Jeffrey Brunner\
-  TELOS AI Labs Inc.
-date: January 2026
-title: |
-  TELOS: Mathematical Enforcement of AI Constitutional Boundaries\
-  Achieving Near-Zero Attack Success Rate Through Embedding-Space Governance
----
-
 **Keywords:** AI safety, constitutional AI, adversarial robustness, embedding space, Lyapunov stability, governance verification, over-refusal calibration
 
 # Introduction
 
-The use of Large Language Models (LLMs) in regulated sectors like healthcare, finance, and education raises a serious issue. These systems provide powerful capabilities, but they lack dependable methods for enforcing regulatory limits. This challenge has become urgent legally. The European Union's AI Act mandates runtime monitoring and ongoing compliance for high-risk AI systems by August 2026. At the same time, California's SB 243 is the first state law specifically targeting AI chatbot safety for minors, effective January 2026. These regulations require mechanisms that current governance methods cannot deliver.
+The deployment of Large Language Models (LLMs) in regulated fields such as healthcare, finance, and education presents a fundamental conflict. These systems offer significant capabilities, but they lack reliable ways to enforce regulatory boundaries. This conflict has become legally urgent. The European Union's AI Act requires runtime monitoring and ongoing compliance for high-risk AI systems by August 2026. Meanwhile, California's SB 243 is the first state law aimed explicitly at AI chatbot safety for minors, effective January 2026. These regulations demand mechanisms that current governance approaches cannot provide.
 
-Current methods for AI governance, whether through fine-tuning, prompt engineering, or post-hoc filtering, often fail against adversarial attacks. The HarmBench benchmark found that leading AI systems show attack success rates of 4.4--90% across 400 standardized attacks. MedSafetyBench revealed similar weaknesses in healthcare contexts with 900 domain-specific attacks. Leading guardrail systems, such as NVIDIA NeMo Guardrails and Llama Guard, accept violation rates between 3.7% and 43.9% as unavoidable, which is incompatible with emerging regulatory requirements.
+Current methods for AI governance---whether through fine-tuning, prompt engineering, or post-hoc filtering---often fail against adversarial attacks. The HarmBench benchmark found that leading AI systems show attack success rates of 4.4--90% across 400 standardized attacks. MedSafetyBench revealed similar weaknesses in healthcare contexts with 900 domain-specific attacks. Leading guardrail systems, such as NVIDIA NeMo Guardrails and Llama Guard, accept violation rates between 3.7% and 43.9% as unavoidable, which is incompatible with emerging regulatory requirements.
 
-This paper looks into whether significantly lower failure rates can be achieved through a different architectural approach. We apply statistical process control methods to AI governance and provide evidence that constitutional enforcement can be considerably improved.
+This paper investigates whether substantially lower failure rates are achievable through a different architectural approach. We apply statistical process control methods to AI governance and present empirical evidence that constitutional enforcement can be significantly strengthened.
 
 ## The Governance Problem
 
-Consider a healthcare AI assistant that must never share Protected Health Information (PHI) according to HIPAA regulations. Current methods fail in predictable ways:
+Consider a healthcare AI assistant that must never disclose Protected Health Information (PHI) under HIPAA regulations. Current methods fail in predictable ways:
 
-1.  **Prompt Engineering:** System prompts like "never disclose PHI" can easily be bypassed using social engineering or prompt injection.
+1.  **Prompt Engineering:** System prompts stating "never disclose PHI" can easily be bypassed using social engineering or prompt injection.
 
-2.  **Fine-tuning:** RLHF/DPO methods embed constraints into model weights but remain susceptible to jailbreaks.
+2.  **Fine-tuning:** RLHF/DPO methods embed constraints into model weights but remain vulnerable to jailbreaks.
 
-3.  **Output Filtering:** Filtering after generation can catch obvious violations but misses semantic equivalents.
+3.  **Output Filtering:** Filtering after generation captures obvious violations but overlooks semantic equivalents.
 
-The main issue is that all current methods treat governance as a *language* problem (what the model says) rather than a *geometric* problem (the location of the query in semantic space).
+The core issue is that all current methods treat governance as a *linguistic* problem (what the model states) rather than a *geometric* problem (the location of the query in semantic space).
 
 ## Our Approach: Governance as Geometric Control
 
 TELOS implements AI governance through three architectural choices:
 
-1.  **Fixed Reference Points:** Instead of depending on the model's shifting attention for self-governance, we establish fixed reference points (Primacy Attractors) in the embedding space.
+1.  **Fixed Reference Points:** Instead of relying on the model's shifting attention for self-governance, we set fixed reference points (Primacy Attractors) in the embedding space.
 
-2.  **Mathematical Enforcement:** We use cosine similarity in the embedding space as a clear, position-invariant measure of constitutional alignment.
+2.  **Mathematical Enforcement:** Cosine similarity in the embedding space offers a deterministic, position-invariant measure of constitutional alignment.
 
-3.  **Three-Tier Defense:** The system ensures that all three layers, mathematical (PA), authoritative (RAG), and human (Expert), must fail at the same time for a violation to occur.
+3.  **Three-Tier Defense:** The system ensures that mathematical (PA), authoritative (RAG), and human (Expert) layers must all fail simultaneously for a violation to occur.
 
 ## Contributions
 
-This paper presents five main contributions:
+This paper makes five main contributions:
 
-1.  **Theoretical:** We show that external reference points in the embedding space enable stable governance with defined basin geometry ($r = 2/\rho$).
+1.  **Theoretical:** We demonstrate that external reference points in the embedding space enable stable governance with defined basin geometry ($r = 2/\rho$).
 
-2.  **Empirical:** We demonstrate 0% ASR across 2,550 adversarial attacks (1,200 AILuminate + 400 HarmBench + 900 MedSafetyBench + 50 SB 243 child safety), compared to 3.7--43.9% for existing methods.
+2.  **Empirical:** We show 0% ASR across 2,550 adversarial attacks (1,200 AILuminate + 400 HarmBench + 900 MedSafetyBench + 50 SB 243 child safety), compared to 3.7--43.9% for existing methods.
 
-3.  **Over-Refusal Calibration:** We illustrate that domain-specific Primacy Attractors lower false positive rates from 24.8% to 8.0% (XSTest benchmark), achieving strong safety without excessive restriction.
+3.  **Over-Refusal Calibration:** We demonstrate that domain-specific Primacy Attractors reduce false positive rates from 24.8% to 8.0% (XSTest benchmark), achieving strong safety without excessive restriction.
 
-4.  **Methodological:** We provide governance trace logging for forensic analysis and regulatory audit trails.
+4.  **Methodological:** We provide governance trace logging that enables forensic analysis and regulatory audit trails.
 
-5.  **Practical:** We offer reproducible validation scripts and a healthcare-specific implementation to support HIPAA compliance.
+5.  **Practical:** We provide reproducible validation scripts and a healthcare-specific implementation designed to support HIPAA compliance requirements.
 
 ## Threat Model
 
-Our evaluation assumes a **query-only adversary** with the following traits:
+Our evaluation assumes a **query-only adversary** with the following characteristics:
 
-- **Knowledge:** The attacker knows about TELOS but not the specific PA configuration, threshold values, or embedding model details
+- **Knowledge:** Attacker knows TELOS exists but not the specific PA configuration, threshold values, or embedding model details
 
-- **Access:** The attacker has only black-box query access with no ability to alter embeddings, intercept API calls, or access system internals
+- **Access:** Black-box query access only; no ability to modify embeddings, intercept API calls, or access system internals
 
-- **Capabilities:** The attacker can create any text inputs, such as multi-turn conversations, role-play scenarios, and prompt injection attempts
+- **Capabilities:** Can craft arbitrary text inputs, including multi-turn conversations, role-play scenarios, and prompt injection attempts
 
-- **Limitations:** The attacker cannot perform model extraction attacks, cannot modify the governance layer, and must adhere to standard rate limiting
+- **Limitations:** Cannot perform model extraction attacks, cannot modify the governance layer, and is subject to standard rate limiting
 
-This threat model aligns with HarmBench and MedSafetyBench evaluation assumptions. We acknowledge that white-box adaptive attacks are an important area for future work.
+This threat model aligns with HarmBench and MedSafetyBench evaluation assumptions. We note that white-box adaptive attacks represent an important direction for future work.
 
 # The Reference Point Problem
-
-<figure id="fig:fidelity-pipeline" data-latex-placement="t">
-<embed src="diagrams/fig3_fidelity_pipeline.pdf" />
-<figcaption>Two-Layer Fidelity Architecture. Layer 1 applies a hard block for extreme off-topic queries (similarity <span class="math inline"> &lt; 0.20</span>). Layer 2 calculates fidelity and maps to intervention zones based on thresholds.</figcaption>
-</figure>
 
 ## Why Attention Mechanisms Fail for Governance
 
@@ -90,17 +66,17 @@ Modern transformers use attention mechanisms to determine token relationships: $
     \text{Attention}(Q,K,V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V
 \end{equation}$$
 
-This leads to a significant issue for governance. The model generates both $Q$ and $K$ from its own hidden states, resulting in circular self-reference. Research on the "lost in the middle" effect [@liu2024lost] shows that LLMs display strong primacy and recency biases, performing well with information at the start and end of context but poorly with middle positions. As conversations progress, initial constitutional constraints drift into this poorly attended middle area: $$\begin{equation}
+This creates a key problem for governance. The model generates both $Q$ and $K$ from its own hidden states, leading to self-referential circularity. Research on the "lost in the middle" effect [@liu2024lost] demonstrates that LLMs exhibit strong primacy and recency biases---attending well to information at the beginning and end of context, but poorly to middle positions. As conversations extend, initial constitutional constraints drift into this poorly-attended middle region: $$\begin{equation}
     \text{Attention}(Q_i, K_j) \propto e^{-\alpha|i-j|} \quad \text{(simplified)}
 \end{equation}$$
 
-At position $i=1000$, attention to initial constraints ($j=0$) can decrease significantly. The model effectively "forgets" its constitutional limits as the context builds.
+At position $i=1000$, attention to initial constraints ($j=0$) can drop substantially. The model effectively "forgets" its constitutional limits as context accumulates.
 
 ## The Primacy Attractor Solution
 
-Instead of depending on self-reference, TELOS establishes an external, fixed reference point:
+Instead of relying on self-reference, TELOS sets up an external, fixed reference point:
 
-**Definition (Primacy Attractor):** A fixed point $\hat{a} \in \mathbb{R}^n$ in embedding space that contains constitutional constraints: $$\begin{equation}
+**Definition (Primacy Attractor):** A fixed point $\hat{a} \in \mathbb{R}^n$ in embedding space that includes constitutional constraints: $$\begin{equation}
     \hat{a} = \frac{\tau \cdot p + (1-\tau) \cdot s}{\|\tau \cdot p + (1-\tau) \cdot s\|}
 \end{equation}$$
 
@@ -110,14 +86,9 @@ The PA stays constant throughout conversations, providing a stable reference for
     \text{Fidelity}(q) = \cos(q, \hat{a}) = \frac{q \cdot \hat{a}}{\|q\| \cdot \|\hat{a}\|}
 \end{equation}$$
 
-Note that since the PA encodes constitutional boundaries (prohibited behaviors), higher fidelity indicates a query closer to violation territory. This geometric relationship is independent of token position or context window, resolving the reference point problem.
+Note that because the PA encodes constitutional boundaries (prohibited behaviors), higher fidelity indicates a query closer to violation territory. This geometric relationship is independent of token position or context window, fixing the reference point problem.
 
 # Mathematical Foundation
-
-<figure id="fig:primacy-attractor" data-latex-placement="t">
-<embed src="diagrams/fig2_primacy_attractor.pdf" />
-<figcaption>Primacy Attractor in embedding space. The PA <span class="math inline">$\hat{\mathbf{a}}$</span> serves as a fixed reference point. The basin boundary (dashed) defines the region of aligned queries. Query fidelity <span class="math inline">$F(q) = \cos(q, \hat{\mathbf{a}})$</span> determines intervention level.</figcaption>
-</figure>
 
 ## Basin of Attraction
 
@@ -147,7 +118,7 @@ We apply Lyapunov stability analysis from classical control theory to characteri
 
 3.  $V(x) \to \infty$ as $\|x\| \to \infty$ (radially unbounded)
 
-By Lyapunov's theorem, these conditions establish global asymptotic stability for the idealized continuous dynamical system. The empirical validation (Section 5) provides confirmation of this theoretical stability across 2,550 real-world attacks.
+By Lyapunov's theorem, these conditions establish global asymptotic stability for the idealized continuous dynamical system.
 
 ## Proportional Control Law
 
@@ -165,12 +136,7 @@ With $K=1.5$ (empirically tuned) and threshold $\theta=0.65$ (healthcare domain)
 
 # Three-Tier Defense Architecture
 
-<figure id="fig:three-tier" data-latex-placement="t">
-<embed src="diagrams/fig1_three_tier_governance.pdf" />
-<figcaption>Three-Tier Governance Architecture. Tier 1 provides mathematical enforcement via embedding similarity (95.8% of blocks). Tier 2 retrieves authoritative policies for ambiguous cases (3.0%). Tier 3 escalates to human experts (1.2%). All decisions are logged for audit compliance.</figcaption>
-</figure>
-
-TELOS uses a layered defense with three independent layers:
+TELOS uses defense-in-depth through three independent layers:
 
 ## Tier 1: Mathematical Enforcement
 
@@ -188,27 +154,27 @@ TELOS uses a layered defense with three independent layers:
 
 - **Corpus:** Federal regulations (CFR), HIPAA guidance, professional standards (AMA, CDC)
 
-Tier 2 handles situations where mathematical similarity alone is not enough. Instead of depending on the LLM's learned knowledge, the system retrieves text from authoritative sources and bases the response on documented regulations.
+Tier 2 addresses cases where mathematical similarity alone is insufficient. Rather than relying on the LLM's parametric knowledge, the system retrieves authoritative source text and grounds the response in documented regulations.
 
 ## Tier 3: Human Expert Escalation
 
 - **Mechanism:** Domain experts with professional responsibility
 
-- **Activation:** Edge cases where $\text{fidelity} < 0.35$ but secondary heuristics suggest possible new attacks
+- **Activation:** Edge cases where $\text{fidelity} < 0.35$ but secondary heuristics suggest potential novel attacks
 
 - **Roles:** Privacy Officer, Legal Counsel, Chief Medical Officer
 
 ## Low Probability of Simultaneous Failure
 
-For a violation to happen, an attacker must simultaneously:
+For a violation to occur, an attacker must simultaneously:
 
 1.  Manipulate embedding math (requires API access)
 
-2.  Exploit gaps in federal regulations (very limited)
+2.  Exploit gaps in federal regulations (highly constrained)
 
-3.  Deceive trained professionals (unlikely under usual protocols)
+3.  Deceive trained professionals (unlikely under standard protocols)
 
-The need for all three layers to fail at once makes successful attacks very unlikely based on our evaluated threat model.
+The requirement that all three layers fail simultaneously makes successful attacks highly improbable under our evaluated threat model.
 
 # Adversarial Validation
 
@@ -234,7 +200,7 @@ We tested 2,550 attacks across five benchmarks:
 
 **MedSafetyBench** ($n=900$): Tier 1 blocks 23.0%, Tier 2 blocks 77.0%
 
-The variation in tier distribution shows the nature of the attacks: AILuminate and HarmBench attacks are more straightforward violations, while MedSafetyBench healthcare attacks often fall into the ambiguous zone requiring Tier 2 policy retrieval.
+The difference in tier distribution reflects the nature of the attacks: AILuminate and HarmBench attacks are more direct violations, while MedSafetyBench healthcare attacks often fall in the ambiguous zone requiring Tier 2 policy retrieval.
 
 ## Experimental Setup
 
@@ -246,9 +212,9 @@ The variation in tier distribution shows the nature of the attacks: AILuminate a
 
 - Raw models (no controls)
 
-**Success Criteria:** An attack is considered "successful" if the model generates a response that would violate a policy. We use the HarmBench default scoring method for general attacks and domain-expert review for healthcare-specific attacks.
+**Success Criteria:** An attack is scored as "successful" if the model produces a response that would constitute a policy violation. We use the HarmBench default scoring methodology for general attacks and domain-expert review for healthcare-specific attacks.
 
-**Interpreting 0% ASR:** Our claim is that zero attacks escaped the governance framework undetected, not that the system operates without human involvement. The 5 attacks (0.2% of total) that reached Tier 3 were successfully detected, flagged, and routed to human experts, precisely the intended behavior.
+**Interpreting 0% ASR:** Our claim is that zero attacks escaped the governance framework undetected---not that the system operates without human involvement. The 5 attacks (0.2% of total) that reached Tier 3 were successfully detected, flagged, and routed to human experts---precisely the intended behavior.
 
 ## Results
 
@@ -394,11 +360,6 @@ Our validation provides technical evidence relevant to emerging regulatory requi
 
 # Runtime Auditable Governance
 
-<figure id="fig:governance-trace" data-latex-placement="t">
-<embed src="diagrams/fig4_governance_trace.pdf" />
-<figcaption>Governance Trace Architecture. Every governance event is recorded as a JSONL entry. The turn cycle repeats for each user interaction. Complete traces support regulatory compliance (EU AI Act, HIPAA, ISO 27001).</figcaption>
-</figure>
-
 ## The Auditability Requirement
 
 Regulatory frameworks including the EU AI Act (Article 12), California SB 53, and HIPAA require that AI systems maintain records sufficient to enable post-deployment review. TELOS addresses this through runtime governance trace logging that records every decision with complete forensic context.
@@ -482,7 +443,7 @@ The forensic trace format addresses specific regulatory requirements:
 
 ## Healthcare-Specific Validation
 
-We highlight thirty representative HIPAA-specific attacks from the broader MedSafetyBench validation:
+Thirty HIPAA-specific attacks were tested:
 
 - PHI disclosure attempts
 
@@ -628,7 +589,7 @@ TELOS draws lessons from industrial quality control. Six Sigma DMAIC and Statist
 
 **Model Coverage:** All results use Mistral embeddings. We have not validated performance on other embedding models (OpenAI, Cohere, open-source) or other LLM families (GPT-4, Claude, Llama). Generalization is an open question.
 
-**Threat Model Scope:** Our validation assumes black-box query access. We have not tested adaptive attacks where adversaries have knowledge of the PA configuration. White-box robustness remains untested. However, the three-tier architecture provides defense-in-depth against novel attack vectors, and embedding model updates naturally shift the geometric attack surface over time.
+**Threat Model Scope:** Our validation assumes black-box query access. We have not tested adaptive attacks where adversaries have knowledge of the PA configuration. White-box robustness remains untested.
 
 **Domain Coverage:** Validation covers healthcare, general safety, child safety, and over-refusal. Performance in other regulated domains (finance, legal, education) requires separate validation.
 
@@ -664,9 +625,9 @@ TELOS's Primacy Attractor architecture extends naturally to agentic contexts: $$
 
 # Conclusion
 
-TELOS demonstrates that AI constitutional violations can be addressed through structured governance. Through three-tier governance, mathematical enforcement, authoritative policy retrieval, and human expert escalation, we observe a 0% Attack Success Rate across 2,550 adversarial tests spanning five benchmarks (95% CI: \[0%, 0.14%\]). XSTest validation shows that domain-specific Primacy Attractors reduce over-refusal from 24.8% to 8.0%.
+TELOS demonstrates that AI constitutional violations can be addressed through structured governance. Through three-tier governance---mathematical enforcement, authoritative policy retrieval, and human expert escalation---we observe a 0% Attack Success Rate across 2,550 adversarial tests spanning five benchmarks (95% CI: \[0%, 0.14%\]). XSTest validation shows that domain-specific Primacy Attractors reduce over-refusal from 24.8% to 8.0%.
 
-Our five contributions, theoretical (Lyapunov-stable PA mathematics), empirical (0% ASR validation), over-refusal calibration (XSTest FPR reduction), methodological (governance trace logging), and practical (reproducible validation infrastructure), address requirements for AI deployment in regulated fields.
+Our five contributions---theoretical (Lyapunov-stable PA mathematics), empirical (0% ASR validation), over-refusal calibration (XSTest FPR reduction), methodological (governance trace logging), and practical (reproducible validation infrastructure)---address requirements for AI deployment in regulated fields.
 
 The reference implementation is available for organizations seeking to evaluate the framework. We invite the research community to reproduce and extend our findings. The code is open source (Apache 2.0).
 
@@ -889,7 +850,7 @@ The combination of purpose statement, scope exemplars, and example responses cre
 
 3.  **Establishes geometric boundaries** -- The centroid plus basin radius creates a mathematically defined region
 
-Queries are measured against this centroid using cosine similarity. A query about "how metformin works" falls within the basin; a query about "how to synthesize dangerous substances" does not, regardless of how cleverly the attack is phrased, because the measurement is geometric, not linguistic.
+Queries are measured against this centroid using cosine similarity. A query about "how metformin works" falls within the basin; a query about "how to synthesize dangerous substances" does not---regardless of how cleverly the attack is phrased, because the measurement is geometric, not linguistic.
 
 # Glossary of Terms
 
@@ -903,13 +864,13 @@ Queries are measured against this centroid using cosine similarity. A query abou
 
 **Attack Success Rate (ASR):** The percentage of adversarial attacks that successfully elicit policy-violating responses.
 
-**Violation Defense Rate (VDR):** The complement of ASR ($\text{VDR} = 1 - \text{ASR}$), showing the percentage of attacks successfully blocked.
+**Violation Defense Rate (VDR):** The complement of ASR ($\text{VDR} = 1 - \text{ASR}$), representing the percentage of attacks successfully blocked.
 
-**Governance Trace Logging:** The audit and observability layer for TELOS governance, allowing for forensic decision tracing and regulatory compliance documentation.
+**Governance Trace Logging:** The audit and observability layer for TELOS governance, enabling forensic decision tracing and regulatory compliance documentation.
 
-**Constitutional Boundary:** A clear constraint defining prohibited behaviors or content types within a specific domain.
+**Constitutional Boundary:** An explicit constraint defining prohibited behaviors or content types within a given domain.
 
-**Lyapunov Stability:** A mathematical property that ensures the governance system returns to equilibrium (the PA) after a disturbance.
+**Lyapunov Stability:** A mathematical property ensuring that the governance system returns to equilibrium (the PA) after perturbation.
 
 ::: thebibliography
 99
