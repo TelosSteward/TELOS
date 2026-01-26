@@ -111,9 +111,28 @@ User Input → Embed → Raw Similarity → Layer 1 Check (0.20)
 
 | Document | Purpose |
 |----------|---------|
+| `docs/TELOS_Academic_Paper.tex` | **Canonical academic paper** (LaTeX source, arXiv-ready) |
+| `docs/TELOS_Academic_Paper.pdf` | Academic paper PDF (14 pages, two-column, with figures) |
+| `docs/TELOS_Academic_Paper.md` | Academic paper markdown version |
 | `docs/TELOS_Whitepaper_v2.3.md` | Mathematical specification |
 | `docs/TELOS_Lexicon_V1.1.md` | Terminology definitions |
 | `docs/GRANT_ROADMAP.md` | Funding phases, consortium architecture |
+
+## Academic Paper Figures
+
+Standalone TikZ figures in `docs/diagrams/`:
+
+| Figure | File | Section | Description |
+|--------|------|---------|-------------|
+| Fig 1 | `fig1_three_tier_governance.tex/.pdf` | Section 4 | Three-Tier Defense Architecture (full-width) |
+| Fig 2 | `fig2_primacy_attractor.tex/.pdf` | Section 3 | PA basin geometry in embedding space |
+| Fig 3 | `fig3_fidelity_pipeline.tex/.pdf` | Section 2 | Two-Layer Fidelity Architecture |
+| Fig 4 | `fig4_governance_trace.tex/.pdf` | Section 6 | Governance Trace event flow |
+
+Figures are included in paper via `\includegraphics`. To recompile standalone figures:
+```bash
+cd docs/diagrams && pdflatex fig1_three_tier_governance.tex
+```
 
 ---
 
