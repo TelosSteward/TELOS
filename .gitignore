@@ -96,3 +96,30 @@ telos_gateway_traces/
 telos_langgraph/
 telos_configurator/
 screenshots/gateway_ui.png
+
+# Internal/business docs (kept locally, not for public repo)
+docs/ADJACENT_RESEARCH_LANDSCAPE.md
+docs/AGENTIC_AI_*.md
+docs/AGENTIC_AI_*.docx
+docs/AUDIT_DOCUMENTS.md
+docs/COMPETITIVE_POSITIONING_ANALYSIS.md
+docs/NSF_SBIR_*.md
+docs/STRATEGIC_POSITIONING_UCXM.md
+docs/SUPABASE_*.md
+docs/SUPABASE_*.txt
+docs/SUPER_AGENT_PAPER_ANALYSIS.md
+docs/TELOS_Competitive_Landscape.md
+docs/TELOS_EU_AI_Act_Positioning.md
+docs/TELOS_Enterprise_Differentiator_Deck.md
+docs/TELOS_Gateway_Technical_Brief_v1.0.md
+docs/TELOS_INSURANCE_BUSINESS_MODEL.md
+docs/TELOS_Lexicon_V1.1.md
+docs/TELOS_Pitch_Deck_v2.md
+docs/TELOS_QA_Interview.md
+docs/TELOS_Whitepaper_v2.4_humanized.*
+docs/WORKBENCH_INTEGRATION_SCOPE.md
+
+# LaTeX temp files
+*.aux
+*.out
+docs/*.log
