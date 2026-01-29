@@ -463,6 +463,51 @@ of its own governance mechanisms.
 
 
 # ============================================================================
+# SAAI Framework - Cumulative Drift Thresholds
+# ============================================================================
+# Per Safer Agentic AI (SAAI) Framework by Dr. Nell Watson:
+# "If behavior strays more than 10% away from original programming,
+#  triggers mandatory review"
+#
+# TELOS implements TIERED RESPONSE per SAAI's "graceful degradation" principle:
+#   - 10% drift: WARNING - mandatory review event, operator notification
+#   - 15% drift: RESTRICT - tighten thresholds to Tier 1 enforcement only
+#   - 20% drift: BLOCK - halt responses until human acknowledgment
+#
+# Drift is computed as: (baseline_fidelity - current_avg) / baseline_fidelity
+# Where baseline is established from first N turns after PA formation.
+# ============================================================================
+
+BASELINE_TURN_COUNT = 3
+"""
+Number of turns to establish baseline fidelity.
+After PA formation, the first N turns define "normal operation" for drift detection.
+Configurable per deployment requirements.
+"""
+
+SAAI_DRIFT_WARNING = 0.10
+"""
+SAAI 10% Threshold: Mandatory review triggered.
+When cumulative drift exceeds 10%, emit mandatory_review_triggered event.
+Per SAAI: "triggers mandatory review"
+"""
+
+SAAI_DRIFT_RESTRICT = 0.15
+"""
+SAAI 15% Threshold: Restrict flexibility.
+When cumulative drift exceeds 15%, tighten to stricter enforcement thresholds.
+Per SAAI: "flexibility scales inversely with the magnitude of the drift"
+"""
+
+SAAI_DRIFT_BLOCK = 0.20
+"""
+SAAI 20% Threshold: Block until human acknowledgment.
+When cumulative drift exceeds 20%, halt AI responses until operator confirms.
+Per SAAI: "graceful degradation" endpoint.
+"""
+
+
+# ============================================================================
 # Process Capability Thresholds
 # ============================================================================
 

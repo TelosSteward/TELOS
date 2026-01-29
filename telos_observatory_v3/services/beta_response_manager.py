@@ -432,6 +432,36 @@ class BetaResponseManager:
                     previous_fidelity=previous_fidelity,
                 )
                 logger.debug("Fidelity calculation recorded to governance trace")
+
+                # ============================================================
+                # SAAI FRAMEWORK: Check for cumulative drift BLOCK
+                # ============================================================
+                # Per SAAI: If cumulative drift exceeds 20%, responses must be
+                # blocked until human operator acknowledges the drift condition.
+                # This implements "graceful degradation" endpoint from SAAI.
+                if collector.is_response_blocked():
+                    saai_status = collector.get_saai_status()
+                    drift_pct = saai_status['drift']['percentage'] or "N/A"
+                    logger.warning(
+                        f"⛔ SAAI DRIFT BLOCK: Cumulative drift {drift_pct} exceeds 20%. "
+                        f"Responses blocked until operator acknowledgment."
+                    )
+                    response_data['saai_blocked'] = True
+                    response_data['saai_drift_level'] = saai_status['drift']['level']
+                    response_data['saai_drift_magnitude'] = saai_status['drift']['magnitude']
+                    # Return special blocked response
+                    response_data['response'] = (
+                        "⚠️ **Session Drift Alert**\n\n"
+                        "This conversation has drifted significantly from its original purpose. "
+                        f"Current drift: **{drift_pct}**\n\n"
+                        "Per SAAI safety protocols, an operator review is required before continuing.\n\n"
+                        "_This is a governance intervention designed to ensure AI alignment._"
+                    )
+                    response_data['shown_source'] = 'saai_blocked'
+                    response_data['intervention_triggered'] = True
+                    response_data['intervention_reason'] = 'saai_cumulative_drift_block'
+                    return response_data
+
             except Exception as e:
                 logger.debug(f"Governance trace logging skipped: {e}")
 

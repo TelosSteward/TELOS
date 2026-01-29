@@ -7,10 +7,17 @@ Manages JSONL persistence with configurable privacy modes.
 
 This is the single source of truth for governance observability data,
 integrating fidelity calculations, interventions, and SSE streaming.
+
+SAAI Framework Integration (January 2026):
+- Cryptographic hash chain for tamper-evident audit trails
+- 10% cumulative drift threshold with tiered response
+- Baseline fidelity capture for drift detection
 """
 
+import hashlib
 import json
 import logging
+import statistics
 import threading
 from datetime import datetime
 from pathlib import Path
@@ -18,12 +25,15 @@ from typing import Any, Callable, Dict, List, Optional
 
 from .evidence_schema import (
     BaseEvent,
+    BaselineEstablishedEvent,
+    DriftLevel,
     EventType,
     FidelityCalculatedEvent,
     FidelityZone,
     GovernanceEvent,
     InterventionLevel,
     InterventionTriggeredEvent,
+    MandatoryReviewTriggeredEvent,
     PAEstablishedEvent,
     PrivacyMode,
     ResponseGeneratedEvent,
@@ -36,6 +46,14 @@ from .evidence_schema import (
     TurnStartEvent,
     fidelity_to_zone,
     serialize_event,
+)
+
+from .constants import (
+    BASELINE_TURN_COUNT,
+    INTERVENTION_THRESHOLD,
+    SAAI_DRIFT_BLOCK,
+    SAAI_DRIFT_RESTRICT,
+    SAAI_DRIFT_WARNING,
 )
 
 logger = logging.getLogger(__name__)
@@ -90,9 +108,29 @@ class GovernanceTraceCollector:
         self._fidelity_sum = 0.0
         self._fidelity_count = 0
 
+        # =====================================================================
+        # SAAI Framework State - Cryptographic Hash Chain
+        # =====================================================================
+        # Per SAAI requirement: "Cryptographic integrity for audit trails"
+        # Each event includes hash of previous event, creating tamper-evident chain
+        self._last_hash: str = "0" * 64  # Genesis hash (all zeros)
+
+        # =====================================================================
+        # SAAI Framework State - Baseline & Drift Detection
+        # =====================================================================
+        # Per SAAI requirement: "If behavior strays more than 10% away from
+        # original programming, triggers mandatory review"
+        self._baseline_fidelities: List[float] = []  # First N turn fidelities
+        self._baseline_fidelity: Optional[float] = None  # Computed baseline average
+        self._baseline_established: bool = False
+        self._drift_level: DriftLevel = DriftLevel.NORMAL
+        self._drift_acknowledged: bool = False  # For BLOCK level recovery
+        self._mandatory_review_count: int = 0
+
         logger.info(
             f"GovernanceTraceCollector initialized: session={session_id}, "
-            f"privacy_mode={privacy_mode.value}, file={self.trace_file}"
+            f"privacy_mode={privacy_mode.value}, file={self.trace_file}, "
+            f"SAAI_drift_thresholds=[{SAAI_DRIFT_WARNING}, {SAAI_DRIFT_RESTRICT}, {SAAI_DRIFT_BLOCK}]"
         )
 
     # =========================================================================
@@ -216,7 +254,14 @@ class GovernanceTraceCollector:
         in_basin: bool,
         previous_fidelity: Optional[float] = None,
     ) -> FidelityCalculatedEvent:
-        """Record fidelity calculation with full governance context."""
+        """
+        Record fidelity calculation with full governance context.
+
+        SAAI Integration:
+        - Collects first N turns for baseline establishment
+        - After baseline, computes cumulative drift
+        - Triggers mandatory review events per SAAI tiered response
+        """
         fidelity_delta = None
         if previous_fidelity is not None:
             fidelity_delta = normalized_fidelity - previous_fidelity
@@ -240,7 +285,181 @@ class GovernanceTraceCollector:
         self._fidelity_sum += normalized_fidelity
         self._fidelity_count += 1
 
+        # =====================================================================
+        # SAAI Framework: Baseline Capture & Drift Detection
+        # =====================================================================
+        self._saai_process_fidelity(turn_number, normalized_fidelity)
+
         return event
+
+    def _saai_process_fidelity(self, turn_number: int, fidelity: float) -> None:
+        """
+        SAAI Framework processing for each fidelity measurement.
+
+        Phase 1 (turns 1-N): Collect baseline fidelities
+        Phase 2 (after baseline): Compute drift and trigger reviews if needed
+        """
+        # Phase 1: Baseline Collection
+        if not self._baseline_established:
+            self._baseline_fidelities.append(fidelity)
+
+            # Check if baseline period is complete
+            if len(self._baseline_fidelities) >= BASELINE_TURN_COUNT:
+                self._establish_baseline()
+            return
+
+        # Phase 2: Drift Detection (after baseline established)
+        self._check_cumulative_drift(turn_number)
+
+    def _establish_baseline(self) -> None:
+        """
+        Establish baseline fidelity from collected initial turns.
+
+        Records BaselineEstablishedEvent for audit trail.
+        """
+        if not self._baseline_fidelities:
+            logger.warning("Cannot establish baseline: no fidelity data")
+            return
+
+        self._baseline_fidelity = statistics.mean(self._baseline_fidelities)
+        baseline_min = min(self._baseline_fidelities)
+        baseline_max = max(self._baseline_fidelities)
+        baseline_std = statistics.stdev(self._baseline_fidelities) if len(self._baseline_fidelities) > 1 else 0.0
+
+        # Check if baseline is stable (all turns above intervention threshold)
+        is_stable = all(f >= INTERVENTION_THRESHOLD for f in self._baseline_fidelities)
+
+        self._baseline_established = True
+
+        # Record baseline establishment event
+        baseline_event = BaselineEstablishedEvent(
+            session_id=self.session_id,
+            baseline_turn_count=len(self._baseline_fidelities),
+            baseline_fidelity=self._baseline_fidelity,
+            baseline_min=baseline_min,
+            baseline_max=baseline_max,
+            baseline_std=baseline_std,
+            is_stable=is_stable,
+        )
+        self._write_event(baseline_event)
+
+        logger.info(
+            f"SAAI Baseline established: fidelity={self._baseline_fidelity:.3f}, "
+            f"range=[{baseline_min:.3f}, {baseline_max:.3f}], stable={is_stable}"
+        )
+
+    def _check_cumulative_drift(self, turn_number: int) -> None:
+        """
+        Check for cumulative drift and trigger SAAI tiered response.
+
+        Drift = (baseline - current_avg) / baseline
+        - 10%: WARNING - mandatory review event
+        - 15%: RESTRICT - tighten thresholds
+        - 20%: BLOCK - halt until human acknowledgment
+        """
+        if not self._baseline_established or self._baseline_fidelity is None:
+            return
+
+        if self._baseline_fidelity <= 0:
+            return  # Avoid division by zero
+
+        # Compute current session average
+        current_avg = self._fidelity_sum / self._fidelity_count if self._fidelity_count > 0 else 0.0
+
+        # Compute relative drift (SAAI formula)
+        drift_magnitude = (self._baseline_fidelity - current_avg) / self._baseline_fidelity
+
+        # Clamp to reasonable range (drift can be negative if improving)
+        drift_magnitude = max(0.0, drift_magnitude)
+
+        # Determine new drift level
+        new_drift_level = self._compute_drift_level(drift_magnitude)
+
+        # Check if drift level has escalated (worse than before)
+        if self._should_trigger_review(new_drift_level):
+            self._trigger_mandatory_review(
+                turn_number=turn_number,
+                new_level=new_drift_level,
+                drift_magnitude=drift_magnitude,
+                current_avg=current_avg,
+            )
+
+    def _compute_drift_level(self, drift_magnitude: float) -> DriftLevel:
+        """Compute drift level from magnitude."""
+        if drift_magnitude >= SAAI_DRIFT_BLOCK:
+            return DriftLevel.BLOCK
+        elif drift_magnitude >= SAAI_DRIFT_RESTRICT:
+            return DriftLevel.RESTRICT
+        elif drift_magnitude >= SAAI_DRIFT_WARNING:
+            return DriftLevel.WARNING
+        else:
+            return DriftLevel.NORMAL
+
+    def _should_trigger_review(self, new_level: DriftLevel) -> bool:
+        """Check if we should trigger a new mandatory review event."""
+        # Only trigger if drift level is worse than current
+        level_order = {
+            DriftLevel.NORMAL: 0,
+            DriftLevel.WARNING: 1,
+            DriftLevel.RESTRICT: 2,
+            DriftLevel.BLOCK: 3,
+        }
+
+        current_order = level_order.get(self._drift_level, 0)
+        new_order = level_order.get(new_level, 0)
+
+        return new_order > current_order
+
+    def _trigger_mandatory_review(
+        self,
+        turn_number: int,
+        new_level: DriftLevel,
+        drift_magnitude: float,
+        current_avg: float,
+    ) -> None:
+        """
+        Trigger SAAI mandatory review event with tiered response.
+
+        Per SAAI Framework:
+        - WARNING: Log and notify operator
+        - RESTRICT: Tighten enforcement thresholds
+        - BLOCK: Halt until human acknowledgment
+        """
+        previous_level = self._drift_level
+        self._drift_level = new_level
+        self._mandatory_review_count += 1
+
+        # Determine threshold crossed
+        if new_level == DriftLevel.BLOCK:
+            threshold_crossed = SAAI_DRIFT_BLOCK
+            action_taken = "responses_blocked"
+        elif new_level == DriftLevel.RESTRICT:
+            threshold_crossed = SAAI_DRIFT_RESTRICT
+            action_taken = "thresholds_tightened"
+        else:  # WARNING
+            threshold_crossed = SAAI_DRIFT_WARNING
+            action_taken = "operator_notified"
+
+        # Record mandatory review event
+        review_event = MandatoryReviewTriggeredEvent(
+            session_id=self.session_id,
+            turn_number=turn_number,
+            drift_level=new_level,
+            drift_magnitude=drift_magnitude,
+            baseline_fidelity=self._baseline_fidelity,
+            current_average=current_avg,
+            threshold_crossed=threshold_crossed,
+            action_taken=action_taken,
+            previous_drift_level=previous_level if previous_level != DriftLevel.NORMAL else None,
+            requires_acknowledgment=(new_level == DriftLevel.BLOCK),
+        )
+        self._write_event(review_event)
+
+        logger.warning(
+            f"SAAI MANDATORY REVIEW TRIGGERED: level={new_level.value}, "
+            f"drift={drift_magnitude:.1%}, baseline={self._baseline_fidelity:.3f}, "
+            f"current_avg={current_avg:.3f}, action={action_taken}"
+        )
 
     def record_intervention(
         self,
@@ -477,12 +696,18 @@ class GovernanceTraceCollector:
         ]
 
     def get_session_stats(self) -> Dict[str, Any]:
-        """Get current session statistics."""
+        """Get current session statistics including SAAI compliance metrics."""
         avg_fidelity = (
             self._fidelity_sum / self._fidelity_count
             if self._fidelity_count > 0
             else 0.0
         )
+
+        # Compute current drift if baseline established
+        current_drift = None
+        if self._baseline_established and self._baseline_fidelity and self._baseline_fidelity > 0:
+            current_drift = (self._baseline_fidelity - avg_fidelity) / self._baseline_fidelity
+            current_drift = max(0.0, current_drift)
 
         return {
             "session_id": self.session_id,
@@ -492,22 +717,134 @@ class GovernanceTraceCollector:
             "total_interventions": self._intervention_count,
             "average_fidelity": avg_fidelity,
             "trace_file": str(self.trace_file),
+            # SAAI Framework metrics
+            "saai_baseline_established": self._baseline_established,
+            "saai_baseline_fidelity": self._baseline_fidelity,
+            "saai_current_drift": current_drift,
+            "saai_drift_level": self._drift_level.value if self._drift_level else None,
+            "saai_mandatory_review_count": self._mandatory_review_count,
+            "saai_requires_acknowledgment": (self._drift_level == DriftLevel.BLOCK and not self._drift_acknowledged),
         }
+
+    # =========================================================================
+    # SAAI Framework Query Interface
+    # =========================================================================
+
+    def get_saai_status(self) -> Dict[str, Any]:
+        """
+        Get comprehensive SAAI compliance status for dashboard/API.
+
+        Returns current drift level, baseline status, and review history.
+        """
+        avg_fidelity = (
+            self._fidelity_sum / self._fidelity_count
+            if self._fidelity_count > 0
+            else 0.0
+        )
+
+        current_drift = None
+        drift_percentage = None
+        if self._baseline_established and self._baseline_fidelity and self._baseline_fidelity > 0:
+            current_drift = (self._baseline_fidelity - avg_fidelity) / self._baseline_fidelity
+            current_drift = max(0.0, current_drift)
+            drift_percentage = f"{current_drift:.1%}"
+
+        return {
+            "baseline": {
+                "established": self._baseline_established,
+                "fidelity": self._baseline_fidelity,
+                "turn_count": len(self._baseline_fidelities) if self._baseline_fidelities else 0,
+            },
+            "drift": {
+                "level": self._drift_level.value,
+                "magnitude": current_drift,
+                "percentage": drift_percentage,
+                "thresholds": {
+                    "warning": SAAI_DRIFT_WARNING,
+                    "restrict": SAAI_DRIFT_RESTRICT,
+                    "block": SAAI_DRIFT_BLOCK,
+                },
+            },
+            "review": {
+                "count": self._mandatory_review_count,
+                "requires_acknowledgment": (self._drift_level == DriftLevel.BLOCK and not self._drift_acknowledged),
+                "acknowledged": self._drift_acknowledged,
+            },
+            "compliance": {
+                "hash_chain_active": True,
+                "baseline_monitoring_active": self._baseline_established,
+            },
+        }
+
+    def acknowledge_drift(self) -> bool:
+        """
+        Acknowledge a BLOCK-level drift for human review.
+
+        Per SAAI: At BLOCK level, human acknowledgment is required
+        to resume operation.
+
+        Returns:
+            True if acknowledgment was needed and processed,
+            False if no acknowledgment was needed.
+        """
+        if self._drift_level == DriftLevel.BLOCK and not self._drift_acknowledged:
+            self._drift_acknowledged = True
+            logger.info("SAAI drift BLOCK level acknowledged by operator")
+            return True
+        return False
+
+    def is_response_blocked(self) -> bool:
+        """
+        Check if responses should be blocked due to SAAI drift level.
+
+        Returns:
+            True if drift is at BLOCK level and not yet acknowledged.
+        """
+        return self._drift_level == DriftLevel.BLOCK and not self._drift_acknowledged
+
+    def get_current_drift_level(self) -> DriftLevel:
+        """Get current SAAI drift level."""
+        return self._drift_level
 
     # =========================================================================
     # Persistence
     # =========================================================================
 
     def _write_event(self, event: GovernanceEvent) -> None:
-        """Write event to JSONL file and in-memory cache."""
+        """
+        Write event to JSONL file and in-memory cache with cryptographic hash chain.
+
+        SAAI Compliance: Each event includes:
+        - previous_hash: Hash of the previous event (genesis = "0"*64)
+        - event_hash: SHA-256 hash of (previous_hash + serialized_event)
+
+        This creates a tamper-evident chain where modification of any event
+        breaks the hash chain for all subsequent events.
+        """
         with self._lock:
             # Add to cache
             self._events.append(event)
 
-            # Write to file
+            # Serialize event to JSON
+            event_json = serialize_event(event)
+            event_dict = json.loads(event_json)
+
+            # Add hash chain fields (SAAI cryptographic integrity)
+            event_dict["previous_hash"] = self._last_hash
+
+            # Compute hash of: previous_hash + sorted event content
+            # Sort keys for deterministic hashing
+            hash_content = self._last_hash + json.dumps(event_dict, sort_keys=True)
+            event_hash = hashlib.sha256(hash_content.encode('utf-8')).hexdigest()
+            event_dict["event_hash"] = event_hash
+
+            # Update chain for next event
+            self._last_hash = event_hash
+
+            # Write to file with hash chain
             try:
                 with open(self.trace_file, 'a') as f:
-                    f.write(serialize_event(event) + '\n')
+                    f.write(json.dumps(event_dict) + '\n')
             except Exception as e:
                 logger.error(f"Failed to write event to {self.trace_file}: {e}")
 

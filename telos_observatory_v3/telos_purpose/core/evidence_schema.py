@@ -40,6 +40,9 @@ class EventType(str, Enum):
     TURN_COMPLETE = "turn_complete"
     SESSION_END = "session_end"
     SESSION_SUMMARY = "session_summary"
+    # SAAI Framework Events
+    MANDATORY_REVIEW_TRIGGERED = "mandatory_review_triggered"
+    BASELINE_ESTABLISHED = "baseline_established"
 
 
 class InterventionLevel(str, Enum):
@@ -50,6 +53,17 @@ class InterventionLevel(str, Enum):
     INTERVENE = "intervene"
     ESCALATE = "escalate"
     HARD_BLOCK = "hard_block"
+
+
+class DriftLevel(str, Enum):
+    """
+    SAAI Drift severity levels for tiered response.
+    Per SAAI Framework: "flexibility scales inversely with drift magnitude"
+    """
+    NORMAL = "normal"        # < 10% drift - no action
+    WARNING = "warning"      # 10-15% drift - mandatory review triggered
+    RESTRICT = "restrict"    # 15-20% drift - tighten thresholds
+    BLOCK = "block"          # > 20% drift - halt until human acknowledgment
 
 
 class FidelityZone(str, Enum):
@@ -323,6 +337,66 @@ class SessionSummaryEvent(BaseEvent):
 
 
 # ============================================================================
+# SAAI Framework Events
+# ============================================================================
+# Per Safer Agentic AI (SAAI) Framework by Dr. Nell Watson
+# These events support mandatory review requirements and tiered response
+
+class BaselineEstablishedEvent(BaseEvent):
+    """
+    Records when baseline fidelity is established for SAAI drift detection.
+
+    After PA formation, the first N turns establish what "normal operation"
+    looks like for this session. Drift is measured relative to this baseline.
+    """
+    event_type: EventType = EventType.BASELINE_ESTABLISHED
+
+    # Baseline configuration
+    baseline_turn_count: int  # Number of turns used to establish baseline
+
+    # Computed baseline
+    baseline_fidelity: float  # Average fidelity over baseline period
+    baseline_min: float  # Minimum fidelity during baseline
+    baseline_max: float  # Maximum fidelity during baseline
+    baseline_std: float  # Standard deviation during baseline
+
+    # Status
+    is_stable: bool  # All baseline turns were >= INTERVENTION_THRESHOLD
+
+
+class MandatoryReviewTriggeredEvent(BaseEvent):
+    """
+    Records when SAAI mandatory review threshold is crossed.
+
+    Per SAAI Framework: "If behavior strays more than 10% away from
+    original programming, triggers mandatory review"
+
+    TELOS implements tiered response:
+    - WARNING (10-15%): Log event, notify operator
+    - RESTRICT (15-20%): Tighten enforcement thresholds
+    - BLOCK (>20%): Halt until human acknowledgment
+    """
+    event_type: EventType = EventType.MANDATORY_REVIEW_TRIGGERED
+    turn_number: int
+
+    # Drift measurement
+    drift_level: DriftLevel  # WARNING, RESTRICT, or BLOCK
+    drift_magnitude: float  # Actual drift percentage (0.0-1.0)
+    baseline_fidelity: float  # Reference baseline
+    current_average: float  # Current session average fidelity
+
+    # Threshold crossed
+    threshold_crossed: float  # Which threshold was breached (0.10, 0.15, 0.20)
+
+    # Action taken
+    action_taken: str  # "operator_notified", "thresholds_tightened", "responses_blocked"
+
+    # State
+    previous_drift_level: Optional[DriftLevel] = None  # For tracking escalation
+    requires_acknowledgment: bool = False  # True for BLOCK level
+
+
+# ============================================================================
 # Utility Functions
 # ============================================================================
 
@@ -367,6 +441,9 @@ def deserialize_event(json_str: str) -> BaseEvent:
         EventType.SSE_TOKEN.value: SSETokenEvent,
         EventType.SSE_GOVERNANCE.value: SSEGovernanceEvent,
         EventType.SESSION_SUMMARY.value: SessionSummaryEvent,
+        # SAAI Framework Events
+        EventType.BASELINE_ESTABLISHED.value: BaselineEstablishedEvent,
+        EventType.MANDATORY_REVIEW_TRIGGERED.value: MandatoryReviewTriggeredEvent,
     }
 
     event_class = event_classes.get(event_type, BaseEvent)
@@ -389,4 +466,7 @@ GovernanceEvent = Union[
     SSETokenEvent,
     SSEGovernanceEvent,
     SessionSummaryEvent,
+    # SAAI Framework Events
+    BaselineEstablishedEvent,
+    MandatoryReviewTriggeredEvent,
 ]
