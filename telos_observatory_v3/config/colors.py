@@ -14,7 +14,7 @@ GOLD_BRIGHT = '#F4D03F'  # Legacy bright gold (deprecated - do not use)
 # Thresholds are internal implementation details, not user-facing
 # Colors updated per UI/UX audit - #27ae60 is canonical green across all zones
 STATUS_GOOD = '#27ae60'     # Green - "Aligned" zone (canonical TELOS green)
-STATUS_MILD = '#f39c12'      # Yellow - "Minor Drift" zone
+STATUS_MILD = '#F4D03F'      # Yellow - "Minor Drift" zone (bright gold-yellow, distinct from orange)
 STATUS_MODERATE = '#e67e22'  # Orange - "Drift Detected" zone
 STATUS_SEVERE = '#e74c3c'    # Red - "Significant Drift" zone
 

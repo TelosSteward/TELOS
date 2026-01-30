@@ -97,8 +97,8 @@ def render_copy_button(text: str, key: str) -> None:
             const icon = document.getElementById('copy-icon-{key}');
             const btn = document.getElementById('copy-btn-{key}');
             icon.textContent = 'Failed';
-            btn.style.borderColor = '#FF4444';
-            btn.style.color = '#FF4444';
+            btn.style.borderColor = '#e74c3c';
+            btn.style.color = '#e74c3c';
             btn.style.background = 'rgba(255, 68, 68, 0.15)';
             setTimeout(function() {{
                 icon.textContent = 'Copy';
@@ -1378,7 +1378,7 @@ Once you send your first message, I'll understand your purpose and we can get st
                     That's an intriguing topic, but it falls outside your stated purpose of understanding TELOS. Your goal here is to understand TELOS without technical overwhelm, so let me keep us focused on that.
                 </div>
                 <div style='color: #e0e0e0; font-size: 20px; line-height: 1.6;'>
-                    Your User Fidelity dropped to <strong style='color: #FFA500;'>orange zone (moderate drift)</strong> when your question moved away from your goal. Meanwhile, my AI Fidelity stayed high by gently bringing us back on track. I am governed by your purpose—your <em>τέλος</em>. This is dual measurement in action.
+                    Your User Fidelity dropped to <strong style='color: #e67e22;'>orange zone (moderate drift)</strong> when your question moved away from your goal. Meanwhile, my AI Fidelity stayed high by gently bringing us back on track. I am governed by your purpose—your <em>τέλος</em>. This is dual measurement in action.
                 </div>
             </div>
         </div>
@@ -1852,8 +1852,8 @@ Once you send your first message, I'll understand your purpose and we can get st
             <div style='background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 2px solid #F4D03F; border-radius: 8px; padding: 15px; text-align: center; box-shadow: 0 0 15px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);'>
                 <div style='color: #F4D03F; font-size: 14px; font-weight: bold; margin-bottom: 15px;'>DRIFT VISUALIZATION</div>
                 <div style='position: relative; width: 150px; height: 150px; margin: 0 auto;'>
-                    <div style='position: absolute; top: 0; left: 0; width: 150px; height: 150px; background-color: #FF4444; border-radius: 50%; border: 2px solid #F4D03F;'></div>
-                    <div style='position: absolute; top: 25%; left: 25%; width: 75px; height: 75px; background-color: #FFA500; border-radius: 50%;'></div>
+                    <div style='position: absolute; top: 0; left: 0; width: 150px; height: 150px; background-color: #e74c3c; border-radius: 50%; border: 2px solid #F4D03F;'></div>
+                    <div style='position: absolute; top: 25%; left: 25%; width: 75px; height: 75px; background-color: #e67e22; border-radius: 50%;'></div>
                     <div style='position: absolute; top: 30%; left: 30%; width: 60px; height: 60px; background-color: #F4D03F; border-radius: 50%;'></div>
                     <div style='position: absolute; top: 35%; left: 35%; width: 45px; height: 45px; background-color: #27ae60; border-radius: 50%;'></div>
                     <div style='position: absolute; top: 46%; left: 46%; width: 10px; height: 10px; background-color: #27ae60; border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%); z-index: 10;'></div>
@@ -1862,8 +1862,8 @@ Once you send your first message, I'll understand your purpose and we can get st
                 <div style='margin-top: 15px;'>
                     <div style='color: #27ae60; font-size: 13px;'>● Aligned (F ≥ 0.70)</div>
                     <div style='color: #F4D03F; font-size: 13px;'>● Minor Drift (0.60-0.69)</div>
-                    <div style='color: #FFA500; font-size: 13px;'>● Drift Detected (0.50-0.59)</div>
-                    <div style='color: #FF4444; font-size: 13px;'>● Significant Drift (F < 0.50)</div>
+                    <div style='color: #e67e22; font-size: 13px;'>● Drift Detected (0.50-0.59)</div>
+                    <div style='color: #e74c3c; font-size: 13px;'>● Significant Drift (F < 0.50)</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -1901,10 +1901,11 @@ Once you send your first message, I'll understand your purpose and we can get st
                     st.rerun()
 
     def _render_slide_6_observation_deck_content(self):
-        """Render Alignment Lens content specifically for slide 6 (drift event slide)."""
-        # Slide 6 fidelity values: User drifted (0.59 orange), AI stayed aligned (0.89 green)
-        user_fidelity = 0.59
-        ai_fidelity = 0.89
+        """Render Alignment Lens content specifically for slide 6 (math question - YELLOW zone)."""
+        # Slide 6 fidelity values: User asked for technical math (0.69 yellow), AI answered anyway (0.82 green)
+        # This is the math question slide, NOT quantum physics (that's slide 8)
+        user_fidelity = 0.69
+        ai_fidelity = 0.82
         primacy_state = (2 * user_fidelity * ai_fidelity) / (user_fidelity + ai_fidelity)
 
         # Determine colors based on Goldilocks fidelity zones
@@ -1937,10 +1938,10 @@ Once you send your first message, I'll understand your purpose and we can get st
             drift_color = "#F4D03F"
         elif user_fidelity >= 0.50:
             drift_status = "Moderate Drift"
-            drift_color = "#FFA500"
+            drift_color = "#e67e22"
         else:
             drift_status = "Severe Drift"
-            drift_color = "#FF4444"
+            drift_color = "#e74c3c"
 
         # Alignment Lens header - compact horizontal bar format
         st.markdown(f"""
@@ -1953,15 +1954,16 @@ Once you send your first message, I'll understand your purpose and we can get st
 """, unsafe_allow_html=True)
 
         # Determine zone labels for fidelity display
+        # Colors match config/colors.py canonical values
         def get_zone_label(fidelity):
             if fidelity >= 0.70:
                 return ("GREEN ZONE - Aligned", "#27ae60")
             elif fidelity >= 0.60:
                 return ("YELLOW ZONE - Minor Drift", "#F4D03F")
             elif fidelity >= 0.50:
-                return ("ORANGE ZONE - Drift Detected", "#FFA500")
+                return ("ORANGE ZONE - Drift Detected", "#e67e22")
             else:
-                return ("RED ZONE - Significant Drift", "#E74C3C")
+                return ("RED ZONE - Significant Drift", "#e74c3c")
 
         user_zone, user_zone_color = get_zone_label(user_fidelity)
         ai_zone, ai_zone_color = get_zone_label(ai_fidelity)
@@ -1998,10 +2000,10 @@ Once you send your first message, I'll understand your purpose and we can get st
                 User Primacy Attractor
             </div>
             <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 2px solid {user_color}; border-top: none; border-radius: 0 0 8px 8px; padding: 18px; text-align: center; box-shadow: 0 0 15px {user_gradient_start}, 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);">
-                <div style="color: {user_color}; font-weight: bold; margin-bottom: 12px; font-size: 20px;">Your Purpose (Moderately Drifted)</div>
+                <div style="color: {user_color}; font-weight: bold; margin-bottom: 12px; font-size: 20px;">Your Purpose (Minor Drift)</div>
                 <div style="color: #e0e0e0; line-height: 1.9; font-size: 15px; text-align: left;">
                     Understand TELOS without technical overwhelm<br/>
-                    <span style="color: #FFA500; font-style: italic;">Asked about quantum physics instead</span>
+                    <span style="color: #F4D03F; font-style: italic;">Asked for technical math details</span>
                 </div>
             </div>
         </div>
@@ -2014,7 +2016,7 @@ Once you send your first message, I'll understand your purpose and we can get st
                 <div style="color: {ai_color}; font-weight: bold; margin-bottom: 12px; font-size: 20px;">Steward's Role (Aligned)</div>
                 <div style="color: #e0e0e0; line-height: 1.9; font-size: 15px; text-align: left;">
                     Align with your learning goals<br/>
-                    <span style="color: #27ae60; font-style: italic;">Gently redirected back to TELOS</span>
+                    <span style="color: #27ae60; font-style: italic;">Answered math question but tracking drift</span>
                 </div>
             </div>
         </div>
@@ -2089,6 +2091,12 @@ Once you send your first message, I'll understand your purpose and we can get st
         # This ensures consistency across all observation deck views
         user_fidelity, ai_fidelity, primacy_state, user_color, ai_color, ps_color = self._get_demo_fidelity_for_slide(current_idx)
 
+        # SLIDE 6 OVERRIDE: Force yellow color for math question slide (0.69 = yellow zone)
+        # This is a static demo slide, so we hardcode the correct yellow color
+        if current_idx == 6:
+            user_color = "#F4D03F"  # Canonical yellow for minor drift
+            print(f"DEBUG SLIDE 6: user_color set to {user_color}")
+
         # Generate gradient rgba colors for PA headers (glow effect)
         user_gradient_start = with_opacity(user_color, 0.9)
         user_gradient_end = with_opacity(user_color, 0.85)
@@ -2114,10 +2122,10 @@ Once you send your first message, I'll understand your purpose and we can get st
             drift_color = "#F4D03F"
         elif user_fidelity >= 0.50:
             drift_status = "Moderate Drift"
-            drift_color = "#FFA500"
+            drift_color = "#e67e22"
         else:
             drift_status = "Severe Drift"
-            drift_color = "#FF4444"
+            drift_color = "#e74c3c"
 
         # Alignment Lens header - compact horizontal bar format
         st.markdown(f"""
@@ -2130,15 +2138,16 @@ Once you send your first message, I'll understand your purpose and we can get st
 """, unsafe_allow_html=True)
 
         # Determine zone labels for fidelity display
+        # Colors match config/colors.py canonical values
         def get_zone_label(fidelity):
             if fidelity >= 0.70:
                 return ("GREEN ZONE - Aligned", "#27ae60")
             elif fidelity >= 0.60:
                 return ("YELLOW ZONE - Minor Drift", "#F4D03F")
             elif fidelity >= 0.50:
-                return ("ORANGE ZONE - Drift Detected", "#FFA500")
+                return ("ORANGE ZONE - Drift Detected", "#e67e22")
             else:
-                return ("RED ZONE - Significant Drift", "#E74C3C")
+                return ("RED ZONE - Significant Drift", "#e74c3c")
 
         user_zone, user_zone_color = get_zone_label(user_fidelity)
         ai_zone, ai_zone_color = get_zone_label(ai_fidelity)
@@ -2460,10 +2469,10 @@ Once you send your first message, I'll understand your purpose and we can get st
             drift_color = "#F4D03F"
         elif user_fidelity >= 0.50:
             drift_status = "Moderate Drift"
-            drift_color = "#FFA500"
+            drift_color = "#e67e22"
         else:
             drift_status = "Severe Drift"
-            drift_color = "#FF4444"
+            drift_color = "#e74c3c"
 
         # Alignment Lens header - compact horizontal bar format
         st.markdown(f"""
@@ -2476,15 +2485,16 @@ Once you send your first message, I'll understand your purpose and we can get st
 """, unsafe_allow_html=True)
 
         # Determine zone labels for fidelity display
+        # Colors match config/colors.py canonical values
         def get_zone_label(fidelity):
             if fidelity >= 0.70:
                 return ("GREEN ZONE - Aligned", "#27ae60")
             elif fidelity >= 0.60:
                 return ("YELLOW ZONE - Minor Drift", "#F4D03F")
             elif fidelity >= 0.50:
-                return ("ORANGE ZONE - Drift Detected", "#FFA500")
+                return ("ORANGE ZONE - Drift Detected", "#e67e22")
             else:
-                return ("RED ZONE - Significant Drift", "#E74C3C")
+                return ("RED ZONE - Significant Drift", "#e74c3c")
 
         user_zone, user_zone_color = get_zone_label(user_fidelity)
         ai_zone, ai_zone_color = get_zone_label(ai_fidelity)
@@ -2821,7 +2831,7 @@ Once you send your first message, I'll understand your purpose and we can get st
             # Example badge (replaces Turn badge)
             st.markdown("""
 <div style="display: flex; align-items: flex-start; height: 100%;">
-    <span style="background: linear-gradient(90deg, #F4D03F 0%, #FFA500 100%); color: #000; padding: 4px 10px; border-radius: 5px; font-size: 19px; font-weight: bold; display: inline-block;">Example</span>
+    <span style="background: linear-gradient(90deg, #F4D03F 0%, #e67e22 100%); color: #000; padding: 4px 10px; border-radius: 5px; font-size: 19px; font-weight: bold; display: inline-block;">Example</span>
 </div>
 """, unsafe_allow_html=True)
 
@@ -3141,10 +3151,10 @@ Once you send your first message, I'll understand your purpose and we can get st
                 fidelity_color = "#F4D03F"  # Yellow/Gold
                 fidelity_glow = "244, 208, 63"  # Gold RGB for box glow
             elif fidelity >= _ZONE_DRIFT:  # 0.50-0.59 Drift Detected
-                fidelity_color = "#FFA500"  # Orange
+                fidelity_color = "#e67e22"  # Orange
                 fidelity_glow = "255, 165, 0"  # Orange RGB for box glow
             else:  # < 0.50 Significant Drift
-                fidelity_color = "#FF4444"  # Red
+                fidelity_color = "#e74c3c"  # Red
                 fidelity_glow = "255, 68, 68"  # Red RGB for box glow
             fidelity_display = f"{int(round(fidelity * 100))}%"
         else:
@@ -3153,7 +3163,7 @@ Once you send your first message, I'll understand your purpose and we can get st
             fidelity_display = "---"
 
         pa_status = "Established" if pa_converged else "Calibrating"
-        pa_color = "#27ae60" if pa_converged else "#FFA500"
+        pa_color = "#27ae60" if pa_converged else "#e67e22"
 
         # Glassmorphism CSS with warm gold tones and pulsing animation
         # OPPOSITE to calibrating: bright at 0%/100%, dim at 50% (calibrating is dim at 0%/100%, bright at 50%)
@@ -3498,9 +3508,9 @@ Once you send your first message, I'll understand your purpose and we can get st
             elif fidelity >= _ZONE_MINOR_DRIFT:  # 0.60-0.69 Minor Drift
                 return "#F4D03F", "244, 208, 63"  # Yellow/Gold
             elif fidelity >= _ZONE_DRIFT:  # 0.50-0.59 Drift Detected
-                return "#FFA500", "255, 165, 0"  # Orange
+                return "#e67e22", "230, 126, 34"  # Orange (canonical)
             else:  # < 0.50 Significant Drift
-                return "#FF4444", "255, 68, 68"  # Red
+                return "#e74c3c", "231, 76, 60"  # Red (canonical)
 
         # Get colors for each metric
         user_color, user_glow = get_fidelity_color(user_fidelity)
@@ -3690,7 +3700,7 @@ Once you send your first message, I'll understand your purpose and we can get st
 
                     # Determine fidelity color and display (handle None properly)
                     if fidelity is not None and fidelity > 0 and fidelity != 0.5:
-                        fidelity_color = "#27ae60" if fidelity >= 0.76 else "#FFD700" if fidelity >= 0.73 else "#FFA500" if fidelity >= 0.67 else "#FF5252"  # Goldilocks zones
+                        fidelity_color = "#27ae60" if fidelity >= 0.70 else "#F4D03F" if fidelity >= 0.60 else "#e67e22" if fidelity >= 0.50 else "#e74c3c"  # Canonical fidelity zones
                         fidelity_display = f"{int(round(fidelity * 100))}%"
                     else:
                         fidelity_color = "#888"  # Gray for missing data
@@ -3703,7 +3713,7 @@ Once you send your first message, I'll understand your purpose and we can get st
                     delta_f_html = ""
                     if 'delta_f' in turn_data:
                         delta_f = turn_data.get('delta_f', 0.0)
-                        delta_f_color = "#27ae60" if delta_f > 0 else "#FF5252" if delta_f < 0 else "#888"
+                        delta_f_color = "#27ae60" if delta_f > 0 else "#e74c3c" if delta_f < 0 else "#888"
                         delta_f_sign = "+" if delta_f >= 0 else ""
                         delta_f_html = f'<span style="margin-left: 15px; display: inline-block;"><span style="color: #a8a8a8; font-size: 14px;">ΔF:</span> <span style="color: {delta_f_color}; font-size: 20px; font-weight: bold; margin-left: 5px;">{delta_f_sign}{int(round(delta_f * 100))}%</span></span>'
 
@@ -3711,7 +3721,7 @@ Once you send your first message, I'll understand your purpose and we can get st
                 else:
                     # PA still calibrating - show calibrating status only
                     pa_status = "Calibrating"
-                    pa_color = "#FFA500"
+                    pa_color = "#e67e22"
                     metrics_html = f'<span style="margin-left: 15px; display: inline-block;"><span style="color: #a8a8a8; font-size: 14px;">Primacy Attractor Status:</span> <span style="color: {pa_color}; font-size: 14px; font-weight: bold; margin-left: 5px;">{pa_status} ({turn_number}/~10)</span></span>'
 
         # Escape the message content to prevent HTML injection
@@ -3768,8 +3778,8 @@ Once you send your first message, I'll understand your purpose and we can get st
             FIDELITY_COLORS = {
                 'green': '#27ae60',   # Good alignment
                 'yellow': '#F4D03F',  # Mild drift (gold)
-                'orange': '#FFA500',  # Moderate drift
-                'red': '#FF4444'      # Severe drift
+                'orange': '#e67e22',  # Moderate drift
+                'red': '#e74c3c'      # Severe drift
             }
             # Default to transparent (no visible border) before calibration
             fidelity_color = FIDELITY_COLORS.get(fidelity_level, 'transparent') if fidelity_level else 'transparent'
@@ -4057,8 +4067,8 @@ Once you send your first message, I'll understand your purpose and we can get st
                 TELOS_FIDELITY_COLORS = {
                     'green': '#27ae60',   # Good alignment (>= 0.70)
                     'yellow': '#F4D03F',  # Mild drift (0.60-0.69)
-                    'orange': '#FFA500',  # Moderate drift (0.50-0.59)
-                    'red': '#FF4444'      # Severe drift (< 0.50)
+                    'orange': '#e67e22',  # Moderate drift (0.50-0.59)
+                    'red': '#e74c3c'      # Severe drift (< 0.50)
                 }
                 telos_fidelity_color = TELOS_FIDELITY_COLORS.get(telos_fidelity_level, '#888888') if telos_fidelity_level else '#888888'
                 telos_label_color = TELOS_FIDELITY_COLORS.get(telos_fidelity_level, '#888888') if telos_fidelity_level else '#888888'
@@ -4335,8 +4345,8 @@ Once you send your first message, I'll understand your purpose and we can get st
                     <p style="color: #a8a8a8; font-size: 12px; font-weight: bold; margin-bottom: 10px;">Metrics:</p>
                     <ul style="color: #e0e0e0; font-size: 12px; line-height: 1.8;">
                         <li>Alignment score: <span style="color: #FFD700;">0.65</span></li>
-                        <li>Semantic distance: <span style="color: #FFA500;">0.35</span></li>
-                        <li>Intent match: <span style="color: #FFA500;">72%</span></li>
+                        <li>Semantic distance: <span style="color: #e67e22;">0.35</span></li>
+                        <li>Intent match: <span style="color: #e67e22;">72%</span></li>
                     </ul>
                 </div>
                 <div style="margin-top: 15px; padding: 10px; background-color: #2d2d2d; border-radius: 5px; border-left: 3px solid #888;">
