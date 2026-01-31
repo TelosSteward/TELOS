@@ -395,6 +395,26 @@ Periodic Reminders:
 
 None of these approaches provide what regulators require: continuous measurement of governance persistence, proportional intervention when drift occurs, and auditable telemetry documenting both.
 
+### 1.4.1 Industry Recognition: Even Frontier Labs Acknowledge the Gap
+
+The insufficiency of training-time alignment is not merely an academic observation. It is now acknowledged by the developers of Constitutional AI themselves.
+
+In January 2026, Anthropic CEO Dario Amodei published "The Adolescence of Technology," a 20,000-word analysis of AI risks and mitigations. Notably, Amodei describes Anthropic's investment in runtime infrastructure beyond Constitutional AI:
+
+> "We are investing in a wide range of evaluations so that we can understand the behaviors of our models in the lab, as well as **monitoring tools to observe behaviors in the wild**."
+
+> "We've implemented... a classifier that specifically detects and blocks bioweapon-related outputs... [We] have generally found them highly robust even against sophisticated adversarial attacks."
+
+> "These classifiers increase the costs to serve our models measurably (in some models, they are close to 5% of total inference costs)."
+
+This represents a significant admission: the pioneers of Constitutional AI acknowledge that training-time alignment requires runtime augmentation. Anthropic now deploys specialized classifiers, at meaningful computational cost, to catch what Constitutional AI alone cannot prevent.
+
+TELOS extends this principle. Where Anthropic's classifiers target specific harm categories (bioweapons), TELOS provides general-purpose constitutional enforcement. Where Anthropic monitors their own models internally, TELOS enables third-party governance infrastructure independent of model providers. Where Anthropic's classifiers operate as proprietary safeguards, TELOS publishes its methodology openly for validation and adoption.
+
+The convergence is clear: even organizations that developed training-time alignment now invest in runtime monitoring. The question is no longer whether runtime governance is necessary, but who builds the infrastructure and under what principles.
+
+Source: Amodei, D. (2026). "The Adolescence of Technology: Confronting and Overcoming the Risks of Powerful AI." https://www.darioamodei.com/essay/the-adolescence-of-technology
+
 ### 1.5 What We Are Building
 
 TELOS provides the infrastructure for observable demonstrable due diligence:
@@ -408,6 +428,43 @@ Due Diligence: The system actively works to maintain alignment instead of just a
 We do not claim this completely solves AI governance. We claim it makes governance measurable where it was once a goal, correctable where it was once based on hope, and auditable where it was once unclear.
 
 The following sections explain the mathematical framework that makes this possible, the implementation that makes it practical, and the validation framework that will determine if it works.
+
+### 1.5.1 Detection-Driven Governance
+
+TELOS operates fundamentally as a detection system. Quality Control for AI.
+
+We do not claim to prevent all harmful outputs. We claim to detect drift reliably and escalate appropriately. Prevention is a byproduct of detection. When the system detects reliably, escalation occurs appropriately, and prevention graduates with it. The entire lifecycle remains transparent and auditable.
+
+Our goal has been and will continue to be refining and fine-tuning detection so that prevention and safety emerge as natural byproducts through proper graduated response mechanisms.
+
+**The Governance Triad**
+
+| Function | Role | Purpose |
+|----------|------|---------|
+| Detection | The Mechanism | Continuous drift measurement |
+| Prevention | The Outcome | Graduated intervention |
+| Auditability | The Proof | Immutable audit trails |
+
+The causal chain: Detection (what we measure) leads to Prevention (byproduct) leads to Safety (outcome through proportional control).
+
+The better you detect, the earlier you can intervene, the more proportional your control. That is process control, not magic.
+
+**Understanding Our Validation Results**
+
+Standard adversarial benchmarks like AILuminate, MedSafetyBench, and XSTest were designed to test binary systems: block or allow. That is essentially all that exists in the field. When researchers run these tests, they are asking one question: Did the system prevent this harmful query?
+
+TELOS does not operate in that paradigm. We introduce detection and escalation through proportional control mechanisms into an equation where they formerly did not exist.
+
+When TELOS achieves 0% adversarial success rate on these benchmarks, we are not claiming the same thing a binary system would claim. We are saying:
+
+- Every attack triggered detection
+- Detection initiated proportional escalation
+- Escalation engaged graduated intervention
+- The three-tier defense (baseline normalization, basin membership, human review) caught what binary systems try to catch with a single gate
+
+The 0% is not "we blocked everything." It is "nothing proceeded without triggering the governance response chain." TELOS preserves the ability to block when necessary. Blocking is the graduated endpoint of detection, not the only tool.
+
+This is not semantics. It is mathematics.
 
 ## Bridge: From Systems Thinking to Mathematical Formalism
 
@@ -1773,6 +1830,8 @@ From aspirational claims to adversarially validated infrastructure.
 This is what we have built, validated, and this is the path forward.
 
 ## References
+
+Amodei, D. (2026). The Adolescence of Technology: Confronting and Overcoming the Risks of Powerful AI. https://www.darioamodei.com/essay/the-adolescence-of-technology
 
 Bai, Y., et al. (2022). Constitutional AI: Harmlessness from AI Feedback. arXiv:2212.08073.
 

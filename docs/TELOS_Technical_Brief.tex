@@ -155,6 +155,8 @@ Llama Guard & Classifier & 4.4--7.3\% \\
 
 \textbf{Statistical Validity:} 95\% CI [0\%, 0.14\%]. Fisher's exact compared to baseline: $p < 0.0001$.
 
+\textbf{Interpreting Detection Metrics:} TELOS operates as a detection and escalation framework rather than a binary prevention system. The framework measures semantic drift against constitutional boundaries and triggers graduated intervention when thresholds are exceeded. Prevention emerges as a consequence of detection efficacy. When we report 0\% ASR, we are not claiming binary prevention. We are reporting that 100\% of attacks triggered the detection-escalation-intervention chain. Detection efficacy is measured by trigger rate: the percentage of boundary-violating inputs that initiate the governance response chain. The three-tier defense achieves what binary systems attempt through single-gate blocking. TELOS preserves blocking capability as the graduated endpoint of detection, not the sole mechanism.
+
 \textbf{Over-Refusal (XSTest):} A generic PA shows a 24.8\% false positive rate. A healthcare-specific PA reduces this to 8.0\%, ensuring strong safety without excessive restrictions.
 
 % ============================================================================
