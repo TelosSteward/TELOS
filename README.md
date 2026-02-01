@@ -159,6 +159,7 @@ For the adversarial validation dataset:
 ```bibtex
 @dataset{brunner_2025_telos_adversarial,
   author       = {Brunner, Jeffrey},
+  orcid        = {0009-0003-6848-8014},
   title        = {{TELOS Adversarial Validation Dataset}},
   month        = nov,
   year         = 2025,
@@ -174,6 +175,7 @@ For the governance benchmark dataset:
 ```bibtex
 @dataset{brunner_2025_telos_governance,
   author       = {Brunner, Jeffrey},
+  orcid        = {0009-0003-6848-8014},
   title        = {{TELOS Governance Benchmark Dataset}},
   month        = dec,
   year         = 2025,
@@ -189,6 +191,7 @@ For the SB 243 child safety validation:
 ```bibtex
 @dataset{brunner_2025_telos_sb243,
   author       = {Brunner, Jeffrey},
+  orcid        = {0009-0003-6848-8014},
   title        = {{TELOS SB 243 Child Safety Validation Dataset}},
   month        = dec,
   year         = 2025,
@@ -204,6 +207,15 @@ For the SB 243 child safety validation:
 ## License
 
 Apache License 2.0 - See LICENSE file
+
+---
+
+## Author
+
+**Jeffrey Brunner**
+TELOS AI Labs Inc.
+[![ORCID](https://img.shields.io/badge/ORCID-0009--0003--6848--8014-green?logo=orcid)](https://orcid.org/0009-0003-6848-8014)
+Email: JB@telos-labs.ai
 
 ---
 
