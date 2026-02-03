@@ -82,7 +82,7 @@ TELOS is a mathematical governance framework for AI alignment. It uses **Primacy
 
 ## Quick Start
 
-### Run Locally
+### Option 1: Run Locally (Recommended for Development)
 
 ```bash
 git clone https://github.com/TelosSteward/TELOS.git
@@ -93,6 +93,12 @@ streamlit run telos_observatory_v3/main.py --server.port 8501
 ```
 
 Opens in browser at `http://localhost:8501`
+
+### Option 2: Hosted Beta
+
+For evaluation without local setup: **[beta.telos-labs.ai](https://beta.telos-labs.ai)**
+
+*Note: The hosted beta may experience latency under load. For development or integration testing, we recommend running locally with your own API key.*
 
 ### Reproduce Validation Results
 
