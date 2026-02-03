@@ -99,8 +99,15 @@ Opens in browser at `http://localhost:8501`
 See [REPRODUCTION_GUIDE.md](docs/REPRODUCTION_GUIDE.md) for step-by-step instructions.
 
 ```bash
-# Run internal validation suite
-python3 telos_observatory_v3/telos_purpose/validation/run_internal_test0.py
+# Run unit tests (78 tests, no external dependencies)
+PYTHONPATH=. pytest tests/ -v
+
+# Run SB 243 child safety validation (50 attacks)
+cd validation/
+python3 run_sb243_validation.py
+
+# Run XSTest over-refusal calibration (250 prompts)
+python3 run_xstest_validation.py
 
 # Adversarial validation results are pre-computed in validation/ directory
 # See validation/telos_complete_validation_dataset.json
@@ -225,5 +232,5 @@ See [HARDWARE_REQUIREMENTS.md](docs/HARDWARE_REQUIREMENTS.md) for system specifi
 
 ---
 
-**Last Updated**: January 26, 2026
+**Last Updated**: February 3, 2026
 
