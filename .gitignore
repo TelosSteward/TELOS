@@ -118,6 +118,10 @@ docs/TELOS_Pitch_Deck_v2.md
 docs/TELOS_QA_Interview.md
 docs/TELOS_Whitepaper_v2.4_humanized.*
 docs/WORKBENCH_INTEGRATION_SCOPE.md
+docs/EMBEDDING_ARCHITECTURE_INTERNAL.md
+docs/TELOS_TECHNICAL_ARCHITECTURE_INTERNAL.md
+docs/TELOS_Provider_Architecture.tex
+docs/TELOS_Provider_Architecture.pdf
 
 # LaTeX temp files
 *.aux
