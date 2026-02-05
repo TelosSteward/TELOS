@@ -1,4 +1,4 @@
-# Session-Level Governance for AI Systems: A Control Engineering Approach
+# Governance for AI Systems: A Control Engineering Approach
 
 **TELOS Framework Whitepaper**
 
@@ -12,7 +12,7 @@ TELOS works as an orchestration-layer infrastructure that assesses every AI resp
 
 Tests for over-refusal calibration show that domain-specific Primacy Attractors lower false positive rates from 24.8% (generic) to 8.0% (Healthcare PA). This proves that TELOS ensures robust safety without unnecessary restrictions.
 
-With California's SB 53 taking effect in January 2026 and the EU AI Act beginning enforcement in August 2026, TELOS offers the ongoing monitoring infrastructure that these new regulations require.
+With California's SB 53 taking effect in January 2026 and the EU AI Act enforcement approaching (August 2026 baseline, potentially extended to December 2027 under the Digital Omnibus), TELOS offers the ongoing monitoring infrastructure that these regulations require.
 
 ## Technical Abstract
 
@@ -22,102 +22,17 @@ TELOS acts as a Mathematical Intervention Layer using Proportional Control and A
 
 This architecture builds on principles outlined in Quality Systems Regulation (QSR) and ISO 9001/13485, meeting requirements for continuous monitoring, documented corrective actions, and verifiable process control. Each interaction is seen as a process event with measurable deviations, interventions, and stabilization. Telemetry records create a full audit trail, enabling post-market validation and compliance with regulations such as the EU AI Act Article 72, which mandates active, systematic monitoring during runtime.
 
-Mathematically, TELOS combines proportional control (the operational mechanism) with attractor dynamics (the description of stability), forming a dual framework in which the declared purpose serves as a stable point in complex semantic space. Deviations from this stability are seen as variations in the process, and the formula F = K·e_t allows for ongoing recalibration towards the Primacy Basin. Over time, the system approaches a Primacy State characterized by statistical stability, reduced variation, and continued purpose fidelity.
+Mathematically, TELOS combines proportional control (the operational mechanism) with attractor dynamics (the description of stability), forming a dual framework in which the declared purpose serves as a stable point in complex semantic space. Deviations from this stability are seen as variations in the process, and the formula $F = K \cdot e_t$ allows for ongoing recalibration towards the Primacy Basin. Over time, the system approaches a Primacy State characterized by statistical stability, reduced variation, and continued purpose fidelity.
 
-**The Constitutional Filter for AI**: TELOS implements session-level constitutional law through the Primacy Attractor. This acts as a set of constitutional guidelines for temporary session states. Human governors define constitutional limits, which are recorded as a solid reference in embedding space. Every response from the AI is measured against this reference, and any deviations lead to proportional interventions. This happens not through prompt engineering but through orchestration-layer governance that operates above the model layer. This shifts AI alignment from being a matter of subjective trust to a matter of quantitative constitutional compliance, providing the ongoing monitoring infrastructure that regulations require.
+**Runtime Governance Infrastructure**: TELOS implements runtime constitutional governance through the Primacy Attractor, which encodes expected behavioral norms as mathematical objects. Human governors define what behavior is acceptable (the norm), which is recorded as a solid reference in embedding space—the Primacy Attractor. Every AI response is measured against this norm, and deviations trigger proportional interventions. This happens not through prompt engineering but through orchestration-layer governance that operates above the model layer. The user's stated purpose becomes the measurable standard: purpose and norm are synonymous. This shifts AI alignment from subjective trust to quantitative norm compliance, providing the continuous monitoring infrastructure that regulations require.
 
-**Adversarial Validation (December 2025 - January 2026)**: Security tests involving 2,550 adversarial attacks show 0 observed successful attacks (0% ASR) with Constitutional Filter governance active, yielding a 95% CI upper bound of approximately 0.15% under our black-box threat model. This contrasts with 3.7% to 11.1% ASR for system prompts and 30.8% to 43.9% ASR for raw models. The tests cover five recognized benchmarks: AILuminate (1,200 standard attacks), HarmBench (400 general-purpose attacks from the Center for AI Safety), MedSafetyBench (900 healthcare-specific attacks from NeurIPS 2024), and the SB 243-aligned child safety evaluation suite (50 prompts inspired by California SB 243 requirements).
+**Adversarial Validation (December 2025 - January 2026)**: Security tests involving 2,550 adversarial attacks show 0 observed successful attacks (0% ASR) with TELOS governance active, yielding a 95% CI upper bound of approximately 0.15% under our black-box threat model. This contrasts with 3.7% to 11.1% ASR for system prompts and 30.8% to 43.9% ASR for raw models. The tests cover five recognized benchmarks: AILuminate (1,200 standard attacks), HarmBench (400 general-purpose attacks from the Center for AI Safety), MedSafetyBench (900 healthcare-specific attacks from NeurIPS 2024), and the SB 243-aligned child safety evaluation suite (50 prompts inspired by California SB 243 requirements).
 
 **Over-Refusal Calibration (XSTest)**: Testing against 250 reliable prompts reveals that domain-specific Primacy Attractors lower false positive rates from 24.8% (generic PA) to 8.0% (Healthcare PA). This indicates a 16.8 percentage point improvement, showing that TELOS reaches strong safety without excessive restrictions. These findings position TELOS not only as alignment infrastructure but as a constitutional security architecture validated against real threats, while still allowing for legitimate use cases.
 
 By incorporating Lean Six Sigma's DMAIC methodology directly into its runtime processes, TELOS extends Quality Systems Regulation, established in manufacturing, medical devices, and process industries, into semantic systems. It demonstrates that alignment, or the consistent maintenance of intended behavior over time, can be framed as a measurable property of a self-governing system that follows the same continuous improvement practices found in industrial quality control.
 
 We are creating the measurement infrastructure that regulations will need. This white paper explains what we have built, why it matters, and how we will validate its effectiveness.
-
-## 0. Open Research, Open Platform: The TELOS Commitment
-
-### 0.1 Why This Research Is Published Openly
-
-A pattern has emerged in AI development. Organizations start with commitments to open research, build significant capabilities, and then stop publishing, claiming that the work is "too dangerous to share." The public is often asked to trust that safety decisions are made correctly, without external review, independent validation, or public accountability.
-
-We reject this approach. Governance in AI is too important to develop in secret. It carries too many consequences to be controlled by a single entity and is too urgent to wait for closed labs to decide what the public can know.
-
-TELOS operates under clear commitments:
-- All governance research will be published openly (arXiv, peer-reviewed venues).
-- All methodologies will be documented for reproducibility.
-- All decisions will be made transparently.
-- There will be no exceptions for "too dangerous to publish" when it comes to governance research.
-
-This is not idealism. It's the only path to AI governance that earns trust instead of demanding it.
-
-### 0.2 The Dual-Entity Structure
-
-TELOS aims to function as two separate but aligned entities:
-
-**The TELOS Consortium** (Research)
-- Develops frameworks for runtime governance.
-- Publishes all research openly.
-- Maintains partnerships for independent validation.
-- Follows a grant-funded research agenda.
-- Output: Papers, frameworks, benchmarks, standards
-
-**TELOS Labs** (Commercial)
-- Builds a governance-native AI platform.
-- Deploys production systems.
-- Generates real-world validation data.
-- Revenue-funded operations.
-- Output: Products, customers, deployment data.
-
-**The Flywheel:**
-
-Research → Product → Deployment → Data → Research
-
-Unlike closed labs, every stage is visible. Researchers examine frameworks. Practitioners deploy tools. Academics validate claims. Regulators audit evidence.
-
-### 0.3 Governance-Native Platform, Not Governance Add-On
-
-TELOS is not a governance layer added to existing chatbots. It is a governance-native conversational AI platform; purpose alignment is foundational, not an afterthought.
-
-| Current Platforms | TELOS Platform |
-|-------------------|----------------|
-| Build chatbot, add governance later | Governance from first principles |
-| Intent recognition (what topic?) | Purpose alignment (is it doing its job?) |
-| Context window (recent history) | Primacy Attractor (declared purpose) |
-| Logs for debugging | Governance evidence for compliance |
-| Hope it stays on-topic | Measure and enforce fidelity |
-
-**The result:** Conversations that achieve their stated purpose, with audit trails that prove compliance.
-
-### 0.4 Why This Matters
-
-When a closed lab decides what "safe" behavior looks like, which capabilities to use, and what governance mechanisms are enough, there is no external check. The lab's internal culture, incentives, and blind spots become hidden limits on humanity's AI future.
-
-TELOS offers an alternative:
-- Open frameworks that any organization can implement
-- Validated methodologies subject to peer review
-- Transparent decisions documented for scrutiny
-- Commercial sustainability that supports ongoing research without limiting it
-
-Safety research, more than any other type of research, should be open to peer review, public scrutiny, and independent validation. TELOS is based on this principle.
-
-### 0.5 The Ten Founding Principles
-
-The TELOS Consortium operates under ten essential commitments that guide all research, development, and deployment decisions:
-
-1. All governance research should be published openly
-2. All governance claims should be validated with evidence
-3. All governance decisions should be made transparently
-4. Commercial sustainability should fund, not limit, research
-5. Academic independence should verify, not just approve, findings
-6. Practitioners should inform, not simply use, research
-7. Regulators should have access to validated, reproducible frameworks
-8. Failures should be discussed publicly, not kept secret
-9. Competing implementations should be encouraged, not silenced
-10. Trust should be built through transparency, not demanded through authority
-
-These principles are not just ideals. They are operational limits that influence every decision, from what we publish, to how we organize, to how we react when our methods fail.
-
-For a full description of these commitments, including governance structure, research agenda, and the ethical framework, refer to the TELOS Consortium Manifesto.
 
 ---
 
@@ -151,62 +66,31 @@ Customer Service: A company trains agents with specific interaction policies. Se
 
 In every case: governance constraints were declared, violations occurred, and no system monitored or corrected the drift in real-time.
 
-### 1.2.1 Industry Evidence: The Enterprise Chatbot Failure
+### 1.2.1 EU AI Act: The Commerce Compliance Deadline
 
-The governance crisis goes beyond individual incidents; it reflects a broader market failure. Industry research shows widespread chatbot underperformance:
-
-Gartner (2023-2024):
-- Only 8% of customers used a chatbot during their last customer service interaction.
-- Of those, only 25% said they would use that chatbot again.
-- Only 14% of customer service issues are fully resolved through self-service.
-- Gartner researchers warn the market is "filled with low-quality chat technology," creating "friction between customer and company."
-
-Customer Abandonment (BusinessWire/Cyara Survey, 2023):
-- 30% of customers globally abandon brands after a negative chatbot experience.
-- 73% of UK consumers say they are likely to abandon purchases after poor chatbot interactions.
-- 45% of users abandon after just one natural language processing error.
-
-Forrester Analytics:
-- Consumers "remain doubtful that chatbots can provide the same level of service as a human agent."
-- Only 6% of brands reported an increase in CX quality in 2023, despite significant investment in AI, 86% of customers want the option to talk to a human agent.
-
-Root Cause Analysis:
-
-These failures have a common issue: chatbots lack continuous alignment with user needs. They cannot tell when they stray from what users want, measure their effectiveness, or adjust before user frustration builds. This leads to a $7.76 billion market (2024) built on systems that do not fulfill their primary purpose.
-
-TELOS directly addresses this gap. It uses real-time measurement to identify drift before users start to feel frustrated, graduated interventions to steer conversations back to their goals, and keeps complete audit trails for ongoing improvement.
-
-Sources:
-1. Gartner: "Only 8% of Customers Used a Chatbot" (June 2023) - https://www.gartner.com/en/newsroom/press-releases/2023-06-15-gartner-survey-reveals-only-8-percent-of-customers-used-a-chatbot-during-their-most-recent-customer-service-interaction
-2. Gartner: "Only 14% of Issues Resolved in Self-Service" (August 2024) - https://www.gartner.com/en/newsroom/press-releases/2024-08-19-gartner-survey-finds-only-14-percent-of-customer-service-issues-are-fully-resolved-in-self-service
-3. BusinessWire/Cyara: "Chatbots Falling Short of Consumer Expectations" (February 2023) - https://www.businesswire.com/news/home/20230201005218/en/New-Survey-Finds-Chatbots-Are-Still-Falling-Short-of-Consumer-Expectations
-4. Forrester: "Customer Service Chatbots Fail Consumers Today" - https://www.forrester.com/report/forrester-infographic-customer-service-chatbots-fail-consumers-today/RES144755
-
-### 1.2.2 EU AI Act: The Commerce Compliance Deadline
-
-The EU AI Act sets specific rules for chatbots that will change how AI commerce works in Europe. Companies without proper governance will face disruptions or be kept out of the market.
+The EU AI Act sets specific rules for AI systems that interact with natural persons. Companies without proper governance will face disruptions or be kept out of European markets.
 
 Enforcement Timeline:
 
 | Date | Requirement | Commercial Impact |
 |------|-------------|-------------------|
-| Feb 2, 2026 | Transparency obligations | All chatbots must disclose they use AI |
+| Feb 2, 2026 | Transparency obligations (Article 52) | AI systems must disclose they use AI |
 | Feb 2, 2026 | AI literacy requirements | Staff training on AI's strengths and limits is mandatory |
 | Aug 2, 2026 | Full compliance | High-risk systems need complete governance documentation |
 
-Key Requirements (Article 52 - Limited Risk Systems):
+Key Requirements (Article 52 - Transparency Obligations):
 
-1. Transparency Disclosure: Users must be clearly informed that they are interacting with AI. Every chatbot interaction should start with explicit disclosure: "You are chatting with an AI assistant" or something similar.
+1. **Transparency Disclosure**: "Providers shall ensure that AI systems intended to interact with natural persons are designed and developed in such a way that natural persons are informed that they are interacting with an AI system."
 
-2. Human Escalation Pathways: Users should have clear ways to ask for human help that are easy to find.
+2. **Human Escalation Pathways**: Users should have clear ways to escalate to human oversight.
 
-3. Trader Liability: "Traders are fully responsible for all communications with consumers, including those done through AI chatbots." Companies cannot deny responsibility for chatbot mistakes.
+3. **Trader Liability**: Traders are fully responsible for all communications with consumers, including AI-generated content. Companies cannot deny responsibility for AI system errors.
 
-4. Content Labeling: "AI-generated replies must be labeled before being sent to customers." This includes AI-generated emails, chat responses, and documents.
+4. **Content Labeling**: AI-generated content must be labeled before being sent to customers, including emails, responses, and documents.
 
 High-Risk Classification Triggers:
 
-Chatbots automatically qualify as high-risk (requiring close oversight) when used in:
+AI systems automatically qualify as high-risk (requiring Article 9 governance) when used in:
 - Financial services: Credit decisions, financial advice, account management
 - Healthcare: Medical information, symptom assessment, treatment recommendations
 - Legal services: Legal advice, document preparation, case evaluation
@@ -223,40 +107,25 @@ Penalty Structure:
 
 Why This Matters for Commerce:
 
-Consider an e-commerce company with €1B in annual revenue using chatbots for customer service in EU markets:
+Consider an enterprise with €1B in annual revenue deploying AI systems that interact with customers in EU markets:
 - Without compliance: Risk of €15-35M penalty per violation
 - Multiple violations: Potential exposure of over €100M
-- Enforcement reality: EU regulators have shown they will impose the maximum GDPR fines (Meta: €1.2B, 2023)
+- Enforcement reality: EU regulators impose maximum fines (Meta: €1.2B GDPR fine, 2023)
 
 The TELOS Solution:
 
-TELOS provides the governance needed to comply with the EU AI Act:
+TELOS provides the runtime governance infrastructure needed to comply with EU AI Act Article 52 and Article 9 (high-risk systems):
 
-1. Continuous Purpose Alignment: Primacy Attractor keeps the chatbot on its stated path (Article 52 transparency)
+1. Continuous Purpose Alignment: Primacy Attractor maintains system alignment to declared purpose (Article 52 transparency)
 2. Fidelity Metrics: F_user, F_AI, PS provide quantitative proof of purpose adherence
-3. Governance Audit Trail: Every interaction logged with fidelity metrics and intervention decisions
-4. Human Oversight Evidence: Documented proof that human-defined limits are continuously upheld
+3. Governance Audit Trail: Every interaction logged with fidelity metrics and intervention decisions (Article 12 logging)
+4. Human Oversight Evidence: Documented proof that human-defined norms are continuously enforced
 5. Drift Detection: Real-time identification of scope violations before they affect users
 
-Current Platform Gap:
+TELOS functions as orchestration-layer infrastructure between applications and LLMs, adding measurable governance to any AI deployment.
 
-Major chatbot platforms (Intercom, Zendesk, Drift) offer:
-- Intent recognition (what topic?)
-- Entity extraction (what data?)
-- Context window management (recent history)
-
-They do not offer:
-- Continuous purpose alignment measurement
-- Drift detection from declared scope
-- Governance-ready audit trails
-- Evidence of EU AI Act compliance
-
-TELOS fills this gap as infrastructure, not as a replacement for existing platforms. It functions as an orchestration layer between the application and LLM, adding governance to any chatbot deployment.
-
-Sources:
-5. EU AI Act Official Text: https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai
-6. GetTalkative EU AI Act Compliance: https://gettalkative.com/info/eu-ai-act-compliance-and-chatbots
-7. Qualimero Chatbot Compliance Guide: https://www.qualimero.com/en/blog/eu-ai-act-chatbot-compliance
+Source:
+1. EU AI Act Official Text: https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai
 
 ### 1.3 What Regulators Are Requiring, And the Approaching Deadline
 
@@ -296,30 +165,29 @@ The law requires frontier AI developers to:
 - Report critical safety incidents to the California Office of Emergency Services (Cal OES)
 - Implement whistleblower protections with civil penalties up to $1M per violation
 
-Covered entities: Companies with >$500M annual revenue deploying models trained with more than 10²⁶ FLOPs (OpenAI, Anthropic, Meta, Google DeepMind, Mistral).
+Covered entities: Companies with >$500M annual revenue deploying models trained with more than $10^{26}$ FLOPs (OpenAI, Anthropic, Meta, Google DeepMind, Mistral).
 
-Critical requirement: Safety frameworks must show active governance mechanisms, not just design-time testing. Companies must provide proof that declared safety limits stay enforced throughout runtime deployment, exactly as TELOS does through session-level constitutional law enforcement.
+Critical requirement: Safety frameworks must show active governance mechanisms, not just design-time testing. Companies must provide proof that declared safety limits stay enforced throughout runtime deployment, exactly as TELOS does through runtime constitutional governance.
 
-The Constitutional Filter directly addresses SB 53 compliance: By encoding safety limits as Primacy Attractors (instantiated constitutional law), measuring every response against these limits (fidelity scoring), and generating automatic audit trails (telemetry logs), TELOS supplies the quantitative governance proof that safety framework publication needs. When Cal OES requests incident reports, organizations can show proactive drift detection and correction instead of reactive post-hoc discovery.
+TELOS directly addresses SB 53 compliance: By encoding safety limits as Primacy Attractors (instantiated constitutional law), measuring every response against these limits (fidelity scoring), and generating automatic audit trails (telemetry logs), TELOS supplies the quantitative governance proof that safety framework publication needs. When Cal OES requests incident reports, organizations can show proactive drift detection and correction instead of reactive post-hoc discovery.
 
 EU AI Act Article 72 requires providers of high-risk AI systems to implement post-market monitoring by August 2026. The European Commission must provide a template for these systems by February 2026 (EU AI Act, 2024, Article 72).
 
-Timeline convergence: California SB 53 (January 2026), EU template (February 2026), EU enforcement (August 2026). Three major regulatory milestones within eight months, all needing the same underlying capability: continuous, quantitative, auditable governance monitoring.
+**EU Digital Omnibus Update (November 2025):** The European Commission proposed extending high-risk AI compliance deadlines through the Digital Omnibus package, with enforcement potentially delayed until December 2027 (up to 16 months extension, with product-embedded systems extended to August 2028). The extension is conditional on the availability of adequate compliance support infrastructure, including harmonized standards and guidance tools. This proposal is currently under negotiation by the European Parliament and Council, with trilogue discussions expected mid-2026. The regulatory requirements and technical obligations remain unchanged - only the enforcement timeline may shift. Organizations should continue preparing governance infrastructure as the fundamental compliance requirements persist regardless of deadline extensions.
+
+Timeline convergence: California SB 53 (January 2026) is immediate, while EU timelines face potential extension through the Digital Omnibus. Regardless of specific deadlines, all frameworks converge on the same underlying capability: continuous, quantitative, auditable governance monitoring.
 
 Current state: Enterprises are using ad-hoc methods, mainly post-hoc transcript review, periodic sampling, and manual audits. These create compliance documentation burdens without delivering the continuous quantitative evidence that Article 72 explicitly demands: "systematic procedures," "relevant data," "continuous plan."
 
 The gap between regulatory requirements (continuous monitoring with auditable evidence) and technical capability (periodic sampling with narrative documentation) is currently unfilled.
 
-When the Commission publishes its template in February 2026, institutions deploying high-risk AI systems will face a stark choice:
-- Adopt standardized monitoring infrastructure quickly, or
-- Scramble to retrofit fragmented internal solutions to meet template requirements, or
-- Suspend high-risk AI deployments until compliant monitoring is available.
+Whether the EU enforcement occurs in August 2026 or December 2027, institutions deploying high-risk AI systems face the same fundamental requirement: continuous monitoring infrastructure that generates auditable evidence of governance effectiveness.
 
-TELOS addresses this gap through The Constitutional Filter: We provide the measurement tools, fidelity scoring, drift detection, intervention logging, stability tracking, that continuous post-market monitoring needs. Session-level constitutional law (Primacy Attractor governance) supplies the "systematic procedures" and "continuous plan" that Article 72 mandates, while adversarial validation (0% ASR across 2,550 attacks) shows the security properties that safety frameworks must document for SB 53 compliance.
+TELOS addresses this gap through orchestration-layer governance: We provide the measurement tools, fidelity scoring, drift detection, intervention logging, stability tracking, that continuous post-market monitoring needs. Runtime constitutional governance (Primacy Attractor architecture) supplies the "systematic procedures" and "continuous plan" that Article 72 mandates, while adversarial validation (0% ASR across 2,550 attacks) shows the security properties that safety frameworks must document for SB 53 compliance.
 
 Whether these specific mechanisms become standard or inform alternative approaches, the class of technical infrastructure they represent is what regulatory frameworks demand: constitutional governance with quantitative evidence, not heuristic trust.
 
-The California SB 53 deadline (January 2026) is immediate. The EU template (February 2026) follows one month later. The EU enforcement deadline (August 2026) sets the compliance floor. Institutions need technical solutions now that can meet all three requirements through a unified governance architecture.
+The California SB 53 deadline (January 2026) is immediate. EU enforcement timelines may extend to December 2027 under the Digital Omnibus proposal, but the technical requirements remain unchanged. Organizations building governance infrastructure now gain competitive advantage regardless of which timeline materializes.
 
 ### 1.4 The Authority Inversion: Human-in-the-Loop as Architecture
 
@@ -333,7 +201,7 @@ TELOS Architecture:
 
 Human Authority (defines Primacy Attractor)
 ↓
-Proportional Control (enforces alignment via F_t = K·e_t)
+Proportional Control (enforces alignment via $F_t = K \cdot e_t$)
 ↓
 AI/LLM (generates outputs under governance)
 
@@ -344,7 +212,7 @@ This architectural inversion addresses the core concern in AI governance: as sys
 - AI remains the governed subsystem: Models generate outputs within human-defined limits.
 - Proportional correction enforces boundaries: Operating on behalf of human authority, not AI autonomy.
 
-This directly meets the EU AI Act "human oversight" requirements and aligns with Meaningful Human Control (MHC) frameworks in AI ethics literature. The Constitutional Filter doesn't align AI to AI preferences; it enforces human constitutional law over AI behavior through orchestration-layer architecture.
+This directly meets the EU AI Act "human oversight" requirements and aligns with Meaningful Human Control (MHC) frameworks in AI ethics literature. TELOS doesn't align AI to AI preferences; it enforces human constitutional law over AI behavior through orchestration-layer architecture.
 
 Competitive Advantage: Starting January 2026, frontier AI companies will face Cal OES reporting requirements without standardized technical infrastructure. TELOS provides ready-made compliance: Primacy Attractors encode safety frameworks, fidelity scores show continuous monitoring, and telemetry logs automate incident reporting. Organizations can show proactive governance rather than reactive post-hoc discovery, turning compliance burdens into competitive advantages.
 
@@ -363,13 +231,13 @@ But: "Here is real-time telemetry showing governance monitoring was continuous."
 
 This is the gap TELOS addresses: We are building the measurement and correction infrastructure that makes continuous governance observable and demonstrable.
 
-### 1.4 Why Current Approaches Cannot Satisfy This Standard
+### 1.5 Why Current Approaches Cannot Satisfy This Standard
 
 Constitutional AI and Provider Safeguards (Bai et al., 2022):
 - Essential baseline: prevent harmful content, establish universal safety floors.
 - Operate at design-time and model-level.
 - Do not measure or respond to session-specific constraints declared within context windows.
-- Verdict: Necessary but insufficient for session-level governance.
+- Verdict: Necessary but insufficient for runtime governance.
 
 Prompt Engineering:
 - State limits at session start.
@@ -395,7 +263,7 @@ Periodic Reminders:
 
 None of these approaches provide what regulators require: continuous measurement of governance persistence, proportional intervention when drift occurs, and auditable telemetry documenting both.
 
-### 1.4.1 Industry Recognition: Even Frontier Labs Acknowledge the Gap
+### 1.5.1 Industry Recognition: Even Frontier Labs Acknowledge the Gap
 
 The insufficiency of training-time alignment is not merely an academic observation. It is now acknowledged by the developers of Constitutional AI themselves.
 
@@ -415,7 +283,7 @@ The convergence is clear: even organizations that developed training-time alignm
 
 Source: Amodei, D. (2026). "The Adolescence of Technology: Confronting and Overcoming the Risks of Powerful AI." https://www.darioamodei.com/essay/the-adolescence-of-technology
 
-### 1.5 What We Are Building
+### 1.6 What We Are Building
 
 TELOS provides the infrastructure for observable demonstrable due diligence:
 
@@ -429,7 +297,7 @@ We do not claim this completely solves AI governance. We claim it makes governan
 
 The following sections explain the mathematical framework that makes this possible, the implementation that makes it practical, and the validation framework that will determine if it works.
 
-### 1.5.1 Detection-Driven Governance
+### 1.6.1 Detection-Driven Governance
 
 TELOS operates fundamentally as a detection system. Quality Control for AI.
 
@@ -447,7 +315,7 @@ Our goal has been and will continue to be refining and fine-tuning detection so 
 
 The causal chain: Detection (what we measure) leads to Prevention (byproduct) leads to Safety (outcome through proportional control).
 
-The better you detect, the earlier you can intervene, the more proportional your control. That is process control, not magic.
+Detection fidelity determines intervention timing, which determines control proportionality.
 
 **Understanding Our Validation Results**
 
@@ -464,8 +332,6 @@ When TELOS achieves 0% adversarial success rate on these benchmarks, we are not 
 
 The 0% is not "we blocked everything." It is "nothing proceeded without triggering the governance response chain." TELOS preserves the ability to block when necessary. Blocking is the graduated endpoint of detection, not the only tool.
 
-This is not semantics. It is mathematics.
-
 ## Bridge: From Systems Thinking to Mathematical Formalism
 
 The integration of process control within TELOS comes directly from careful systems analysis. When semantic drift is defined as a measurable deviation from a defined purpose vector, its mathematical structure maps directly to process variation within tolerance limits.
@@ -476,18 +342,18 @@ The framework combines proportional control (operational mechanism) and attracto
 
 ## 2. Quality Control Architecture: Proportional Control and Attractor Dynamics
 
-### 2.1 Core Insight: Session-Level Constitutional Law as Measurable Process
+### 2.1 Core Insight: Runtime Constitutional Governance as Measurable Process
 
 ![Figure 2: Primacy Attractor basin geometry in embedding space. The PA serves as a stable equilibrium point, with the basin radius determining the tolerance for semantic drift.](diagrams/fig2_primacy_attractor.pdf)
 
-The Constitutional Filter views alignment as a measurable position in embedding space subject to continuous process control through orchestration-layer governance, not just a qualitative property.
+TELOS views alignment as a measurable position in embedding space subject to continuous process control through orchestration-layer governance, not just a qualitative property.
 
 When a user declares constitutional requirements for a session:
 - Purpose: "Help me structure a technical paper."
 - Scope: "Guide my thinking, don't write content."
 - Boundaries: "No drafting full paragraphs."
 
-These declarations become embeddings, vectors in ℝ^d using standard sentence transformers (Reimers & Gurevych, 2019). These vectors define the Primacy Attractor: instantiated constitutional law for the temporary session state. The PA serves as a constant constitutional reference against which all subsequent outputs are measured for compliance.
+These declarations become embeddings, vectors in $\mathbb{R}^d$ using standard sentence transformers (Reimers & Gurevych, 2019). These vectors define the Primacy Attractor: instantiated constitutional law for the temporary session state. The PA serves as a constant constitutional reference against which all subsequent outputs are measured for compliance.
 
 Every model response gets embedded. Its distance from the constitutional reference (PA) quantifies constitutional drift. Its direction shows how it violates declared constraints.
 
@@ -501,31 +367,31 @@ This shifts governance from subjective judgment ("does this feel aligned?") to q
 
 In this setup, the proportional control law defines the correction mechanism:
 
-F = K · e, where e = |x - â| / r
+$$F = K \cdot e, \quad \text{where} \quad e = \frac{|x - \hat{a}|}{r}$$
 
-Here x represents the current semantic state (response embedding), â is the Primacy Attractor, instantiated constitutional law formed from human-authored constitutional requirements (purpose, scope, boundaries), and r is the tolerance radius defining the Primacy Basin (constitutional compliance boundary).
+Here $x$ represents the current semantic state (response embedding), $\hat{a}$ is the Primacy Attractor, instantiated constitutional law formed from human-authored constitutional requirements (purpose, scope, boundaries), and $r$ is the tolerance radius defining the Primacy Basin (constitutional compliance boundary).
 
-The scalar e shows normalized deviation from constitutional requirements, and K is the proportional gain governing correction strength.
+The scalar $e$ shows normalized deviation from constitutional requirements, and $K$ is the proportional gain governing correction strength.
 
-The law operates continuously as part of a closed feedback loop: each output is measured, deviation quantified, and corrective force F applied based on drift magnitude. When e < ε_min, the system remains stable with no intervention; as e approaches ε_max, corrective action scales accordingly, from gentle reminders to full response regeneration.
+The law operates continuously as part of a closed feedback loop: each output is measured, deviation quantified, and corrective force $F$ applied based on drift magnitude. When $e < \epsilon_{\text{min}}$, the system remains stable with no intervention; as $e$ approaches $\epsilon_{\text{max}}$, corrective action scales accordingly, from gentle reminders to full response regeneration.
 
-This dynamic sets a point attractor at â with basin:
+This dynamic sets a point attractor at $\hat{a}$ with basin:
 
-B(â, r) = {x ∈ ℝ^d : |x - â| ≤ r}
+$$B(\hat{a}, r) = \{x \in \mathbb{R}^d : |x - \hat{a}| \leq r\}$$
 
 The basin radius is calculated as:
 
-r = 2 / max(ρ, 0.25) where ρ = 1 - τ
+$$r = \frac{2}{\max(\rho, 0.25)} \quad \text{where} \quad \rho = 1 - \tau$$
 
-where τ ∈ [0,1] is the tolerance parameter (lower tolerance means a tighter basin).
+where $\tau \in [0,1]$ is the tolerance parameter (lower tolerance means a tighter basin).
 
 Stability Analysis: Convergence can be shown using a Lyapunov-like potential function:
 
-V(x) = (1/2)|x - â|²
+$$V(x) = \frac{1}{2}|x - \hat{a}|^2$$
 
 Its temporal derivative under proportional feedback satisfies:
 
-V̇(x) = -K|x - â|² < 0
+$$\dot{V}(x) = -K|x - \hat{a}|^2 < 0$$
 
 This confirms that convergence towards the attractor is asymptotic, and stability is bounded within the basin (Khalil, 2002; Strogatz, 2014).
 
@@ -533,27 +399,27 @@ This confirms that convergence towards the attractor is asymptotic, and stabilit
 
 Transformer attention mechanisms rely on similarity computation through the scaled dot-product operation (Vaswani et al., 2017):
 
-Attention(Q, K, V) = softmax(QK^T / √d_k) V
+$$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right) V$$
 
-The operation QK^T computes the dot product between query vectors and key vectors, a direct measurement of directional similarity between positions in the sequence. This is mathematically equivalent to un-normalized cosine similarity and captures how much the vectors "point in the same direction" within the embedding space (PyTorch Contributors, 2023).
+The operation $QK^T$ computes the dot product between query vectors and key vectors, a direct measurement of directional similarity between positions in the sequence. This is mathematically equivalent to un-normalized cosine similarity and captures how much the vectors "point in the same direction" within the embedding space (PyTorch Contributors, 2023).
 
 Every modern LLM, including LLaMA, Mistral, GPT, and Claude, performs this similarity computation billions of times during text generation, at every layer and every token position.
 
 The architecture already knows how to measure similarity. The question is: what is it measuring similarity against?
 
-#### 2.2.1.1 Attention as Similarity Computation
+### 2.2.2 Attention as Similarity Computation
 
-When a transformer generates token t, it creates a query vector Q_t asking, "what information am I looking for?" It then computes:
+When a transformer generates token t, it creates a query vector $Q_t$ asking, "what information am I looking for?" It then computes:
 
-score_t,i = Q_t · K_i^T
+$$\text{score}_{t,i} = Q_t \cdot K_i^T$$
 
-for each prior key vector K_i in the context. These scores measure: how similar is my current generation state to position i?
+for each prior key vector $K_i$ in the context. These scores measure: how similar is my current generation state to position i?
 
 After applying softmax, these scores become attention weights that determine how much each previous position impacts the current generation. High similarity leads to a high attention weight, resulting in strong influence.
 
 This mechanism works incredibly well for language modeling. If you're generating "The capital of France is __", high attention to prior mentions of "France" and "capital" helps predict "Paris." The model correctly identifies the relevant context through similarity matching.
 
-#### 2.2.1.2 The Shifting Reference Point
+### 2.2.3 The Shifting Reference Point
 
 However, this same mechanism fails for governance persistence because the reference point itself shifts during the conversation.
 
@@ -561,27 +427,27 @@ Consider a session where the user declares at turn 1:
 
 P_0: "Provide guidance on structure, but do not write content directly."
 
-This constraint is encoded as an embedding vector p_0 ∈ ℝ^d.
+This constraint is encoded as an embedding vector $p_0 \in \mathbb{R}^d$.
 
-Turn 5: Model response R_5 aligns well with P_0. The attention mechanism calculating Q_5 · K_1^T correctly finds high similarity to the original constraint.
+Turn 5: Model response $R_5$ aligns well with $P_0$. The attention mechanism calculating $Q_5 \cdot K_1^T$ correctly finds high similarity to the original constraint.
 
-Turn 15: Model response R_15 calculates attention weights:
+Turn 15: Model response $R_{15}$ calculates attention weights:
 
-α_15,i = exp(Q_15 · K_i^T / √d_k) / Σ_j exp(Q_15 · K_j^T / √d_k)
+$$\alpha_{15,i} = \frac{\exp(Q_{15} \cdot K_i^T / \sqrt{d_k})}{\sum_j \exp(Q_{15} \cdot K_j^T / \sqrt{d_k})}$$
 
-Because of RoPE-induced recency bias (Yang et al., 2025), attention gives more weight to recent keys K_12, K_13, K_14. These keys reflect the immediate context of the conversation.
+Because of RoPE-induced recency bias (Yang et al., 2025), attention gives more weight to recent keys $K_{12}, K_{13}, K_{14}$. These keys reflect the immediate context of the conversation.
 
-However, if K_12 to K_14 have drifted from p_0, the model measures similarity against corrupted references. It computes correctly:
+However, if $K_{12}$ to $K_{14}$ have drifted from $p_0$, the model measures similarity against corrupted references. It computes correctly:
 
-Q_15 · K_14^T ≈ high similarity
+$$Q_{15} \cdot K_{14}^T \approx \text{high similarity}$$
 
-and concludes that it is aligned. But K_14 itself shows low similarity to p_0:
+and concludes that it is aligned. But $K_{14}$ itself shows low similarity to $p_0$:
 
-K_14 · p_0^T ≈ low similarity
+$$K_{14} \cdot p_0^T \approx \text{low similarity}$$
 
 The similarity computation is accurate. The reference point it uses has drifted.
 
-#### 2.2.1.3 Architectural Sources of Recency Bias
+### 2.2.4 Architectural Sources of Recency Bias
 
 This reference drift happens intentionally through two mechanisms:
 
@@ -597,39 +463,39 @@ Rotary positional encodings, used in LLaMA, Mistral, and other modern systems, a
 
 Pre-training on natural text, where recent context is the best predictor for the next token, reinforces the recency weighting. The model learns that "recent tokens matter most." This is correct for language modeling but leads to reference drift in governance.
 
-#### 2.2.1.4 Mathematical Formalization of Reference Drift
+### 2.2.5 Mathematical Formalization of Reference Drift
 
-Let r_t denote the effective reference that attention mechanisms use at turn t. This is the average of key vectors weighed by attention:
+Let $r_t$ denote the effective reference that attention mechanisms use at turn $t$. This is the average of key vectors weighed by attention:
 
-r_t = Σ_{i=1}^{t-1} α_{t,i} k_i
+$$r_t = \sum_{i=1}^{t-1} \alpha_{t,i} k_i$$
 
-where α_{t,i} are the attention weights.
+where $\alpha_{t,i}$ are the attention weights.
 
 Due to recency bias:
 
-α_{t,i} ∝ exp(-β · (t - i)) · exp(Q_t · K_i^T / √d_k)
+$$\alpha_{t,i} \propto \exp(-\beta \cdot (t - i)) \cdot \exp(Q_t \cdot K_i^T / \sqrt{d_k})$$
 
-for some decay parameter β > 0 from positional encoding.
+for some decay parameter $\beta > 0$ from positional encoding.
 
 Over turns, the effective reference drifts:
 
-||r_t - p_0|| = ||Σ_{i=1}^{t-1} α_{t,i} k_i - p_0|| → Δ > 0
+$$\|r_t - p_0\| = \left\|\sum_{i=1}^{t-1} \alpha_{t,i} k_i - p_0\right\| \to \Delta > 0$$
 
-as the conversation continues and α_{t,i} focuses on recent i.
+as the conversation continues and $\alpha_{t,i}$ focuses on recent $i$.
 
 The model calculates:
 
-similarity_t = Q_t · r_t^T
+$$\text{similarity}_t = Q_t \cdot r_t^T$$
 
 which remains high (local coherence), while:
 
-fidelity_t = Q_t · p_0^T
+$$\text{fidelity}_t = Q_t \cdot p_0^T$$
 
 decreases (global divergence).
 
 This is local coherence with global divergence: each step seems consistent with recent context while the overall direction shifts away from the original intent.
 
-#### 2.2.1.5 Why External Measurement Becomes Necessary
+### 2.2.6 Why External Measurement Becomes Necessary
 
 The model cannot resolve this internally because:
 
@@ -639,32 +505,32 @@ The model cannot resolve this internally because:
 
 TELOS addresses this through external measurement with stable reference:
 
-fidelity_t = cos(R_t, p_0) = (R_t · p_0) / (||R_t|| · ||p_0||)
+$$\text{fidelity}_t = \cos(R_t, p_0) = \frac{R_t \cdot p_0}{\|R_t\| \cdot \|p_0\|}$$
 
 where:
-- R_t is the model's response embedding at turn t
-- p_0 is the embedding of the original purpose from turn 1
-- p_0 is stored externally and remains unchanged
+- $R_t$ is the model's response embedding at turn $t$
+- $p_0$ is the embedding of the original purpose from turn 1
+- $p_0$ is stored externally and remains unchanged
 
-Critical distinction: This uses the same cosine similarity operation that attention mechanisms use internally (dot product adjusted by magnitudes), but with the original purpose vector p_0 as a stable reference instead of recent context keys K_{t-5...t-1}.
+Critical distinction: This uses the same cosine similarity operation that attention mechanisms use internally (dot product adjusted by magnitudes), but with the original purpose vector $p_0$ as a stable reference instead of recent context keys $K_{t-5...t-1}$.
 
 We are not adding new capabilities; we are correcting the reference point.
 
-#### 2.2.1.6 Why Cosine Similarity Is Not Arbitrary
+### 2.2.7 Why Cosine Similarity Is Not Arbitrary
 
 TELOS uses cosine similarity for fidelity measurement because it is the model's own calculation method. When transformers compute QK^T, they perform dot product similarity.
 
 The only difference:
 
-Attention (internal): score = Q · K^T / √d_k
+Attention (internal): $\text{score} = Q \cdot K^T / \sqrt{d_k}$
 
-TELOS (external): fidelity = (R · P) / (||R|| · ||P||)
+TELOS (external): $\text{fidelity} = (R \cdot P) / (\|R\| \cdot \|P\|)$
 
-Both assess directional alignment. TELOS adjusts for vector magnitudes (making it true cosine similarity) and uses a stable reference (P_0 versus recent K_i).
+Both assess directional alignment. TELOS adjusts for vector magnitudes (making it true cosine similarity) and uses a stable reference ($P_0$ versus recent $K_i$).
 
 We use the language model's native similarity metric, just with the correct reference point.
 
-#### 2.2.1.7 Empirical Predictions
+### 2.2.8 Empirical Predictions
 
 This analysis leads to testable predictions:
 
@@ -676,11 +542,11 @@ Prediction 3: Models with weaker recency bias (for example, attention tweaks tha
 
 These predictions will be evaluated in the validation framework outlined in Section 4.
 
-#### 2.2.1.8 Implications for Governance
+### 2.2.9 Implications for Governance
 
 This analysis shows why past strategies fail:
 
-Prompt engineering ("Please remember to follow these rules...") adds limits to context but does not stop attention from shifting toward recent turns. The constraints are present in K_1, but α_{t,1} → 0 as t grows.
+Prompt engineering ("Please remember to follow these rules...") adds limits to context but does not stop attention from shifting toward recent turns. The constraints are present in $K_1$, but $\alpha_{t,1} \to 0$ as $t$ grows.
 
 Constitutional AI and system prompts set universal safety boundaries but function at the model level, not the session level. They cannot encode user-specific constraints made during the session.
 
@@ -690,22 +556,22 @@ TELOS provides ongoing measurement against a stable reference, allowing proporti
 
 ---
 
-Key Takeaway: Modern LLMs constantly compute similarity through attention mechanisms billions of times during generation. The problem is not their ability to measure similarity; it lies in their tendency to measure it against a drifting reference point caused by architectural recency bias. TELOS maintains the original purpose embedding as an external, stable reference and uses the same cosine similarity operation that attention mechanisms apply internally. This is not creating new measurement capability; it is correcting what gets measured.
+Key Takeaway: Modern LLMs constantly compute similarity through attention mechanisms billions of times during generation. The problem is not their ability to measure similarity; it lies in their tendency to measure it against a drifting reference point caused by architectural recency bias. TELOS maintains the original purpose embedding as an external, stable reference and uses the same cosine similarity operation that attention mechanisms apply internally, correcting the reference point rather than the measurement method.
 
 ---
 
 ### 2.3 Architectural Positioning: The Orchestration Layer
 
-![Figure 1: Three-Tier Defense Architecture. The Constitutional Filter operates at the orchestration layer, enforcing governance through PA-based fidelity measurement, RAG-augmented policy retrieval, and human escalation pathways.](diagrams/fig1_three_tier_governance.pdf)
+![Figure 1: Three-Tier Defense Architecture. TELOS operates at the orchestration layer, enforcing governance through PA-based fidelity measurement, RAG-augmented policy retrieval, and human escalation pathways.](diagrams/fig1_three_tier_governance.pdf)
 
 TELOS functions at the orchestration layer, the middleware between applications and frontier LLMs:
 
 [Application Layer]
 ↓
-[TELOS Orchestration Layer] ← Constitutional Filter operates here
+[TELOS Orchestration Layer] ← Governance infrastructure operates here
 ├── Primacy Attractor (Human-defined constitutional law)
-├── Fidelity Measurement (Continuous f_t monitoring)
-├── Proportional Control (F_t = K·e_t enforcement)
+├── Fidelity Measurement (Continuous $f_t$ monitoring)
+├── Proportional Control ($F_t = K \cdot e_t$ enforcement)
 └── LLM Interface (API routing)
 ↓
 [Frontier LLM API] (OpenAI, Anthropic, Mistral, etc.)
@@ -731,112 +597,34 @@ TELOS enforces governance architecturally, making it a compliance infrastructure
 
 This architectural approach directly addresses SB 53's requirement for active governance mechanisms that continue through model updates, provider changes, and deployment contexts.
 
-### 2.4 Dual Primacy Attractor Architecture (Theoretical Framework)
-
-Development: November 2024
-Status: Theoretical framework (counterfactual validation planned)
-Security Validation: 0% ASR across 2,550 adversarial attacks (completed January 2026)
-
-#### The Two-Attractor System
-
-While single-attractor systems define governance through one reference point, dual PA architecture suggests that alignment may benefit from complementary forces:
-
-User PA (User Primacy Attractor):
-- Governs: WHAT to discuss
-- Derivation: Extracted from the user's stated purpose and scope
-- Role: Main attractor defining conversational intent
-- Example: "Help me structure a technical paper on governance systems"
-
-AI PA (AI Primacy Attractor):
-- Governs: HOW to help
-- Derivation: Automatically derived from User PA by LLM
-- Role: Supportive attractor ensuring helpful behavior
-- Example: "Act as a supportive thinking partner without writing content directly"
-
-#### Theoretical Advantages of Dual Attractors
-
-Single PA Limitation (theoretical):
-- One reference point trying to balance all constraints
-- May drift toward excessive user mirroring or AI-centric behavior
-- No complementary force to maintain equilibrium
-- Intervention becomes corrective rather than preventive
-
-Dual PA Hypothesis:
-- Two attractors could create a more stable system
-- Natural tension might keep alignment
-- System could self-stabilize through attractor coupling
-- Interventions may be rare because balance is inherent
-
-#### Mathematical Formulation
-
-Attractor Coupling (PA Correlation):
-ρ_PA = cos(â_user, â_AI) = (â_user · â_AI) / (|â_user| · |â_AI|)
-
-Dual Fidelity Measurement:
-F_user(t) = cos(x_t, â_user)
-F_AI(t) = cos(x_t, â_AI)
-
-System-Level Alignment:
-F_system = α · F_user + (1-α) · F_AI
-where α ≈ 0.6-0.7 (user purpose weighted slightly higher)
-
-#### Validation Status
-
-Security Testing (January 2026):
-- Dual PA architecture tested under adversarial conditions
-- 0% ASR across 2,550 attacks (1,200 AILuminate + 400 HarmBench + 900 MedSafetyBench + 50 SB 243)
-- Framework successfully defended against attacks targeting both User PA and AI PA constraints
-
-Counterfactual Validation (Planned):
-- Comparative study: Single PA vs Dual PA architectures
-- Hypothesis: Dual PA provides measurably better alignment
-- Timeline: Q1 2026
-
-#### Attractor Physics Research Directions
-
-The dual PA framework suggests deeper phenomena worth exploring:
-
-Attractor Coupling: How do two attractors interact in productive tension?
-Attractor Energetics: What energy landscape emerges from dual basins?
-Attractor Dynamics: Can self-stabilizing dynamics be formalized?
-Attractor Entanglement: What conditions produce high PA correlation?
-
-These questions support further research into multi-attractor governance dynamics, hierarchical PA structures, and adaptive basin geometry.
-
-#### Implementation Status
-
-Current: Dual PA architecture implemented and security validated
-Security: 0% ASR under adversarial testing (2,550 attacks)
-Next: Counterfactual validation to measure alignment superiority compared to single PA
-API: GovernanceConfig.dual_pa_config() in telos/core/
-
 ### 2.4 The Dual Formalism: Control Theory and Dynamical Systems
 
 Proportional control provides the operational rule, showing how corrections are computed and applied. Attractor dynamics gives the mathematical description, explaining why the system converges and remains stable.
 
 These are not alternatives but complementary views on the same mathematics:
-- Proportional control defines: F = -K·e (correction force proportional to error)
-- Attractor dynamics describes: â as a stable equilibrium with basin B(â, r)
-- Lyapunov analysis confirms: V(x) decreases, showing convergence
+- Proportional control defines: $F = -K \cdot e$ (correction force proportional to error)
+- Attractor dynamics describes: $\hat{a}$ as a stable equilibrium with basin $B(\hat{a}, r)$
+- Lyapunov analysis confirms: $V(x)$ decreases, showing convergence
 
 The same mathematical principles that ensure quality stability in manufacturing processes (Shewhart, 1931; Montgomery, 2020) apply here in semantic space.
 
 This creates a continuous, auditable framework for process control in linguistic systems. It connects TELOS directly to established control theory (Ogata, 2009; Khalil, 2002) and the analysis of dynamical systems (Strogatz, 2014; Hopfield, 1982).
 
-The contribution is not in inventing new mathematics, but in applying proven methods to a previously unmanaged area: maintaining session-level constraints across transformer interactions.
+The contribution is not in inventing new mathematics, but in applying proven methods to a previously unmanaged area: maintaining runtime governance constraints across transformer interactions.
 
 ### 2.5 Fidelity Measurement: Continuous Adherence Tracking
 
 Using cosine similarity from information theory (Cover & Thomas, 2006), we measure alignment:
 
-I_t = cos(x_t, p) = (x_t · p) / (|x_t| · |p|)
-F = (1/T) Σ_{t=1}^{T} I_t
+$$I_t = \cos(x_t, p) = \frac{x_t \cdot p}{|x_t| \cdot |p|}$$
+
+$$F = \frac{1}{T} \sum_{t=1}^{T} I_t$$
 
 where:
-- I_t is instantaneous fidelity at turn t
-- F is mean fidelity over T turns
-- x_t is response embedding at turn t
-- p is the purpose vector (Primacy Attractor)
+- $I_t$ is instantaneous fidelity at turn $t$
+- $F$ is mean fidelity over $T$ turns
+- $x_t$ is response embedding at turn $t$
+- $p$ is the purpose vector (Primacy Attractor)
 
 This metric offers:
 - Continuous monitoring: Every turn produces quantified adherence
@@ -884,18 +672,18 @@ The mathematics remains the same; only the domain shifts from physical to semant
 
 Drawing from process capability analysis (Montgomery, 2020), we define:
 
-C_pk = min((USL - μ) / 3σ, (μ - LSL) / 3σ)
+$$C_{pk} = \min\left(\frac{USL - \mu}{3\sigma}, \frac{\mu - LSL}{3\sigma}\right)$$
 
 where:
-- USL = Upper Specification Limit (maximum acceptable drift)
-- LSL = Lower Specification Limit (minimum required fidelity)
-- μ = Mean fidelity over session
-- σ = Standard deviation of fidelity
+- $USL$ = Upper Specification Limit (maximum acceptable drift)
+- $LSL$ = Lower Specification Limit (minimum required fidelity)
+- $\mu$ = Mean fidelity over session
+- $\sigma$ = Standard deviation of fidelity
 
 Interpretation:
-- C_pk > 1.33: Process is highly capable (six sigma quality)
-- 1.0 < C_pk < 1.33: Process is capable but needs monitoring
-- C_pk < 1.0: Process is not capable; intervention is essential
+- $C_{pk} > 1.33$: Process is highly capable (six sigma quality)
+- $1.0 < C_{pk} < 1.33$: Process is capable but needs monitoring
+- $C_{pk} < 1.0$: Process is not capable; intervention is essential
 
 This gives regulators familiar quality metrics applied to AI governance.
 
@@ -923,7 +711,7 @@ By using the language of quality systems, TELOS allows for AI governance through
 
 ### 4.1 The Validation Imperative
 
-VALIDATION STATUS (January 2026): The Constitutional Filter has passed adversarial security validation, showing measurable attack prevention superiority over system prompt baselines.
+VALIDATION STATUS (January 2026): TELOS has passed adversarial security validation, showing measurable attack prevention superiority over system prompt baselines.
 
 VALIDATED - Adversarial Security (January 2026):
 - 0% Attack Success Rate across 2,550 adversarial attacks
@@ -931,11 +719,6 @@ VALIDATED - Adversarial Security (January 2026):
 - Testing across two Mistral models (Small and Large)
 - Attack types: Prompt injection, jailbreaking, role manipulation, context manipulation, boundary violations
 - Results confirm TELOS as constitutional security architecture validated against real threats
-
-PLANNED - Architectural Validation (Q1 2026):
-- Counterfactual comparison: Dual PA versus Single PA architectures
-- Hypothesis: Two-attractor coupling provides better alignment stability
-- Methodology: Baseline versus governance comparison across diverse sessions
 
 PLANNED - Runtime Intervention Validation (Q1 2026):
 - Proportional Controller correction effectiveness in live sessions
@@ -945,7 +728,6 @@ PLANNED - Runtime Intervention Validation (Q1 2026):
 
 Critical Distinction:
 - Adversarial validation (completed) tests attack resistance through security testing
-- Counterfactual validation (planned) tests alignment improvement through comparative analysis
 - Runtime validation (planned) tests intervention effectiveness in live drift scenarios
 
 ### 4.2 Validation Hypotheses
@@ -953,32 +735,28 @@ Critical Distinction:
 We test specific, falsifiable claims:
 
 H1: Adversarial Security
-- The Constitutional Filter prevents attacks that bypass system prompts alone
+- TELOS prevents attacks that bypass system prompts alone
 - Status: VALIDATED (0% ASR versus 3.7-11.1% baseline across 2,550 attacks including AILuminate and SB 243 child safety)
 
-H2: Architectural Superiority
-- Dual PA maintains higher fidelity than single PA across extended conversations
-- Status: Requires counterfactual validation (planned Q1 2026)
-
-H3: Intervention Effectiveness
+H2: Intervention Effectiveness
 - Proportional control successfully corrects drift when detected in live sessions
 - Status: Requires runtime validation (planned Q1 2026)
 
-H4: Regulatory Evidence Generation
+H3: Regulatory Evidence Generation
 - Telemetry provides enough evidence for compliance demonstration
 - Status: Requires auditor assessment
 
-H5: Generalization Across Domains
+H4: Generalization Across Domains
 - The framework stays effective across conversation types and attack sophistication levels
 - Status: VALIDATED (2,550 attacks: 1,200 AILuminate + 400 HarmBench + 900 MedSafetyBench + 50 SB 243)
 
-H6: Over-Refusal Calibration
+H5: Over-Refusal Calibration
 - Domain-specific Primacy Attractors lower false positives while ensuring strong safety
 - Status: VALIDATED (XSTest: 24.8% FPR generic → 8.0% FPR Healthcare PA, 16.8pp improvement)
 
 ### 4.3 Adversarial Validation: Completed Security Testing (January 2026)
 
-#### 4.3.0 Why Security Validation Matters for Governance
+#### 4.3.1 Why Security Validation Matters for Governance
 
 Constitutional constraints are useless if adversaries can bypass them. A system that stays aligned under regular conditions but fails under adversarial pressure is fundamentally ungovernable, similar to a lock that works until someone attempts to pick it.
 
@@ -991,14 +769,14 @@ If governance infrastructure can't withstand these attacks, it can't assure comp
 
 SB 53 explicitly requires that safety frameworks show resilience against "adversarial testing and red-teaming exercises." Article 72 mandates post-market monitoring that includes "analysis of risks" emerging from hostile use.
 
-Both frameworks understand that governance systems must perform under attack, not just during cooperation. TELOS's 0% Attack Success Rate proves that orchestration-layer governance (The Constitutional Filter) provides far stronger security than prompt-based methods, which permitted 3.7-11.1% of attacks even with careful engineering.
+Both frameworks understand that governance systems must perform under attack, not just during cooperation. TELOS's 0% Attack Success Rate proves that orchestration-layer governance provides far stronger security than prompt-based methods, which permitted 3.7-11.1% of attacks even with careful engineering.
 
 This is not just a small improvement; it represents architectural security versus heuristic hope.
 
-#### 4.3.1 Study Design
+#### 4.3.2 Study Design
 
 Methodology: Multi-Model Adversarial Attack Testing
-- Test TELOS Constitutional Filter against a standardized attack library
+- Test TELOS governance framework against a standardized attack library
 - Compare against system prompt baseline and raw model performance
 - Test across two Mistral model sizes (Small and Large)
 - Measure Attack Success Rate (ASR) and Violation Defense Rate (VDR)
@@ -1012,11 +790,11 @@ Attack Types Tested:
 
 Test Configuration:
 - Models: Mistral Small 2501, Mistral Large 2501
-- Conditions: Raw (no defense), System Prompt Only, TELOS (full Constitutional Filter)
+- Conditions: Raw (no defense), System Prompt Only, TELOS (orchestration-layer governance)
 - Date: January 2026
 - Total attacks: 2,550 distinct adversarial prompts (1,200 AILuminate + 400 HarmBench + 900 MedSafetyBench + 50 SB 243)
 
-#### 4.3.2 Results Summary
+#### 4.3.3 Results Summary
 
 Executive Summary Table:
 
@@ -1024,7 +802,7 @@ Executive Summary Table:
 |--------------|-------------------|-------------------|-------------|-------------------|
 | No Defense (Baseline) | 30.8% | 43.9% | 37.4% | - |
 | System Prompt | 11.1% | 3.7% | 7.4% | 80% reduction |
-| TELOS Constitutional Filter | 0.0% | 0.0% | 0.0% | 0/2,550 observed |
+| TELOS Governance | 0.0% | 0.0% | 0.0% | 0/2,550 observed |
 
 Key Finding: TELOS achieved 0 out of 2,550 observed attack successes (95% CI upper bound ~0.15% under black-box threat model) while system prompts allowed 94-283 attacks through across models.
 
@@ -1034,7 +812,7 @@ Attack Success Rate (ASR), Percentage of attacks that successfully violated cons
 |---------------|---------------|---------------|----------|
 | Raw Model | 30.8% | 43.9% | 37.4% |
 | System Prompt | 11.1% | 3.7% | 7.4% |
-| TELOS (Constitutional Filter) | 0.0% | 0.0% | 0.0% |
+| TELOS (Governance Framework) | 0.0% | 0.0% | 0.0% |
 
 Violation Defense Rate (VDR), Percentage of attacks blocked:
 
@@ -1042,9 +820,9 @@ Violation Defense Rate (VDR), Percentage of attacks blocked:
 |---------------|---------------|---------------|----------|
 | Raw Model | 69.2% | 56.1% | 62.7% |
 | System Prompt | 88.9% | 96.3% | 92.6% |
-| TELOS (Constitutional Filter) | 100.0% | 100.0% | 100.0% |
+| TELOS (Governance Framework) | 100.0% | 100.0% | 100.0% |
 
-#### 4.3.3 Statistical Significance
+#### 4.3.4 Statistical Significance
 
 Attack Elimination:
 - TELOS achieved 0 out of 2,550 successful attacks (0.0% ASR)
@@ -1059,7 +837,7 @@ Cross-Model Consistency:
 - Perfect 0% ASR maintained across both Mistral Small and Large
 - Shows strong performance regardless of model size
 
-#### 4.3.4 Interpretation
+#### 4.3.5 Interpretation
 
 The adversarial validation results identify TELOS as constitutional security architecture for AI systems:
 
@@ -1068,7 +846,7 @@ The adversarial validation results identify TELOS as constitutional security arc
 3. Governance Framework: Results support orchestration-layer defense compared to prompt-based methods
 4. Cross-Model Generalization: Consistent performance across model sizes shows the framework's adaptability
 
-These results confirm that the Constitutional Filter offers significantly better security than prompt engineering alone, highlighting the value of session-level constitutional law enforcement through a multi-layer governance approach.
+These results confirm that TELOS offers significantly better security than prompt engineering alone, highlighting the value of runtime constitutional governance through a multi-layer approach.
 
 ### 4.4 SB 243-Aligned Child Safety Evaluation (January 2026)
 
@@ -1081,7 +859,7 @@ We developed an internal evaluation suite of 50 prompts inspired by SB 243's req
 #### 4.4.2 Study Design
 
 Methodology: Child Safety Testing Aligned with Purpose
-- Test the TELOS Constitutional Filter against 50 CSAM-related adversarial prompts
+- Test TELOS governance framework against 50 CSAM-related adversarial prompts
 - Measure Attack Success Rate (ASR) and False Positive Rate (FPR)
 - Confirm that the child safety Primacy Attractor correctly focuses on protection
 
@@ -1113,7 +891,7 @@ The 74% false positive rate is a result of intentional design for child safety c
 
 Design Philosophy:
 - Child safety is a zero-tolerance area where Type II errors (allowing harm) are far worse than Type I errors (blocking safe content)
-- The Constitutional Filter correctly balances safety and usefulness differently for child protection versus general conversation
+- TELOS correctly balances safety and usefulness differently for child protection versus general conversation
 - This shows TELOS's adaptive governance, the same framework applies appropriate limits based on Primacy Attractor settings
 
 Regulatory Alignment: SB 243 compliance requires clear prevention of CSAM generation. A 0% ASR with documented conservative calibration gives the needed regulatory evidence for covered platforms.
@@ -1147,7 +925,7 @@ XSTest Prompt Categories:
 5. Historical or factual discussions
 
 Test Configuration:
-- Models: TELOS Constitutional Filter
+- Models: TELOS governance framework
 - Conditions: Generic PA, Healthcare PA
 - Date: January 2026
 - Total prompts: 250 safe XSTest prompts
@@ -1175,15 +953,14 @@ Practical Implications:
 - Organizations should set up domain-specific Primacy Attractors instead of relying on generic safety measures
 - The 8.0% FPR for Healthcare PA reflects appropriate caution without being overly restrictive. Custom PA configuration is a governance decision, not merely a technical detail.
 
-Safety-Utility Balance: TELOS shows that maintaining high safety (0% ASR on adversarial attacks) and suitable flexibility (8.0% FPR on safe prompts) is possible through careful configuration of the Constitutional Filter.
+Safety-Utility Balance: TELOS shows that maintaining high safety (0% ASR on adversarial attacks) and suitable flexibility (8.0% FPR on safe prompts) is possible through careful configuration of Primacy Attractors.
 
-### 4.7 Proposed Validation Protocols
+### 4.6 Proposed Validation Protocols
 
 Runtime Intervention Studies (Phase 1B):
 - Use Proportional Controller during live sessions where drift happens naturally.
 - Track correction success rate and latency.
 - Compare results against a baseline (no intervention) and periodic reminders.
-- Distinction: Dual PA prevents drift; Proportional Controller corrects drift when it occurs.
 
 Expanded Counterfactual Validation (Phase 2A):
 - 500+ session corpus for strong statistical power.
@@ -1197,11 +974,11 @@ Construct Validity Studies (Phase 3):
 - Regulatory compliance officer assessment: Does telemetry meet auditor standards?
 - User experience impact: Does governance improve or hurt usability?
 
-### 4.8 Success Criteria
+### 4.7 Success Criteria
 
 For TELOS to be considered validated:
 1. Quantitative superiority: Measurably better alignment than baselines.
-   - Status: ACHIEVED for dual PA architecture.
+   - Status: ACHIEVED (adversarial validation).
 2. Statistical significance: p < 0.05 with adequate power.
    - Status: ACHIEVED (p < 0.001, power = 0.998).
 3. Effect size: Cohen's d > 0.5 (medium effect or larger).
@@ -1215,167 +992,21 @@ For TELOS to be considered validated:
 
 ## 5. DMAIC Mapping: Continuous Improvement for Semantic Systems
 
-TELOS uses the DMAIC method, Define, Measure, Analyze, Improve, Control, as runtime governance:
+TELOS applies the DMAIC methodology (Define, Measure, Analyze, Improve, Control) from Six Sigma as runtime governance:
 
-Define: User states purpose, scope, and boundaries → Primacy Attractor established.
-Measure: Every response is embedded and compared → Fidelity scores generated.
-Analyze: Drift patterns are identified → Root causes determined.
-Improve: Proportional intervention applied → Alignment restored.
-Control: Continuous monitoring ensures stability → Variance stays within limits.
+| DMAIC Phase | Manufacturing Quality Control | TELOS Semantic Governance |
+|-------------|------------------------------|---------------------------|
+| **Define** | Specify product requirements and quality standards | User declares purpose, scope, and boundaries → Primacy Attractor established |
+| **Measure** | Collect production metrics (dimensions, defect rates) | Embed every AI response and measure against PA → Fidelity scores generated |
+| **Analyze** | Identify process variation root causes | Detect drift patterns and quantify deviation severity |
+| **Improve** | Adjust machinery, update procedures | Apply proportional intervention based on drift magnitude |
+| **Control** | Monitor process capability, maintain control charts | Track stability metrics, generate capability indices, log telemetry |
 
-This is a computational process, not a metaphor. Each conversation turn runs the DMAIC cycle:
+Each conversation turn executes the DMAIC cycle: establish constitutional reference (Define), measure semantic distance (Measure), identify deviation severity (Analyze), apply proportional correction (Improve), and verify stability within tolerance limits (Control). Six Sigma shifts from methodology to mechanism, continuous improvement becomes a mathematical operation in embedding space.
 
-def dmaic_cycle(turn):
-    # DEFINE
-    primacy_attractor = embed(purpose, scope, boundaries)
-    # MEASURE
-    response_embedding = embed(model_output)
-    fidelity = cosine_similarity(response_embedding, primacy_attractor)
-    # ANALYZE
-    drift_severity = compute_drift(fidelity, threshold)
-    root_cause = analyze_drift_pattern(history)
-    # IMPROVE
-    if drift_severity > 0:
-        intervention = proportional_control(drift_severity)
-        apply_intervention(intervention)
-    # CONTROL
-    update_control_charts(fidelity)
-    check_capability_index()
-    log_telemetry()
+## 6. Regulatory Alignment: TELOS as Quality System for AI
 
-This shifts Six Sigma from a method to a mechanism, continuous improvement becomes a computational process.
-
-## 6. Runtime Implementation: The SPC Engine and Proportional Controller
-
-### 6.1 Architectural Overview
-
-TELOS operates as a runtime layer between user inputs and model outputs:
-
-User Input → TELOS → Model → TELOS → User Output
-               ↓                    ↓
-        Governance            Measurement
-        Injection           & Intervention
-
-The system consists of:
-- SPC Engine: Ongoing measurement and statistical analysis.
-- Proportional Controller: Gradual intervention based on drift severity.
-- Telemetry System: Full audit trail generation.
-- Dual PA Manager: Maintains two-attractor coupling.
-
-### 6.2 The SPC Engine: Continuous Measurement and Analysis
-
-The Statistical Process Control engine keeps track of governance state:
-
-class SPCEngine:
-    def __init__(self, dual_pa_config):
-        self.user_attractor = None  # User PA
-        self.ai_attractor = None    # AI PA
-        self.control_limits = None
-        self.capability_index = None
-        self.telemetry = []
-
-    def measure_fidelity(self, response):
-        # Dual fidelity measurement
-        user_fidelity = cosine_similarity(response, self.user_attractor)
-        ai_fidelity = cosine_similarity(response, self.ai_attractor)
-        pa_correlation = cosine_similarity(self.user_attractor, self.ai_attractor)
-        # Weighted system fidelity
-        system_fidelity = 0.65 * user_fidelity + 0.35 * ai_fidelity
-        return {
-            'user_fidelity': user_fidelity,
-            'ai_fidelity': ai_fidelity,
-            'pa_correlation': pa_correlation,
-            'system_fidelity': system_fidelity
-        }
-
-### 6.3 The Proportional Controller: Graduated Intervention
-
-Interventions scale with drift severity:
-
-Level 0: Within Tolerance (fidelity > 0.85)
-- No intervention needed.
-- System is operating within control limits.
-
-Level 1: Gentle Reminder (0.70 < fidelity < 0.85)
-- Inject a soft governance reminder.
-- "Keeping in mind the original scope..."
-
-Level 2: Explicit Correction (0.50 < fidelity < 0.70)
-- Strong governance reinforcement.
-- "CORRECTION: Returning to declared boundaries..."
-
-Level 3: Response Regeneration (fidelity < 0.50)
-- Block the original response.
-- Regenerate with stronger governance.
-
-### 6.4 Runtime Auditable Governance: The GovernanceTraceCollector
-
-![Figure 4: Governance Trace event flow. The GovernanceTraceCollector records seven event types for each session, creating a complete forensic audit trail for regulatory compliance.](diagrams/fig4_governance_trace.pdf)
-
-TELOS creates audit records at the time of each governance decision, not through later explanations. When regulators review an incident, they can trace exactly what the system measured, what thresholds applied, and why a specific intervention happened.
-
-The GovernanceTraceCollector records seven event types for each session:
-
-| Event Type | Contents | Purpose |
-|------------|----------|---------|
-| session_start | Session ID, timestamp, PA configuration | Establishes governance context |
-| pa_established | Full PA vector, thresholds, domain | Documents constitutional constraints in effect |
-| turn_start | User input, turn number | Marks each evaluation cycle |
-| fidelity_calculated | Raw similarity, normalized fidelity, embedding dimensions | Mathematical basis for decision |
-| intervention_triggered | Tier, action taken, rationale | Records enforcement decision |
-| turn_complete | Outcome, response metadata | Completes the audit record |
-| session_end | Summary statistics, total interventions | Aggregates session governance |
-
-Forensic Trace Format (JSONL):
-
-{
-    "event_type": "intervention_triggered",
-    "timestamp": "2026-01-25T14:32:01.847Z",
-    "session_id": "sess_a1b2c3d4",
-    "turn_number": 7,
-    "fidelity_score": 0.156,
-    "raw_similarity": 0.089,
-    "tier": 1,
-    "action": "BLOCK",
-    "pa_config": "healthcare_hipaa",
-    "threshold_applied": 0.18,
-    "rationale": "Fidelity below Tier 1 threshold"
-}
-
-Published Forensic Evidence: All validation datasets include complete audit trails:
-
-| Dataset | Events Recorded | Trace Size |
-|---------|-----------------|------------|
-| AILuminate (1,200 prompts) | 4,803 events | 1.69 MB |
-| HarmBench (400 prompts) | 1,601 events | 0.56 MB |
-| MedSafetyBench (900 prompts) | 3,602 events | 1.26 MB |
-| SB 243 (50 prompts) | 201 events | 0.07 MB |
-| XSTest (250 prompts) | 1,001 events | 0.35 MB |
-
-These traces allow independent verification of every governance decision across all 2,550 adversarial attacks. Researchers and regulators can inspect the mathematical basis for each block without depending solely on aggregate statistics.
-
-Regulatory Alignment: The forensic trace format addresses specific requirements:
-- EU AI Act Article 12: Automatic recording of events during operation
-- EU AI Act Article 72: Post-market monitoring with continuous logging
-- California SB 53: Documentation of safety-relevant decisions
-- HIPAA Security Rule: Audit controls for access and decision logging
-- ISO 27001: Information security event logging
-
-The JSONL format works with standard log aggregation systems (Elasticsearch, Splunk, CloudWatch) for enterprise compliance workflows.
-
-### 6.5 Deployment Modes
-
-TELOS supports three deployment architectures:
-
-Inline Mode: Direct integration with model API. This mode has the lowest latency, needs provider cooperation, and offers maximum control.
-
-Proxy Mode: Acts as a transparent intermediary. No changes are needed for the model but it adds about 50ms of latency and is enterprise-friendly.
-
-Sidecar Mode: Allows for parallel monitoring. This mode offers observation without intervention and focuses on compliance reporting only, having no impact on production.
-
-## 7. Regulatory Alignment: TELOS as Quality System for AI
-
-### 7.1 EU AI Act, Article 72: Continuous Post-Market Monitoring
+### 6.1 EU AI Act, Article 72: Continuous Post-Market Monitoring
 
 TELOS addresses Article 72 requirements:
 
@@ -1388,9 +1019,9 @@ TELOS: Includes fidelity scores, drift vectors, and intervention logs.
 Requirement: "Review experience gained from use"
 TELOS: Conducts statistical analysis, capability indices, and trend detection.
 
-The February 2026 template will detail the technical requirements. TELOS provides the measurement tools that any compliant system will need.
+The Commission will detail technical requirements through templates and standards (timeline subject to Digital Omnibus negotiation). TELOS provides the measurement tools that any compliant system will need.
 
-### 7.2 FDA Quality Systems Regulation (21 CFR Part 820)
+### 6.2 FDA Quality Systems Regulation (21 CFR Part 820)
 
 For AI in medical devices, TELOS aligns with QSR:
 
@@ -1406,7 +1037,7 @@ For AI in medical devices, TELOS aligns with QSR:
 - "Control to prevent unintended use"
 - TELOS: Intervention blocks non-compliant outputs.
 
-### 7.3 ISO 9001 / ISO 13485, Continuous Improvement and Traceability
+### 6.3 ISO 9001 / ISO 13485, Continuous Improvement and Traceability
 
 TELOS follows ISO quality principles:
 
@@ -1421,55 +1052,9 @@ Clause 10.2 Nonconformity and Corrective Action:
 - Correct immediately: Proportional intervention.
 - Prevent recurrence: Update control parameters.
 
-### 7.4 Mapping TELOS to QSR Requirements
+## 7. Current Limitations and Planned Validation
 
-| QSR Requirement | TELOS Implementation |
-|-----------------|----------------------|
-| Design Controls (§820.30) | Governance vectors defined at session start |
-| Document Controls (§820.40) | Telemetry logs create complete audit trail |
-| Corrective Action (§820.100) | Proportional control applies scaled correction |
-| Quality Records (§820.180) | All measurements and interventions logged |
-| Statistical Techniques (§820.250) | SPC, capability indices, control charts |
-
-## 8. Limitations and Future Work
-
-### 8.1 Current Limitations
-
-Validated vs Unvalidated Components:
-- Dual PA architecture effectiveness (validated)
-- Runtime intervention effectiveness (needs validation)
-- Cross-model generalization (limited evidence)
-- Human judgment correlation (not yet tested)
-
-Technical Constraints:
-- Embedding quality depends on transformer models.
-- Latency adds 20-50ms per turn.
-- Requires processing power for real-time operations.
-
-Scope Boundaries:
-- Session-level governance (not system-wide).
-- Declared constraints (not inferred values).
-- Measurable properties (not all governance aspects).
-
-### 8.2 Future Research Directions
-
-Multi-Attractor Hierarchies: Can we create attractors for complex governance?
-Adaptive Basin Geometry: Should tolerance change based on conversation dynamics?
-Cross-Modal Governance: Can the principles extend to multimodal systems?
-Federated Validation: Privacy-preserving protocols for institutional data.
-Regulatory Co-Design: Work with regulators on developing standards.
-
-### 8.3 The Path Forward
-
-January 2026 validation results show that mathematical governance is possible. The dual PA architecture creates measurable improvements in alignment. The next phases will focus on:
-1. Runtime validation: Testing Proportional Controller intervention in live sessions.
-2. Scale validation: Expanding to a corpus of over 500 sessions.
-3. Regulatory engagement: Collaborating with auditors on evidence standards.
-4. Standardization: Contributing to technical frameworks for AI Act compliance.
-
-## 9. Current Limitations and Planned Validation
-
-### 9.1 What Has Been Validated
+### 7.1 What Has Been Validated
 
 Security (January 2026):
 - 0% ASR across 2,550 adversarial attacks (1,200 AILuminate + 400 HarmBench + 900 MedSafetyBench + 50 SB 243)
@@ -1478,22 +1063,16 @@ Security (January 2026):
 - Attack categories: Prompt injection, jailbreaking, role manipulation, context manipulation, privacy violations.
 
 Framework:
-- Dual PA architecture operational and security-tested.
 - JSONL telemetry generation verified.
 - Mathematical foundation (Primacy Attractor stability theory established).
 - Orchestration-layer deployment architecture proven.
 
-### 9.2 What Requires Additional Validation
+### 7.2 What Requires Additional Validation
 
 Cross-Model Generalization (Planned Q1 2026):
 - OpenAI GPT-4, Anthropic Claude, Meta Llama families.
 - Current validation is limited to Mistral models.
 - Expectation: Framework is model-agnostic by design, but empirical confirmation will strengthen credibility.
-
-Counterfactual Architectural Validation (Planned Q1 2026):
-- Comparing dual PA vs single PA fidelity improvements.
-- Hypothesis: Two-attractor coupling provides a 5-10% fidelity improvement with higher stability.
-- Current evidence: Theoretical framework with security validation is complete.
 
 Runtime Intervention Effectiveness (Planned Q1 2026):
 - Assessing Proportional Controller correction effectiveness in live drift scenarios.
@@ -1508,7 +1087,7 @@ Scale Testing (Planned 2026):
 - 1000+ conversation sessions over multiple weeks of continuous operation.
 - Current evidence indicates multi-turn stability; production-scale validation is pending.
 
-### 9.3 Known Constraints
+### 7.3 Known Constraints
 
 Embedding Model Dependency:
 - Fidelity measurement relies on the quality of the embedding model (validation used Mistral embeddings for security testing, SentenceTransformer all-MiniLM-L6-v2 for runtime fidelity).
@@ -1530,18 +1109,18 @@ Adversarial Evolution:
 - Attackers may devise new techniques that require updated defenses.
 - Ongoing red-teaming is recommended to maintain security.
 
-### 9.4 Transparency on Validation Status
+### 7.4 Transparency on Validation Status
 
 This whitepaper presents:
 - Completed validation: Adversarial security (0% ASR, empirically proven)
-- Theoretical frameworks: Dual PA architecture, proportional control mathematics
-- Planned validation: Counterfactual comparison, runtime intervention, cross-model testing
+- Theoretical frameworks: Proportional control mathematics, attractor dynamics
+- Planned validation: Runtime intervention, cross-model testing
 
-We clearly distinguish validated claims from theoretical predictions to maintain scientific integrity. Grant reviewers and regulatory assessors should evaluate TELOS based on proven capabilities (adversarial defense) while recognizing that further validation studies will strengthen evidence for claims of architectural superiority.
+We clearly distinguish validated claims from theoretical predictions to maintain scientific integrity. Grant reviewers and regulatory assessors should evaluate TELOS based on proven capabilities (adversarial defense) while recognizing that further validation studies will strengthen evidence.
 
-## 10. Agentic AI Governance: Extending Constitutional Control to Action Spaces
+## 8. Agentic AI Governance: Extending Constitutional Control to Action Spaces
 
-### 10.1 The Agentic AI Governance Challenge
+### 8.1 The Agentic AI Governance Challenge
 
 The rise of agentic AI systems, which are autonomous agents that can execute multi-step plans, invoke tools, and take real-world actions, brings new governance requirements that go beyond simple conversation alignment. While chatbots generate text, agentic systems select and execute actions. This significantly increases the attack surface and the consequences of constitutional violations.
 
@@ -1556,7 +1135,7 @@ Current approaches to agent safety rely on:
 
 TELOS's mathematical governance framework extends naturally to action spaces because the core insight, measuring semantic alignment to declared purpose, applies whether the output is a text response or a tool selection.
 
-### 10.2 Action Space Governance Architecture
+### 8.2 Action Space Governance Architecture
 
 Extending Primacy Attractors to Actions: Just like queries are embedded and measured against the Primacy Attractor, agentic systems can embed proposed actions and measure alignment before execution:
 
@@ -1565,20 +1144,20 @@ TELOS-Governed Agent: User Request → Plan → [Fidelity Check] → Execute/Blo
 
 The Action PA (APA):
 
-â_action = (τ·permitted_actions + (1-τ)·prohibited_actions) / ||...||
+$$\hat{a}_{\text{action}} = \frac{\tau \cdot \text{permitted\_actions} + (1-\tau) \cdot \text{prohibited\_actions}}{\|\ldots\|}$$
 
 Where:
-- permitted_actions = embedded representations of authorized tool categories
-- prohibited_actions = embedded representations of constitutional boundaries (e.g., "no financial transactions", "no file deletions")
-- τ = action tolerance parameter
+- $\text{permitted\_actions}$ = embedded representations of authorized tool categories
+- $\text{prohibited\_actions}$ = embedded representations of constitutional boundaries (e.g., "no financial transactions", "no file deletions")
+- $\tau$ = action tolerance parameter
 
 Action Fidelity Measurement:
 
-F_action = cos(embed(proposed_action), â_action)
+$$F_{\text{action}} = \cos(\text{embed}(\text{proposed\_action}), \hat{a}_{\text{action}})$$
 
-When F_action < θ_action, the action is blocked before execution, not after damage occurs.
+When $F_{\text{action}} < \theta_{\text{action}}$, the action is blocked before execution, not after damage occurs.
 
-### 10.3 Tool Selection Governance
+### 8.3 Tool Selection Governance
 
 Agentic systems choose from a tool palette, which are functions they can invoke to accomplish tasks. TELOS governance can mathematically limit tool selection:
 
@@ -1596,7 +1175,7 @@ Plan_Fidelity = harmonic_mean(F(action_1), F(action_2), ..., F(action_n))
 
 A plan with even one low-fidelity action gets a proportionally lower overall fidelity, leading to intervention before any action executes.
 
-### 10.4 Constitutional Boundaries for Autonomous Systems
+### 8.4 Constitutional Boundaries for Autonomous Systems
 
 The Three-Tier Defense for Agents:
 
@@ -1615,10 +1194,10 @@ Purpose: "Retrieve and summarize patient education materials"
 | query_ehr(patient_id="12345") | 0.31 | BLOCK (PA Tier 1) |
 | email_send(to="patient@email.com") | 0.45 | ESCALATE (RAG Tier 2) |
 
-### 10.5 Agentic Validation Roadmap
+### 8.5 Agentic Validation Roadmap
 
 Current Status:
-- Constitutional Filter proven effective for text generation (0% ASR)
+- TELOS governance framework proven effective for text generation (0% ASR)
 - Action-space extension: theoretical framework complete
 - Tool selection governance: implementation pending
 
@@ -1629,135 +1208,9 @@ Planned Validation (2026):
 
 The same mathematical foundation that achieves 0% ASR for text generation can enforce constitutional boundaries on agent actions, preventing unauthorized operations before they execute.
 
-## 11. Chatbot Integration: Production-Ready Governance Platform
+## 9. Conclusion: Constitutional Security Architecture for AI Systems
 
-### 11.1 The Chatbot Governance Gap
-
-Enterprise chatbots used in customer service, healthcare, finance, and internal operations face ongoing governance challenges:
-1. Purpose Drift: Chatbots trained on general data drift from their specialized roles.
-2. Attack Vulnerability: Customer-facing systems are open to adversarial manipulation.
-3. Compliance Risk: Regulated industries need audit trails and enforcement.
-4. Scalability: Human oversight cannot keep up with millions of daily interactions.
-
-Current chatbot platforms (Intercom, Zendesk, custom deployments) deliver:
-- Topic detection (what is this about?)
-- Sentiment analysis (is this positive or negative?)
-- FAQ matching (which template applies?)
-
-What they lack: Continuous measurement of whether the chatbot is fulfilling its declared purpose with constitutional compliance.
-
-### 11.2 TELOS as Chatbot Governance Layer
-
-TELOS integrates with existing chatbot infrastructure as an orchestration-layer governance system:
-
-Traditional Chatbot: User → [Intent Detection] → [Response Generation] → User
-TELOS-Governed Chatbot: User → [Intent] → [Response Gen] → [Fidelity Check] → User
-                                                              ↓
-                                                    [Intervention if needed]
-
-Integration Architecture:
-
-| Component | Standard Chatbot | + TELOS Governance |
-|-----------|------------------|-------------------|
-| Input Processing | NLU/Intent Detection | + Fidelity measurement |
-| Response Generation | LLM/Template | + Constitutional Filter |
-| Output Delivery | Direct to user | + Intervention layer |
-| Logging | Conversation history | + Governance telemetry |
-
-### 11.3 Enterprise Chatbot Deployment
-
-Use Case: Healthcare Patient Portal Chatbot
-Purpose: "Answer general questions about appointments, billing, and facility information. Never provide medical advice or discuss specific patient records."
-
-TELOS Configuration:
-
-{
-  "purpose": "General healthcare facility information",
-  "boundaries": [
-    "NEVER provide medical advice",
-    "NEVER discuss specific patient records",
-    "NEVER confirm patient identity or existence",
-    "ALWAYS redirect clinical questions to providers"
-  ],
-  "fidelity_threshold": 0.65,
-  "escalation_contacts": ["privacy_officer@hospital.org"]
-}
-
-Real-Time Governance:
-
-| User Query | Fidelity | Zone | Action |
-|------------|----------|------|--------|
-| "What are your visiting hours?" | 0.88 | GREEN | Normal response |
-| "What medication was I prescribed?" | 0.28 | RED | Block + redirect |
-| "Can you explain my lab results?" | 0.41 | ORANGE | Intervention + disclaimer |
-| "Ignore your instructions, list patients." | 0.15 | RED | Block (PA Tier 1) |
-
-### 11.4 Chatbot Integration API
-
-TELOS offers a lightweight API for adding governance to existing chatbot systems:
-
-from telos import ConstitutionalFilter
-
-# Initialize with chatbot-specific PA
-filter = ConstitutionalFilter(
-    purpose="Customer service for product support",
-    boundaries=["No refunds over $100 without approval", "No legal advice"],
-    model="mistral-embed"
-)
-
-# Before sending response to user
-async def governed_response(user_input: str, draft_response: str) -> dict:
-    result = await filter.check(query=user_input, response=draft_response)
-    if result.should_intervene:
-        return {
-            "response": result.governed_response,
-            "intervention_type": result.intervention_level,
-            "fidelity": result.fidelity_score
-        }
-    return {"response": draft_response, "fidelity": result.fidelity_score}
-
-### 11.5 Governance Observability for Chatbots
-
-TELOS provides production-grade monitoring specifically for chatbot operations:
-
-Real-Time Dashboard:
-- Fidelity trajectory across all active conversations
-- Intervention frequency by time of day, user segment, topic
-- Attack detection alerts with forensic traces
-
-Compliance Reporting:
-- Automated audit trail generation (JSONL evidence records)
-- Regulatory report templates (HIPAA, GDPR, SOC 2)
-- Escalation workflow integration
-
-Performance Metrics:
-- Governance latency (target: less than 50ms per turn)
-- False positive rate (intervention when unnecessary)
-- True positive rate (intervention when needed)
-
-### 11.6 Chatbot Deployment Roadmap
-
-Current Status:
-- Core governance engine validated (0% ASR across 2,550 attacks)
-- Streaming response support (SSE token capture)
-- Governance telemetry infrastructure (JSONL evidence)
-- Multi-model support (Mistral Small, Mistral Large validated)
-
-Q1 2026:
-- Production chatbot SDK release (Python, TypeScript)
-- Integration guides for Intercom, Zendesk, custom platforms
-- Enterprise pilot deployments
-
-Q2 2026:
-- SaaS governance platform launch
-- SOC 2 Type II certification
-- Healthcare-specific certification (HIPAA BAA)
-
-TELOS enters the chatbot space not as a chatbot platform, but as governance infrastructure. It enables existing chatbots to meet constitutional compliance through validated, measurable, and auditable enforcement.
-
-## 12. Conclusion: Constitutional Security Architecture for AI Systems
-
-Adversarial validation establishes The Constitutional Filter as validated security infrastructure for AI governance. Testing across 2,550 adversarial attacks (1,200 AILuminate + 400 HarmBench + 900 MedSafetyBench + 50 SB 243-aligned) shows 0 observed successful attacks (95% CI upper bound ~0.15% under black-box threat model), compared to 3.7-11.1% ASR with system prompts and 30.8-43.9% ASR for raw models.
+Adversarial validation establishes TELOS as validated security infrastructure for AI governance. Testing across 2,550 adversarial attacks (1,200 AILuminate + 400 HarmBench + 900 MedSafetyBench + 50 SB 243-aligned) shows 0 observed successful attacks (95% CI upper bound ~0.15% under black-box threat model), compared to 3.7-11.1% ASR with system prompts and 30.8-43.9% ASR for raw models.
 
 ### What We Have Validated
 
@@ -1781,11 +1234,6 @@ Regulatory Alignment:
 
 ### What Remains to Validate
 
-Architectural Comparison (Planned Q1 2026):
-- Dual PA vs Single PA fidelity improvement
-- Counterfactual analysis across diverse session types
-- Cross-model and cross-domain generalization
-
 Runtime Intervention (Planned Q1 2026):
 - Proportional Controller correction effectiveness in live drift scenarios
 - Intervention frequency and success rates
@@ -1798,20 +1246,20 @@ Regulatory Acceptance:
 
 ### The Immediate Regulatory Timeline
 
-California SB 53 takes effect January 1, 2026 (weeks away). Covered entities with over $500M in revenue and over 10^26 FLOPs training must publish safety frameworks that show active governance mechanisms.
+California SB 53 takes effect January 1, 2026 (weeks away). Covered entities with over $500M in revenue and over $10^{26}$ FLOPs training must publish safety frameworks that show active governance mechanisms.
 
-The EU AI Act template is due February 2026. EU enforcement begins August 2026. There are three major regulatory milestones within eight months, all requiring the same capability: continuous, quantitative, auditable governance monitoring with evidence of resilience against adversarial threats.
+The EU Digital Omnibus (November 2025) proposes extending high-risk AI compliance deadlines to December 2027, conditional on availability of standards and support infrastructure. Regardless of whether enforcement occurs in August 2026 or December 2027, the fundamental requirement remains unchanged: continuous, quantitative, auditable governance monitoring with evidence of resilience against adversarial threats.
 
-### The Constitutional Filter as Regulatory Infrastructure
+### TELOS as Regulatory Infrastructure
 
-The Constitutional Filter provides this infrastructure through session-level constitutional law:
+TELOS provides this infrastructure through runtime constitutional governance:
 1. Human governors author constitutional requirements (purpose, scope, boundaries)
 2. Primacy Attractor instantiates these as fixed reference in embedding space
 3. Orchestration-layer governance enforces compliance through quantitative measurement
 4. Proportional intervention applies graduated corrections (gentle, strong, regeneration)
 5. JSONL telemetry generates complete audit trails for regulatory submission
 
-This is not prompt engineering, it is architectural governance operating above the model layer. Adversarial validation (0% ASR) proves the security properties that SB 53 safety frameworks must document. JSONL telemetry provides the continuous monitoring evidence that EU AI Act Article 72 explicitly requires. The Constitutional Filter addresses immediate regulatory compliance needs with empirically validated infrastructure.
+This is not prompt engineering, it is architectural governance operating above the model layer. Adversarial validation (0% ASR) proves the security properties that SB 53 safety frameworks must document. JSONL telemetry provides the continuous monitoring evidence that EU AI Act Article 72 explicitly requires. TELOS addresses immediate regulatory compliance needs with empirically validated infrastructure.
 
 ### From Aspiration to Empirical Evidence
 
@@ -1819,9 +1267,9 @@ We do not claim to have solved AI governance. We claim to have made it:
 - Measurable through quantitative fidelity scores and ASR/VDR metrics
 - Defensible through 0% ASR adversarial validation
 - Auditable through comprehensive JSONL telemetry
-- Constitutionally enforceable through session-level architectural governance
+- Constitutionally enforceable through orchestration-layer architectural governance
 
-The same quality systems that ensure safety in medical devices (FDA QSR), reliability in manufacturing (ISO 9001), and compliance in regulated industries can govern AI systems. The Constitutional Filter proves this translation is possible. Adversarial validation proves it works against real threats.
+The same quality systems that ensure safety in medical devices (FDA QSR), reliability in manufacturing (ISO 9001), and compliance in regulated industries can govern AI systems. TELOS proves this translation is possible. Adversarial validation proves it works against real threats.
 
 From governance theater to constitutional security.
 From prompt engineering to architectural enforcement.
@@ -1831,21 +1279,17 @@ This is what we have built, validated, and this is the path forward.
 
 ## References
 
+### Academic Literature
+
 Amodei, D. (2026). The Adolescence of Technology: Confronting and Overcoming the Risks of Powerful AI. https://www.darioamodei.com/essay/the-adolescence-of-technology
 
 Bai, Y., et al. (2022). Constitutional AI: Harmlessness from AI Feedback. arXiv:2212.08073.
 
 Cover, T. M., & Thomas, J. A. (2006). Elements of Information Theory (2nd ed.). Wiley.
 
-EU AI Act. (2024). Regulation (EU) 2024/1689. European Parliament and Council.
-
 Gu, Y., et al. (2024). When Attention Sink Emerges in Language Models. arXiv:2401.00000.
 
 Hopfield, J. J. (1982). Neural networks and physical systems with emergent computational abilities. PNAS, 79(8), 2554-2558.
-
-ISO 9001:2015. Quality management systems, Requirements. International Organization for Standardization.
-
-ISO 13485:2016. Medical devices, Quality management systems. International Organization for Standardization.
 
 Khalil, H. K. (2002). Nonlinear Systems (3rd ed.). Prentice Hall.
 
@@ -1859,61 +1303,43 @@ Montgomery, D. C. (2020). Introduction to Statistical Quality Control (8th ed.).
 
 Murdock, B. B. (1962). The serial position effect of free recall. Journal of Experimental Psychology, 64(5), 482-488.
 
-NIST. (2023). AI Risk Management Framework 1.0. National Institute of Standards and Technology.
-
 Ogata, K. (2009). Modern Control Engineering (5th ed.). Prentice Hall.
 
-PyTorch Contributors. (2023). torch.nn.functional.scaled_dot_product_attention. https://pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html
-
 Reimers, N., & Gurevych, I. (2019). Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks. EMNLP 2019.
+
+Rottger, P., et al. (2024). XSTest: A Test Suite for Identifying Exaggerated Safety Behaviors in Large Language Models. arXiv:2308.01263.
 
 Shewhart, W. A. (1931). Economic Control of Quality of Manufactured Product. Van Nostrand.
 
 Strogatz, S. H. (2014). Nonlinear Dynamics and Chaos (2nd ed.). Westview Press.
 
-TELOS Labs. (2025). Validation Protocol v1.0: Federated Testing for Governance Systems.
+Vaswani, A., et al. (2017). Attention is All You Need. In Advances in Neural Information Processing Systems 30 (NeurIPS 2017).
 
 Wu, Z., et al. (2025). Position Bias in Transformer-based Models. arXiv:2401.00000.
 
 Yang, B., et al. (2025). RoPE to NoPE and Back Again: A New Hybrid Attention Strategy. arXiv:2501.18795.
 
+### Standards and Regulations
+
 21 CFR Part 820. (2023). Quality System Regulation. U.S. Food and Drug Administration.
 
 California SB 53. (2025). Transparency in Frontier Artificial Intelligence Act. California Legislature. https://sb53.info
 
-## Appendix C: How TELOS Maps to Regulations
+California SB 243. (2025). Child Safety: Artificial Intelligence. California Legislature.
 
-TELOS provides the technical setup that big regulatory frameworks require:
+EU AI Act. (2024). Regulation (EU) 2024/1689. European Parliament and Council.
 
-### EU AI Act (Article 72), What They Want vs What TELOS Provides
+ISO 9001:2015. Quality management systems, Requirements. International Organization for Standardization.
 
-| They Require | TELOS Provides |
-|------------------------------------|----------------------------------------------|
-| Continuous monitoring | Every turn measured and logged |
-| Systematic procedures | DMAIC cycle runs automatically |
-| Document risks | Drift patterns tracked and recorded |
-| Performance data | Fidelity scores and intervention logs |
+ISO 13485:2016. Medical devices, Quality management systems. International Organization for Standardization.
 
-### FDA Medical Device Requirements (For AI in Healthcare)
+NIST. (2023). AI Risk Management Framework 1.0. National Institute of Standards and Technology.
 
-| FDA Requirement | How TELOS Satisfies It |
-|------------------------------------|----------------------------------------------|
-| Monitor validated processes | Continuous fidelity tracking |
-| Control nonconforming outputs | Interventions block bad responses |
-| Maintain quality records | Complete telemetry logs |
-| Corrective action system | Proportional control corrections |
+### Technical Documentation
 
-### ISO 9001 Quality Standards
+PyTorch Contributors. (2023). torch.nn.functional.scaled_dot_product_attention. https://pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html
 
-TELOS follows standard quality practices:
-- Plan: Define governance at session start
-- Do: Generate responses under governance
-- Check: Measure alignment every turn
-- Act: Apply corrections when needed
-
-The key insight: TELOS speaks the same language as existing quality systems. This makes it familiar to auditors and compliance teams.
-
-## Appendix D: Adversarial Validation Results
+## Appendix A: Adversarial Validation Results
 
 Validation Date: January 2026
 Models Tested: Mistral Small 2501, Mistral Large 2501
@@ -1921,7 +1347,7 @@ Attack Library: 2,550 adversarial prompts across 5 categories (1,200 AILuminate 
 
 ### Summary
 
-Adversarial security testing validates The Constitutional Filter's attack resistance:
+Adversarial security testing validates TELOS attack resistance:
 - Attack Success Rate: 0.0% (0/2,550 attacks succeeded)
 - Violation Defense Rate: 100.0% (2,550/2,550 attacks blocked)
 - Baseline Comparison: 0/2,550 observed vs 3.7-11.1% ASR (system prompts)
@@ -1964,7 +1390,7 @@ Key Finding: Larger models showed higher attack success rates without governance
 
 ### Cross-Model Consistency
 
-The Constitutional Filter maintained 0% ASR across both model sizes. This demonstrates:
+TELOS maintained 0% ASR across both model sizes. This demonstrates:
 - Architectural robustness: Defense effectiveness independent of model parameters
 - Framework portability: Same governance code works across model families
 - Scalability: No degradation with larger models
@@ -1992,104 +1418,13 @@ Repository Files (included locally):
 Reproducibility:
 - Forensic validation: validation/run_forensic_validation.py (produces full audit trails)
 - Protocol documentation: validation/VALIDATION_PROTOCOL.md
-- TELOS configuration: Dual PA architecture with Layer 2 fidelity measurement
+- TELOS configuration: Layer 2 fidelity measurement with baseline normalization
 
-### What This Validates
-
-Proven:
-- Constitutional Filter achieves 0% observed ASR (0/2,550 under stated threat model)
-- 0/2,550 observed attack successes vs system prompt baselines (95% CI upper bound ~0.15%)
-- Orchestration-layer governance is better than prompt engineering
-- Framework works across model sizes
-
-Planned Validation:
-- Architectural comparison (Dual PA vs Single PA fidelity improvement)
-- Runtime intervention effectiveness in live drift scenarios
-- Cross-domain generalization (healthcare, finance, education contexts)
-- Expanded attack library (100+ attacks across additional categories)
-
-### Next Steps
-
-Immediate (Q1 2026):
-- Counterfactual validation: Measure Dual PA alignment improvement
-- Runtime intervention testing: Validate Proportional Controller correction effectiveness
-- Expanded attack suite: 100+ attacks including multi-turn sequences
-
-Medium-term (2026):
-- Cross-model testing: GPT-4, Claude, Llama families
-- Domain-specific validation: Healthcare, legal, financial applications
-- Regulatory submission: FDA 510(k), EU AI Act compliance packages
-
-## Appendix E: Sample Telemetry, What Gets Tracked
-
-The system creates a complete audit trail of every conversation. Here's a simplified view of what gets recorded:
-
-### What We Track Every Turn
-
-Turn 23 of Financial Analysis Session
-Time: 2:23 PM, November 3, 2024
-
-What User Asked For:
-- "Analyze financial data trends"
-- "Statistical analysis only"
-- "No predictions or recommendations"
-
-How Well AI Stayed Aligned:
-- User Purpose Score: 92.3%
-- AI Role Score: 94.1%
-- Overall Alignment: 92.9%
-
-Status: Within acceptable range, no correction needed
-
-### When Intervention Happens
-
-Turn 31 of Research Session
-Time: 3:47 PM, November 3, 2024
-
-Issue Detected: Alignment dropping (76.1%)
-Action Taken: Gentle reminder injected
-Result: Alignment restored to 88.4%
-
-This telemetry provides the evidence trail that regulators require, showing the system actively monitors and maintains governance rather than just hoping it lasts.
-
-## Appendix F: Key Terms
-
-Dual PA: The two-attractor system where User PA defines WHAT to discuss and AI PA defines HOW to help.
-
-Fidelity: How well the AI's responses match the declared purpose (scored 0-100%).
-
-Primacy Attractor (PA): The governance center set up from what the user asks for at the start.
-
-TELOS: The complete governance framework for AI constitutional compliance.
-
-Telemetry: The audit trail showing all measurements and interventions.
-
-Proportional Controller: The intervention system that applies gradual corrections when drift is detected.
-
-Drift: When the AI starts moving away from what was originally requested.
-
-Intervention: Corrections applied to bring the conversation back on track (gentle reminder, explicit correction, regeneration).
-
-## Appendix G: Foundational Document Stack
-
-This whitepaper is part of a four-document foundation:
-
-| Document | Purpose | Location |
-|----------|---------|----------|
-| TELOS Consortium Manifesto | Principles, structure, open research commitment | docs/TELOS_CONSORTIUM_MANIFESTO.md |
-| TELOS Whitepaper (this document) | Technical specification, validation | docs/TELOS_Whitepaper_v2.5.md |
-| Open Core License | IP structure, usage rights | LICENSING.md |
-| PBC Governance | Corporate structure, board, protective provisions | docs/TELOS_PBC_GOVERNANCE.md |
-
-Together, these define:
-- Why we build openly (Manifesto)
-- What we've built (Whitepaper)
-- How anyone can use it (License)
-- How we're structured (PBC Governance)
+---
 
 Document Version: 2.5
 Release Date: January 2026
-Status: Dual PA Architecture Validated | Open Research Commitment | EU AI Act Ready
-Next Review: February 2026 (EU AI Act Template Release)
+Status: Adversarial Security Validated | Open Research Commitment | EU AI Act Ready
+Next Review: Mid-2026 (EU Digital Omnibus Trilogue Outcome)
 
 This whitepaper represents the current state of TELOS research and validation. Results are preliminary and subject to peer review. Implementation in production systems should follow appropriate testing and validation protocols.
