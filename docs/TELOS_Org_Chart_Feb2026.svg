@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 950 550">
+  <style>
+    .title { font-family: Arial, sans-serif; font-size: 28px; font-weight: bold; fill: #2c3e50; }
+    .subtitle { font-family: Arial, sans-serif; font-size: 16px; fill: #7f8c8d; }
+    .board-title { font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; fill: white; }
+    .board-text { font-family: Arial, sans-serif; font-size: 13px; fill: white; }
+    .board-subtext { font-family: Arial, sans-serif; font-size: 11px; fill: #bdc3c7; }
+    .name { font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; fill: #2c3e50; }
+    .role { font-family: Arial, sans-serif; font-size: 13px; font-weight: bold; fill: #34495e; }
+    .duty { font-family: Arial, sans-serif; font-size: 11px; fill: #7f8c8d; }
+    .footer { font-family: Arial, sans-serif; font-size: 12px; fill: #95a5a6; }
+    .advisor-note { font-family: Arial, sans-serif; font-size: 10px; fill: #7f8c8d; font-style: italic; }
+  </style>
+
+  <!-- Background -->
+  <rect width="950" height="550" fill="white"/>
+
+  <!-- Title -->
+  <text x="475" y="45" text-anchor="middle" class="title">TELOS AI Labs Inc.</text>
+  <text x="475" y="70" text-anchor="middle" class="subtitle">Organizational Chart</text>
+
+  <!-- Board of Directors Box -->
+  <rect x="275" y="100" width="400" height="90" rx="8" fill="#2c3e50"/>
+  <text x="475" y="130" text-anchor="middle" class="board-title">BOARD OF DIRECTORS</text>
+  <text x="475" y="155" text-anchor="middle" class="board-text">Jeffrey Brunner (Director) • Jennifer Brunner (Director)</text>
+  <text x="475" y="175" text-anchor="middle" class="board-subtext">Joint Majority Owners</text>
+
+  <!-- Connector lines from Board -->
+  <line x1="475" y1="190" x2="475" y2="220" stroke="#2c3e50" stroke-width="2"/>
+  <line x1="160" y1="220" x2="790" y2="220" stroke="#2c3e50" stroke-width="2"/>
+
+  <!-- Vertical lines to each box -->
+  <line x1="160" y1="220" x2="160" y2="250" stroke="#2c3e50" stroke-width="2"/>
+  <line x1="475" y1="220" x2="475" y2="250" stroke="#2c3e50" stroke-width="2"/>
+  <line x1="790" y1="220" x2="790" y2="250" stroke="#2c3e50" stroke-width="2"/>
+
+  <!-- Arrows -->
+  <polygon points="160,250 155,240 165,240" fill="#2c3e50"/>
+  <polygon points="475,250 470,240 480,240" fill="#2c3e50"/>
+  <polygon points="790,250 785,240 795,240" fill="#2c3e50"/>
+
+  <!-- Jeffrey Brunner Box -->
+  <rect x="20" y="255" width="280" height="170" rx="8" fill="white" stroke="#2c3e50" stroke-width="2"/>
+  <rect x="20" y="255" width="280" height="45" rx="8" fill="#2c3e50"/>
+  <rect x="20" y="292" width="280" height="8" fill="#2c3e50"/>
+  <text x="160" y="283" text-anchor="middle" class="name" fill="white">Jeffrey Brunner</text>
+  <text x="160" y="325" text-anchor="middle" class="role">Chief Executive Officer</text>
+  <text x="160" y="355" text-anchor="middle" class="duty">• Technical Development</text>
+  <text x="160" y="375" text-anchor="middle" class="duty">• Validation Research</text>
+  <text x="160" y="395" text-anchor="middle" class="duty">• Regulatory Engagement</text>
+
+  <!-- Joel Thompson Box (Technical Advisor) -->
+  <rect x="335" y="255" width="280" height="170" rx="8" fill="white" stroke="#2c3e50" stroke-width="2"/>
+  <rect x="335" y="255" width="280" height="45" rx="8" fill="#2c3e50"/>
+  <rect x="335" y="292" width="280" height="8" fill="#2c3e50"/>
+  <text x="475" y="283" text-anchor="middle" class="name" fill="white">Joel Thompson</text>
+  <text x="475" y="325" text-anchor="middle" class="role">Technical Advisor</text>
+  <text x="475" y="355" text-anchor="middle" class="duty">• Architecture Guidance</text>
+  <text x="475" y="375" text-anchor="middle" class="duty">• Technical Review</text>
+  <text x="475" y="395" text-anchor="middle" class="duty">• Development Strategy</text>
+  <text x="475" y="415" text-anchor="middle" class="advisor-note">(Secured February 1, 2026)</text>
+
+  <!-- Jennifer Brunner Box -->
+  <rect x="650" y="255" width="280" height="170" rx="8" fill="white" stroke="#2c3e50" stroke-width="2"/>
+  <rect x="650" y="255" width="280" height="45" rx="8" fill="#2c3e50"/>
+  <rect x="650" y="292" width="280" height="8" fill="#2c3e50"/>
+  <text x="790" y="283" text-anchor="middle" class="name" fill="white">Jennifer Brunner</text>
+  <text x="790" y="325" text-anchor="middle" class="role">Operations &amp; Partnerships</text>
+  <text x="790" y="355" text-anchor="middle" class="duty">• Operations Management</text>
+  <text x="790" y="375" text-anchor="middle" class="duty">• Partnership Development</text>
+  <text x="790" y="395" text-anchor="middle" class="duty">• Business Administration</text>
+
+  <!-- Footer -->
+  <text x="475" y="480" text-anchor="middle" class="footer">Delaware C-Corporation • No Additional Employees</text>
+  <text x="475" y="500" text-anchor="middle" class="footer">February 2026</text>
+</svg>
