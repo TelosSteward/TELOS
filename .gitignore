@@ -127,3 +127,11 @@ docs/TELOS_Provider_Architecture.pdf
 *.aux
 *.out
 docs/*.log
+
+# Working drafts (local reference copies, not for repo)
+docs/TELOS_Academic_Paper_REVISED.*
+docs/TELOS_Academic_Paper_Distribution.*
+docs/TELOS_Paper_Review_Report.md
+docs/REVIEW_*.md
+docs/PAPER_TRANSFORMATION_SUMMARY.txt
+docs/DOCUMENT_INVENTORY.md
