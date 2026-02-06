@@ -67,7 +67,8 @@ TELOS produces audit records at the moment of each governance decision. When reg
 | Document | Description |
 |----------|-------------|
 | **[Academic Paper (PDF)](docs/TELOS_Academic_Paper.pdf)** | Peer-review ready paper with full methodology and results |
-| **[Technical Whitepaper v2.5](docs/TELOS_Whitepaper_v2.5.md)** | Complete mathematical specification and validation details |
+| **[Whitepaper v2.5 (PDF)](docs/TELOS_Whitepaper_v2.5.pdf)** | Complete mathematical specification and validation details |
+| **[Technical Brief (PDF)](docs/TELOS_Technical_Brief.pdf)** | Concise 3-page summary with validation results and citations |
 | **[Reproduction Guide](docs/REPRODUCTION_GUIDE.md)** | Step-by-step instructions to verify all results |
 
 ---
