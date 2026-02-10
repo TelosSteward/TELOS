@@ -89,13 +89,15 @@ def get_demo_welcome_message():
 
 I'll walk you through how TELOS keeps me aligned with your goals through real-time governance -- ensuring I stay accountable to what you actually want, not where the conversation might drift.
 
-What you'll experience is TELOS in action. You'll see how it measures alignment, detects drift, and intervenes when needed.
+There are three ways to explore. The **DEMO** walks through conversational governance -- how TELOS measures alignment, detects drift, and intervenes when needed. The **AGENTIC** tab shows where this is heading -- governance for AI agents that don't just talk, but act. And **BETA** lets you experience live TELOS governance yourself.
 
-Click **Start Demo** to establish your purpose and see governance in action.
+There's no required path. Start wherever draws your interest, move between them freely, skip what doesn't serve you. This is your time -- use it however feels most useful. I'll be here throughout, wherever you choose to begin.
+
+Click **Start Demo** below, or select your starting point from the tabs above.
 
 ---
 
-**TELOS AI Labs Inc.** | [GitHub](https://github.com/TelosSteward/TELOS) | [JB@telos-labs.ai](mailto:JB@telos-labs.ai) | [Stay informed as TELOS develops](https://forms.gle/39QcdaakdSGxDR6F9)"""
+**TELOS AI Labs Inc.** | [GitHub](https://github.com/TelosSteward/TELOS) | [JB@telos-labs.ai](mailto:JB@telos-labs.ai) | [Request a Live Demo](https://forms.gle/xR6gRxQnyLSMJmeT9)"""
 
 
 def get_demo_system_prompt():
@@ -291,8 +293,8 @@ You now understand how TELOS works: constitutional governance that measures alig
 
 Click the BETA button below to experience live TELOS governance. You'll see real PA calibration, dynamic fidelity scores, and actual interventions. I'm your guide -- click the Ask Steward button at the top of your BETA session to ask me questions about what you're seeing.
 
-This is active research. We're looking for peer reviewers, research institutions, regulatory bodies, and practitioners in domains where runtime AI governance matters. If that's your work, we'd value the conversation.
+Want to see the agentic governance system running live? We provide direct access and walkthrough demos for qualified reviewers and practitioners.
 
 ---
 
-[GitHub](https://github.com/TelosSteward/TELOS) | [JB@telos-labs.ai](mailto:JB@telos-labs.ai) | [Stay informed as TELOS develops](https://forms.gle/39QcdaakdSGxDR6F9)"""
+**[Request a live demo](https://forms.gle/xR6gRxQnyLSMJmeT9)** | [GitHub](https://github.com/TelosSteward/TELOS) | [JB@telos-labs.ai](mailto:JB@telos-labs.ai)"""

@@ -64,50 +64,54 @@ class BetaOnboarding:
         if st.session_state.get('beta_consent_given', False):
             return True  # User has consented, proceed to beta interface
 
+        # Kill Streamlit's default top padding and header gap
+        st.markdown("""
+        <style>
+            .block-container,
+            section.main > div.block-container,
+            [data-testid="stMainBlockContainer"],
+            .stMainBlockContainer.block-container,
+            div[data-testid="stMainBlockContainer"].block-container,
+            .stApp .main .block-container,
+            .stApp section.main .block-container {
+                padding-top: 0 !important;
+                margin-top: 0 !important;
+            }
+            [data-testid="stAppViewContainer"] > .main {
+                padding-top: 0 !important;
+                margin-top: 0 !important;
+            }
+            section.main {
+                padding-top: 0 !important;
+                margin-top: 0 !important;
+            }
+        </style>
+        """, unsafe_allow_html=True)
+
         # Center all content using standard column layout
         col_spacer_left, col_center, col_spacer_right = st.columns([0.5, 3, 0.5])
 
         with col_center:
             # Show onboarding screen
             st.markdown("""
-            <div style="text-align: center; padding: 20px 0;">
+            <div style="text-align: center; padding: 0 0 4px 0; margin-top: -6rem;">
                 <h1 style="color: #F4D03F; font-size: 48px; margin: 0;">Welcome to TELOS Beta</h1>
-                <p style="color: #e0e0e0; font-size: 18px; margin-top: 10px;">Help us build the future of AI governance</p>
+                <p style="color: #e0e0e0; font-size: 18px; margin-top: 4px; margin-bottom: 0;">Help us build the future of AI governance</p>
             </div>
-            """, unsafe_allow_html=True)
 
-            st.markdown("<div style='margin: 15px 0;'></div>", unsafe_allow_html=True)
-
-            # What is Beta?
-            st.markdown("""
-            <div class="message-container" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid #F4D03F; border-radius: 8px; padding: 20px; margin: 10px 0; box-shadow: 0 0 15px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);">
-                <h3 style="color: #F4D03F; margin-top: 0;">What is Beta Testing?</h3>
-                <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
+            <div class="message-container" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid #F4D03F; border-radius: 8px; padding: 16px 20px; margin: 8px 0 4px 0; box-shadow: 0 0 15px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);">
+                <h3 style="color: #F4D03F; margin-top: 0; margin-bottom: 6px;">What is Beta Testing?</h3>
+                <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6; margin-bottom: 0;">
                     You're getting early access to TELOS AI Governance features before they're publicly released.
                     Your feedback helps us refine the system and improve AI governance for everyone.
                 </p>
             </div>
-            """, unsafe_allow_html=True)
 
-            # How We Handle Your Data
-            st.markdown("""
-            <div class="message-container" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid #F4D03F; border-radius: 8px; padding: 20px; margin: 10px 0; box-shadow: 0 0 15px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);">
-                <h3 style="color: #F4D03F; margin-top: 0;">How We Handle Your Data</h3>
-                <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
-                    <strong style="color: #F4D03F;">Ephemeral Sessions:</strong> Your conversation exists only during your active session in your browser using Railway's servers. When you close the browser or end your session, the conversation is gone. We cannot retrieve past conversations.
+            <div class="message-container" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid #F4D03F; border-radius: 8px; padding: 16px 20px; margin: 4px 0 8px 0; box-shadow: 0 0 15px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);">
+                <h3 style="color: #F4D03F; margin-top: 0; margin-bottom: 6px;">Your Data</h3>
+                <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6; margin-bottom: 0;">
+                    Conversations stay in your browser and are never sent to our servers. When you close the session, they're gone. We collect only anonymized governance measurements (fidelity scores, intervention patterns) — never conversation content.
                 </p>
-                <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6;">
-                    <strong style="color: #F4D03F;">What We Collect:</strong> As you converse, governance deltas (mathematical measurements like fidelity scores and intervention patterns) are transmitted to our research database. Your actual conversations are never sent to our servers. Only the numerical measurements are collected. All deltas are anonymized and aggregated. Your individual session cannot be identified or singled out from the collective dataset.
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
-
-            st.markdown("<div style='margin: 20px 0;'></div>", unsafe_allow_html=True)
-
-            # Consent checkbox
-            st.markdown("""
-            <div class="message-container" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 2px solid #F4D03F; border-radius: 8px; padding: 25px; margin: 10px 0; box-shadow: 0 0 20px rgba(244, 208, 63, 0.2), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);">
-                <h3 style="color: #F4D03F; margin-top: 0; text-align: center;">Beta Consent</h3>
             </div>
             """, unsafe_allow_html=True)
 
@@ -115,8 +119,6 @@ class BetaOnboarding:
                 "I understand and consent to participate in TELOS Beta testing. I agree to share governance deltas (mathematical measurements only) to help improve the system. I understand my conversation content remains private.",
                 key="beta_consent_checkbox"
             )
-
-            st.markdown("<div style='margin: 10px 0;'></div>", unsafe_allow_html=True)
 
             # Continue button (only enabled if consent given)
             col1, col2, col3 = st.columns([1, 1, 1])
@@ -146,12 +148,10 @@ class BetaOnboarding:
 
                         st.rerun()
 
-            st.markdown("<div style='margin: 15px 0;'></div>", unsafe_allow_html=True)
-
             # Footer note
             st.markdown("""
-            <div style="text-align: center; color: #888; font-size: 14px; margin-top: 15px;">
-                Questions about data privacy? Contact us at contact@telos-labs.ai
+            <div style="text-align: center; color: #888; font-size: 14px; margin-top: 4px;">
+                Questions about data privacy? Contact us at <a href="mailto:JB@telos-labs.ai" style="color: #F4D03F; text-decoration: none;">JB@telos-labs.ai</a>
             </div>
             """, unsafe_allow_html=True)
 

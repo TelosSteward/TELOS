@@ -287,15 +287,10 @@ section.main div.block-container,
     align-items: center !important;
 }
 
-/* Refined hover effect */
+/* Refined hover effect — hover only, not focus/active (prevents perpetual glow) */
 .stButton > button:hover,
-.stButton > button:focus,
-.stButton > button:active,
 div[data-testid*="stButton"] > button:hover,
-div[class*="stButton"] > button:hover,
-button:hover,
-button:focus,
-button:active {
+div[class*="stButton"] > button:hover {
     background-color: #3d3d3d !important;
     color: #e0e0e0 !important;
     border-width: 2px !important;
@@ -333,50 +328,57 @@ p, span, div {
     color: #e0e0e0 !important;
 }
 
-/* Global font size increase by 2px */
+/* Global font size - enlarged for readability */
 html, body, [class*="css"] {
-    font-size: 16px !important;
-}
-
-p {
-    font-size: 16px !important;
-    line-height: 1.5 !important;
-}
-
-body, html, .stMarkdown, .stText, span, div {
-    line-height: 1.5 !important;
-}
-
-button {
-    font-size: 16px !important;
-}
-
-input {
-    font-size: 16px !important;
-}
-
-label {
-    font-size: 16px !important;
-}
-
-h1 {
-    font-size: 36px !important;
-}
-
-h2 {
-    font-size: 30px !important;
-}
-
-h3 {
-    font-size: 24px !important;
-}
-
-h4 {
     font-size: 20px !important;
 }
 
+p {
+    font-size: 20px !important;
+    line-height: 1.6 !important;
+}
+
+/* Slide content: allow inline styles to control font size/line-height */
+.telos-slide-content p,
+.telos-slide-content div {
+    font-size: inherit !important;
+    line-height: inherit !important;
+}
+
+body, html, .stMarkdown, .stText, span, div {
+    line-height: 1.6 !important;
+}
+
+button {
+    font-size: 20px !important;
+}
+
+input {
+    font-size: 20px !important;
+}
+
+label {
+    font-size: 20px !important;
+}
+
+h1 {
+    font-size: 42px !important;
+}
+
+h2 {
+    font-size: 36px !important;
+}
+
+h3 {
+    font-size: 30px !important;
+}
+
+h4 {
+    font-size: 26px !important;
+}
+
 .stMarkdown {
-    font-size: 16px !important;
+    font-size: 20px !important;
 }
 
 /* Checkbox styling - gold toggle */

@@ -703,66 +703,43 @@ Once you send your first message, I'll understand your purpose and we can get st
             }}
         }})();
 
-        // Demo keyboard navigation with debug logging
+        // Demo keyboard navigation
         (function() {{
-            console.log('Demo keyboard navigation initializing...');
             const currentSlide = {current_idx};
             const maxSlide = {max_idx};
-
-            console.log('Current slide:', currentSlide, 'Max slide:', maxSlide);
 
             // Remove old listener if exists
             if (window.demoKeyListener) {{
                 document.removeEventListener('keydown', window.demoKeyListener);
-                console.log('Removed old listener');
             }}
 
             // Create new listener
             window.demoKeyListener = function(event) {{
-                console.log('Key pressed:', event.key);
-
                 // Only handle arrow keys, not modified
-                if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {{
-                    console.log('Modifier key detected, ignoring');
-                    return;
-                }}
+                if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
 
                 if (event.key === 'ArrowLeft' && currentSlide > 0) {{
-                    console.log('Left arrow - looking for Previous button');
                     event.preventDefault();
-
-                    // Find button in parent window/iframe
                     const parent = window.parent;
                     if (parent && parent.document) {{
                         const buttons = parent.document.querySelectorAll('button');
-                        console.log('Found', buttons.length, 'buttons in parent');
-
                         for (let btn of buttons) {{
-                            console.log('Button text:', btn.textContent);
-                            if (btn.textContent.includes('Previous') || btn.textContent.includes('⬅')) {{
-                                console.log('Clicking Previous button');
+                            if (btn.textContent.includes('Previous') || btn.textContent.includes('Back to Welcome') || btn.textContent.includes('⬅')) {{
                                 btn.click();
                                 break;
                             }}
                         }}
                     }}
                 }} else if (event.key === 'ArrowRight' && currentSlide < maxSlide) {{
-                    console.log('Right arrow - looking for Next/Start/Complete button');
                     event.preventDefault();
-
-                    // Find button in parent window/iframe
                     const parent = window.parent;
                     if (parent && parent.document) {{
                         const buttons = parent.document.querySelectorAll('button');
-                        console.log('Found', buttons.length, 'buttons in parent');
-
                         for (let btn of buttons) {{
-                            console.log('Button text:', btn.textContent);
                             if (btn.textContent.includes('Next') ||
                                 btn.textContent.includes('Start Demo') ||
                                 btn.textContent.includes('Complete Demo') ||
                                 btn.textContent.includes('➡')) {{
-                                console.log('Clicking Next/Start/Complete button');
                                 btn.click();
                                 break;
                             }}
@@ -775,10 +752,7 @@ Once you send your first message, I'll understand your purpose and we can get st
             document.addEventListener('keydown', window.demoKeyListener);
             if (window.parent && window.parent.document) {{
                 window.parent.document.addEventListener('keydown', window.demoKeyListener);
-                console.log('Attached listener to parent document');
             }}
-
-            console.log('Keyboard listener attached');
         }})();
         </script>
         """, height=0)
@@ -808,16 +782,20 @@ Once you send your first message, I'll understand your purpose and we can get st
                 Hello! I'm Steward, an AI assistant governed by TELOS and your guide.
             </p>
             <p style="color: #e0e0e0; font-size: 18px; line-height: 1.6; margin-bottom: 15px;">
-                I'll walk you through how TELOS keeps me aligned with your goals through real-time governance - ensuring I stay accountable to what you actually want, not where the conversation might drift.
+                I'll walk you through how TELOS keeps me aligned with your goals through real-time governance -- ensuring I stay accountable to what you actually want, not where the conversation might drift.
             </p>
             <p style="color: #e0e0e0; font-size: 18px; line-height: 1.6; margin-bottom: 15px;">
-                What you'll experience is TELOS in action. You'll see how it measures alignment, detects drift, and intervenes when needed.
+                There are three ways to explore. <strong style="color: #F4D03F;">DEMO</strong> walks through conversational governance -- how TELOS measures alignment, detects drift, and intervenes when needed. <strong style="color: #F4D03F;">AGENTIC</strong> shows where this is heading -- governance for AI agents that don't just talk, but act. And <strong style="color: #F4D03F;">BETA</strong> lets you experience live TELOS governance yourself.
             </p>
             <p style="color: #e0e0e0; font-size: 18px; line-height: 1.6; margin-bottom: 15px;">
-                Feel free to explore at your own pace. You're welcome to go through the full demo, switch to BETA to try it yourself, or move back and forth between them however feels most comfortable.
+                There's no required path. Start wherever draws your interest, move between them freely, skip what doesn't serve you. This is your time -- use it however feels most useful. I'll be here throughout, wherever you choose to begin.
             </p>
-            <p style="color: #e0e0e0; font-size: 18px; line-height: 1.6;">
-                Click "Start Demo" to establish your purpose and see governance in action.
+            <p style="color: #e0e0e0; font-size: 18px; line-height: 1.6; margin-bottom: 15px;">
+                Click <strong style="color: #F4D03F;">Start Demo</strong> below, or select your starting point from the tabs above.
+            </p>
+            <hr style="border: none; border-top: 1px solid #555; margin: 10px 0;">
+            <p style="color: #e0e0e0; font-size: 16px; line-height: 1.6; margin-top: 10px;">
+                <strong>TELOS AI Labs Inc.</strong> | <a href="https://github.com/TelosSteward/TELOS" style="color: #F4D03F;" target="_blank">GitHub</a> | <a href="mailto:JB@telos-labs.ai" style="color: #F4D03F;" target="_blank">JB@telos-labs.ai</a> | <a href="https://forms.gle/xR6gRxQnyLSMJmeT9" style="color: #F4D03F;" target="_blank">Request a Live Demo</a>
             </p>
         </div>
     </div>
@@ -961,17 +939,13 @@ Once you send your first message, I'll understand your purpose and we can get st
             <div class="nav-button-container">
             """, unsafe_allow_html=True)
 
-            # Use 3 columns: Previous | Download | BETA
-            col_prev, col_download, col_beta = st.columns(3)
+            # Use 2 columns: Previous | BETA
+            col_prev, col_beta = st.columns(2)
 
             with col_prev:
                 if st.button("Previous", key="completion_prev", use_container_width=True):
                     st.session_state.demo_slide_index = len(slides)  # Go back to last Q&A slide
                     st.rerun()
-
-            with col_download:
-                from telos_observatory.components.slide_export import render_download_button
-                render_download_button(key_prefix="demo_completion")
 
             with col_beta:
                 if st.button("BETA", key="completion_beta", use_container_width=True):
@@ -1228,7 +1202,7 @@ Once you send your first message, I'll understand your purpose and we can get st
             # Use 2 columns for navigation buttons
             col_prev, col_next = st.columns(2)
             with col_prev:
-                if st.button("Previous", key="prev_slide_1", use_container_width=True):
+                if st.button("Back to Welcome", key="prev_slide_1", use_container_width=True):
                     st.session_state.demo_slide_index = 0  # Back to welcome
                     st.rerun()
             with col_next:
@@ -2099,7 +2073,6 @@ Once you send your first message, I'll understand your purpose and we can get st
         # This is a static demo slide, so we hardcode the correct yellow color
         if current_idx == 6:
             user_color = "#F4D03F"  # Canonical yellow for minor drift
-            print(f"DEBUG SLIDE 6: user_color set to {user_color}")
 
         # Generate gradient rgba colors for PA headers (glow effect)
         user_gradient_start = with_opacity(user_color, 0.9)

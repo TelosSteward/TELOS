@@ -117,7 +117,7 @@ TELOS tracks both our alignments but only intervenes on mine. This dual measurem
                         steward_response = f"I apologize, but I encountered an error: {str(e)}. Please try again."
                 else:
                     # Fallback if LLM not configured
-                    steward_response = f"I'm currently in setup mode. {st.session_state.get('steward_error', 'Please configure the ANTHROPIC_API_KEY to enable full Steward functionality.')}"
+                    steward_response = f"I'm currently in setup mode. {st.session_state.get('steward_error', 'Please configure the MISTRAL_API_KEY to enable full Steward functionality.')}"
 
                 st.session_state.steward_chat_history.append({
                     'role': 'assistant',

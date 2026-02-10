@@ -116,7 +116,7 @@ class SidebarActions:
                 # Open GitHub in new tab using JavaScript
                 st.markdown("""
                 <script>
-                window.open('https://github.com/telos-labs/telos-observatory', '_blank');
+                window.open('https://github.com/TelosSteward/TELOS', '_blank');
                 </script>
                 """, unsafe_allow_html=True)
                 st.info("Opening GitHub repository in new tab...")

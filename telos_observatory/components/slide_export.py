@@ -26,8 +26,11 @@ def generate_slides_html(include_demo=True):
 
     if include_demo:
         from telos_observatory.demo_mode.telos_framework_demo import get_demo_slides
+        from telos_observatory.agentic.agentic_demo_slides import get_agentic_demo_slides
         demo_slides = get_demo_slides()
+        agentic_slides = get_agentic_demo_slides()
         sections.append(("TELOS Framework", "Conversational AI Governance", demo_slides))
+        sections.append(("Agentic AI Governance", "Action Space Governance", agentic_slides))
 
     today = date.today().strftime("%B %d, %Y")
     slides_html = _build_sections(sections)
@@ -52,7 +55,7 @@ def generate_slides_html(include_demo=True):
         <p class="doc-title">AI Governance Demo Reference</p>
         <p class="doc-date">{today}</p>
         <p class="doc-org">TELOS AI Labs Inc.</p>
-        <p class="doc-contact">contact@telos-labs.ai</p>
+        <p class="doc-contact">JB@telos-labs.ai</p>
     </div>
 </div>
 

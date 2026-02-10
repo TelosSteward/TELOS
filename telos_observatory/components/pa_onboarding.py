@@ -100,17 +100,7 @@ class PAOnboarding:
         </style>
         """, unsafe_allow_html=True)
 
-        # Header
-        st.markdown(f"""
-        <div style="text-align: center; padding: 20px 0; max-width: 700px; margin: 0 auto;">
-            <h2 style="color: {GOLD}; font-size: 36px; margin: 0;">What brings you here today?</h2>
-            <p style="color: #e0e0e0; font-size: 16px; margin-top: 10px;">
-                Select a purpose template or click Start Fresh to get started straight away
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown("<div style='margin: 20px 0;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='margin: 30px 0;'></div>", unsafe_allow_html=True)
 
         # Display templates in 2-column grid
         for i in range(0, len(PA_TEMPLATES), 2):
@@ -121,38 +111,7 @@ class PAOnboarding:
                     with col:
                         self._render_template_card(template)
 
-        st.markdown("<div style='margin: 30px 0;'></div>", unsafe_allow_html=True)
-
-        # Start Fresh section with explanation and button
-        st.markdown(f"""
-        <div style="
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(244, 208, 63, 0.4);
-            border-radius: 12px;
-            padding: 20px 25px;
-            margin: 0 auto;
-            max-width: 500px;
-            text-align: center;
-        ">
-            <div style="color: #e0e0e0; font-size: 16px; line-height: 1.6;">
-                Just want to dive in? State what you're here to do in your first message and TELOS will calibrate from there.
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown("<div style='margin: 35px 0;'></div>", unsafe_allow_html=True)
-
-        # Divider line for visual separation
-        st.markdown("""
-        <div style="
-            width: 120px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(244, 208, 63, 0.5), transparent);
-            margin: 0 auto 35px auto;
-        "></div>
-        """, unsafe_allow_html=True)
+        st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
 
         col1, col2, col3 = st.columns([1, 1, 1])
         with col2:

@@ -77,8 +77,8 @@ class BetaCompletion:
             <div style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
                 <p style="color: #e0e0e0; font-size: 18px; margin: 0;">
                     <span style="color: #F4D03F;">General Inquiries:</span>
-                    <a href="mailto:contact@telos-labs.ai" style="color: #27ae60; text-decoration: none;">
-                        contact@telos-labs.ai
+                    <a href="mailto:JB@telos-labs.ai" style="color: #27ae60; text-decoration: none;">
+                        JB@telos-labs.ai
                     </a>
                 </p>
                 <p style="color: #e0e0e0; font-size: 18px; margin: 0;">
