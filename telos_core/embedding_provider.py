@@ -224,6 +224,7 @@ def rescale_sentence_transformer_fidelity(raw_score: float) -> float:
 # =============================================================================
 
 _cached_minilm_provider = None
+_cached_mpnet_provider = None
 
 
 def get_cached_minilm_provider() -> SentenceTransformerProvider:
@@ -243,3 +244,22 @@ def get_cached_minilm_provider() -> SentenceTransformerProvider:
             model_name="sentence-transformers/all-MiniLM-L6-v2"
         )
     return _cached_minilm_provider
+
+
+def get_cached_mpnet_provider() -> SentenceTransformerProvider:
+    """
+    Return a cached singleton SentenceTransformerProvider (all-mpnet-base-v2).
+
+    Used for AI response fidelity checking and behavioral fidelity computation.
+    MPNet provides 768-dimensional embeddings with stronger semantic sensitivity
+    than MiniLM (384-dim), making it better suited for response quality assessment.
+
+    Returns:
+        Cached SentenceTransformerProvider instance
+    """
+    global _cached_mpnet_provider
+    if _cached_mpnet_provider is None:
+        _cached_mpnet_provider = SentenceTransformerProvider(
+            model_name="sentence-transformers/all-mpnet-base-v2"
+        )
+    return _cached_mpnet_provider
