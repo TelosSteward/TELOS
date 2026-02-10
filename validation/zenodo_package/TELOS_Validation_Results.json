@@ -1,0 +1,105 @@
+{
+  "title": "TELOS Governance Framework - Validation Results",
+  "version": "1.0.0",
+  "date": "2025-12-23",
+  "authors": [
+    {
+      "name": "TELOS Observatory Inc.",
+      "email": "contact@telosobservatory.ai"
+    }
+  ],
+  "description": "Validation results for the TELOS (Telically Entrained Linguistic Operational Substrate) governance framework against standard AI safety benchmarks.",
+
+  "methodology": {
+    "approach": "Primacy Attractor (PA) based fidelity measurement",
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2 (384-dim) and Mistral 7B (1024-dim)",
+    "thresholds": {
+      "baseline_hard_block": 0.35,
+      "intervention_threshold": 0.48
+    },
+    "two_layer_system": {
+      "layer_1": "Baseline similarity check (raw_sim < 0.35 triggers hard block)",
+      "layer_2": "Basin membership check (fidelity < 0.48 triggers soft intervention)"
+    }
+  },
+
+  "benchmarks": {
+    "wmdp": {
+      "name": "Weapons of Mass Destruction Proxy (WMDP)",
+      "source": "cais/wmdp on HuggingFace",
+      "paper": "https://arxiv.org/abs/2403.03218",
+      "total_questions": 3668,
+      "categories": {
+        "biosecurity": 1273,
+        "chemical": 408,
+        "cybersecurity": 1987
+      },
+      "results": {
+        "total_intervention_rate": 0.9937,
+        "hard_block_rate": 0.9261,
+        "soft_intervention_rate": 0.0676,
+        "mean_fidelity": 0.1791,
+        "interpretation": "99.4% of hazardous knowledge queries correctly flagged for intervention before reaching LLM"
+      }
+    },
+
+    "harmbench": {
+      "name": "HarmBench",
+      "source": "Center for AI Safety",
+      "github": "https://github.com/centerforaisafety/HarmBench",
+      "total_attacks_tested": 400,
+      "results": {
+        "attack_success_rate": 0.0,
+        "violation_defense_rate": 1.0,
+        "tier_1_blocks": 383,
+        "tier_2_blocks": 12,
+        "tier_3_blocks": 5,
+        "interpretation": "100% defense rate against adversarial jailbreak attacks"
+      }
+    },
+
+    "multi_turn_jailbreak": {
+      "name": "Multi-Turn Jailbreak Attack Dataset",
+      "source": "tom-gibbs/multi-turn_jailbreak_attack_datasets on HuggingFace",
+      "paper": "https://arxiv.org/abs/2409.00137",
+      "total_conversations": 500,
+      "total_turns_analyzed": 5216,
+      "results": {
+        "trajectory_detection_rate": 1.0,
+        "single_turn_detection_rate": 1.0,
+        "detection_by_jailbreak_level": {
+          "not_jailbroken": 1.0,
+          "partial": 1.0,
+          "full_jailbreak": 1.0
+        },
+        "note": "This dataset uses cipher/encoding attacks that are semantically anomalous from turn 0. Future work should validate against natural language escalation attacks (e.g., Crescendo).",
+        "interpretation": "100% detection of cipher-based multi-turn attacks"
+      }
+    }
+  },
+
+  "key_findings": {
+    "1_pre_llm_filtering": "PA-based fidelity measurement enables effective pre-LLM filtering of hazardous queries",
+    "2_two_layer_effectiveness": "Two-layer system (baseline + basin) provides defense in depth",
+    "3_domain_adaptability": "Domain-specific PAs (biosecurity, cybersecurity, chemical) maintain high intervention rates",
+    "4_adversarial_robustness": "100% defense rate against HarmBench adversarial attacks"
+  },
+
+  "limitations": {
+    "1_multi_turn_validation": "Current multi-turn benchmark uses cipher attacks, not natural language escalation. Need MHJ or Crescendo dataset access for proper trajectory validation.",
+    "2_false_positive_rate": "Not extensively tested on benign in-domain queries",
+    "3_embedding_dependency": "Results depend on embedding model quality"
+  },
+
+  "reproducibility": {
+    "scripts": [
+      "run_wmdp_validation.py",
+      "run_multiturn_validation.py"
+    ],
+    "requirements": [
+      "datasets",
+      "sentence-transformers",
+      "numpy"
+    ]
+  }
+}

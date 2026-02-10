@@ -1,0 +1,120 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "telos"
+version = "1.0.0"
+description = "TELOS: Telically Entrained Linguistic Operational Substrate — Mathematical AI Governance Framework"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.9"
+authors = [
+    {name = "Jeffrey Brunner", email = "JB@telos-labs.ai"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "numpy>=1.24.0,<2.0.0",
+    "pydantic>=2.0.0,<3.0.0",
+    "python-dotenv>=1.0.0,<2.0.0",
+]
+
+[project.optional-dependencies]
+embeddings = [
+    "sentence-transformers>=2.2.0,<3.0.0",
+    "torch>=2.0.0",
+]
+mistral = [
+    "mistralai>=0.1.0,<2.0.0",
+]
+gateway = [
+    "fastapi>=0.104.0,<1.0.0",
+    "uvicorn>=0.24.0,<1.0.0",
+    "httpx>=0.25.0,<1.0.0",
+    "openai>=1.0.0,<2.0.0",
+]
+observatory = [
+    "streamlit>=1.28.0,<2.0.0",
+    "plotly>=5.17.0,<6.0.0",
+    "matplotlib>=3.7.0,<4.0.0",
+    "pandas>=2.0.0,<3.0.0",
+]
+langgraph = [
+    "langgraph>=0.0.20",
+    "langchain-core>=0.1.0",
+]
+dev = [
+    "pytest>=7.4.0,<9.0.0",
+    "pytest-cov>=4.1.0,<6.0.0",
+    "pytest-asyncio>=0.21.0,<1.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+]
+all = [
+    "telos[embeddings,mistral,gateway,observatory,langgraph,dev]",
+]
+
+[project.urls]
+Homepage = "https://telos-labs.ai"
+Documentation = "https://docs.telos-labs.ai"
+Repository = "https://github.com/TelosSteward/TELOS"
+
+[tool.setuptools.packages.find]
+include = [
+    "telos_core*",
+    "telos_governance*",
+    "telos_gateway*",
+    "telos_adapters*",
+    "telos_observatory*",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests requiring external services",
+    "validation: marks adversarial validation tests",
+]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "S",    # flake8-bandit (security)
+    "UP",   # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "S101",  # assert used (fine in tests)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false

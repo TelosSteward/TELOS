@@ -1,0 +1,147 @@
+# Secrets & contacts (credentials + email addresses — never commit)
+.secrets/
+contacts/
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Test outputs
+tests/test_results/
+*.jsonl
+
+# Session data (privacy)
+beta_data/
+beta_consents/
+consent_logs/
+session_data/
+*_sessions/
+
+# Local settings (not version controlled)
+.claude/settings.local.json
+
+# Embeddings cache
+embeddings_cache/
+.cache/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Local development files
+scratch/
+temp/
+tmp/
+
+# Internal process docs (not for public repo)
+TELOS_PUBLIC_BUILD_PROCESS.md
+ROLLBACK_GUIDE.md
+HANDOFF.md
+
+# External benchmark repos (cloned locally, not committed)
+
+# Draft directories
+draft/
+drafts/
+*_draft/
+*_drafts/
+.tmp.driveupload/
+
+# Binary documents (use PDF/Markdown versions instead)
+*.docx
+
+# Legacy components (removed in hardened version)
+telos_configurator/
+screenshots/gateway_ui.png
+
+# Governance trace output
+telos_governance_traces/
+telos_gateway_traces/
+gateway_traces.jsonl
+
+# Internal/business docs (kept locally, not for public repo)
+docs/ADJACENT_RESEARCH_LANDSCAPE.md
+docs/AUDIT_DOCUMENTS.md
+docs/COMPETITIVE_POSITIONING_ANALYSIS.md
+docs/NSF_SBIR_*.md
+docs/STRATEGIC_POSITIONING_UCXM.md
+docs/SUPABASE_*.md
+docs/SUPABASE_*.txt
+docs/TELOS_Competitive_Landscape.md
+docs/TELOS_EU_AI_Act_Positioning.md
+docs/TELOS_Enterprise_Differentiator_Deck.md
+docs/TELOS_Gateway_Technical_Brief_v1.0.md
+docs/TELOS_INSURANCE_BUSINESS_MODEL.md
+docs/TELOS_Lexicon_V1.1.md
+docs/TELOS_Pitch_Deck_v2.md
+docs/TELOS_QA_Interview.md
+docs/TELOS_Whitepaper_v2.4_humanized.*
+docs/WORKBENCH_INTEGRATION_SCOPE.md
+docs/EMBEDDING_ARCHITECTURE_INTERNAL.md
+docs/TELOS_TECHNICAL_ARCHITECTURE_INTERNAL.md
+docs/TELOS_Provider_Architecture.tex
+docs/TELOS_Provider_Architecture.pdf
+
+# LaTeX temp files
+*.aux
+*.out
+docs/*.log
+
+# Working drafts (local reference copies, not for repo)
+docs/TELOS_Academic_Paper_REVISED.*
+docs/TELOS_Academic_Paper_Distribution.*
+docs/TELOS_Paper_Review_Report.md
+docs/REVIEW_*.md
+docs/PAPER_TRANSFORMATION_SUMMARY.txt
+docs/DOCUMENT_INVENTORY.md
