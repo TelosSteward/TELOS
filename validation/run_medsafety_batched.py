@@ -10,7 +10,7 @@ import numpy as np
 from pathlib import Path
 from datetime import datetime
 
-sys.path.insert(0, '/Users/brunnerjf/Desktop/TELOS_Master/validation')
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from run_medsafetybench_validation import MedSafetyBenchLoader, OllamaEmbedder
 
 BATCH_SIZE = 50
@@ -66,7 +66,7 @@ def main():
 
     # Load PA config and generate embedding
     print('Generating PA embedding...')
-    pa_config_path = Path('/Users/brunnerjf/Desktop/TELOS_Master/validation/config/healthcare_hipaa_pa_config.json')
+    pa_config_path = Path(__file__).resolve().parent / 'config' / 'healthcare_hipaa_pa_config.json'
     with open(pa_config_path, 'r') as f:
         pa_config = json.load(f)
 
@@ -152,7 +152,7 @@ def main():
         'detailed_results': all_results
     }
 
-    output_file = Path('/Users/brunnerjf/Desktop/TELOS_Master/validation/medsafetybench_batched_results.json')
+    output_file = Path(__file__).resolve().parent / 'medsafetybench_batched_results.json'
     with open(output_file, 'w') as f:
         json.dump(output, f, indent=2)
     print(f'\nResults saved to: {output_file}')

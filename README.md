@@ -4,18 +4,18 @@
 
 ![Python](https://img.shields.io/badge/python-3.8+-green)
 ![License](https://img.shields.io/badge/license-Apache%202.0-orange)
-[![Scenarios](https://img.shields.io/badge/scenarios-2%2C550-blue)](https://github.com/TelosSteward/TELOS)
+[![Scenarios](https://img.shields.io/badge/scenarios-2%2C850-blue)](https://github.com/TelosSteward/TELOS)
 [![ASR](https://img.shields.io/badge/attack%20success%20rate-0%25-brightgreen)](https://github.com/TelosSteward/TELOS)
 
-[![AILuminate](https://img.shields.io/badge/AILuminate-900-blue)](https://doi.org/10.5281/zenodo.18370263)
-[![Adversarial](https://img.shields.io/badge/Adversarial-2%2C550-blue)](https://doi.org/10.5281/zenodo.18370659)
+[![AILuminate](https://img.shields.io/badge/AILuminate-1%2C200-blue)](https://doi.org/10.5281/zenodo.18370263)
+[![Adversarial](https://img.shields.io/badge/Adversarial-2%2C600-blue)](https://doi.org/10.5281/zenodo.18370659)
 [![Governance](https://img.shields.io/badge/Governance-46_sessions-blue)](https://doi.org/10.5281/zenodo.18009153)
 [![SB 243](https://img.shields.io/badge/SB_243-100-blue)](https://doi.org/10.5281/zenodo.18370504)
 [![XSTest](https://img.shields.io/badge/XSTest-FPR_8%25-blue)](https://doi.org/10.5281/zenodo.18370603)
 
 ---
 
-TELOS (Telically Entrained Linguistic Operational Substrate) is a mathematical governance framework for AI alignment. It uses **Primacy Attractors** -- embedding-space representations of user purpose -- to measure conversational fidelity via cosine similarity and detect drift in real-time. When a user's input deviates from their stated purpose, TELOS applies proportional interventions calibrated by a two-layer fidelity system. The framework has been validated against 2,550 adversarial scenarios across five peer-reviewed benchmarks with a 0% attack success rate, and all validation data is published with DOIs on Zenodo for independent verification.
+TELOS (Telically Entrained Linguistic Operational Substrate) is a mathematical governance framework for AI alignment. It uses **Primacy Attractors** -- embedding-space representations of user purpose -- to measure conversational fidelity via cosine similarity and detect drift in real-time. When a user's input deviates from their stated purpose, TELOS applies proportional interventions calibrated by a two-layer fidelity system. The framework has been validated against 2,850 scenarios across five peer-reviewed benchmarks with a 0% attack success rate, and all validation data is published with DOIs on Zenodo for independent verification.
 
 ---
 
@@ -81,7 +81,7 @@ telos/
 │   └── governance_trace.py  #   Audit trail structure
 ├── telos_governance/        # Governance decision gates
 │   ├── fidelity_gate.py     #   Two-tier conversational gate
-│   └── governance_protocol.py #  Audit-trail protocol
+│   └── tool_selection_gate.py #  Semantic tool ranking
 ├── telos_gateway/           # FastAPI API gateway (OpenAI-compatible)
 │   ├── routes/              #   Health, chat completions
 │   └── providers/           #   Mistral, OpenAI provider adapters
@@ -142,18 +142,18 @@ should_intervene = (raw_similarity < 0.20) OR (fidelity < 0.48)
 
 ## Validation Results
 
-### Adversarial Benchmarks (2,550 scenarios, 0% ASR)
+### Adversarial Benchmarks (2,850 scenarios, 0% ASR)
 
 TELOS was validated against five peer-reviewed adversarial benchmarks. All validation data is published on Zenodo with DOIs for independent verification.
 
-- **Total Adversarial Scenarios**: 2,550
+- **Total Scenarios**: 2,850
 - **Attack Success Rate**: 0.00%
 - **Statistical Confidence**: 99.9% CI [0%, 0.14%]
 - **Forensic Audit Trails**: Full JSONL traces for every governance decision
 
 | Benchmark | Scenarios | Blocked | Venue | DOI |
 |-----------|-----------|---------|-------|-----|
-| AILuminate | 900 | 900 (100%) | MLCommons | [10.5281/zenodo.18370263](https://doi.org/10.5281/zenodo.18370263) |
+| AILuminate | 1,200 | 1,200 (100%) | MLCommons | [10.5281/zenodo.18370263](https://doi.org/10.5281/zenodo.18370263) |
 | HarmBench | 400 | 400 (100%) | Center for AI Safety | [10.5281/zenodo.18370659](https://doi.org/10.5281/zenodo.18370659) |
 | MedSafetyBench | 900 | 900 (100%) | NeurIPS 2024 | [10.5281/zenodo.18370659](https://doi.org/10.5281/zenodo.18370659) |
 | SB 243 Child Safety | 100 | 100 (100%) | California Legislature | [10.5281/zenodo.18370504](https://doi.org/10.5281/zenodo.18370504) |

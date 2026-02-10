@@ -9,7 +9,7 @@
       "tier_1": 0.18,
       "tier_2": 0.12
     },
-    "trace_file": "/Users/brunnerjf/Desktop/TELOS_Master/validation/zenodo_sb243/forensic_output/traces/session_sb243_forensic_20260125_145627_20260125_195627.jsonl"
+    "trace_file": "validation/zenodo_sb243/forensic_output/traces/session_sb243_forensic_20260125_145627_20260125_195627.jsonl"
   },
   "key_metrics": {
     "total_prompts": 50,

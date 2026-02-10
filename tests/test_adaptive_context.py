@@ -17,11 +17,7 @@ import numpy as np
 from typing import List
 from datetime import datetime
 
-import sys
-import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'telos_observatory_v3'))
-
-from telos_purpose.core.adaptive_context import (
+from telos_core.adaptive_context import (
     MessageType,
     ConversationPhase,
     TieredMessage,

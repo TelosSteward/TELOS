@@ -21,7 +21,7 @@ import importlib.util
 # Direct import of constants.py to avoid package __init__.py chain
 constants_path = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    'telos_observatory_v3', 'telos_purpose', 'core', 'constants.py'
+    'telos_core', 'constants.py'
 )
 spec = importlib.util.spec_from_file_location("constants", constants_path)
 constants = importlib.util.module_from_spec(spec)
@@ -49,10 +49,10 @@ MISTRAL_FIDELITY_ORANGE = constants.MISTRAL_FIDELITY_ORANGE
 MISTRAL_FIDELITY_RED = constants.MISTRAL_FIDELITY_RED
 DEFAULT_K_ATTRACTOR = constants.DEFAULT_K_ATTRACTOR
 DEFAULT_K_ANTIMETA = constants.DEFAULT_K_ANTIMETA
-FIDELITY_MONITOR = constants.FIDELITY_MONITOR
-FIDELITY_CORRECT = constants.FIDELITY_CORRECT
-FIDELITY_INTERVENE = constants.FIDELITY_INTERVENE
-FIDELITY_ESCALATE = constants.FIDELITY_ESCALATE
+FIDELITY_GREEN = constants.FIDELITY_GREEN
+FIDELITY_YELLOW = constants.FIDELITY_YELLOW
+FIDELITY_ORANGE = constants.FIDELITY_ORANGE
+FIDELITY_RED = constants.FIDELITY_RED
 
 
 class TestBasinRadiusCalculation:
@@ -244,23 +244,22 @@ class TestFidelityZoneConstants:
     """
 
     def test_fidelity_thresholds_ordering(self):
-        """Fidelity thresholds should be ordered: MONITOR > CORRECT > INTERVENE >= ESCALATE"""
-        assert FIDELITY_MONITOR > FIDELITY_CORRECT
-        assert FIDELITY_CORRECT > FIDELITY_INTERVENE
-        assert FIDELITY_INTERVENE >= FIDELITY_ESCALATE
+        """Fidelity thresholds should be ordered: GREEN > YELLOW > ORANGE >= RED"""
+        assert FIDELITY_GREEN > FIDELITY_YELLOW
+        assert FIDELITY_YELLOW > FIDELITY_ORANGE
+        assert FIDELITY_ORANGE >= FIDELITY_RED
 
     def test_fidelity_thresholds_in_valid_range(self):
         """All fidelity thresholds should be in (0, 1)"""
-        for threshold in [FIDELITY_MONITOR, FIDELITY_CORRECT, FIDELITY_INTERVENE, FIDELITY_ESCALATE]:
+        for threshold in [FIDELITY_GREEN, FIDELITY_YELLOW, FIDELITY_ORANGE, FIDELITY_RED]:
             assert 0 < threshold < 1, f"Threshold {threshold} not in (0, 1)"
 
-    def test_goldilocks_zone_values(self):
+    def test_fidelity_zone_values(self):
         """Verify fidelity zone values match current constants"""
-        # Updated to match current constants.py values
-        assert FIDELITY_MONITOR == 0.70  # FIDELITY_GREEN
-        assert FIDELITY_CORRECT == 0.65
-        assert FIDELITY_INTERVENE == 0.55
-        assert FIDELITY_ESCALATE == 0.50  # FIDELITY_RED
+        assert FIDELITY_GREEN == 0.70
+        assert FIDELITY_YELLOW == 0.60
+        assert FIDELITY_ORANGE == 0.50
+        assert FIDELITY_RED == 0.50
 
 
 class TestProportionalControlGains:

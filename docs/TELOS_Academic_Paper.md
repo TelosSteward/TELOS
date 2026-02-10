@@ -381,7 +381,7 @@ Code, data, and validation scripts are available at **github.com/TelosSteward/TE
     cd TELOS
     pip install -r requirements.txt
     export MISTRAL_API_KEY='your_key'
-    python3 telos_observatory_v3/telos_purpose/validation/run_internal_test0.py
+    PYTHONPATH=. pytest tests/ -v
 
 **All validation datasets published on Zenodo:**
 

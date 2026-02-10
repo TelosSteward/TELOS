@@ -4,4 +4,4 @@
 
 echo "=== TELOS Observatory Startup ==="
 echo "Starting Streamlit..."
-streamlit run telos_observatory_v3/main.py --server.port $PORT --server.address 0.0.0.0
+streamlit run telos_observatory/main.py --server.port $PORT --server.address 0.0.0.0

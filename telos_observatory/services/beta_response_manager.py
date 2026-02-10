@@ -156,8 +156,6 @@ class BetaResponseManager:
         # PA Enrichment Service
         self.pa_enrichment_service = None
 
-        self.telemetric_manager = None
-
         # Adaptive Context System
         self.adaptive_context_manager = None
         self.adaptive_context_enabled = ADAPTIVE_CONTEXT_ENABLED and ADAPTIVE_CONTEXT_AVAILABLE

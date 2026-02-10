@@ -62,10 +62,7 @@ from telos_core.primacy_math import (
 )
 from telos_core.proportional_controller import ProportionalController
 from telos_core.conversation_manager import ConversationManager
-try:
-    from telos_observatory_v3.telos_purpose.core.intercepting_llm_wrapper import InterceptingLLMWrapper
-except ImportError:
-    InterceptingLLMWrapper = None  # Optional: only needed for live interception
+InterceptingLLMWrapper = None  # Not available in public build
 
 from telos_core.exceptions import (
     SessionError,

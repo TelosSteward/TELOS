@@ -21,11 +21,10 @@ from fastapi import APIRouter, Depends, Header, HTTPException
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
-from telos_gateway.auth import lookup_agent, require_auth
+from telos_gateway.auth import require_auth
 from telos_gateway.config import config
 from telos_gateway.providers.mistral_provider import MistralProvider
 from telos_gateway.providers.openai_provider import OpenAIProvider
-from telos_gateway.registry import get_registry
 
 # Import governance types from telos_governance (single source of truth)
 from telos_governance.types import ActionDecision, GovernanceResult
@@ -108,11 +107,8 @@ def _select_provider(model: str):
     return _openai_provider
 
 
-def _resolve_llm_key(api_key: str, agent_profile) -> str:
+def _resolve_llm_key(api_key: str) -> str:
     """Determine the LLM API key to use for the upstream call."""
-    if agent_profile:
-        # Registered agents use server-side LLM key
-        return os.environ.get("MISTRAL_API_KEY", os.environ.get("OPENAI_API_KEY", ""))
     return api_key
 
 
@@ -183,12 +179,8 @@ async def chat_completions(
     start_time = time.time()
 
     try:
-        # -- Agent lookup --
-        agent_profile = lookup_agent(api_key)
-        llm_api_key = _resolve_llm_key(api_key, agent_profile)
-
-        if agent_profile:
-            logger.info(f"Registered agent: {agent_profile.name} ({agent_profile.agent_id})")
+        # -- Resolve LLM key --
+        llm_api_key = _resolve_llm_key(api_key)
 
         # -- Select provider --
         provider = _select_provider(request.model)
@@ -210,15 +202,6 @@ async def chat_completions(
             "latency_ms": latency_ms,
             "provider": provider.get_provider_name(),
         }
-        if agent_profile:
-            data["telos_governance"]["agent"] = {
-                "agent_id": agent_profile.agent_id,
-                "name": agent_profile.name,
-                "domain": agent_profile.domain,
-            }
-            # Update stats
-            registry = get_registry()
-            registry.update_agent_stats(agent_profile.agent_id, was_blocked=False)
 
         return data
 

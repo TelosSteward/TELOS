@@ -693,7 +693,7 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
             st.rerun()
 
     # Reduce vertical spacing for DEMO and BETA modes
-    if st.session_state.get('active_tab') in ['DEMO', 'BETA', 'AGENTIC']:
+    if st.session_state.get('active_tab') in ['DEMO', 'BETA']:
         st.markdown("""
         <style>
         .stMarkdown + div { margin-top: 0 !important; padding-top: 0 !important; }
@@ -714,8 +714,6 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
         [data-testid="stSidebar"] { display: none !important; }
         </style>
         """, unsafe_allow_html=True)
-
-    # [Agentic demo and live mode functions removed — not in public build]
 
     # Unified rendering function
     def render_mode_content(mode: str):

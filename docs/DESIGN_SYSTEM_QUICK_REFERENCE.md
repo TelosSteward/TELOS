@@ -378,7 +378,7 @@ st.markdown(f"""
 
 | File | Purpose |
 |------|---------|
-| `telos_observatory_v3/main.py` | Global CSS variables, page layout |
+| `telos_observatory/main.py` | Global CSS variables, page layout |
 | `config/colors.py` | Color definitions and functions |
 | `config/steward_styles.py` | Steward persona styling |
 | `components/*.py` | Individual UI components (27 files) |

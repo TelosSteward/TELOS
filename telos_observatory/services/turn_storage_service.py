@@ -5,7 +5,7 @@ Turn Storage Service - Data Persistence and History for TELOS Observatory
 Extracted from BetaResponseManager to provide focused turn data management.
 
 Handles:
-- Turn data storage with telemetric encryption
+- Turn data storage
 - Conversation history retrieval
 - Recent context extraction for fidelity and PA enrichment
 - Error response creation
@@ -24,34 +24,6 @@ def store_turn_data(manager, turn_number: int, data: Dict):
     """Store turn data for Observatory review and transmit to Supabase."""
     storage_key = f'beta_turn_{turn_number}_data'
     st.session_state[storage_key] = data
-
-    # TELEMETRIC KEYS: Encrypt governance telemetry with session-bound key
-    if manager.telemetric_manager:
-        try:
-            telos_data = data.get('telos_analysis', {})
-            import time
-
-            turn_telemetry = {
-                'turn_number': turn_number,
-                'fidelity_score': telos_data.get('user_pa_fidelity') or telos_data.get('fidelity_score') or 0.0,
-                'distance_from_pa': telos_data.get('distance_from_pa', 0.0),
-                'intervention_triggered': telos_data.get('intervention_triggered', False),
-                'in_basin': telos_data.get('in_basin', True),
-                'ai_pa_fidelity': telos_data.get('ai_pa_fidelity'),
-                'primacy_state_score': telos_data.get('primacy_state_score'),
-                'timestamp': time.time()
-            }
-
-            encrypted_delta = manager.telemetric_manager.process_turn(turn_telemetry)
-            sig_status = "signed" if encrypted_delta.telos_signature else "unsigned"
-            logger.info(f"Telemetric Keys: Encrypted turn {turn_number} ({len(encrypted_delta.ciphertext)} bytes, {sig_status})")
-
-            if 'encrypted_governance_deltas' not in st.session_state:
-                st.session_state.encrypted_governance_deltas = []
-            st.session_state.encrypted_governance_deltas.append(encrypted_delta.to_dict())
-
-        except Exception as e:
-            logger.warning(f"Telemetric Keys encryption failed for turn {turn_number}: {e}")
 
     # Update running statistics
     if 'beta_statistics' not in st.session_state:

@@ -93,7 +93,7 @@ Quick lookup guide organized by topic:
 ### Color & Styling Configuration
 - **`config/colors.py`** - Color definitions, fidelity functions
 - **`config/steward_styles.py`** - Steward persona styling (6 bands)
-- **`telos_observatory_v3/main.py`** - Global CSS (2,041 lines)
+- **`telos_observatory/main.py`** - Global CSS
 
 ### UI Components (27 files analyzed)
 Key components include:

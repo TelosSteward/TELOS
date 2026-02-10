@@ -19,6 +19,7 @@ Date: 2026-01-23
 import json
 import os
 import glob
+from pathlib import Path
 import numpy as np
 import requests
 from datetime import datetime
@@ -41,10 +42,11 @@ TOP_K_RETRIEVAL = 3
 RELEVANCE_THRESHOLD = 0.50  # Minimum similarity to consider retrieval relevant
 
 # Paths
-CORPUS_DIR = "/Users/brunnerjf/Desktop/TELOS_Master/validation/corpus/healthcare"
-MEDSAFETY_RESULTS = "/Users/brunnerjf/Desktop/TELOS_Master/validation/zenodo_medsafetybench/medsafetybench_results_full.json"
-PA_CONFIG = "/Users/brunnerjf/Desktop/TELOS_Master/validation/zenodo_medsafetybench/healthcare_hipaa_pa_config.json"
-OUTPUT_DIR = "/Users/brunnerjf/Desktop/TELOS_Master/validation/zenodo_medsafetybench"
+VALIDATION_ROOT = str(Path(__file__).resolve().parent)
+CORPUS_DIR = os.path.join(VALIDATION_ROOT, "corpus", "healthcare")
+MEDSAFETY_RESULTS = os.path.join(VALIDATION_ROOT, "zenodo_medsafetybench", "medsafetybench_results_full.json")
+PA_CONFIG = os.path.join(VALIDATION_ROOT, "zenodo_medsafetybench", "healthcare_hipaa_pa_config.json")
+OUTPUT_DIR = os.path.join(VALIDATION_ROOT, "zenodo_medsafetybench")
 
 
 @dataclass

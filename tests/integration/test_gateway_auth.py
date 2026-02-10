@@ -74,15 +74,15 @@ class TestAuthentication:
         )
         assert response.status_code == 401
 
-    def test_invalid_telos_agent_key_returns_401(self, client):
+    def test_valid_bearer_token_accepted(self, client):
+        """A valid bearer token should not return 401."""
         response = client.post(
             "/v1/chat/completions",
-            headers={"Authorization": "Bearer telos-agent-invalid-key-12345"},
+            headers={"Authorization": "Bearer test-api-key-12345"},
             json={"model": "gpt-4", "messages": [{"role": "user", "content": "hi"}]},
         )
-        assert response.status_code == 401
-        data = response.json()
-        assert data["detail"]["error"]["type"] == "authentication_error"
+        # Should not be 401 (auth passes, may fail downstream for missing LLM key)
+        assert response.status_code != 401
 
 
 # ============================================================================
@@ -105,99 +105,9 @@ class TestErrorFormat:
         assert "type" in err
         assert "code" in err
 
-    def test_404_agent_not_found(self, client):
-        response = client.get("/v1/agents/nonexistent-agent-id")
+    def test_404_unknown_path(self, client):
+        response = client.get("/v1/nonexistent-path")
         assert response.status_code == 404
-        data = response.json()
-        assert "detail" in data
-        err = data["detail"]["error"]
-        assert err["type"] == "not_found"
-
-
-# ============================================================================
-# Agent registration
-# ============================================================================
-
-
-class TestAgentRegistration:
-    """Test agent registration and lookup flow."""
-
-    def test_register_agent(self, client):
-        response = client.post(
-            "/v1/agents",
-            json={
-                "name": "Test Agent",
-                "owner": "Test Owner",
-                "purpose_statement": "I am a test agent for unit testing the TELOS gateway registration flow.",
-                "domain": "testing",
-                "tools": [],
-                "risk_level": "low",
-            },
-        )
-        assert response.status_code == 200
-        data = response.json()
-        assert "agent_id" in data
-        assert "api_key" in data
-        assert data["api_key"].startswith("telos-agent-")
-
-    def test_register_agent_short_name_rejected(self, client):
-        response = client.post(
-            "/v1/agents",
-            json={
-                "name": "AB",  # too short
-                "owner": "Test Owner",
-                "purpose_statement": "I am a test agent for unit testing.",
-            },
-        )
-        assert response.status_code == 422  # Validation error
-
-    def test_register_agent_short_purpose_rejected(self, client):
-        response = client.post(
-            "/v1/agents",
-            json={
-                "name": "Test Agent",
-                "owner": "Test Owner",
-                "purpose_statement": "Too short",  # < 20 chars
-            },
-        )
-        assert response.status_code == 422
-
-    def test_register_and_lookup(self, client):
-        # Register
-        reg_response = client.post(
-            "/v1/agents",
-            json={
-                "name": "Lookup Test Agent",
-                "owner": "Test Owner",
-                "purpose_statement": "I am a test agent for verifying the lookup flow works correctly.",
-                "domain": "testing",
-            },
-        )
-        agent_id = reg_response.json()["agent_id"]
-
-        # Lookup
-        get_response = client.get(f"/v1/agents/{agent_id}")
-        assert get_response.status_code == 200
-        data = get_response.json()
-        assert data["agent_id"] == agent_id
-        assert data["name"] == "Lookup Test Agent"
-        assert data["is_active"] is True
-
-    def test_deactivate_requires_auth(self, client):
-        # Register first
-        reg = client.post(
-            "/v1/agents",
-            json={
-                "name": "Deactivate Test Agent",
-                "owner": "Test Owner",
-                "purpose_statement": "I am a test agent for verifying deactivation requires authentication.",
-            },
-        )
-        agent_id = reg.json()["agent_id"]
-
-        # Try to deactivate without auth
-        response = client.delete(f"/v1/agents/{agent_id}")
-        assert response.status_code == 401
 
 
 # ============================================================================

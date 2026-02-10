@@ -8,12 +8,12 @@ deduplicates by email (keeps most recent), and exports to CSV.
 
 Setup (one-time):
   1. Google Cloud Console → create a service account
-  2. Download JSON key → save as telos_hardened/.secrets/google_service_account.json
+  2. Download JSON key → save as .secrets/google_service_account.json
   3. Share the response Google Sheet with the service account email (read-only)
   4. Set SPREADSHEET_ID below to the response sheet's ID
 
 Usage:
-  cd telos_hardened
+  cd TELOS
   python3 scripts/pull_form_responses.py
 """
 

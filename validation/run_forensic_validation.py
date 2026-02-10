@@ -31,7 +31,7 @@ import numpy as np
 import hashlib
 
 # Add parent directories to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent / "telos_observatory_v3"))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Import TELOS forensic infrastructure
 try:

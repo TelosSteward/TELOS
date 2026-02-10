@@ -161,7 +161,7 @@ The Observatory runs two tabs: DEMO (14-slide walkthrough) and BETA (live 10-tur
 
 | Benchmark | Scenarios | Result | DOI |
 |-----------|-----------|--------|-----|
-| AILuminate | 900 | 0% ASR | [10.5281/zenodo.18370263](https://doi.org/10.5281/zenodo.18370263) |
+| AILuminate | 1,200 | 0% ASR | [10.5281/zenodo.18370263](https://doi.org/10.5281/zenodo.18370263) |
 | HarmBench | 400 | 0% ASR | [10.5281/zenodo.18370659](https://doi.org/10.5281/zenodo.18370659) |
 | MedSafetyBench | 900 | 0% ASR | [10.5281/zenodo.18370659](https://doi.org/10.5281/zenodo.18370659) |
 | SB 243 Child Safety | 100 | 0% ASR | [10.5281/zenodo.18370504](https://doi.org/10.5281/zenodo.18370504) |
