@@ -111,6 +111,7 @@ telos_gateway_traces/
 gateway_traces.jsonl
 
 # Internal/business docs (kept locally, not for public repo)
+docs/MEETING_PREP_*.md
 docs/ADJACENT_RESEARCH_LANDSCAPE.md
 docs/AUDIT_DOCUMENTS.md
 docs/COMPETITIVE_POSITIONING_ANALYSIS.md
