@@ -175,55 +175,17 @@ class PAOnboarding:
         </style>
         """, unsafe_allow_html=True)
 
-        # Header with template title (icons removed per user feedback)
-        st.markdown(f"""
-        <div style="text-align: center; padding: 20px 0;">
-            <h2 style="color: {GOLD}; font-size: 32px; margin: 0;">{template['title']}</h2>
-            <p style="color: #e0e0e0; font-size: 18px; margin-top: 10px;">
-                {template['short_desc']}
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Description section
-        st.markdown(f"""
-        <div style="
-            background: rgba(15, 15, 15, 0.4);
-            border: 1px solid rgba(244, 208, 63, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-        ">
-            <h3 style="color: {GOLD}; margin-top: 0;">What this accomplishes</h3>
-            <p style="color: #e0e0e0; font-size: 16px; line-height: 1.6;">
-                {template['purpose']}
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Use cases section
+        # Compact single-page layout: title + description + use cases in one card
         use_cases = self._get_template_use_cases(template['id'])
+        use_cases_html = ""
         if use_cases:
-            st.markdown(f"""
-            <div style="
-                background: rgba(15, 15, 15, 0.3);
-                border: 1px solid #444;
-                border-radius: 12px;
-                padding: 20px;
-                margin: 20px 0;
-            ">
-                <h3 style="color: {GOLD}; margin-top: 0;">Example use cases</h3>
-                <ul style="color: #ccc; font-size: 15px; line-height: 1.8; padding-left: 20px;">
-                    {''.join(f'<li>{uc}</li>' for uc in use_cases)}
-                </ul>
-            </div>
-            """, unsafe_allow_html=True)
+            items = ''.join(f'<li>{uc}</li>' for uc in use_cases)
+            use_cases_html = f'<div style="border-top: 1px solid rgba(244, 208, 63, 0.2); margin-top: 12px; padding-top: 12px;"><div style="color: {GOLD}; font-weight: bold; font-size: 15px; margin-bottom: 6px;">Example use cases</div><ul style="color: #ccc; font-size: 14px; line-height: 1.6; padding-left: 20px; margin: 0;">{items}</ul></div>'
 
-        # Remove "View Primacy Attractor Details" - replaced by Alignment Lens in BETA mode
-        # Alignment Lens is now shown via button toggle, not automatically
+        st.markdown(f"""<style>@keyframes templateFadeIn {{ from {{ opacity: 0; transform: translateY(10px); }} to {{ opacity: 1; transform: translateY(0); }} }}</style><div style="background: rgba(15, 15, 15, 0.4); border: 1px solid rgba(244, 208, 63, 0.3); border-radius: 12px; padding: 20px 25px; margin: 10px 0; opacity: 0; animation: templateFadeIn 1.0s ease-out forwards;"><div style="margin-bottom: 12px;"><span style="color: {GOLD}; font-size: 24px; font-weight: bold;">{template['title']}</span><span style="color: #999; font-size: 16px; margin-left: 10px;">{template['short_desc']}</span></div><p style="color: #e0e0e0; font-size: 15px; line-height: 1.6; margin: 0;">{template['purpose']}</p>{use_cases_html}</div>""", unsafe_allow_html=True)
 
-        # Add bottom spacing before buttons
-        st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
+        # Spacing before buttons
+        st.markdown("<div style='margin: 40px 0;'></div>", unsafe_allow_html=True)
 
         # Action buttons - static sizing to match DEMO mode
         # Use CSS with fixed max-widths to prevent rescaling

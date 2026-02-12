@@ -849,7 +849,7 @@ Once you send your first message, I'll understand your purpose and we can get st
             # Enable BETA tab unlock
             st.session_state.demo_completed = True
 
-            # Consolidated Congratulations with Glassmorphism - same width as other slides
+            # Clean completion card
             completion_html = """
 <div class="compact-container">
     <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45);
@@ -867,30 +867,14 @@ Once you send your first message, I'll understand your purpose and we can get st
                 animation: slideContentFadeIn 1.0s ease-out forwards;
                 animation-fill-mode: forwards;">
         <div style="text-align: center; margin-bottom: 20px;">
-            <h2 style="color: #27ae60; font-size: 32px; margin: 0 0 8px 0;">Congratulations - You've Completed the TELOS Demo</h2>
+            <h2 style="color: #27ae60; font-size: 32px; margin: 0 0 8px 0;">You've Completed the TELOS Demo</h2>
         </div>
         <div style="border-top: 1px solid rgba(76, 175, 80, 0.3); padding-top: 20px; margin-top: 10px;">
             <div style="margin-bottom: 15px;">
                 You now understand how TELOS works: constitutional governance that measures alignment, detects drift, and intervenes proportionally to maintain accountability to stated purpose.
             </div>
-            <div style="margin-bottom: 15px;">
-                <strong style="color: #F4D03F;">What's next:</strong>
-            </div>
-            <div style="margin-bottom: 15px;">
-                This is active research, not a finished solution. We're seeking institutional partnerships to validate these approaches in healthcare, financial services, and enterprise AI deployments where accountability isn't optional.
-            </div>
-            <div style="margin-bottom: 15px;">
-                If your organization is exploring AI governance for regulated domains, we'd welcome a conversation.
-            </div>
-            <div style="margin-bottom: 15px;">
-                <strong style="color: #F4D03F;">Ready for BETA?</strong>
-            </div>
-            <div style="margin-left: 20px; margin-bottom: 15px;">
-                Click the <strong style="color: #F4D03F;">BETA button</strong> below to experience live TELOS governance.<br>
-                You'll see real PA calibration, dynamic fidelity scores, and actual interventions.
-            </div>
-            <div style="margin-top: 15px; padding: 12px; background: rgba(26, 26, 30, 0.6); border-radius: 5px; border-left: 4px solid #F4D03F;">
-                <strong style="color: #F4D03F;">I'm your TELOS guide:</strong> Click the Ask Steward button at the top of your BETA session to ask me questions about what you're seeing.
+            <div>
+                <strong style="color: #F4D03F;">Ready for BETA?</strong> Click the <strong style="color: #F4D03F;">BETA</strong> button below to experience live TELOS governance -- real PA calibration, dynamic fidelity scores, and actual interventions. Click <strong style="color: #F4D03F;">Ask Steward</strong> at the top of your BETA session to ask me questions about what you're seeing.
             </div>
         </div>
     </div>
@@ -904,33 +888,10 @@ Once you send your first message, I'll understand your purpose and we can get st
 """
             st.markdown(completion_html, unsafe_allow_html=True)
 
-            # Add spacing before buttons (30px matches other slides)
+            # Spacing before buttons (matches other slides)
             st.markdown("<div style='margin: 30px 0;'></div>", unsafe_allow_html=True)
 
-            # Wrap buttons in 700px container to match 3-button layout width
-            # Also override any fidelity-colored border styling from standard slides
-            st.markdown("""
-            <style>
-            .nav-button-container {
-                max-width: 700px;
-                margin: 0 auto;
-                padding: 0 10px;
-            }
-            /* Reset BETA button styling - override fidelity-colored borders from standard slides */
-            div[data-testid="stHorizontalBlock"] > div:nth-child(2) button[kind="secondary"] {
-                background-color: #2d2d2d !important;
-                border: 2px solid #666666 !important;
-                color: #e0e0e0 !important;
-            }
-            div[data-testid="stHorizontalBlock"] > div:nth-child(2) button[kind="secondary"]:hover {
-                background-color: #3d3d3d !important;
-                border: 2px solid #888888 !important;
-            }
-            </style>
-            <div class="nav-button-container">
-            """, unsafe_allow_html=True)
-
-            # Use 2 columns: Previous | BETA
+            # 2 columns: Previous | BETA
             col_prev, col_beta = st.columns(2)
 
             with col_prev:
@@ -942,8 +903,6 @@ Once you send your first message, I'll understand your purpose and we can get st
                 if st.button("BETA", key="completion_beta", use_container_width=True):
                     st.session_state.active_tab = "BETA"
                     st.rerun()
-
-            st.markdown("</div>", unsafe_allow_html=True)
 
             return
 
@@ -1230,10 +1189,6 @@ Once you send your first message, I'll understand your purpose and we can get st
                     st.rerun()
 
             with col_obs:
-                # Colored indicator bar above button - shows fidelity status
-                st.markdown(f"""
-                <div style="height: 4px; background-color: {user_color}; border-radius: 2px; margin-bottom: 4px; box-shadow: 0 0 6px {user_color};"></div>
-                """, unsafe_allow_html=True)
                 if st.button("Show Alignment Lens", key=f"obs_deck_toggle_{current_idx}", use_container_width=True, type="primary"):
                     st.session_state.demo_std_obs_deck_visible = True
                     st.rerun()
@@ -1287,10 +1242,10 @@ Once you send your first message, I'll understand your purpose and we can get st
         # Primacy State border color should match actual primacy_state value
         ps_color = get_fidelity_color(primacy_state)
 
-        # Animation styles
+        # Animation styles - unique name to prevent browser caching between slide transitions
         st.markdown("""
 <style>
-@keyframes slideContentFadeIn {
+@keyframes slideContentFadeIn8 {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
@@ -1316,7 +1271,7 @@ Once you send your first message, I'll understand your purpose and we can get st
         color: #e0e0e0;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         opacity: 0;
-        animation: slideContentFadeIn 1.0s ease-out forwards;
+        animation: slideContentFadeIn8 1.0s ease-out forwards;
         animation-fill-mode: forwards;">
         <div style="
             min-width: 32px;
@@ -1342,7 +1297,7 @@ Once you send your first message, I'll understand your purpose and we can get st
         # Steward response with border color matching AI fidelity
         st.markdown(f"""
         <div style='max-width: 700px; margin: 20px auto;'>
-            <div style='background-color: rgba(46, 204, 113, 0.05); border: 3px solid {ai_color}; border-radius: 10px; padding: 20px 25px; box-shadow: 0 0 15px rgba(46, 204, 113, 0.2); opacity: 0; animation: slideContentFadeIn 1.0s ease-out 0.3s forwards;'>
+            <div style='background-color: rgba(46, 204, 113, 0.05); border: 3px solid {ai_color}; border-radius: 10px; padding: 20px 25px; box-shadow: 0 0 15px rgba(46, 204, 113, 0.2); opacity: 0; animation: slideContentFadeIn8 1.0s ease-out 0.3s forwards;'>
                 <div style='color: {ai_color}; font-size: 20px; line-height: 1.6; margin-bottom: 15px;'>
                     That's an intriguing topic, but it falls outside your stated purpose of understanding TELOS. Your goal here is to understand TELOS without technical overwhelm, so let me keep us focused on that.
                 </div>
@@ -1446,10 +1401,10 @@ Once you send your first message, I'll understand your purpose and we can get st
         ai_color = get_fidelity_color(ai_fidelity)
         ps_color = get_fidelity_color(primacy_state)
 
-        # Animation styles
+        # Animation styles - unique name to prevent browser caching between slide transitions
         st.markdown("""
 <style>
-@keyframes slideContentFadeIn {
+@keyframes slideContentFadeIn9 {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
@@ -1473,7 +1428,7 @@ Once you send your first message, I'll understand your purpose and we can get st
         color: #e0e0e0;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         opacity: 0;
-        animation: slideContentFadeIn 1.0s ease-out forwards;
+        animation: slideContentFadeIn9 1.0s ease-out forwards;
         animation-fill-mode: forwards;">
         <div style="
             min-width: 32px;
@@ -1499,7 +1454,7 @@ Once you send your first message, I'll understand your purpose and we can get st
         # Steward response
         st.markdown(f"""
 <div style='max-width: 700px; margin: 15px auto;'>
-    <div style='background-color: rgba(46, 204, 113, 0.05); border: 3px solid {ai_color}; border-radius: 10px; padding: 20px 25px; box-shadow: 0 0 15px rgba(46, 204, 113, 0.2); opacity: 0; animation: slideContentFadeIn 1.0s ease-out 0.3s forwards;'>
+    <div style='background-color: rgba(46, 204, 113, 0.05); border: 3px solid {ai_color}; border-radius: 10px; padding: 20px 25px; box-shadow: 0 0 15px rgba(46, 204, 113, 0.2); opacity: 0; animation: slideContentFadeIn9 1.0s ease-out 0.3s forwards;'>
         <div style='color: {ai_color}; font-size: 20px; line-height: 1.6; margin-bottom: 15px;'>
             That's quite far from our purpose here. What would you like to know about how TELOS keeps both of us working toward the same goal?
         </div>
@@ -1870,11 +1825,10 @@ Once you send your first message, I'll understand your purpose and we can get st
                     st.rerun()
 
     def _render_slide_6_observation_deck_content(self):
-        """Render Alignment Lens content specifically for slide 6 (math question - YELLOW zone)."""
-        # Slide 6 fidelity values: User asked for technical math (0.69 yellow), AI answered anyway (0.82 green)
-        # This is the math question slide, NOT quantum physics (that's slide 8)
-        user_fidelity = 0.69
-        ai_fidelity = 0.82
+        """Render Alignment Lens content specifically for slide 8 (quantum physics - ORANGE zone)."""
+        # Slide 8 fidelity values: User asked about quantum physics (0.55 orange), AI redirected (0.88 green)
+        user_fidelity = 0.55
+        ai_fidelity = 0.88
         primacy_state = (2 * user_fidelity * ai_fidelity) / (user_fidelity + ai_fidelity)
 
         # Determine colors based on Goldilocks fidelity zones
@@ -1969,10 +1923,10 @@ Once you send your first message, I'll understand your purpose and we can get st
                 User Primacy Attractor
             </div>
             <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 2px solid {user_color}; border-top: none; border-radius: 0 0 8px 8px; padding: 18px; text-align: center; box-shadow: 0 0 15px {user_gradient_start}, 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);">
-                <div style="color: {user_color}; font-weight: bold; margin-bottom: 12px; font-size: 20px;">Your Purpose (Minor Drift)</div>
+                <div style="color: {user_color}; font-weight: bold; margin-bottom: 12px; font-size: 20px;">Your Purpose (Moderate Drift)</div>
                 <div style="color: #e0e0e0; line-height: 1.9; font-size: 15px; text-align: left;">
                     Understand TELOS without technical overwhelm<br/>
-                    <span style="color: #F4D03F; font-style: italic;">Asked for technical math details</span>
+                    <span style="color: #e67e22; font-style: italic;">Asked about quantum physics instead</span>
                 </div>
             </div>
         </div>

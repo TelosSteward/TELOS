@@ -200,26 +200,139 @@ def interpret(fidelity: float, purpose: str) -> SemanticSpec:
 # =============================================================================
 
 EXEMPLAR_CORPUS = {
+    # =========================================================================
+    # MINIMAL CORRECTION (strength < 0.45, fidelity ~0.70+)
+    # Characteristics: Questions, heavy hedging, implicit acknowledgment
+    # =========================================================================
     "minimal": [
         "That's an interesting angle - I'm wondering if we might explore how that connects to {purpose}?",
         "Curious thought! Perhaps there's a way to bridge that with what you mentioned wanting to focus on?",
         "That could be worth exploring. I'm thinking it might connect back to {purpose} in an interesting way?",
+        "Interesting direction. Could we maybe look at how that relates to what you came here for?",
+        "I'm curious about that. Perhaps we could see how it ties into {purpose}?",
+        "That's a fascinating point. I wonder if there might be a connection to what you're working on?",
+        "Intriguing! Could there perhaps be an angle that relates this to {purpose}?",
+        "That's worth considering. I'm wondering if we might find a link to your original focus?",
+        "Interesting thought. Perhaps we could explore whether this connects to {purpose}?",
+        "That could be relevant. I'm curious if there might be a way to tie it to what you mentioned?",
+        "Good observation. Could we maybe see how this relates to {purpose}?",
+        "That's a thoughtful point. Perhaps there's a path from here back to your focus?",
+        "I find that interesting. I wonder if we might connect it to {purpose} somehow?",
+        "That raises some thoughts. Could there perhaps be relevance to what you're exploring?",
+        "Interesting angle. I'm thinking there might be a bridge to {purpose} here?",
+        "That's worth noting. Perhaps we could look at how it intersects with your goal?",
+        "Curious direction. Could we maybe explore the connection to {purpose}?",
+        "That's an intriguing point. I wonder if it might relate to what you came here for?",
+        "Interesting perspective. Perhaps there's a way to link this to {purpose}?",
+        "That catches my attention. Could there be a connection we might explore to your focus?",
     ],
+
+    # =========================================================================
+    # LIGHT CORRECTION (strength 0.45-0.60, fidelity ~0.60-0.70)
+    # Characteristics: Soft statements, light hedging, brief acknowledgment
+    # =========================================================================
     "light": [
         "That's a bit of a tangent. Your goal was {purpose} - maybe we could look at the connection there? Or if priorities shifted, we can adjust.",
         "I hear you. Since you mentioned wanting to {purpose}, perhaps we could explore how this relates? If your focus has changed, that's fine too.",
+        "That's stepping a bit outside what you said you wanted. Shall we see how it connects to {purpose}? Or update your focus if needed.",
+        "Interesting, though it's drifting from your stated goal. Want to explore the connection to {purpose}, or has your focus shifted?",
+        "That's veering a bit from your purpose. Maybe we can find where it connects to {purpose}? We can always adjust your focus.",
+        "I notice we're moving sideways from your goal. Shall we trace back to {purpose}? Or has your direction changed?",
+        "That's branching off somewhat. Your focus was {purpose} - perhaps there's a link? Or update if needed.",
+        "We're drifting a little from {purpose}. Maybe we can reconnect? Let me know if your priorities shifted.",
+        "That's a slight detour from what you stated. Shall we explore how it ties to {purpose}? Or adjust if things changed.",
+        "I see we're moving off-center from your goal. Perhaps we can bridge back to {purpose}? Or shift focus if needed.",
+        "That's taking us a bit afield. Since {purpose} was your aim, maybe there's a connection? We can adjust too.",
+        "We're wandering a little from your stated focus. Want to link this to {purpose}? Or has direction changed?",
+        "That's edging away from {purpose}. Perhaps we could find the relevance? Or update your focus if needed.",
+        "I notice a slight drift from your goal. Maybe there's a way back to {purpose}? We can adjust if priorities shifted.",
+        "That's moving us somewhat off track. Your purpose was {purpose} - shall we reconnect? Or change focus?",
+        "We're stepping a bit aside from what you mentioned. Perhaps there's a link to {purpose}? Let me know if things changed.",
+        "That's a small departure from your focus. Maybe we can tie it back to {purpose}? Or adjust your direction.",
+        "I see we're drifting from {purpose}. Want to explore the connection? Or has your focus shifted?",
+        "That's slightly off from your stated goal. Shall we bridge back to {purpose}? We can update if needed.",
+        "We're veering a bit. Since you came here for {purpose}, maybe we can reconnect? Or adjust your focus.",
     ],
+
+    # =========================================================================
+    # MODERATE CORRECTION (strength 0.60-0.75, fidelity ~0.50-0.60)
+    # Characteristics: Direct statements, no hedging, explicit acknowledgment
+    # =========================================================================
     "moderate": [
         "That's moved away from your focus. You came here to {purpose}. Let me suggest we look at the aspect closest to what you asked about.",
         "I notice that's off your stated topic. Your goal was {purpose} - here's a path back that might still address your interest.",
+        "That's drifted from what you said you wanted. Since {purpose} was your focus, let's redirect there. You can always update if priorities changed.",
+        "We've wandered from your stated purpose. {purpose} was your goal - shall I help you reconnect with that?",
+        "That's off your original track. You mentioned {purpose} - let me help you get back there. Or update your focus.",
+        "I see we're away from your purpose. Your aim was {purpose}. Here's how to reconnect. You can shift if things changed.",
+        "That's diverged from your focus. Since you came for {purpose}, let's realign. Or adjust your direction if needed.",
+        "We're off the path you set. {purpose} was your goal - let me guide us back. Update your focus if priorities shifted.",
+        "That's strayed from what you wanted. Your stated purpose was {purpose}. Let's get back on course. Or change focus.",
+        "I notice significant drift from your goal. You came here for {purpose}. Here's the way back. Or shift if needed.",
+        "That's taken us away from your focus. {purpose} was your aim - let's reconnect. You can always update your direction.",
+        "We've moved off your stated path. Your goal was {purpose}. Let me help you return. Or adjust if things changed.",
+        "That's not aligned with your purpose. You wanted to {purpose}. Here's a redirect. Or update your focus.",
+        "I see departure from your focus. Since {purpose} was your goal, let's get back. You can shift direction if needed.",
+        "That's pulled us from your aim. You mentioned wanting to {purpose}. Let me guide us back. Or change focus.",
+        "We're off your original purpose. {purpose} was what you stated. Here's the path back. Or update if priorities shifted.",
+        "That's away from what you asked for. Your focus was {purpose}. Let's reconnect. Or adjust your direction.",
+        "I notice we're off track from {purpose}. That was your goal. Here's how to return. Or shift focus if things changed.",
+        "That's diverging from your stated aim. You came for {purpose}. Let me redirect. Or update your focus.",
+        "We've drifted from your purpose. {purpose} was your intention. Let's get back. You can always adjust direction.",
     ],
+
+    # =========================================================================
+    # FIRM CORRECTION (strength 0.75-0.85, fidelity ~0.40-0.50)
+    # Characteristics: Directives, no hedging, named drift
+    # =========================================================================
     "firm": [
         "That's quite far from your purpose: {purpose}. Here's a path back. If your priorities have changed, you can shift focus.",
         "We've moved significantly from what you stated: {purpose}. Let me redirect us. Update your focus if your goals have changed.",
+        "That's a notable departure from your goal of {purpose}. I'll guide us back - or you can shift focus if needed.",
+        "This is off-track from {purpose}. Here's how to reconnect with your stated goal. Shifting focus is always an option.",
+        "We're well away from your purpose: {purpose}. I'm redirecting us. Change your focus if priorities shifted.",
+        "That's far from what you asked for. Your goal was {purpose}. Let me bring us back. Or update your direction.",
+        "Significant drift from {purpose}. I'll guide us back to your stated aim. Shift focus if things have changed.",
+        "This has moved considerably from your purpose. You came for {purpose}. Here's the redirect. Or adjust focus.",
+        "We're off course from {purpose}. That was your stated goal. I'm bringing us back. Update focus if needed.",
+        "That's a major departure from what you wanted. {purpose} was your aim. Redirecting now. Or shift your focus.",
+        "Far from your stated purpose: {purpose}. Here's the path back. Change direction if your goals evolved.",
+        "This is substantially off from {purpose}. I'm guiding us back. You can update your focus if priorities changed.",
+        "We've drifted considerably from your goal. {purpose} was your purpose. Redirecting. Or shift focus.",
+        "That's well outside your stated aim: {purpose}. Let me redirect. Update your direction if things changed.",
+        "Significant departure from {purpose}. Here's how to get back on track. Shifting focus is an option.",
+        "This is far from what you stated. Your purpose was {purpose}. I'm redirecting us. Or change focus.",
+        "We're substantially off from your goal: {purpose}. Bringing us back now. Update focus if priorities shifted.",
+        "That's a major drift from your aim. {purpose} was your goal. Here's the redirect. Or adjust direction.",
+        "Far from your original purpose: {purpose}. I'll guide us back. You can shift focus if things evolved.",
+        "This has strayed considerably from {purpose}. Redirecting to your stated goal. Or update your focus.",
     ],
+
+    # =========================================================================
+    # STRONG CORRECTION (strength >= 0.85, fidelity < 0.40)
+    # Characteristics: Clear directives, anchoring statement, prominent shift mention
+    # =========================================================================
     "strong": [
         "This is far from your purpose: {purpose}. I'll redirect us back. If your focus has genuinely shifted, you can update it and we'll go from there.",
         "That's well outside what you came here for: {purpose}. Let's get back on track. You can always update your focus if things have changed.",
+        "We've moved far from your stated goal of {purpose}. Here's the path back. If your priorities shifted, updating your focus is straightforward.",
+        "This doesn't connect to {purpose}. I'm redirecting to serve your original goal. Shift focus if your needs have genuinely changed.",
+        "That's very far from your purpose: {purpose}. Bringing us back now. If your goals have truly changed, update your focus.",
+        "We're nowhere near {purpose}. That's your stated aim. I'm redirecting us. Update focus if priorities genuinely shifted.",
+        "This is completely off from your goal: {purpose}. Here's the redirect. You can change your focus if things have evolved.",
+        "Far outside your stated purpose: {purpose}. I'll guide us back. If your direction has truly changed, update it.",
+        "That's not serving your purpose: {purpose}. Redirecting now. Shift your focus if your needs have genuinely changed.",
+        "We've strayed very far from {purpose}. Getting us back on track. Update your focus if priorities truly shifted.",
+        "This doesn't align with what you came for: {purpose}. Here's the path back. Change focus if things have evolved.",
+        "Very far from your stated goal: {purpose}. I'm redirecting us. You can update your focus if it's genuinely changed.",
+        "That's well away from your purpose: {purpose}. Bringing us back. If your priorities shifted, update your direction.",
+        "This isn't connected to {purpose}. Redirecting to serve your goal. Shift focus if your needs have truly changed.",
+        "We're far off from what you stated: {purpose}. Here's the redirect. Update focus if things genuinely evolved.",
+        "That's distant from your purpose: {purpose}. I'll guide us back now. Change your focus if priorities truly shifted.",
+        "Not serving your stated aim: {purpose}. Redirecting. You can update your focus if it's genuinely changed.",
+        "Very far from {purpose}. That was your goal. Getting back on track. Shift focus if your needs have evolved.",
+        "This is disconnected from your purpose: {purpose}. Here's the path back. Update direction if things truly changed.",
+        "Far from what you came here for: {purpose}. Redirecting now. If your focus has genuinely shifted, update it.",
     ],
 }
 
@@ -320,7 +433,10 @@ def compute_behavioral_fidelity(
         )
         max_similarity = max(max_similarity, float(similarity))
 
-    # Normalize: map raw MPNet similarity to display range
-    # MPNet raw 0.40 for AI text -> display 0.70 (GREEN threshold)
-    normalized = min(1.0, max(0.0, max_similarity * 1.75))
-    return normalized
+    # Normalize using calibrated AI response normalization: display = 1.4 * raw + 0.14
+    # Matches normalize_ai_response_fidelity() in fidelity_display.py
+    # Calibrated for longer AI text: raw 0.40 -> display 0.70 (GREEN threshold)
+    AI_RESPONSE_SLOPE = 1.4
+    AI_RESPONSE_INTERCEPT = 0.14
+    behavioral_fidelity = max(0.0, min(1.0, AI_RESPONSE_SLOPE * max_similarity + AI_RESPONSE_INTERCEPT))
+    return behavioral_fidelity
