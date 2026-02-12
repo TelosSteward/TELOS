@@ -104,18 +104,7 @@ class BetaPAEstablishment:
 
         st.markdown('<div class="beta-template-container">', unsafe_allow_html=True)
 
-        st.markdown("""
-        <div style="text-align: center; padding: 20px 0;">
-            <h2 style="color: #F4D03F; font-size: 36px; margin: 0;">What brings you here today?</h2>
-            <p style="color: #e0e0e0; font-size: 16px; margin-top: 10px;">
-                Select a purpose template or describe your own
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
         st.markdown("</div>", unsafe_allow_html=True)
-
-        st.markdown("<div style='margin: 20px 0;'></div>", unsafe_allow_html=True)
 
         # Display templates in a grid (2 columns) - wrapped in container
         st.markdown('<div style="max-width: 700px; margin: 0 auto;">', unsafe_allow_html=True)

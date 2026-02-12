@@ -92,26 +92,88 @@ class BetaOnboarding:
         col_spacer_left, col_center, col_spacer_right = st.columns([0.5, 3, 0.5])
 
         with col_center:
-            # Show onboarding screen
+            # Single card with fade-in animation, matching DEMO/AGENTIC welcome style
             st.markdown("""
-            <div style="text-align: center; padding: 0 0 4px 0; margin-top: -6rem;">
-                <h1 style="color: #F4D03F; font-size: 48px; margin: 0;">Welcome to TELOS Beta</h1>
-                <p style="color: #e0e0e0; font-size: 18px; margin-top: 4px; margin-bottom: 0;">Help us build the future of AI governance</p>
-            </div>
-
-            <div class="message-container" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid #F4D03F; border-radius: 8px; padding: 16px 20px; margin: 8px 0 4px 0; box-shadow: 0 0 15px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);">
-                <h3 style="color: #F4D03F; margin-top: 0; margin-bottom: 6px;">What is Beta Testing?</h3>
-                <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6; margin-bottom: 0;">
-                    You're getting early access to TELOS AI Governance features before they're publicly released.
-                    Your feedback helps us refine the system and improve AI governance for everyone.
-                </p>
-            </div>
-
-            <div class="message-container" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%), rgba(26, 26, 30, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid #F4D03F; border-radius: 8px; padding: 16px 20px; margin: 4px 0 8px 0; box-shadow: 0 0 15px rgba(244, 208, 63, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);">
-                <h3 style="color: #F4D03F; margin-top: 0; margin-bottom: 6px;">Your Data</h3>
-                <p style="color: #e0e0e0; font-size: 19px; line-height: 1.6; margin-bottom: 0;">
-                    Conversations stay in your browser and are never sent to our servers. When you close the session, they're gone. We collect only anonymized governance measurements (fidelity scores, intervention patterns) — never conversation content.
-                </p>
+            <style>
+            @keyframes betaFadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            /* Gold toggle switch — replace native checkbox */
+            .stCheckbox {
+                gap: 10px !important;
+            }
+            .stCheckbox > label {
+                color: #e0e0e0 !important;
+            }
+            .stCheckbox input[type="checkbox"] {
+                width: 44px !important;
+                height: 24px !important;
+                appearance: none !important;
+                -webkit-appearance: none !important;
+                background-color: #2d2d2d !important;
+                border: 2px solid #666 !important;
+                border-radius: 12px !important;
+                cursor: pointer !important;
+                position: relative !important;
+                transition: all 0.3s ease !important;
+                margin-right: 10px !important;
+            }
+            .stCheckbox input[type="checkbox"]::after {
+                content: "" !important;
+                position: absolute !important;
+                width: 16px !important;
+                height: 16px !important;
+                border-radius: 50% !important;
+                background-color: #fff !important;
+                top: 2px !important;
+                left: 2px !important;
+                transition: all 0.3s ease !important;
+            }
+            .stCheckbox input[type="checkbox"]:checked {
+                background-color: #F4D03F !important;
+                border-color: #F4D03F !important;
+            }
+            .stCheckbox input[type="checkbox"]:checked::after {
+                left: 22px !important;
+                background-color: #0a0a0a !important;
+            }
+            /* Hide the SVG checkmark that Streamlit adds */
+            .stCheckbox svg,
+            .stCheckbox path,
+            .stCheckbox [data-testid="stCheckbox"] svg,
+            [data-testid="stCheckbox"] svg,
+            [data-testid="stCheckbox"] path,
+            .stCheckbox span svg,
+            .stCheckbox label svg {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                width: 0 !important;
+                height: 0 !important;
+            }
+            </style>
+            <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+                        border: 2px solid #F4D03F;
+                        border-radius: 15px;
+                        padding: 20px;
+                        margin: -4rem auto 20px auto;
+                        text-align: center;
+                        box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+                        opacity: 0;
+                        animation: betaFadeIn 1.0s ease-out forwards;">
+                <h1 style="color: #F4D03F; font-size: 28px; margin: 0 0 4px 0;">Welcome to TELOS Beta</h1>
+                <p style="color: #e0e0e0; font-size: 15px; margin: 0 0 14px 0;">Help us build the future of AI governance</p>
+                <div style="text-align: left; max-width: 700px; margin: 0 auto;">
+                    <p style="color: #e0e0e0; font-size: 16px; line-height: 1.5; margin-bottom: 10px;">
+                        You're getting early access to TELOS AI Governance features before they're publicly released.
+                        Your feedback helps us refine the system and improve AI governance for everyone.
+                    </p>
+                    <p style="color: #e0e0e0; font-size: 16px; line-height: 1.5; margin-bottom: 0;">
+                        <strong style="color: #F4D03F;">Your Data:</strong>
+                        Conversations stay in your browser and are never sent to our servers. When you close the session, they're gone. We collect only anonymized governance measurements (fidelity scores, intervention patterns) — never conversation content.
+                    </p>
+                </div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -147,13 +209,6 @@ class BetaOnboarding:
                             }
 
                         st.rerun()
-
-            # Footer note
-            st.markdown("""
-            <div style="text-align: center; color: #888; font-size: 14px; margin-top: 4px;">
-                Questions about data privacy? Contact us at <a href="mailto:JB@telos-labs.ai" style="color: #F4D03F; text-decoration: none;">JB@telos-labs.ai</a>
-            </div>
-            """, unsafe_allow_html=True)
 
         return False  # User has not consented yet
 

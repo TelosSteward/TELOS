@@ -831,8 +831,8 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
 <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             border: 2px solid #F4D03F;
             border-radius: 15px;
-            padding: 30px;
-            margin: 20px auto;
+            padding: 20px;
+            margin: 10px auto 30px auto;
             text-align: center;
             box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
             opacity: 0;
@@ -849,8 +849,6 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
 }}
 </style>
 """, unsafe_allow_html=True)
-
-            st.markdown("<div style='margin: 30px 0;'></div>", unsafe_allow_html=True)
 
             col_l, col_c, col_r = st.columns(3)
             with col_c:

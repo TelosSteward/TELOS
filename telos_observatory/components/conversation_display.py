@@ -769,33 +769,27 @@ Once you send your first message, I'll understand your purpose and we can get st
     <div data-slide="0" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
                 border: 2px solid #F4D03F;
                 border-radius: 15px;
-                padding: 30px;
-                margin: 20px auto;
+                padding: 20px;
+                margin: 10px auto 30px auto;
                 text-align: center;
                 box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
                 opacity: 0;
                 animation: slideContentFadeIn 1.0s ease-out forwards;
                 animation-fill-mode: forwards;">
-        <h1 style="color: #F4D03F; font-size: 32px; margin-bottom: 20px;">Welcome to TELOS Demo Mode!</h1>
+        <h1 style="color: #F4D03F; font-size: 28px; margin-bottom: 12px;">Welcome to TELOS Demo Mode!</h1>
         <div style="text-align: left; max-width: 700px; margin: 0 auto;">
-            <p style="color: #e0e0e0; font-size: 18px; line-height: 1.6; margin-bottom: 15px;">
+            <p style="color: #e0e0e0; font-size: 16px; line-height: 1.5; margin-bottom: 10px;">
                 Hello! I'm Steward, an AI assistant governed by TELOS and your guide.
-            </p>
-            <p style="color: #e0e0e0; font-size: 18px; line-height: 1.6; margin-bottom: 15px;">
                 I'll walk you through how TELOS keeps me aligned with your goals through real-time governance -- ensuring I stay accountable to what you actually want, not where the conversation might drift.
             </p>
-            <p style="color: #e0e0e0; font-size: 18px; line-height: 1.6; margin-bottom: 15px;">
+            <p style="color: #e0e0e0; font-size: 16px; line-height: 1.5; margin-bottom: 10px;">
                 There are three ways to explore. <strong style="color: #F4D03F;">DEMO</strong> walks through conversational governance -- how TELOS measures alignment, detects drift, and intervenes when needed. <strong style="color: #F4D03F;">AGENTIC</strong> shows where this is heading -- governance for AI agents that don't just talk, but act. And <strong style="color: #F4D03F;">BETA</strong> lets you experience live TELOS governance yourself.
             </p>
-            <p style="color: #e0e0e0; font-size: 18px; line-height: 1.6; margin-bottom: 15px;">
+            <p style="color: #e0e0e0; font-size: 16px; line-height: 1.5; margin-bottom: 10px;">
                 There's no required path. Start wherever draws your interest, move between them freely, skip what doesn't serve you. This is your time -- use it however feels most useful. I'll be here throughout, wherever you choose to begin.
             </p>
-            <p style="color: #e0e0e0; font-size: 18px; line-height: 1.6; margin-bottom: 15px;">
+            <p style="color: #e0e0e0; font-size: 16px; line-height: 1.5; margin-bottom: 8px;">
                 Click <strong style="color: #F4D03F;">Start Demo</strong> below, or select your starting point from the tabs above.
-            </p>
-            <hr style="border: none; border-top: 1px solid #555; margin: 10px 0;">
-            <p style="color: #e0e0e0; font-size: 16px; line-height: 1.6; margin-top: 10px;">
-                <strong>TELOS AI Labs Inc.</strong> | <a href="https://github.com/TelosSteward/TELOS" style="color: #F4D03F;" target="_blank">GitHub</a> | <a href="mailto:JB@telos-labs.ai" style="color: #F4D03F;" target="_blank">JB@telos-labs.ai</a> | <a href="https://forms.gle/xR6gRxQnyLSMJmeT9" style="color: #F4D03F;" target="_blank">Request a Live Demo</a>
             </p>
         </div>
     </div>
@@ -807,9 +801,6 @@ Once you send your first message, I'll understand your purpose and we can get st
 }}
 </style>
 """, unsafe_allow_html=True)
-
-            # Add spacing between content and button (30px matches top spacing)
-            st.markdown("<div style='margin: 30px 0;'></div>", unsafe_allow_html=True)
 
             # Wrap button in 700px container to match 3-button layout width
             st.markdown("""
