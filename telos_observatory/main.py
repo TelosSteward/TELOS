@@ -4,6 +4,7 @@ TELOS Observatory - Main Application
 Clean entry point with extracted CSS and proper imports.
 """
 
+import os
 from pathlib import Path
 from datetime import datetime
 
@@ -345,21 +346,16 @@ def main():
             steward_panel.render_button()
 
     # Initialize active tab
+    # Admin access requires TELOS_ADMIN_SECRET env var matching query param
     if 'active_tab' not in st.session_state:
         query_params = st.query_params
-        is_admin = query_params.get("admin") == "true"
+        admin_secret = os.environ.get("TELOS_ADMIN_SECRET", "")
+        admin_token = query_params.get("admin", "")
+        is_admin = bool(admin_secret and admin_token and admin_secret == admin_token and len(admin_secret) >= 16)
         beta_direct = query_params.get("beta") == "true"
-        telos_direct = query_params.get("telos") == "true"
 
         if is_admin:
             st.session_state.active_tab = "DEVOPS"
-        elif telos_direct:
-            st.session_state.beta_consent_given = True
-            st.session_state.demo_completed = True
-            st.session_state.beta_completed = True
-            st.session_state.pa_established = True
-            st.session_state.telos_demo_mode = False
-            st.session_state.active_tab = "TELOS"
         elif beta_direct:
             st.session_state.beta_consent_given = True
             st.session_state.active_tab = "BETA"
@@ -369,11 +365,12 @@ def main():
     active_tab = st.session_state.active_tab
 
     query_params = st.query_params
-    is_admin = query_params.get("admin") == "true"
+    admin_secret = os.environ.get("TELOS_ADMIN_SECRET", "")
+    admin_token = query_params.get("admin", "")
+    is_admin = bool(admin_secret and admin_token and admin_secret == admin_token and len(admin_secret) >= 16)
     beta_direct = query_params.get("beta") == "true"
-    telos_direct = query_params.get("telos") == "true"
 
-    if (active_tab in ["BETA", "TELOS"]) and not has_beta_consent and not is_admin and not beta_direct and not telos_direct:
+    if (active_tab in ["BETA", "TELOS"]) and not has_beta_consent and not is_admin and not beta_direct:
         beta_onboarding.render()
         return
     else:

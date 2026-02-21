@@ -107,9 +107,29 @@ def _select_provider(model: str):
     return _openai_provider
 
 
-def _resolve_llm_key(api_key: str) -> str:
-    """Determine the LLM API key to use for the upstream call."""
-    return api_key
+def _resolve_llm_key(provider_name: str) -> str:
+    """Resolve the LLM API key from server-side environment variables.
+
+    Never forwards the caller's bearer token to upstream LLM providers.
+    """
+    env_map = {
+        "mistral": "MISTRAL_API_KEY",
+        "openai": "OPENAI_API_KEY",
+    }
+    env_var = env_map.get(provider_name, "OPENAI_API_KEY")
+    key = os.environ.get(env_var, "")
+    if not key:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "error": {
+                    "message": f"LLM provider not configured",
+                    "type": "configuration_error",
+                    "code": 503,
+                }
+            },
+        )
+    return key
 
 
 def _build_response(data: Dict[str, Any], governance_meta: Optional[Dict] = None) -> Dict:
@@ -179,11 +199,11 @@ async def chat_completions(
     start_time = time.time()
 
     try:
-        # -- Resolve LLM key --
-        llm_api_key = _resolve_llm_key(api_key)
-
         # -- Select provider --
         provider = _select_provider(request.model)
+
+        # -- Resolve LLM key from server env (never forward caller's token) --
+        llm_api_key = _resolve_llm_key(provider.get_provider_name())
         logger.info(f"Using {provider.get_provider_name()} provider for model: {request.model}")
 
         # -- Forward to LLM --
@@ -208,5 +228,5 @@ async def chat_completions(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error in chat_completions: {e}", exc_info=True)
-        return _error_response(500, f"TELOS Gateway error: {str(e)}", "server_error")
+        logger.error(f"Error in chat_completions: {type(e).__name__}: {e}", exc_info=True)
+        return _error_response(500, "Internal server error", "server_error")

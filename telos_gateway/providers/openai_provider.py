@@ -55,10 +55,17 @@ class OpenAIProvider(LLMProvider):
 
         logger.debug(f"Forwarding to OpenAI: model={request.model}")
 
-        async with httpx.AsyncClient(timeout=self.timeout) as client:
-            response = await client.post(url, headers=headers, json=request_data)
-            response.raise_for_status()
-            return response.json()
+        try:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                response = await client.post(url, headers=headers, json=request_data)
+                response.raise_for_status()
+                return response.json()
+        except httpx.HTTPStatusError as e:
+            logger.error(f"OpenAI API error: HTTP {e.response.status_code}")
+            raise ValueError("LLM provider returned an error") from None
+        except httpx.RequestError as e:
+            logger.error(f"OpenAI connection error: {type(e).__name__}")
+            raise ValueError("Failed to connect to LLM provider") from None
 
     async def chat_completion_stream(
         self,
@@ -76,16 +83,23 @@ class OpenAIProvider(LLMProvider):
         request_data = request.model_dump(exclude_none=True)
         request_data["stream"] = True
 
-        async with httpx.AsyncClient(timeout=self.timeout) as client:
-            async with client.stream(
-                "POST", url, headers=headers, json=request_data
-            ) as response:
-                response.raise_for_status()
-                async for line in response.aiter_lines():
-                    if line.startswith("data: "):
-                        yield line + "\n\n"
-                    elif line.strip() == "":
-                        continue
+        try:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                async with client.stream(
+                    "POST", url, headers=headers, json=request_data
+                ) as response:
+                    response.raise_for_status()
+                    async for line in response.aiter_lines():
+                        if line.startswith("data: "):
+                            yield line + "\n\n"
+                        elif line.strip() == "":
+                            continue
+        except httpx.HTTPStatusError as e:
+            logger.error(f"OpenAI streaming error: HTTP {e.response.status_code}")
+            yield f'data: {{"error": "LLM provider returned an error"}}\n\n'
+        except httpx.RequestError as e:
+            logger.error(f"OpenAI streaming connection error: {type(e).__name__}")
+            yield f'data: {{"error": "Failed to connect to LLM provider"}}\n\n'
 
 
 class MockProvider(LLMProvider):

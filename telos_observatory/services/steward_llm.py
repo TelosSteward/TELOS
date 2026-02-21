@@ -179,7 +179,7 @@ Be helpful, clear, and concise. Use analogies when helpful. Always prioritize us
             return response.choices[0].message.content
 
         except Exception as e:
-            return f"I apologize, but I encountered an error: {str(e)}. Please try again."
+            return f"I apologize, but I encountered an error generating a response. Please try again."
 
     def get_streaming_response(self,
                                user_message: str,
@@ -233,4 +233,4 @@ Be helpful, clear, and concise. Use analogies when helpful. Always prioritize us
                     yield chunk.data.choices[0].delta.content
 
         except Exception as e:
-            yield f"I apologize, but I encountered an error: {str(e)}. Please try again."
+            yield f"I apologize, but I encountered an error generating a response. Please try again."
