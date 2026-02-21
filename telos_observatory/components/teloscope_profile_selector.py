@@ -78,17 +78,24 @@ PROFILES = {
 
 
 def get_profile_from_query_params() -> Optional[str]:
-    """Check query params for profile selection."""
+    """Check query params for profile selection.
+
+    Admin/devops access requires TELOS_ADMIN_SECRET env var.
+    """
+    import os
     query_params = st.query_params
 
-    # Direct profile param
+    # Direct profile param (non-privileged profiles only)
     profile = query_params.get("profile")
-    if profile in PROFILES:
+    if profile in PROFILES and profile not in ("devops",):
         return profile
 
-    # Legacy param mapping
-    if query_params.get("admin") == "true":
+    # Admin access requires secret
+    admin_secret = os.environ.get("TELOS_ADMIN_SECRET", "")
+    admin_token = query_params.get("admin", "")
+    if admin_secret and admin_token and admin_secret == admin_token and len(admin_secret) >= 16:
         return "devops"
+
     if query_params.get("research") == "true":
         return "research"
 

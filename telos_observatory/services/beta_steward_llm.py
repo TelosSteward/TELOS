@@ -483,7 +483,7 @@ When users ask you to explain what happened in the session, summarize the trajec
             return response.choices[0].message.content
 
         except Exception as e:
-            return f"I apologize, but I encountered an error: {str(e)}. Please try again."
+            return f"I apologize, but I encountered an error generating a response. Please try again."
 
     def get_streaming_response(self,
                                user_message: str,
@@ -537,4 +537,4 @@ When users ask you to explain what happened in the session, summarize the trajec
                     yield chunk.data.choices[0].delta.content
 
         except Exception as e:
-            yield f"I apologize, but I encountered an error: {str(e)}. Please try again."
+            yield f"I apologize, but I encountered an error generating a response. Please try again."

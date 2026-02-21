@@ -118,7 +118,7 @@ class FileHandler:
         except Exception as e:
             return {
                 'name': uploaded_file.name if hasattr(uploaded_file, 'name') else 'unknown',
-                'error': f'Error processing file: {str(e)}',
+                'error': 'Error processing file. Please try a different file.',
                 'success': False
             }
 
@@ -170,7 +170,7 @@ class FileHandler:
             return None, f"Unsupported file type: {file_type}"
 
         except Exception as e:
-            return None, f"Error extracting content: {str(e)}"
+            return None, "Error extracting file content. Please try a different file."
 
     def _extract_pdf(self, file_bytes: bytes) -> Tuple[Optional[str], Optional[str]]:
         """Extract text from PDF file."""
@@ -189,7 +189,7 @@ class FileHandler:
         except ImportError:
             return None, "PDF support requires PyPDF2. Install with: pip install PyPDF2"
         except Exception as e:
-            return None, f"Error extracting PDF: {str(e)}"
+            return None, "Error extracting PDF content. Please try a different file."
 
     def _extract_docx(self, file_bytes: bytes) -> Tuple[Optional[str], Optional[str]]:
         """Extract text from DOCX file."""
@@ -208,7 +208,7 @@ class FileHandler:
         except ImportError:
             return None, "DOCX support requires python-docx. Install with: pip install python-docx"
         except Exception as e:
-            return None, f"Error extracting DOCX: {str(e)}"
+            return None, "Error extracting DOCX content. Please try a different file."
 
     def _extract_xlsx(self, file_bytes: bytes) -> Tuple[Optional[str], Optional[str]]:
         """Extract text from XLSX file."""
@@ -234,7 +234,7 @@ class FileHandler:
         except ImportError:
             return None, "XLSX support requires openpyxl. Install with: pip install openpyxl"
         except Exception as e:
-            return None, f"Error extracting XLSX: {str(e)}"
+            return None, "Error extracting XLSX content. Please try a different file."
 
     def _is_image(self, file_type: str) -> bool:
         """Check if file is an image."""

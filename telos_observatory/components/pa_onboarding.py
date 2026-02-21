@@ -659,13 +659,16 @@ class PAOnboarding:
                     value=previous_answer,  # Pre-populate with saved answer
                     placeholder=q['placeholder'],
                     height=100,
+                    max_chars=500,
                     key=f"pa_{q['key']}_{current_q}",  # Unique key per question to force refresh
                     label_visibility="collapsed"
                 )
 
-                # Store answer
+                # Store answer with sanitization
                 if answer:
-                    answers[q['key']] = answer
+                    # Strip control characters (keep newlines/tabs)
+                    sanitized = ''.join(c for c in answer if ord(c) >= 32 or c in '\n\t')
+                    answers[q['key']] = sanitized
 
                 # Navigation buttons
                 col1, col2, col3 = st.columns([2, 1, 2])
@@ -742,7 +745,7 @@ class PAOnboarding:
                         q_key = self.questions[i]['key']
                         if q_key in st.session_state.pa_answers:
                             st.markdown(f"**{self.questions[i]['question']}**")
-                            st.markdown(st.session_state.pa_answers[q_key])
+                            st.text(st.session_state.pa_answers[q_key])
                             st.markdown("---")
 
         return None

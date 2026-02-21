@@ -4395,7 +4395,7 @@ Once you send your first message, I'll understand your purpose and we can get st
             purpose_items = ""
             if primacy_attractor and 'purpose' in primacy_attractor:
                 for purpose_item in primacy_attractor['purpose']:
-                    purpose_items += f"<p style='margin: 8px 0; color: #e0e0e0;'>• {purpose_item}</p>"
+                    purpose_items += f"<p style='margin: 8px 0; color: #e0e0e0;'>• {html.escape(str(purpose_item))}</p>"
             else:
                 purpose_items = "<p style='margin: 8px 0; color: #e0e0e0;'>• Establish conversation purpose from baseline turns</p>"
 
@@ -4418,7 +4418,7 @@ Once you send your first message, I'll understand your purpose and we can get st
             scope_items = ""
             if primacy_attractor and 'scope' in primacy_attractor:
                 for scope_item in primacy_attractor['scope']:
-                    scope_items += f"<p style='margin: 8px 0; color: #e0e0e0;'>• {scope_item}</p>"
+                    scope_items += f"<p style='margin: 8px 0; color: #e0e0e0;'>• {html.escape(str(scope_item))}</p>"
             else:
                 scope_items = "<p style='margin: 8px 0; color: #e0e0e0;'>• Topics covered in baseline</p>"
 
@@ -4441,7 +4441,7 @@ Once you send your first message, I'll understand your purpose and we can get st
             boundary_items = ""
             if primacy_attractor and 'boundaries' in primacy_attractor:
                 for boundary_item in primacy_attractor['boundaries']:
-                    boundary_items += f"<p style='margin: 8px 0; color: #e0e0e0;'>• {boundary_item}</p>"
+                    boundary_items += f"<p style='margin: 8px 0; color: #e0e0e0;'>• {html.escape(str(boundary_item))}</p>"
             else:
                 boundary_items = "<p style='margin: 8px 0; color: #e0e0e0;'>• Off-topic discussions</p>"
 
