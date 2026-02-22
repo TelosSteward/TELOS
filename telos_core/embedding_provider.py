@@ -8,6 +8,7 @@ Provides two implementations:
 
 from __future__ import annotations
 import hashlib
+import math
 import numpy as np
 from typing import Optional
 
@@ -216,6 +217,9 @@ def rescale_sentence_transformer_fidelity(raw_score: float) -> float:
         Rescaled fidelity score for TELOS (0.0 to 1.0)
     """
     rescaled = 0.25 + raw_score * 1.8
+    # NaN guard: corrupted scores must fail-closed to 0.0
+    if math.isnan(rescaled):
+        return 0.0
     return max(0.0, min(1.0, rescaled))
 
 

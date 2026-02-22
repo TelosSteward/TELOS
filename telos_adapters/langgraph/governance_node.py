@@ -13,6 +13,7 @@ you either execute the right tool or you don't.
 This is the heart of TELOS governance for agentic AI.
 """
 
+import math
 from typing import Any, Dict, List, Optional, Callable
 from datetime import datetime
 import numpy as np
@@ -108,6 +109,9 @@ def calculate_fidelity(
     else:
         normalized = 0.90 + ((raw_similarity - 0.45) / 0.30) * 0.10
 
+    # NaN guard: corrupted similarity must fail-closed to 0.0
+    if math.isnan(normalized):
+        normalized = 0.0
     # Clamp to valid range
     normalized = max(0.0, min(1.0, normalized))
 

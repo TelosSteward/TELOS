@@ -41,6 +41,7 @@ Usage:
 """
 
 from __future__ import annotations
+import math
 from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
@@ -449,6 +450,9 @@ def get_style_interpolation(fidelity: float, green_threshold: float = 0.70) -> d
     else:
         band_position = 0.5
 
+    # NaN guard: corrupted fidelity must fail-closed
+    if math.isnan(band_position):
+        band_position = 0.0
     band_position = max(0.0, min(1.0, band_position))
 
     # Interpolate (higher position = closer to next band = less intervention)

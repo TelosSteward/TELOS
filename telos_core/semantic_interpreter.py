@@ -13,6 +13,7 @@ NO abstract tone words ("be warm", "be direct").
 ONLY concrete linguistic specifications that an LLM can execute deterministically.
 """
 
+import math
 from dataclasses import dataclass
 from typing import Optional
 import logging
@@ -438,5 +439,9 @@ def compute_behavioral_fidelity(
     # Calibrated for longer AI text: raw 0.40 -> display 0.70 (GREEN threshold)
     AI_RESPONSE_SLOPE = 1.4
     AI_RESPONSE_INTERCEPT = 0.14
-    behavioral_fidelity = max(0.0, min(1.0, AI_RESPONSE_SLOPE * max_similarity + AI_RESPONSE_INTERCEPT))
+    behavioral_fidelity = AI_RESPONSE_SLOPE * max_similarity + AI_RESPONSE_INTERCEPT
+    # NaN guard: corrupted similarity must fail-closed to 0.0
+    if math.isnan(behavioral_fidelity):
+        behavioral_fidelity = 0.0
+    behavioral_fidelity = max(0.0, min(1.0, behavioral_fidelity))
     return behavioral_fidelity

@@ -37,6 +37,7 @@ Usage:
     decision = engine.make_governance_decision(result.normalized_fidelity)
 """
 
+import math
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List, Optional, Tuple
@@ -218,6 +219,9 @@ def normalize_fidelity(
     Returns:
         Normalized fidelity clamped to [0, 1]
     """
+    # NaN guard: corrupted input must fail to lowest fidelity (fail-closed)
+    if math.isnan(raw_similarity):
+        return 0.0
     display = slope * raw_similarity + intercept
     return max(0.0, min(1.0, display))
 

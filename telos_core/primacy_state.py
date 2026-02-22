@@ -24,6 +24,7 @@ Status: Production-ready (validated on 46 dual PA sessions + trifecta extension)
 """
 
 from __future__ import annotations
+import math
 from dataclasses import dataclass
 from typing import Optional, Dict, Any, Tuple
 import numpy as np
@@ -179,7 +180,12 @@ class PrimacyStateCalculator:
         if norm_a == 0 or norm_b == 0:
             return 0.0
 
-        return float(dot_product / (norm_a * norm_b))
+        result = float(dot_product / (norm_a * norm_b))
+        # NaN guard: corrupted embeddings must not bypass governance (fail-closed)
+        if math.isnan(result):
+            logger.warning("NaN detected in cosine similarity — returning 0.0 (fail-closed)")
+            return 0.0
+        return result
 
     def set_steward_centroid(self, steward_centroid: np.ndarray):
         """

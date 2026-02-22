@@ -29,6 +29,8 @@ Derivation:
     intercept = 0.70 - 1.167 × 0.50 = 0.117
 """
 
+import math
+
 from telos_core.constants import (
     ST_FIDELITY_GREEN, ST_FIDELITY_YELLOW, ST_FIDELITY_ORANGE
 )
@@ -85,6 +87,9 @@ def normalize_st_fidelity(raw_fidelity: float) -> float:
         >>> normalize_st_fidelity(0.10)   # Off-topic
         0.23  # RED zone - triggers intervention
     """
+    # NaN guard: corrupted input must fail to lowest fidelity (fail-closed)
+    if math.isnan(raw_fidelity):
+        return 0.0
     display = LINEAR_SLOPE * raw_fidelity + LINEAR_INTERCEPT
     return max(0.0, min(1.0, display))  # Clamp to [0, 1]
 
@@ -123,6 +128,9 @@ def normalize_ai_response_fidelity(raw_fidelity: float) -> float:
         >>> normalize_ai_response_fidelity(0.15)  # Off-topic response
         0.35  # RED zone
     """
+    # NaN guard: corrupted input must fail to lowest fidelity (fail-closed)
+    if math.isnan(raw_fidelity):
+        return 0.0
     display = AI_RESPONSE_SLOPE * raw_fidelity + AI_RESPONSE_INTERCEPT
     return max(0.0, min(1.0, display))  # Clamp to [0, 1]
 

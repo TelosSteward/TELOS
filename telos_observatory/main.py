@@ -6,6 +6,8 @@ Clean entry point with extracted CSS and proper imports.
 
 from pathlib import Path
 from datetime import datetime
+import hmac
+import os
 
 # Load environment variables from .env file
 from dotenv import load_dotenv
@@ -347,7 +349,14 @@ def main():
     # Initialize active tab
     if 'active_tab' not in st.session_state:
         query_params = st.query_params
-        is_admin = query_params.get("admin") == "true"
+        _admin_secret = os.environ.get("TELOS_ADMIN_SECRET", "")
+        _admin_token = query_params.get("admin", "")
+        is_admin = (
+            _admin_secret
+            and _admin_token
+            and len(_admin_secret) >= 16
+            and hmac.compare_digest(_admin_secret, _admin_token)
+        )
         beta_direct = query_params.get("beta") == "true"
         telos_direct = query_params.get("telos") == "true"
 
@@ -369,7 +378,14 @@ def main():
     active_tab = st.session_state.active_tab
 
     query_params = st.query_params
-    is_admin = query_params.get("admin") == "true"
+    _admin_secret = os.environ.get("TELOS_ADMIN_SECRET", "")
+    _admin_token = query_params.get("admin", "")
+    is_admin = (
+        _admin_secret
+        and _admin_token
+        and len(_admin_secret) >= 16
+        and hmac.compare_digest(_admin_secret, _admin_token)
+    )
     beta_direct = query_params.get("beta") == "true"
     telos_direct = query_params.get("telos") == "true"
 
@@ -499,7 +515,14 @@ def render_tabs_and_content(has_beta_consent, state_manager, sidebar_actions,
     beta_complete = st.session_state.get('beta_completed', False)
 
     query_params = st.query_params
-    is_admin = query_params.get("admin") == "true"
+    _admin_secret = os.environ.get("TELOS_ADMIN_SECRET", "")
+    _admin_token = query_params.get("admin", "")
+    is_admin = (
+        _admin_secret
+        and _admin_token
+        and len(_admin_secret) >= 16
+        and hmac.compare_digest(_admin_secret, _admin_token)
+    )
     beta_entered = st.session_state.get('beta_consent_given', False) or st.session_state.get('pa_established', False)
 
     st.markdown("""<div style="max-width: 700px; margin: 0 auto;">""", unsafe_allow_html=True)
