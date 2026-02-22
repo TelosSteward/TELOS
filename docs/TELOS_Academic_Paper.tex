@@ -378,14 +378,14 @@ NVIDIA NeMo Guardrails~\citep{rebedea2023nemo} offers programmable dialogue mana
 \section{Limitations}
 
 \begin{itemize}
-    \item \textbf{Model Coverage:} All results use Mistral embeddings. GPT-4, Claude, and Llama have not been tested.
+    \item \textbf{Model Coverage:} Adversarial validation uses Mistral embeddings (mistral-embed, 1024 dimensions). Runtime fidelity uses SentenceTransformer all-MiniLM-L6-v2 (384 dimensions; \citealt{reimers2019sentence}). GPT-4, Claude, and Llama have not been tested.
     \item \textbf{Threat Model Scope:} Black-box only. Adaptive or white-box attacks have not been tested.
     \item \textbf{Language:} English only. Cross-lingual attacks are out of scope.
     \item \textbf{Modality:} Text only. Image-based jailbreaks have not been tested.
     \item \textbf{Human Scalability:} Tier 3 escalation (1.2\% of queries) does not scale to millions of daily queries without significant staffing.
 \end{itemize}
 
-Expanding model and language coverage is the immediate research priority.
+Expanding model and language coverage is the immediate research priority. We note that validation hypotheses were formulated during the evaluation cycle rather than prospectively registered; future runtime intervention studies will be pre-registered.
 
 % ============================================================================
 % 9. CONCLUSION
@@ -567,6 +567,11 @@ MLCommons AI Safety Working Group.
 Khalil, H.~K.
 \newblock \emph{Nonlinear Systems}, Third Edition.
 \newblock Prentice Hall, 2002.
+
+\bibitem[Reimers and Gurevych(2019)]{reimers2019sentence}
+Reimers, N., Gurevych, I.
+\newblock Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks.
+\newblock \emph{EMNLP}, 2019.
 
 \bibitem[Wheeler(2010)]{wheeler2010spc}
 Wheeler, D.~J.
