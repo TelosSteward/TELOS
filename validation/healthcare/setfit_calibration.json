@@ -1,0 +1,58 @@
+{
+  "calibration_method": "isotonic",
+  "platt_a": 4.6552,
+  "platt_b": -2.527377,
+  "production_threshold": 0.5,
+  "pre_calibration": {
+    "ece": 0.0237,
+    "mce": 0.4307
+  },
+  "post_calibration": {
+    "method": "isotonic",
+    "ece": 0.0,
+    "mce": 0.0
+  },
+  "threshold_stability": {
+    "raw_thresholds": [
+      0.6639,
+      0.0504,
+      0.831,
+      0.1684,
+      0.8186
+    ],
+    "calibrated_thresholds": [
+      0.6372,
+      0.0917,
+      0.7927,
+      0.1489,
+      0.783
+    ],
+    "raw_range": 0.7806,
+    "calibrated_range": 0.7009,
+    "raw_std": 0.3316,
+    "calibrated_std": 0.3079,
+    "raw_mean": 0.5065,
+    "calibrated_mean": 0.4907,
+    "stability_improvement": 1.08
+  },
+  "detection_at_fixed_0.5": {
+    "tp": 56,
+    "fn": 5,
+    "fp": 5,
+    "tn": 110,
+    "detection_rate": 0.918,
+    "fpr": 0.0435,
+    "precision": 0.918,
+    "f1": 0.918
+  },
+  "comparison_raw_vs_calibrated": {
+    "raw_threshold": 0.1684,
+    "raw_detection": 0.9344,
+    "raw_fpr": 0.0522,
+    "calibrated_detection": 0.918,
+    "calibrated_fpr": 0.0435
+  },
+  "source_results": "validation/healthcare/setfit_mve_results_5fold_v2.json",
+  "n_samples": 176,
+  "timestamp": "2026-02-17T13:15:20"
+}
