@@ -1,6 +1,6 @@
 # TELOS
 
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org) [![arXiv](https://img.shields.io/badge/arXiv-preprint-b31b1b.svg)](docs/TELOS_Academic_Paper.pdf) [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.18370263-blue.svg)](https://doi.org/10.5281/zenodo.18370263) [![SAAI Compliant](https://img.shields.io/badge/SAAI-Framework_Compliant-green.svg)](research/saai_requirement_mapping.md)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org) [![arXiv](https://img.shields.io/badge/arXiv-preprint-b31b1b.svg)](docs/TELOS_Academic_Paper.pdf) [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.18370263-blue.svg)](https://doi.org/10.5281/zenodo.18370263) [![SAAI Compliant](https://img.shields.io/badge/SAAI-Framework_Compliant-green.svg)](research/regulatory/saai_requirement_mapping.md)
 
 **A mathematical governance framework for AI agents.**
 
@@ -18,7 +18,7 @@ No LLM required for governance decisions. Deterministic. Auditable. 15-25ms per 
 # Setup
 git clone https://github.com/TelosSteward/TELOS.git
 cd TELOS && python3 -m venv venv && source venv/bin/activate
-pip install -r requirements.txt && export PYTHONPATH=$(pwd)
+pip install -r requirements.txt
 
 # 1. Score a single request against a governance specification
 telos score "Assess roof condition for underwriting" -c templates/property_intel.yaml -v
@@ -28,7 +28,7 @@ telos score "Assess roof condition for underwriting" -c templates/property_intel
 DEMO_FAST=1 python3 demos/nearmap_live_demo.py
 
 # 3. Run full test suite (1,600+ tests)
-PYTHONPATH=. pytest tests/ -v
+pytest tests/ -v
 ```
 
 For a comprehensive technical overview of the architecture, development history, and research program, see [CLAUDE.md](CLAUDE.md).
@@ -65,7 +65,7 @@ All governance math runs locally via ONNX inference. No API calls. No cloud depe
 
 **The structural insight:** Conversational governance is a convergence problem (are two semantic signals staying aligned?). Agentic governance is a compliance problem (is this instrument operating within its defined specification?). The math is identical; the operational surface is more constrained and classifiable. This is why agentic governance achieves higher precision — tool calls are discrete events with known signatures, not fluid semantic territory.
 
-Full analysis: `research/convergence_to_compliance.md`
+Full analysis: `research/papers/convergence_to_compliance.md`
 
 ---
 
@@ -106,7 +106,7 @@ Runtime governance for [OpenClaw](https://github.com/nicepkg/openclaw) — the m
 ### TKeys
 Session-bound AES-256-GCM encryption using governance telemetry as supplementary entropy for HKDF key derivation. Per-turn key rotation with 128-bit CSPRNG floor. HMAC-SHA512 signing on every governance delta. Independent cryptographic primitive — publishable separately.
 
-Full security review: `research/tkeys_cryptographic_review.md` | Novelty analysis: `research/tkeys_novelty_analysis.md`
+Full security review: `research/papers/tkeys_cryptographic_review.md` | Novelty analysis: `research/papers/tkeys_novelty_analysis.md`
 
 ### TKeys Activation Protocol (Liability Separation)
 The governance engine is **inert by default**. Without a valid TKey signature on the PA configuration, the engine refuses to start.
@@ -202,7 +202,7 @@ See [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md) for all commands.
 
 ### Optimizer
 
-Governance Configuration Optimizer: 14 tunable parameters, Optuna TPE, 7 benchmarks, 5,212 total scenarios, four-gate ratchet (Cat A regression + holdout + less-restrictive block + GDD). Research Governance Charter: `research/optimizer_governance_charter.md`.
+Governance Configuration Optimizer: 14 tunable parameters, Optuna TPE, 7 benchmarks, 5,212 total scenarios, four-gate ratchet (Cat A regression + holdout + less-restrictive block + GDD). Research Governance Charter: `research/architecture/optimizer_governance_charter.md`.
 
 ---
 
@@ -216,22 +216,60 @@ Governance Configuration Optimizer: 14 tunable parameters, Optuna TPE, 7 benchma
 │   ├── fidelity_engine.py       #   Two-layer fidelity calculation
 │   └── embedding_provider.py    #   Multi-model embeddings (MiniLM, MPNet, ONNX)
 ├── telos_governance/            # Governance gates + CLI + delivery system
-│   ├── agentic_pa.py            #   Primacy Attractor construction + sub-centroid clustering
-│   ├── agentic_fidelity.py      #   6-dimension composite fidelity scoring
-│   ├── governance_protocol.py   #   Audit-trail governance protocol
-│   ├── setfit_classifier.py     #   SetFit ONNX boundary classifier (L1.5 cascade)
-│   ├── response_manager.py      #   Agentic session orchestrator
+│   ├── scoring/                 #   Fidelity scoring + governance protocol
+│   │   ├── agentic_pa.py        #     Primacy Attractor construction + sub-centroid clustering
+│   │   ├── agentic_fidelity.py  #     6-dimension composite fidelity scoring
+│   │   ├── fidelity_gate.py     #     Two-tier conversational governance gate
+│   │   ├── governance_protocol.py #   Audit-trail governance protocol
+│   │   ├── threshold_config.py  #     ThresholdConfig dataclass (optimizer params)
+│   │   └── tool_selection_gate.py #   Semantic tool ranking
+│   ├── corpus/                  #   Boundary corpus (3 layers)
+│   │   ├── boundary_corpus_static.py    # L1: 61 hand-crafted boundary phrasings
+│   │   ├── boundary_corpus_llm.py       # L2: 121 LLM-generated gap-fillers
+│   │   ├── boundary_corpus_regulatory.py # L3: 48 regulatory extractions
+│   │   └── boundary_corpus_safe.py      # Safe / false-positive corpus
+│   ├── crypto/                  #   Cryptographic layer (TKeys + signing)
+│   │   ├── crypto_layer.py      #     AES-256-GCM encryption-at-rest for PA config IP
+│   │   ├── receipt_signer.py    #     Ed25519 + HMAC-SHA512 governance receipt signing
+│   │   ├── signing.py           #     Ed25519 key management for .telos bundles
+│   │   ├── pa_signing.py        #     TKey PA approval + dual-attestation protocol
+│   │   └── gate_signer.py       #     Time-bounded gate token signing
+│   ├── bundle/                  #   Bundle delivery system
+│   │   ├── bundle.py            #     .telos binary format (build, sign, encrypt, verify)
+│   │   ├── licensing.py         #     Offline Ed25519-signed license tokens
+│   │   └── bundle_pipeline.py   #     One-command customer delivery provisioning
+│   ├── telemetry/               #   Intelligence + telemetry pipeline
+│   │   ├── intelligence_layer.py #    Opt-in governance telemetry (off/metrics/full)
+│   │   ├── telemetry_pipeline.py #    Telemetry processing pipeline
+│   │   └── interpreter.py       #     Governance trace interpreter
+│   ├── teloscope/               #   TELOSCOPE analysis + audit tools
+│   │   ├── annotate.py          #     Session annotation
+│   │   ├── compare.py           #     Config comparison
+│   │   ├── inspect.py           #     Receipt inspection
+│   │   ├── report.py            #     Governance report generation
+│   │   ├── rescore.py           #     Replay + rescore sessions
+│   │   ├── stats.py             #     Governance statistics
+│   │   ├── sweep.py             #     Parameter sweep analysis
+│   │   ├── timeline.py          #     Decision timeline
+│   │   ├── validate.py          #     Config validation
+│   │   └── teloscope_audit.py   #     Full session audit
+│   ├── pa/                      #   Primacy Attractor construction + templates
+│   │   ├── pa_constructor.py    #     PA builder from config
+│   │   ├── pa_context.py        #     PA context management
+│   │   ├── pa_extractor.py      #     PA extraction from documents
+│   │   └── agent_templates.py   #     Pre-built agent PA templates
+│   ├── adapters/                #   Internal adapter utilities
+│   │   ├── action_chain.py      #     SCI tracking for multi-step actions
+│   │   ├── response_manager.py  #     Agentic session orchestrator
+│   │   ├── setfit_classifier.py #     SetFit ONNX boundary classifier (L1.5 cascade)
+│   │   └── tool_semantics.py    #     Tool semantic definitions
+│   ├── demo/                    #   Demo support modules
+│   │   ├── mock_tools.py        #     MockToolExecutor for benchmarks + demo mode
+│   │   ├── demo_audit_bridge.py #     Demo-to-audit bridge
+│   │   └── demo_teloscope_analysis.py # Demo TELOSCOPE analysis
 │   ├── cli.py                   #   CLI entry point (score, benchmark, demo, bundle, agent)
 │   ├── config.py                #   YAML config schema, loader, validation
-│   ├── crypto_layer.py          #   AES-256-GCM encryption-at-rest for PA config IP
-│   ├── receipt_signer.py        #   Ed25519 + HMAC-SHA512 governance receipt signing
 │   ├── session.py               #   GovernanceSessionContext lifecycle
-│   ├── signing.py               #   Ed25519 key management for .telos bundles
-│   ├── pa_signing.py            #   TKey PA approval + dual-attestation protocol
-│   ├── bundle.py                #   .telos binary format (build, sign, encrypt, verify)
-│   ├── licensing.py             #   Offline Ed25519-signed license tokens
-│   ├── bundle_pipeline.py       #   One-command customer delivery provisioning
-│   ├── intelligence_layer.py    #   Opt-in governance telemetry (off/metrics/full)
 │   └── report_generator.py      #   9-section forensic reports (HTML + JSONL + CSV)
 ├── telos_adapters/              # Framework adapters
 │   ├── langgraph/               #   LangGraph wrapper, supervisor, swarm
@@ -245,6 +283,10 @@ Governance Configuration Optimizer: 14 tunable parameters, Optuna TPE, 7 benchma
 ├── telos_observatory/           # Streamlit UI (DEMO + BETA + AGENTIC)
 ├── telos_privacy/               # TKeys cryptographic layer
 │   └── cryptography/            #   Session-bound AES-256-GCM + HKDF + HMAC-SHA512
+├── tools/                       # Analysis scripts + research utilities
+│   ├── governance_optimizer.py  #   Multi-seed threshold optimizer (Optuna TPE, 14 params)
+│   ├── governance_comparison.py #   Cross-config comparison
+│   └── run_backtest.py          #   Backtest runner
 ├── demos/                       # Live governance demos (4 domains)
 ├── templates/                   # YAML governance configs (10 templates)
 ├── models/                      # ONNX SetFit models (healthcare, openclaw)
@@ -253,7 +295,15 @@ Governance Configuration Optimizer: 14 tunable parameters, Optuna TPE, 7 benchma
 │   ├── nearmap/                 #   235 scenarios, 9 attack families
 │   ├── healthcare/              #   280 scenarios, 12 attack families, 7 configs
 │   └── openclaw/                #   100 scenarios, 6 attack families, 4 risk tiers
-├── research/                    # Active research program (20+ documents)
+├── research/                    # Active research program (see research/README.md)
+│   ├── papers/                  #   Core technical papers + design docs
+│   ├── experiments/             #   MVEs, closures, experimental designs
+│   ├── benchmarks/              #   Benchmark roadmaps, hypotheses, results
+│   ├── regulatory/              #   Regulatory mappings + compliance analysis
+│   ├── architecture/            #   Systems architecture + governance design
+│   ├── data/                    #   Research datasets + validation artifacts
+│   ├── scripts/                 #   Research scripts + utilities
+│   └── planning/                #   Work orders, advisory reports, planning docs
 ├── supabase/                    # Activation backend (Edge Function + migration)
 └── docs/                        # CLI reference, config reference, integration guide
 ```
@@ -276,18 +326,18 @@ Regulatory mapping (self-assessed): IEEE 7000, SAAI, EU AI Act, NIST AI RMF, OWA
 
 ## Research Program
 
-Key documents in `research/`:
+Key documents in `research/` (see `research/README.md` for full index):
 
 | Document | Contents |
 |----------|----------|
-| `agentic_governance_hypothesis.md` | Core hypothesis + H6-H10 autonomous agent hypotheses |
-| `convergence_to_compliance.md` | Why agentic governance is a compliance problem, not convergence |
-| `telos_agentic_architecture.md` | Full agentic architecture design |
-| `tkeys_cryptographic_review.md` | 5-agent TKeys cryptographic security review |
-| `tkeys_novelty_analysis.md` | TKeys novelty, provenance, and security analysis |
-| `setfit_mve_phase2_closure.md` | SetFit boundary classifier experimental record (AUC 0.980) |
-| `optimizer_governance_charter.md` | Research Governance Charter (TELOS-RGC-001) |
-| `agentic_benchmark_roadmap.md` | 13 external benchmarks across 3 phases |
+| `benchmarks/agentic_governance_hypothesis.md` | Core hypothesis + H6-H10 autonomous agent hypotheses |
+| `papers/convergence_to_compliance.md` | Why agentic governance is a compliance problem, not convergence |
+| `papers/telos_agentic_architecture.md` | Full agentic architecture design |
+| `papers/tkeys_cryptographic_review.md` | 5-agent TKeys cryptographic security review |
+| `papers/tkeys_novelty_analysis.md` | TKeys novelty, provenance, and security analysis |
+| `experiments/setfit_mve_phase2_closure.md` | SetFit boundary classifier experimental record (AUC 0.980) |
+| `architecture/optimizer_governance_charter.md` | Research Governance Charter (TELOS-RGC-001) |
+| `benchmarks/agentic_benchmark_roadmap.md` | 13 external benchmarks across 3 phases |
 
 ---
 
@@ -327,7 +377,7 @@ Additional citations for PropensityBench, AgentHarm, AgentDojo, SB 243, and Gove
 
 ```bash
 # Full test suite (1,600+ tests)
-PYTHONPATH=. pytest tests/ -v
+pytest tests/ -v
 
 # TKeys cryptographic verification (22 tests)
 python3 -m telos_privacy.cryptography.test_verify_crypto
