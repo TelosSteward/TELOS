@@ -1,0 +1,89 @@
+{
+  "dataset_name": "TELOS OpenClaw Governance Backtest \u2014 Forensic Dataset v1",
+  "version": "1.0.0",
+  "created": "2026-02-26T17:19:21.539140+00:00",
+  "description": "Re-scoring of 2,071 historical governance events from the OpenClaw autonomous agent deployment through the TELOS AgenticFidelityEngine. Includes full 6-dimension fidelity breakdowns for scorable events and complete event metadata for all events.",
+  "creator": "TELOS AI Labs Inc.",
+  "contact": "JB@telos-labs.ai",
+  "license": "CC-BY-4.0",
+  "methodology": {
+    "engine": "AgenticFidelityEngine",
+    "config": "templates/openclaw.yaml",
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2 (ONNX)",
+    "embedding_dim": 384,
+    "scoring_dimensions": [
+      "purpose_fidelity",
+      "scope_fidelity",
+      "boundary_violation",
+      "tool_fidelity",
+      "chain_continuity",
+      "composite"
+    ],
+    "verdicts": [
+      "EXECUTE",
+      "CLARIFY",
+      "SUGGEST",
+      "INERT",
+      "ESCALATE"
+    ]
+  },
+  "statistics": {
+    "total_events": 2071,
+    "main_store_events": 2060,
+    "posthoc_audit_events": 11,
+    "scored_events": 11,
+    "unscorable_events": 2060,
+    "event_types": {
+      "deliberation": 146,
+      "measurement": 387,
+      "decision": 1495,
+      "authority": 43
+    },
+    "sessions": [
+      "8571f164-df1d-484f-995c-c9a74bcc26de",
+      "command_classify",
+      "content",
+      "e83eff12-2583-47a8-a226-e3bc674c74bb",
+      "pa_compliance",
+      "query_response",
+      "research",
+      "result_synthesis",
+      "s1",
+      "scout",
+      "stewart",
+      "stewart_telegram",
+      "stewartbot_boot",
+      "system",
+      "task_spec_generation",
+      "test"
+    ],
+    "date_range": {
+      "earliest": "2026-02-22T15:00:00+00:00",
+      "latest": "2026-02-26T16:25:17.036237+00:00"
+    }
+  },
+  "provenance": {
+    "source_main": "~/.telos/events",
+    "source_posthoc": "~/.telos/posthoc_audit",
+    "scoring_codebase": ". (commit at time of execution)",
+    "genai_disclosure": "Scoring performed by deterministic mathematical engine (cosine similarity + threshold logic). No generative AI used in the scoring process itself."
+  },
+  "schema": {
+    "event_id": "Unique event identifier",
+    "timestamp": "ISO 8601 timestamp with timezone",
+    "source": "'main' (event store) or 'posthoc_audit'",
+    "session_id": "Session/agent identifier",
+    "event_type": "measurement | decision | deliberation | authority",
+    "tool_call": "Tool name (e.g., Bash, Read, Task)",
+    "tool_args": "Tool arguments dict (for scorable events)",
+    "is_scorable": "Whether the event was scored through the engine",
+    "action_text": "Constructed action text used for scoring",
+    "verdict": "Governance verdict (EXECUTE/CLARIFY/SUGGEST/INERT/ESCALATE)",
+    "fidelity": "6-dimension fidelity breakdown dict",
+    "dimension_scores": "Same as fidelity (for compatibility)",
+    "direction_level": "Graduated direction level",
+    "boundary_triggered": "Whether a boundary was triggered",
+    "posthoc_verdict": "Original posthoc audit verdict (ground truth)",
+    "posthoc_fidelity": "Original posthoc audit fidelity (ground truth)"
+  }
+}
