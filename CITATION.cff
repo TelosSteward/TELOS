@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+title: "TELOS: Telically Entrained Linguistic Operational Substrate"
+message: "If you use this software in your research, please cite it as below."
+type: software
+authors:
+  - given-names: Jeffrey
+    family-names: Brunner
+    email: JB@telos-labs.ai
+    orcid: "https://orcid.org/0009-0003-6848-8014"
+    affiliation: "TELOS AI Labs Inc."
+license: Apache-2.0
+version: "2.0.0"
+date-released: "2026-03-04"
+url: "https://telos-labs.ai"
+repository-code: "https://github.com/TelosSteward/TELOS"
+keywords:
+  - ai-governance
+  - purpose-alignment
+  - agentic-safety
+  - cryptographic-audit
+  - primacy-attractor
+  - embedding-governance
+  - ai-safety
+  - agent-governance
+abstract: >-
+  TELOS is a mathematical governance framework for AI agents. It uses Primacy
+  Attractors -- embedding-space representations of user-defined purpose -- to
+  detect and direct drift in autonomous AI agents. Every tool call is scored
+  against a fixed specification using cosine similarity, producing a graduated
+  governance verdict with an Ed25519-signed cryptographic receipt. No LLM
+  required for governance decisions. Deterministic. Auditable. 15-25ms per
+  decision.
+references:
+  - type: dataset
+    authors:
+      - given-names: Jeffrey
+        family-names: Brunner
+    title: "TELOS Adversarial Validation Dataset"
+    year: 2025
+    doi: "10.5281/zenodo.18370659"
+    repository: "https://zenodo.org/records/18370659"
