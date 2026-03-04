@@ -1,0 +1,358 @@
+"""
+Action Classifier — Maps OpenClaw tool names to TELOS governance categories.
+
+OpenClaw exposes 10 tool groups, each with distinct risk profiles derived
+from documented security incidents (CVE-2026-25253, ClawHavoc, Moltbook).
+
+Risk tier mapping (M0 convergence point C3, unanimously agreed):
+    CRITICAL: runtime, messaging, automation, openclaw
+    HIGH:     fs, web
+    MEDIUM:   nodes
+    LOW:      sessions, memory, ui
+
+Cross-group chain detection: When consecutive tool calls span different
+groups, the classifier flags this for SCI chain tracking. The primary
+exfiltration pattern (ClawHavoc, Moltbook) is: read creds (fs) -> exec
+curl (runtime) -> exfiltrate (web/messaging). Cross-group transitions
+between HIGH+ groups trigger elevated scoring.
+
+Regulatory traceability:
+    - EU AI Act Art. 9: Risk tiers implement graduated risk management
+    - SAAI claim TELOS-SAAI-010: Tool group risk tiering (11 groups × 4 tiers)
+    - SAAI claim TELOS-SAAI-013: ClawHavoc-sourced supply chain detection
+    - SAAI claim TELOS-SAAI-014: Cross-group chain detection and escalation
+    - NIST AI RMF MAP 3.1: Supply chain risk mapping via tool classification
+    - OWASP ASI03 (Privilege Abuse): Cross-group escalation detection
+    - OWASP ASI04 (Supply Chain): Shadow tool and poisoning pattern detection
+    See: research/openclaw_regulatory_mapping.md §2, §6
+"""
+
+import logging
+from dataclasses import dataclass
+from enum import Enum
+from typing import Dict, Optional, Tuple
+
+logger = logging.getLogger(__name__)
+
+
+class ToolGroupRiskTier(str, Enum):
+    """Risk tier for OpenClaw tool groups.
+
+    Derived from documented CVEs and security incidents.
+    See: HANDOFF_OPENCLAW.md §4 (Convergence Point C3).
+
+    EU AI Act Art. 9 compliance: Risk tiers map governance depth to
+    tool group risk, with CRITICAL groups receiving full cascade scoring
+    and LOW groups receiving keyword-only screening.
+    SAAI claim TELOS-SAAI-010.
+    """
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+
+# OpenClaw tool group -> risk tier mapping
+# Source: Russell governance theory analysis + Karpathy systems assessment (M0)
+TOOL_GROUP_RISK_MAP: Dict[str, ToolGroupRiskTier] = {
+    "runtime": ToolGroupRiskTier.CRITICAL,
+    "messaging": ToolGroupRiskTier.CRITICAL,
+    "automation": ToolGroupRiskTier.CRITICAL,
+    "openclaw": ToolGroupRiskTier.CRITICAL,
+    "fs": ToolGroupRiskTier.HIGH,
+    "web": ToolGroupRiskTier.HIGH,
+    "nodes": ToolGroupRiskTier.MEDIUM,
+    "sessions": ToolGroupRiskTier.LOW,
+    "memory": ToolGroupRiskTier.LOW,
+    "ui": ToolGroupRiskTier.LOW,
+}
+
+# OpenClaw tool name -> (tool_group, telos_tool_name) mapping
+# Maps the actual tool names OpenClaw sends in before_tool_call events
+# to TELOS governance tool names defined in openclaw.yaml.
+# Lookup is case-insensitive — "read" and "Read" both resolve.
+_OPENCLAW_TOOL_MAP_RAW: Dict[str, Tuple[str, str]] = {
+    # group:fs — File System
+    "Read": ("fs", "fs_read_file"),
+    "Write": ("fs", "fs_write_file"),
+    "Edit": ("fs", "fs_edit_file"),
+    "MultiEdit": ("fs", "fs_edit_file"),
+    "Glob": ("fs", "fs_list_directory"),
+    "Grep": ("fs", "fs_search_files"),
+    "ListDir": ("fs", "fs_list_directory"),
+    "ApplyPatch": ("fs", "fs_apply_patch"),
+    "Move": ("fs", "fs_move_file"),
+    "Delete": ("fs", "fs_delete_file"),
+    "NotebookEdit": ("fs", "fs_edit_file"),
+
+    # group:runtime — Shell Execution
+    "Bash": ("runtime", "runtime_execute"),
+    "Execute": ("runtime", "runtime_execute"),
+    "Process": ("runtime", "runtime_process"),
+    "Shell": ("runtime", "runtime_execute"),
+
+    # group:web — Web/Network
+    "WebFetch": ("web", "web_fetch"),
+    "WebNavigate": ("web", "web_navigate"),
+    "WebScrape": ("web", "web_scrape"),
+    "WebSearch": ("web", "web_search"),
+    "Browser": ("web", "web_navigate"),
+
+    # group:messaging — External Communication
+    "SendMessage": ("messaging", "messaging_send"),
+    "ReadMessages": ("messaging", "messaging_read"),
+    "ReplyMessage": ("messaging", "messaging_reply"),
+    "SlackSend": ("messaging", "messaging_send"),
+    "DiscordSend": ("messaging", "messaging_send"),
+    "TelegramSend": ("messaging", "messaging_send"),
+    "WhatsAppSend": ("messaging", "messaging_send"),
+
+    # group:automation — Scheduled Tasks
+    "CronCreate": ("automation", "automation_cron_create"),
+    "CronList": ("automation", "automation_cron_list"),
+    "CronDelete": ("automation", "automation_cron_delete"),
+    "GatewayConfig": ("automation", "automation_gateway_config"),
+
+    # group:sessions — Session Management
+    "SessionSave": ("sessions", "sessions_save"),
+    "SessionRestore": ("sessions", "sessions_restore"),
+    "SessionList": ("sessions", "sessions_list"),
+    "SessionDelete": ("sessions", "sessions_delete"),
+    "TaskUpdate": ("sessions", "sessions_save"),
+    "TaskCreate": ("sessions", "sessions_save"),
+    "TaskList": ("sessions", "sessions_list"),
+    "TaskStop": ("sessions", "sessions_delete"),
+    "TaskOutput": ("sessions", "sessions_list"),
+    "TaskGet": ("sessions", "sessions_list"),
+    "Skill": ("sessions", "sessions_restore"),
+
+    # group:memory — Agent Memory
+    "MemoryStore": ("memory", "memory_store"),
+    "MemoryRetrieve": ("memory", "memory_retrieve"),
+    "MemorySearch": ("memory", "memory_search"),
+
+    # group:ui — User Interface
+    "Display": ("ui", "ui_display"),
+    "Prompt": ("ui", "ui_prompt"),
+    "EnterPlanMode": ("ui", "ui_display"),
+    "ExitPlanMode": ("ui", "ui_display"),
+    "AskUserQuestion": ("ui", "ui_prompt"),
+    "EnterWorktree": ("ui", "ui_display"),
+
+    # group:nodes — Agent Orchestration
+    "Delegate": ("nodes", "nodes_delegate"),
+    "Coordinate": ("nodes", "nodes_coordinate"),
+    "Task": ("nodes", "nodes_delegate"),
+
+    # group:openclaw — Built-in Management
+    "SkillInstall": ("openclaw", "openclaw_skill_install"),
+    "SkillExecute": ("openclaw", "openclaw_skill_execute"),
+    "ConfigModify": ("openclaw", "openclaw_config_modify"),
+    "AgentCreate": ("openclaw", "openclaw_agent_create"),
+
+    # MCP: Playwright browser tools -> web group
+    "mcp__playwright__browser_navigate": ("web", "web_navigate"),
+    "mcp__playwright__browser_click": ("web", "web_navigate"),
+    "mcp__playwright__browser_fill_form": ("web", "web_navigate"),
+    "mcp__playwright__browser_press_key": ("web", "web_navigate"),
+    "mcp__playwright__browser_install": ("web", "web_navigate"),
+    "mcp__playwright__browser_wait_for": ("web", "web_navigate"),
+    "mcp__playwright__browser_snapshot": ("web", "web_navigate"),
+    "mcp__playwright__browser_take_screenshot": ("web", "web_navigate"),
+    "mcp__playwright__browser_close": ("web", "web_navigate"),
+    "mcp__playwright__browser_evaluate": ("web", "web_navigate"),
+    "mcp__playwright__browser_type": ("web", "web_navigate"),
+    "mcp__playwright__browser_select_option": ("web", "web_navigate"),
+    "mcp__playwright__browser_hover": ("web", "web_navigate"),
+    "mcp__playwright__browser_drag": ("web", "web_navigate"),
+    "mcp__playwright__browser_tabs": ("web", "web_navigate"),
+    "mcp__playwright__browser_navigate_back": ("web", "web_navigate"),
+    "mcp__playwright__browser_network_requests": ("web", "web_navigate"),
+    "mcp__playwright__browser_console_messages": ("web", "web_navigate"),
+    "mcp__playwright__browser_handle_dialog": ("web", "web_navigate"),
+    "mcp__playwright__browser_file_upload": ("web", "web_navigate"),
+    "mcp__playwright__browser_resize": ("web", "web_navigate"),
+    "mcp__playwright__browser_run_code": ("web", "web_navigate"),
+
+    # MCP: Sequential thinking -> memory group
+    "mcp__sequential-thinking__sequentialthinking": ("memory", "memory_store"),
+
+    # MCP: Memory tools -> memory group
+    "mcp__memory__read_graph": ("memory", "memory_retrieve"),
+    "mcp__memory__create_entities": ("memory", "memory_store"),
+    "mcp__memory__create_relations": ("memory", "memory_store"),
+    "mcp__memory__add_observations": ("memory", "memory_store"),
+    "mcp__memory__delete_entities": ("memory", "memory_store"),
+    "mcp__memory__delete_observations": ("memory", "memory_store"),
+    "mcp__memory__delete_relations": ("memory", "memory_store"),
+    "mcp__memory__search_nodes": ("memory", "memory_search"),
+    "mcp__memory__open_nodes": ("memory", "memory_retrieve"),
+
+    # MCP: Context7 documentation -> memory group (read-only reference)
+    "mcp__context7__resolve-library-id": ("memory", "memory_search"),
+    "mcp__context7__query-docs": ("memory", "memory_retrieve"),
+
+    # MCP: Supabase -> memory group (read-only query)
+    "mcp__supabase__query": ("memory", "memory_search"),
+
+    # MCP: Hugging Face -> web group (external API)
+    "mcp__claude_ai_Hugging_Face__hf_whoami": ("web", "web_fetch"),
+    "mcp__claude_ai_Hugging_Face__space_search": ("web", "web_search"),
+    "mcp__claude_ai_Hugging_Face__hub_repo_search": ("web", "web_search"),
+    "mcp__claude_ai_Hugging_Face__paper_search": ("web", "web_search"),
+    "mcp__claude_ai_Hugging_Face__hub_repo_details": ("web", "web_fetch"),
+    "mcp__claude_ai_Hugging_Face__hf_doc_search": ("web", "web_search"),
+    "mcp__claude_ai_Hugging_Face__hf_doc_fetch": ("web", "web_fetch"),
+    "mcp__claude_ai_Hugging_Face__dynamic_space": ("web", "web_fetch"),
+    "mcp__claude_ai_Hugging_Face__hf_hub_community": ("web", "web_fetch"),
+
+    # MCP: Cloudflare -> web group (external API)
+    "mcp__claude_ai_Cloudflare_Developer_Platform__accounts_list": ("web", "web_fetch"),
+    "mcp__claude_ai_Cloudflare_Developer_Platform__search_cloudflare_documentation": ("web", "web_search"),
+    "mcp__claude_ai_Cloudflare_Developer_Platform__workers_list": ("web", "web_fetch"),
+    "mcp__claude_ai_Cloudflare_Developer_Platform__workers_get_worker": ("web", "web_fetch"),
+}
+
+# Build case-insensitive lookup: maps lowercased name -> (group, telos_name)
+_TOOL_MAP_CI: Dict[str, Tuple[str, str]] = {
+    k.lower(): v for k, v in _OPENCLAW_TOOL_MAP_RAW.items()
+}
+
+# Maps string risk_level from YAML config to ToolGroupRiskTier enum.
+# Used by ActionClassifier when per-tool risk overrides group-level risk.
+_RISK_LEVEL_MAP: Dict[str, ToolGroupRiskTier] = {
+    "low": ToolGroupRiskTier.LOW,
+    "medium": ToolGroupRiskTier.MEDIUM,
+    "high": ToolGroupRiskTier.HIGH,
+    "critical": ToolGroupRiskTier.CRITICAL,
+}
+
+# Public reference (canonical casing preserved for iteration/export)
+OPENCLAW_TOOL_MAP: Dict[str, Tuple[str, str]] = _OPENCLAW_TOOL_MAP_RAW
+
+
+def _lookup_tool(tool_name: str) -> Optional[Tuple[str, str]]:
+    """Case-insensitive tool name lookup."""
+    # Try exact match first (fast path)
+    result = _OPENCLAW_TOOL_MAP_RAW.get(tool_name)
+    if result:
+        return result
+    # Fall back to case-insensitive
+    return _TOOL_MAP_CI.get(tool_name.lower())
+
+
+@dataclass
+class ClassifiedAction:
+    """Result of classifying an OpenClaw tool call."""
+    openclaw_tool_name: str
+    tool_group: str
+    telos_tool_name: str
+    risk_tier: ToolGroupRiskTier
+    is_cross_group: bool = False
+    previous_group: Optional[str] = None
+
+
+class ActionClassifier:
+    """Maps OpenClaw tool calls to TELOS governance categories.
+
+    Tracks tool group transitions for cross-group chain detection.
+    The primary exfiltration pattern is cross-group: fs -> runtime -> web.
+
+    Accepts an optional per-tool risk map (from YAML config tool definitions)
+    to override group-level risk with more granular per-tool risk_level.
+    """
+
+    def __init__(self, tool_risk_overrides: Optional[Dict[str, str]] = None):
+        """Initialize the action classifier.
+
+        Args:
+            tool_risk_overrides: Optional mapping of telos_tool_name -> risk_level
+                from the YAML config tool definitions. When present, per-tool
+                risk_level takes precedence over group-level risk.
+        """
+        self._previous_group: Optional[str] = None
+        self._chain_groups: list = []
+        self._tool_risk_overrides = tool_risk_overrides or {}
+
+    def classify(self, tool_name: str) -> ClassifiedAction:
+        """Classify an OpenClaw tool call.
+
+        Uses case-insensitive lookup. Per-tool risk_level from YAML config
+        overrides group-level risk when available.
+
+        Args:
+            tool_name: The OpenClaw tool name from before_tool_call event.
+
+        Returns:
+            ClassifiedAction with group, TELOS name, risk tier, and
+            cross-group flag.
+        """
+        mapping = _lookup_tool(tool_name)
+
+        if mapping:
+            group, telos_name = mapping
+        else:
+            # Unknown tool — classify as openclaw group (CRITICAL)
+            # with the original name preserved
+            group = "openclaw"
+            telos_name = f"openclaw_{tool_name.lower()}"
+            logger.warning(
+                f"Unknown OpenClaw tool '{tool_name}' — classified as "
+                f"group:openclaw (CRITICAL)"
+            )
+
+        # Per-tool risk from YAML config overrides group-level risk
+        tool_risk_str = self._tool_risk_overrides.get(telos_name)
+        if tool_risk_str:
+            risk_tier = _RISK_LEVEL_MAP.get(
+                tool_risk_str, TOOL_GROUP_RISK_MAP.get(group, ToolGroupRiskTier.CRITICAL)
+            )
+        else:
+            risk_tier = TOOL_GROUP_RISK_MAP.get(group, ToolGroupRiskTier.CRITICAL)
+
+        # Cross-group detection
+        is_cross_group = (
+            self._previous_group is not None
+            and self._previous_group != group
+        )
+
+        result = ClassifiedAction(
+            openclaw_tool_name=tool_name,
+            tool_group=group,
+            telos_tool_name=telos_name,
+            risk_tier=risk_tier,
+            is_cross_group=is_cross_group,
+            previous_group=self._previous_group,
+        )
+
+        # Update state
+        self._previous_group = group
+        self._chain_groups.append(group)
+
+        if is_cross_group:
+            logger.info(
+                f"Cross-group transition: {result.previous_group} -> {group} "
+                f"(chain: {' -> '.join(self._chain_groups[-3:])})"
+            )
+
+        return result
+
+    def reset_chain(self) -> None:
+        """Reset chain tracking (new task/session)."""
+        self._previous_group = None
+        self._chain_groups.clear()
+
+    @property
+    def chain_length(self) -> int:
+        """Current chain length."""
+        return len(self._chain_groups)
+
+    @property
+    def chain_groups(self) -> list:
+        """Tool groups in current chain."""
+        return list(self._chain_groups)
+
+    @staticmethod
+    def get_risk_tier(group: str) -> ToolGroupRiskTier:
+        """Get the risk tier for a tool group."""
+        return TOOL_GROUP_RISK_MAP.get(group, ToolGroupRiskTier.CRITICAL)

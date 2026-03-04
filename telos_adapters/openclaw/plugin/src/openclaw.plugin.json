@@ -1,0 +1,22 @@
+{
+  "id": "telos-governance",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "socketPath": {
+        "type": "string",
+        "description": "Path to the TELOS governance daemon UDS socket"
+      },
+      "preset": {
+        "type": "string",
+        "enum": ["strict", "balanced", "permissive", "custom"],
+        "description": "Governance preset (strict=fail-closed+blocks CLARIFY+, balanced=fail-closed+blocks SUGGEST+, permissive=fail-open)"
+      },
+      "verbose": {
+        "type": "boolean",
+        "description": "Log every scoring decision"
+      }
+    }
+  }
+}
