@@ -346,7 +346,7 @@ Key documents in `research/` (see `research/README.md` for full index):
 | Document | Description |
 |----------|-------------|
 | [Academic Paper (PDF)](docs/TELOS_Academic_Paper.pdf) | Peer-review ready paper with full methodology |
-| [Whitepaper v3.0 (PDF)](docs/TELOS_Whitepaper_v3.0.pdf) | Complete mathematical specification |
+| [Whitepaper v3.0](docs/TELOS_Whitepaper_v3.0.md) | Complete mathematical specification |
 | [Technical Brief (PDF)](docs/TELOS_Technical_Brief.pdf) | Concise 3-page summary |
 | [CLI Reference](docs/CLI_REFERENCE.md) | All CLI commands with examples |
 | [Config Reference](docs/CONFIG_REFERENCE.md) | Full YAML governance schema |
