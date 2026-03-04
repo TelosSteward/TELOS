@@ -122,7 +122,7 @@ The governance engine is **inert by default**. Without a valid TKey signature on
 `.telos` binary format: `[TELO magic][version][manifest][64B labs_sig][64B deploy_sig][AES-256-GCM payload]`. One-command customer provisioning via `telos bundle provision`. Ed25519-signed license tokens for offline capability-scoped enforcement.
 
 ### Governance Receipts
-Every decision produces an Ed25519-signed receipt: decision + config hash + timestamp + dimension breakdown + signer identity. Immutable audit trail. Article 72 (EU AI Act) ready.
+Every decision produces an Ed25519-signed receipt: decision + config hash + timestamp + dimension breakdown + signer identity. Immutable audit trail. Designed to support post-market monitoring workflows consistent with EU AI Act Article 72 requirements.
 
 ---
 
@@ -270,7 +270,7 @@ Governance Configuration Optimizer: 14 tunable parameters, Optuna TPE, 7 benchma
 | Russell (2019) | Deference-under-uncertainty | ESCALATE + Permission Controller = defer when uncertain |
 | Shewhart (1931) | Statistical Process Control | Continuous measurement at every decision point |
 
-Regulatory alignment: IEEE 7000, SAAI, EU AI Act (Article 72), NIST AI RMF, OWASP Agentic Top 10, UC Berkeley CLTC Agentic AI Profile, Singapore IMDA Framework. Mappings in `docs/` and `research/`.
+Regulatory mapping (self-assessed): IEEE 7000, SAAI, EU AI Act, NIST AI RMF, OWASP Agentic Top 10, UC Berkeley CLTC Agentic AI Profile, Singapore IMDA Framework. Mappings in `docs/` and `research/`.
 
 ---
 
@@ -343,6 +343,21 @@ python3 validation/openclaw/run_openclaw_benchmark.py --forensic -v
 ```
 
 ---
+
+---
+
+## Scope and Limitations
+
+TELOS enforces behavioral fidelity to a declared Primacy Attractor (PA). It does not evaluate whether the PA itself is safe, beneficial, or aligned with human values. PA authorship requires external value alignment processes not provided by this framework.
+
+**What TELOS is:** A behavioral specification enforcement tool with embedding-space monitoring and tiered response. Deterministic governance decisions at the tool-call level.
+
+**What TELOS is not:** A solution to the AI alignment problem, a formal safety guarantee, or a substitute for human judgment in defining agent purpose. It is a research-stage framework under active development.
+
+**Benchmark scope:** Validation results reported above reflect performance on specific, fixed benchmark sets evaluated by the authors. They do not generalize to novel attack vectors not represented in the evaluation data. Benchmark performance on known attack sets should not be interpreted as guarantees of real-world safety. See [VALIDATION_STATUS.md](VALIDATION_STATUS.md) for data availability and reproduction instructions.
+
+**Regulatory status:** Regulatory mappings in this repository (EU AI Act, NIST AI RMF, IEEE 7000) represent the authors' self-assessment of alignment. They have not been reviewed or certified by any regulatory body. Organizations using TELOS in regulated deployments are responsible for their own compliance determinations.
+
 
 ## License
 
