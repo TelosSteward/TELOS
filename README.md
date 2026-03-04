@@ -18,7 +18,7 @@ No LLM required for governance decisions. Deterministic. Auditable. 15-25ms per 
 # Setup
 git clone https://github.com/TelosSteward/TELOS.git
 cd TELOS && python3 -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
+pip install -e ".[cli,dev]"
 
 # 1. Score a single request against a governance specification
 telos score "Assess roof condition for underwriting" -c templates/property_intel.yaml -v
@@ -27,7 +27,7 @@ telos score "Assess roof condition for underwriting" -c templates/property_intel
 #    Same governance engine, 4 radically different purposes, 29 turns, 12 boundary interventions
 DEMO_FAST=1 python3 demos/nearmap_live_demo.py
 
-# 3. Run full test suite (1,600+ tests)
+# 3. Run full test suite (1,680+ tests)
 pytest tests/ -v
 ```
 
