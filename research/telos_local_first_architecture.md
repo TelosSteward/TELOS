@@ -228,7 +228,7 @@ This is not just a compliance posture. It is a competitive position. When a pros
 | A bespoke boundary configuration for each client's domain | A one-size-fits-all product |
 | A structural relationship gated by cryptographic co-signing | A software license that can be replaced by a competitor overnight |
 | Evidence of documented governance effort | Legal immunity or regulatory safe harbor |
-| Open-source (governance engine on github.com/TelosSteward/telos-hardened) | A black box |
+| Open-source (governance engine on github.com/TelosSteward/TELOS) | A black box |
 
 ---
 
@@ -240,4 +240,4 @@ The result: plug-and-play governance infrastructure that is model-agnostic, ente
 
 *Actuarial proof of intent and execution for every AI decision within bounded work across its entire life cycle.*
 
-**JB@telos-labs.ai** | github.com/TelosSteward/telos-hardened
+**JB@telos-labs.ai** | github.com/TelosSteward/TELOS
