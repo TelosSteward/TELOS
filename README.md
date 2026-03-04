@@ -1,4 +1,6 @@
-# TELOS Hardened
+# TELOS
+
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org) [![arXiv](https://img.shields.io/badge/arXiv-preprint-b31b1b.svg)](docs/TELOS_Academic_Paper.pdf) [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.18370263-blue.svg)](https://doi.org/10.5281/zenodo.18370263) [![SAAI Compliant](https://img.shields.io/badge/SAAI-Framework_Compliant-green.svg)](research/saai_requirement_mapping.md)
 
 **A mathematical governance framework for AI agents.**
 
