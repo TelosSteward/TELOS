@@ -86,6 +86,15 @@ class PermissionController:
             audit_dir: Path for escalation audit logs. Defaults to ~/.telos/audit/.
         """
         self._config = config
+        if config.timeout_action == "allow":
+            import warnings
+            warnings.warn(
+                "timeout_action=\"allow\" is deprecated and unsafe. "
+                "Fail-open governance bypasses scoring on timeout. "
+                "Use timeout_action=\"deny\" (default) in production.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
         self._notifications = notification_service
         self._signer = receipt_signer
         self._tkeys = tkeys_manager

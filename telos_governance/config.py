@@ -266,7 +266,7 @@ class NotificationsConfig:
     whatsapp_access_token: str = ""
     whatsapp_recipient_number: str = ""
     escalation_timeout_seconds: int = 300
-    timeout_action: str = "deny"  # "deny" (fail-closed) or "allow" (fail-open)
+    timeout_action: str = "deny"  # "deny" (fail-closed) only. "allow" (fail-open) is unsafe and deprecated.
 
     @property
     def has_telegram(self) -> bool:

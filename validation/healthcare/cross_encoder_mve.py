@@ -56,8 +56,7 @@ try:
     from ruamel.yaml import YAML as _YAML
 
     def _load_yaml(path: Path) -> dict:
-        yaml = _YAML()
-        yaml.preserve_quotes = True
+        yaml = _YAML(typ="safe")
         with open(path, "r") as f:
             return dict(yaml.load(f))
 

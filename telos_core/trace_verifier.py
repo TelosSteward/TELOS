@@ -250,6 +250,7 @@ def verify_trace_integrity(file_path) -> TraceVerificationReport:
         # Check if this file has hash chain (backward compatibility)
         if event_previous_hash is None and event_hash is None:
             # No hash chain in this file - mark as valid but note it
+            logger.warning("Trace event %d missing hash fields — skipping chain verification", idx)
             if idx == 0:
                 report.errors.append("No hash chain found (pre-SAAI trace file)")
                 report.is_valid = True
