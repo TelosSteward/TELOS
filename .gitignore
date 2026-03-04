@@ -262,3 +262,10 @@ calibration_queue/
 
 # SQLite databases
 *.db
+
+# Build artifacts
+**/dist/
+*.bak
+
+# Generated demo output
+demos/output/
