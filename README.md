@@ -27,8 +27,8 @@ telos score "Assess roof condition for underwriting" -c templates/property_intel
 #    Same governance engine, 4 radically different purposes, 29 turns, 12 boundary interventions
 DEMO_FAST=1 python3 demos/nearmap_live_demo.py
 
-# 3. Run full test suite (1,680+ tests)
-pytest tests/ -v
+# 3. Run core test suite (1,500+ tests)
+pytest tests/unit tests/scenarios -v
 ```
 
 For a comprehensive technical overview of the architecture, development history, and research program, see [CLAUDE.md](CLAUDE.md).
