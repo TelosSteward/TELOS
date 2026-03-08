@@ -247,7 +247,7 @@ class TestSAAIThresholds:
         assert SAAI_DRIFT_RESTRICT < SAAI_DRIFT_BLOCK
 
     def test_baseline_turn_count(self):
-        assert BASELINE_TURN_COUNT == 3
+        assert BASELINE_TURN_COUNT == 50
         assert BASELINE_TURN_COUNT > 0
 
 

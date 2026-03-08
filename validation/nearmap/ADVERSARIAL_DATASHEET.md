@@ -59,7 +59,7 @@ This is analogous to how automotive safety researchers build crash test scenario
 
 **Why was this dataset created?** To validate the adversarial robustness of the TELOS agentic governance engine against attack patterns relevant to regulated property intelligence workflows. Existing LLM adversarial benchmarks (HarmBench, AdvBench, JailbreakBench) test general-purpose language model safety, but none test domain-specific *agentic governance* — the ability of a governance layer to prevent an AI agent from executing malicious tool calls in response to adversarial prompts.
 
-**Who created it?** TELOS AI Labs Inc., with adversarial taxonomy design informed by a 5-agent research team review (governance theory, statistics, systems engineering, regulatory analysis, methodology).
+**Who created it?** TELOS AI Labs Inc., with adversarial taxonomy design informed by cross-domain review spanning governance theory, statistics, systems engineering, regulatory analysis, and methodology.
 
 **Who funded it?** Self-funded research.
 
@@ -113,21 +113,13 @@ This is analogous to how automotive safety researchers build crash test scenario
 5. Mapping to published taxonomy references (OWASP, NIST, MITRE ATLAS)
 6. Creating a paired false-positive control using similar vocabulary for a legitimate request
 
-**Who was involved in the collection process?** The adversarial taxonomy was designed following a 5-agent research team review:
-
-| Agent | Domain | Key Contribution |
-|-------|--------|------------------|
-| Governance Theorist | Ostrom/Russell alignment theory | Mapped attacks to Ostrom's 8 Design Principles; named "semantic cloaking" vulnerability |
-| Data Scientist | Statistics, embedding geometry | Identified 95% CI width (40 points), "twilight zone" (bf 0.60-0.70), minimum viable sample size |
-| Systems Engineer | Architecture, performance | Identified mean-pooling dilution as core vulnerability, 22 attack types (12 covered) |
-| Regulatory Analyst | EU AI Act, NAIC, OWASP | Mapped to OWASP LLM/Agentic Top 10; identified zero fair-insurance coverage gap |
-| Research Methodologist | Experimental design, rigor | Identified circular validation, broken provenance chain, no false-positive controls |
+**Who was involved in the collection process?** The adversarial taxonomy was designed following a cross-domain research review covering governance theory, statistics, systems engineering, regulatory analysis, and research methodology. Key contributions included: mapping attacks to Ostrom's 8 Design Principles; identifying the "semantic cloaking" vulnerability; statistical analysis of 95% CI width and minimum viable sample sizes; identifying mean-pooling dilution as the core architectural vulnerability; mapping to OWASP LLM/Agentic Top 10 frameworks; and establishing false-positive controls and provenance chain methodology.
 
 **Over what timeframe?** 2026-02-12 (single research session).
 
 ### Preprocessing / Cleaning
 
-**Was any preprocessing applied?** Each scenario was calibrated against the governance engine's actual output. Cat E scenarios that the engine fails to detect are documented as known gaps with severity ratings (CRITICAL for EXECUTE, MODERATE for SUGGEST/CLARIFY). Cat C controls are calibrated to the engine's actual decision to serve as regression tests.
+**Was any preprocessing applied?** Each scenario was calibrated against the governance engine's actual output. Cat E scenarios that the engine fails to detect are documented as known gaps with severity ratings (CRITICAL for EXECUTE, MODERATE for CLARIFY). Cat C controls are calibrated to the engine's actual decision to serve as regression tests.
 
 ### Uses
 
@@ -144,9 +136,11 @@ This is analogous to how automotive safety researchers build crash test scenario
 
 ### Distribution
 
-**How is the dataset distributed?** As part of the TELOS Hardened research artifact (private GitHub repository).
+**How is the dataset distributed?** As part of the TELOS research artifact (TELOS repository).
 
-**License:** Research use only.
+**License:** Research use only. Licensed under the terms of the TELOS AI Labs Inc. proprietary research license. Contact JB@telos-labs.ai for licensing inquiries.
+
+**Dual-use acknowledgment:** This adversarial dataset contains attack scenarios that, while designed for defensive governance validation, document techniques that could theoretically inform offensive use. The attack taxonomy is derived entirely from published frameworks (OWASP, NIST, MITRE ATLAS) and does not introduce novel attack techniques. Distribution is restricted to authorized research collaborators.
 
 ### Maintenance
 
@@ -205,9 +199,9 @@ These represent the most severe governance failures: the engine would proceed to
 
 **Root cause:** Mean-pooling in sentence-transformers treats all tokens equally. When an adversarial payload is surrounded by enough legitimate property intelligence vocabulary, the adversarial signal is mathematically diluted below the boundary detection threshold (0.70). This is the "semantic cloaking" vulnerability identified by the governance theorist.
 
-### MODERATE Evasions (8) — Engine produces SUGGEST/CLARIFY instead of ESCALATE
+### MODERATE Evasions (8) — Engine produces CLARIFY instead of ESCALATE
 
-These are partial successes: the engine doesn't execute the adversarial request, but doesn't escalate it either. An operator might be confused by a SUGGEST or CLARIFY response to a social engineering attempt.
+These are partial successes: the engine doesn't execute the adversarial request, but doesn't escalate it either. An operator might be confused by a CLARIFY response to a social engineering attempt.
 
 | Scenario | Attack | Actual | eff | bf |
 |----------|--------|--------|-----|-----|

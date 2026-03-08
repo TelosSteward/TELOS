@@ -1,7 +1,7 @@
 """
 Codebase Access Policy — Ed25519-signed access policies for RAG collections.
 
-Each RAG collection (e.g., telos_governance, stewartbot, openclaw_workspace)
+Each RAG collection (e.g., telos_governance, agent_workspace)
 gets an Ed25519-signed access policy defining which agent identities can
 read/write specific code paths. The principal's Ed25519 signature
 mathematically bars unauthorized writes — the agent cannot grant itself access.
@@ -350,8 +350,11 @@ class CodebasePolicySigner:
 # Path matching utilities
 # ---------------------------------------------------------------------------
 
-WRITE_TOOLS = {"Write", "Edit", "MultiEdit", "Delete", "Move", "ApplyPatch"}
-READ_TOOLS = {"Read", "Glob", "Grep", "ListDir"}
+# Canonical tool sets — all lowercase for case-insensitive matching.
+# Unknown tools are treated as writes (deny-by-default).
+WRITE_TOOLS = {"write", "edit", "multiedit", "delete", "move", "applypatch"}
+READ_TOOLS = {"read", "glob", "grep", "listdir"}
+ALL_KNOWN_TOOLS = WRITE_TOOLS | READ_TOOLS
 
 
 def extract_file_path(tool_name: str, tool_args: dict) -> Optional[str]:
@@ -456,7 +459,9 @@ def check_access(
         - Read to any covered   -> (True, "read_allowed", policy)
         - Write to read_write   -> (True, "write_allowed", policy)
     """
-    is_write = tool_name in WRITE_TOOLS
+    canonical_tool = tool_name.strip().lower() if tool_name else ""
+    # Deny-by-default: unknown tools treated as writes (fail-closed)
+    is_write = canonical_tool not in READ_TOOLS
 
     matched = find_matching_policy(file_path, policies, project_root)
 

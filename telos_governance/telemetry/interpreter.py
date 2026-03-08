@@ -13,7 +13,7 @@ Architecture:
         -> _extract_params() [regex/keyword extraction]
         -> execute()        [dispatch to tool function]
         -> TeloscopeAudit   [Gate 2 observation log]
-        -> chain tracking   [A30 suspicious pattern detection]
+        -> chain tracking   [suspicious pattern detection]
 
 Import pattern: try telos_governance.* first, fallback to direct imports.
 
@@ -25,7 +25,7 @@ Routing:
 
 Chain continuity:
     Tracks tool call sequence for the session. Detects suspicious patterns
-    from A30 specification:
+    from the report quality specification:
       - 3+ sweeps without stats/inspect (parameter search without examining results)
       - 5+ rescores (iterative refinement, result-shopping risk)
       - 20+ tool calls without documented research question (open-ended fishing)
@@ -220,7 +220,7 @@ LONG_NAMES = {v: k for k, v in SHORT_NAMES.items()}
 DIMENSIONS = {"composite", "purpose", "scope", "boundary", "tool", "chain"}
 
 # Verdicts recognized in queries
-VERDICTS = {"EXECUTE", "CLARIFY", "SUGGEST", "INERT", "ESCALATE"}
+VERDICTS = {"EXECUTE", "CLARIFY", "INERT", "ESCALATE"}
 
 # Known tool names from the audit data (for parameter extraction)
 KNOWN_TOOLS = {
@@ -229,7 +229,7 @@ KNOWN_TOOLS = {
     "readmcpresourcetool",
 }
 
-# ── A30 Operational Caps ──────────────────────────────────────────────────
+# ── Operational Caps ─────────────────────────────────────────────────────
 
 MAX_CORPUS_EVENTS = 50000
 MAX_SWEEP_POINTS = 200
@@ -524,7 +524,7 @@ def _extract_params(query: str, tool_name: str) -> Dict[str, Any]:
         params["threshold"] = float(thresh_match.group(1))
 
     # Specific threshold parameters: "st_execute", "st_clarify", etc.
-    for param_name in ("st_execute", "st_clarify", "st_suggest",
+    for param_name in ("st_execute", "st_clarify",
                         "boundary_violation"):
         pat = re.search(
             rf'{param_name}\s*(?:to|=)?\s*(0?\.\d+|\d+\.\d+)',
@@ -611,11 +611,10 @@ def _extract_params(query: str, tool_name: str) -> Dict[str, Any]:
         # "sweep st_execute", "sweep boundary_violation"
         sweep_param = re.search(
             r'sweep\s+(?:the\s+)?(?:over\s+)?'
-            r'(st_execute|st_clarify|st_suggest|boundary_violation|'
+            r'(st_execute|st_clarify|boundary_violation|'
             r'weight_purpose|weight_scope|weight_tool|weight_chain|'
             r'weight_boundary_penalty|execute\s+threshold|'
-            r'clarify\s+threshold|suggest\s+threshold|'
-            r'boundary\s+threshold)',
+            r'clarify\s+threshold|boundary\s+threshold)',
             ql
         )
         if sweep_param:
@@ -624,7 +623,6 @@ def _extract_params(query: str, tool_name: str) -> Dict[str, Any]:
             param_map = {
                 "execute threshold": "st_execute",
                 "clarify threshold": "st_clarify",
-                "suggest threshold": "st_suggest",
                 "boundary threshold": "boundary_violation",
             }
             params["param_name"] = param_map.get(raw_param, raw_param)
@@ -690,11 +688,11 @@ def _canonicalize_tool(raw: str) -> Optional[str]:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# Chain pattern detection (A30)
+# Chain pattern detection
 # ═══════════════════════════════════════════════════════════════════════════
 
 def _detect_suspicious_patterns(chain: List[str]) -> List[str]:
-    """Detect suspicious patterns from A30 specification.
+    """Detect suspicious chain patterns.
 
     Returns a list of warning messages for detected patterns.
     """
@@ -715,7 +713,7 @@ def _detect_suspicious_patterns(chain: List[str]) -> List[str]:
         # Don't reset on other tools -- sweep,load,sweep still counts
         if consecutive_sweeps >= SWEEP_WARN_CONSECUTIVE:
             warnings.append(
-                f"A30 CLARIFY: {consecutive_sweeps} sweep calls without "
+                f"CLARIFY: {consecutive_sweeps} sweep calls without "
                 f"stats/inspect. Parameter search without examining results "
                 f"-- possible p-hacking. (chain position {i})"
             )
@@ -725,7 +723,7 @@ def _detect_suspicious_patterns(chain: List[str]) -> List[str]:
     rescore_count = sum(1 for s in shorts if s == "rescore")
     if rescore_count >= RESCORE_WARN_CONSECUTIVE:
         warnings.append(
-            f"A30 CLARIFY: {rescore_count} rescore calls in session. "
+            f"CLARIFY: {rescore_count} rescore calls in session. "
             f"Iterative refinement -- result-shopping risk."
         )
 
@@ -734,7 +732,7 @@ def _detect_suspicious_patterns(chain: List[str]) -> List[str]:
     inspect_count = sum(1 for s in shorts if s == "inspect")
     if inspect_count >= 5:
         warnings.append(
-            f"A30 CLARIFY: {inspect_count} inspect calls in session. "
+            f"CLARIFY: {inspect_count} inspect calls in session. "
             f"If filtering on session_id, verify this is governance "
             f"analysis, not user profiling."
         )
@@ -743,7 +741,7 @@ def _detect_suspicious_patterns(chain: List[str]) -> List[str]:
     export_count = sum(1 for s in shorts if s == "export")
     if export_count >= 3:
         warnings.append(
-            f"A30 ESCALATE: {export_count} export calls in session. "
+            f"ESCALATE: {export_count} export calls in session. "
             f"Possible data spraying."
         )
 
@@ -751,14 +749,14 @@ def _detect_suspicious_patterns(chain: List[str]) -> List[str]:
     if n > 0 and shorts[0] != "load" and shorts[0] != "validate":
         # First call should typically be load or validate
         warnings.append(
-            f"A30 NOTE: First tool call was '{shorts[0]}', not 'load'. "
+            f"NOTE: First tool call was '{shorts[0]}', not 'load'. "
             f"Corpus should be loaded before analysis."
         )
 
     # Operational cap: 20+ calls without research question
     if n >= MAX_TOOL_CALLS_WITHOUT_QUESTION:
         warnings.append(
-            f"A30 CLARIFY: {n} tool calls without documented research "
+            f"CLARIFY: {n} tool calls without documented research "
             f"question. Open-ended fishing -- please document your "
             f"research objective."
         )
@@ -812,7 +810,7 @@ class TeloscopeInterpreter:
             telemetry_enabled=telemetry_enabled,
         )
 
-        # Session chain tracking (A30)
+        # Session chain tracking
         self._chain: List[str] = []     # Tool names in call order
         self._call_count: int = 0
         self._warnings_issued: set = set()
@@ -912,7 +910,7 @@ class TeloscopeInterpreter:
         2. Extract parameters from the query
         3. Call the tool function
         4. Log the call to TeloscopeAudit (Gate 2 observation)
-        5. Track chain continuity (A30 pattern detection)
+        5. Track chain continuity (pattern detection)
         6. Return formatted result string
 
         Args:
@@ -1179,7 +1177,7 @@ class TeloscopeInterpreter:
 
         # Build rescore kwargs
         rescore_kwargs: Dict[str, Any] = {}
-        for key in ("st_execute", "st_clarify", "st_suggest",
+        for key in ("st_execute", "st_clarify",
                      "boundary_violation", "weight_purpose", "weight_scope",
                      "weight_tool", "weight_chain", "weight_boundary_penalty"):
             if key in params:
@@ -1211,7 +1209,7 @@ class TeloscopeInterpreter:
         # Compute number of sweep points
         n_points = int((stop - start) / step) + 1
 
-        # Sweep bounds check (A30)
+        # Sweep bounds check
         checks.append(check_sweep_bounds(n_points))
 
         # Sample size check

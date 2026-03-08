@@ -34,7 +34,7 @@ except ImportError:
 
 
 DIMENSIONS = ["composite", "purpose", "scope", "boundary", "tool", "chain"]
-VERDICT_ORDER = ["EXECUTE", "CLARIFY", "SUGGEST", "INERT", "ESCALATE"]
+VERDICT_ORDER = ["EXECUTE", "CLARIFY", "INERT", "ESCALATE"]
 
 # Production weights
 _WEIGHTS = {

@@ -4,7 +4,7 @@ Tests for telos_adapters.generic.decorator
 Tests the @telos_governed decorator:
 - Pass-through when no text input
 - Blocking on low fidelity
-- Decision classification (EXECUTE, CLARIFY, SUGGEST, INERT, ESCALATE)
+- Decision classification (EXECUTE, CLARIFY, ESCALATE)
 - Custom on_block callback
 - Metadata on wrapper
 - Config-driven purpose loading (Step 8.3)
@@ -261,18 +261,21 @@ class TestDecisionClassification:
         # CLARIFY still proceeds
         assert func("test input") == "executed_with_clarify"
 
-    def test_suggest_between_050_070(self):
+    def test_below_clarify_is_blocked(self):
+        """Similarity 0.55 < CLARIFY threshold 0.70 -> ESCALATE, function blocked (raises ValueError)."""
         from telos_adapters.generic.decorator import telos_governed
+        import pytest
         embed = self._make_controlled_decorator(0.55)
 
         @telos_governed(purpose="purpose", threshold=0.70, embed_fn=embed)
         def func(text: str) -> str:
-            return "executed_with_suggest"
+            return "should_not_execute"
 
-        # SUGGEST still proceeds
-        assert func("test input") == "executed_with_suggest"
+        # ESCALATE: function raises ValueError — action blocked by governance
+        with pytest.raises(ValueError, match="blocked by TELOS governance"):
+            func("test input")
 
-    def test_inert_below_050(self):
+    def test_escalate_below_050(self):
         from telos_adapters.generic.decorator import telos_governed
         embed = self._make_controlled_decorator(0.35)
 
@@ -447,7 +450,7 @@ class TestSessionIntegration:
             result = func("unrelated")
             assert result == "BLOCKED"
             assert session.receipt_count == 1
-            assert session.receipts[0].decision == "inert"
+            assert session.receipts[0].decision == "escalate"
 
     def test_no_session_no_signing(self):
         """Without session, decorator works normally with no signing."""

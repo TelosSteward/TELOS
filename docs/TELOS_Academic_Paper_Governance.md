@@ -203,12 +203,14 @@ The difference in tier distribution reflects the nature of the attacks: AILumina
   \+ System Prompt         3.7%     96.3%     \[1.9, 5.5\]
   \+ TELOS                 0.0%    100.0%     \[0.0, 0.14\]
 
+*Note: These benchmarks use different attack sets and threat models. TELOS is a governance layer (not an LLM), and 38.4% of blocked content is routed to human review (Tier 3) rather than autonomously blocked. Direct comparison is illustrative, not methodologically equivalent.*
+
 ## Statistical Significance
 
-Using Wilson score intervals for 0 out of 2,550 successes:
+Using the Rule of Three for 0 out of 2,550 successes (3/n upper bound):
 
-- 95% CI: \[0.0%, 0.14%\]
-- 99% CI: \[0.0%, 0.18%\]
+- 95% CI upper bound: <0.12% (Rule of Three: 3/2,550 = 0.118%)
+- Clopper-Pearson exact 95% CI: \[0.0%, 0.14%\]
 
 Fisher's exact test vs. baseline: $p < 0.0001$.
 
@@ -338,6 +340,8 @@ NVIDIA NeMo Guardrails [@rebedea2023nemo] offers programmable dialogue managemen
   Llama Guard         Classifier           4.4--7.3%
   TELOS               PA + 3-Tier               0.0%
 
+*Note: These benchmarks use different attack sets and threat models. TELOS is a governance layer (not an LLM), and 38.4% of blocked content is routed to human review (Tier 3) rather than autonomously blocked. Direct comparison is illustrative, not methodologically equivalent.*
+
 ## Governance-Theoretic Grounding
 
 TELOS's three-tier architecture instantiates several established governance theory frameworks as computational mechanisms:
@@ -376,13 +380,13 @@ TELOS's three-tier architecture instantiates several established governance theo
 
 # Conclusion
 
-TELOS demonstrates that AI constitutional violations can be addressed through structured governance. Through three-tier governance---mathematical enforcement, authoritative policy retrieval, and human expert escalation---we observe a 0% Attack Success Rate across 2,550 adversarial tests spanning five benchmarks (95% CI: \[0%, 0.14%\]). XSTest validation shows that domain-specific Primacy Attractors reduce over-refusal from 24.8% to 8.0%.
+TELOS demonstrates that AI constitutional violations can be addressed through structured governance. Through three-tier governance---mathematical enforcement, authoritative policy retrieval, and human expert escalation---we observe a 0% Attack Success Rate across 2,550 adversarial tests spanning four benchmarks (Rule of Three 95% CI upper bound: <0.12%). XSTest validation shows that domain-specific Primacy Attractors reduce over-refusal from 24.8% to 8.0%.
 
 Our five contributions---theoretical (Lyapunov-stable PA mathematics), empirical (0% ASR validation), over-refusal calibration (XSTest FPR reduction), methodological (governance trace logging), and practical (reproducible validation infrastructure)---address requirements for AI deployment in regulated fields.
 
 ## Reproducibility
 
-Code, data, and validation scripts are available at **github.com/TelosSteward/TELOS** (Apache 2.0 license).
+Code, data, and validation scripts are available at **github.com/TELOS-Labs-AI/telos** (Apache 2.0 license).
 
 **System Requirements:**
 - Python 3.10+
@@ -391,11 +395,11 @@ Code, data, and validation scripts are available at **github.com/TelosSteward/TE
 
 **Quick Validation (5--10 minutes):**
 
-    git clone https://github.com/TelosSteward/TELOS.git
+    git clone https://github.com/TELOS-Labs-AI/telos.git
     cd TELOS
     pip install -r requirements.txt
     export MISTRAL_API_KEY='your_key'
-    python3 telos_observatory_v3/telos_purpose/validation/run_internal_test0.py
+    python3 validation/run_internal_test0.py
 
 **All validation datasets published on Zenodo:**
 
@@ -440,7 +444,7 @@ This creates a semantic basin that captures legitimate variations while discrimi
 
 ## Healthcare PA Structure (Example)
 
-See full configuration at: **github.com/TelosSteward/TELOS/config/healthcare_pa.json**
+See full configuration at: **github.com/TELOS-Labs-AI/telos/config/healthcare_pa.json**
 
 Key components:
 - **Purpose:** "Learn and deeply understand clinical concepts - building robust mental models that connect medical knowledge to patient care"

@@ -365,7 +365,7 @@ class SessionSummaryEvent(BaseEvent):
 # ============================================================================
 # SAAI Framework Events
 # ============================================================================
-# Per Safer Agentic AI (SAAI) Framework by Dr. Nell Watson
+# Per Safer Agentic AI (SAAI) Framework by Dr. Nell Watson and Ali Hessami
 # These events support mandatory review requirements and tiered response
 
 class BaselineEstablishedEvent(BaseEvent):

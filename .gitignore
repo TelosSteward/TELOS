@@ -9,6 +9,7 @@ contacts/
 telos_observatory_v3/
 
 # Nested repo copy (accidental duplication — 2.6GB)
+telos/
 
 # VC/business documents (not for collaborator repo)
 docs/The_Cost_of_Ungoverned_AI.pdf
@@ -124,8 +125,6 @@ screenshots/gateway_ui.png
 
 # Governance trace output
 telos_governance_traces/
-telos_gateway_traces/
-gateway_traces.jsonl
 
 # Internal/business docs (kept locally, not for public repo)
 docs/ADJACENT_RESEARCH_LANDSCAPE.md
@@ -240,8 +239,9 @@ validation/healthcare/reports/
 !validation/healthcare/healthcare_disagreement_v1.jsonl
 !validation/healthcare/healthcare_ground_truth_v1.jsonl
 
-# Exception: OpenClaw SetFit held-out evaluation (required for reproducibility)
-!validation/openclaw/openclaw_setfit_heldout_v1.jsonl
+# Domain-specific SetFit artifacts — PROPRIETARY (trained weights, labeled data, calibration)
+# These stay local. The models/ rule covers head_weights + manifest.
+# The *.jsonl rule covers training + heldout.
 
 # Optimizer — large artifacts (regenerable via governance_optimizer.py)
 optimizer_output/**/study.db
@@ -262,10 +262,3 @@ calibration_queue/
 
 # SQLite databases
 *.db
-
-# Build artifacts
-**/dist/
-*.bak
-
-# Generated demo output
-demos/output/

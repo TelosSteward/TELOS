@@ -51,6 +51,22 @@ class TestOnnxInit:
     def test_tokenizer_loaded(self, onnx_provider):
         assert onnx_provider._tokenizer is not None
 
+    def test_model_hash_pinned(self):
+        """Pinned SHA-256 hash must match the actual model file."""
+        from huggingface_hub import hf_hub_download
+        model_name = "sentence-transformers/all-MiniLM-L6-v2"
+        info = OnnxEmbeddingProvider._SUPPORTED_MODELS[model_name]
+        path = hf_hub_download(model_name, info["onnx_file"])
+        assert OnnxEmbeddingProvider._verify_model_hash(path, info["sha256"])
+
+    def test_tampered_hash_fails(self, tmp_path):
+        """Wrong hash must fail verification."""
+        dummy = tmp_path / "model.onnx"
+        dummy.write_bytes(b"tampered model data")
+        assert not OnnxEmbeddingProvider._verify_model_hash(
+            str(dummy), "0" * 64
+        )
+
 
 # ---------------------------------------------------------------------------
 # Encoding

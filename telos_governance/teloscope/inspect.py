@@ -41,7 +41,7 @@ _WEIGHTS = {
     "boundary": -0.10,
 }
 
-VERDICT_ORDER = ["EXECUTE", "CLARIFY", "SUGGEST", "INERT", "ESCALATE"]
+VERDICT_ORDER = ["EXECUTE", "CLARIFY", "INERT", "ESCALATE"]
 
 
 def _contribution(event: AuditEvent) -> Dict[str, float]:

@@ -17,8 +17,8 @@ reproducibility. Three independent verification checks:
 
 NOTE: The ``previous_event_hash`` field is populated by ChainedAuditWriter
 (demo_audit_bridge.py) and TeloscopeAudit._write_entry() (teloscope_audit.py).
-A22 finding F6 closed by A34 T0-1. Signature verification requires a
-pinned public key (see T0-2).
+Signature verification requires a pinned public key to prevent
+self-signed forgery.
 
 Usage:
     from telos_governance.corpus import load_corpus
@@ -83,9 +83,9 @@ except ImportError:
     except ImportError:
         ThresholdConfig = None
 
-VERDICT_ORDER = ["EXECUTE", "CLARIFY", "SUGGEST", "INERT", "ESCALATE"]
+VERDICT_ORDER = ["EXECUTE", "CLARIFY", "INERT", "ESCALATE"]
 
-# Statuses that indicate incomplete validation (A34 T0-5).
+# Statuses that indicate incomplete validation.
 # These are NOT failures, but they are NOT passes either. Unknown != good.
 DEGRADED_STATUSES = {"not_present", "not_available", "no_signatures", "degraded"}
 
@@ -338,8 +338,8 @@ def validate_chain(corpus: AuditCorpus) -> ChainResult:
     excluding ``previous_event_hash`` and ``signature``) and compares it
     with the current event's ``previous_event_hash`` field.
 
-    Returns ``status="degraded"`` if all hashes are empty (A34 T0-5;
-    previously "not_present" which was fail-open — A22-F6).
+    Returns ``status="degraded"`` if all hashes are empty (previously
+    "not_present" which was fail-open).
     """
     n = len(corpus)
     if n == 0:
@@ -424,7 +424,7 @@ def validate_signatures(
     signed payload is the event JSON with the ``signature`` field removed,
     serialized with sorted keys.
 
-    **IMPORTANT (A34 T0-2):** If ``trusted_public_key`` is provided, all
+    **IMPORTANT:** If ``trusted_public_key`` is provided, all
     events are verified against that key. If an event's embedded
     ``signing_public_key`` differs from the trusted key, the event FAILS
     verification (key mismatch). This prevents self-signed forgery where
@@ -707,7 +707,7 @@ def validate(
     sigs = validate_signatures(corpus, trusted_public_key=trusted_public_key)
     repro = validate_reproducibility(corpus, config=config)
 
-    # Determine overall status (A34 T0-5: degraded != pass)
+    # Determine overall status (degraded != pass)
     results = [chain, sigs, repro]
     n_pass = sum(1 for r in results if r.status == "pass")
     n_fail = sum(1 for r in results if r.status == "fail")

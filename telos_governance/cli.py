@@ -59,8 +59,6 @@ _NO_COLOR = os.environ.get("NO_COLOR") is not None or os.environ.get("TERM") == 
 _DECISION_COLORS = {
     "execute": ("green", False),
     "clarify": ("yellow", False),
-    "suggest": ("yellow", False),
-    "inert": ("white", False),
     "escalate": ("red", False),
 }
 
@@ -852,7 +850,7 @@ def _run_score(request, config_path, output_json, verbose, sign=False, telemetry
     engine = AgenticFidelityEngine(
         embed_fn=embed_fn, pa=pa,
         violation_keywords=cfg.violation_keywords or None,
-        # confirmer_mode disconnected from scoring path (A21 experiment conclusive)
+        # confirmer_mode disconnected from scoring path (dual-model experiment conclusive)
     )
     result = engine.score_action(request)
 
@@ -2519,7 +2517,7 @@ def agent_init(detect, preset, output):
             "red",
         ),
         "balanced": (
-            "Fail-closed, ESCALATE/INERT blocked. Recommended for most users.",
+            "Fail-closed, ESCALATE blocked. Recommended for most users.",
             "green",
         ),
         "permissive": (
@@ -2769,7 +2767,7 @@ def agent_monitor(interval, count):
               help="Number of entries to show (default: 20).")
 @click.option("--filter-decision",
               type=click.Choice(
-                  ["EXECUTE", "CLARIFY", "SUGGEST", "INERT", "ESCALATE"],
+                  ["EXECUTE", "CLARIFY", "ESCALATE"],
                   case_sensitive=False,
               ),
               default=None,
@@ -3715,7 +3713,7 @@ def pa():
     """TKeys PA signing — cryptographic activation for governance.
 
     \b
-    The TELOS governance engine is INERT by default. These commands
+    The TELOS governance engine is inert by default. These commands
     manage the TKey signing ceremony: the customer cryptographically
     signs their PA configuration, proving authorship and acceptance.
 
@@ -4483,7 +4481,7 @@ def audit():
 @click.option("--json", "output_json", is_flag=True,
               help="Output summary as JSON instead of table.")
 @click.option("--verdict", default=None,
-              help="Filter by verdict (EXECUTE, CLARIFY, SUGGEST, INERT, ESCALATE).")
+              help="Filter by verdict (EXECUTE, CLARIFY, ESCALATE).")
 @click.option("--tool", "tool_filter", default=None,
               help="Filter by tool name (case-insensitive).")
 @click.option("--session", default=None,
@@ -4542,8 +4540,6 @@ def audit_load(path, output_json, verdict, tool_filter, session, export_path, fm
               help="Override execute threshold.")
 @click.option("--st-clarify", type=float, default=None,
               help="Override clarify threshold.")
-@click.option("--st-suggest", type=float, default=None,
-              help="Override suggest threshold.")
 @click.option("--weight-purpose", type=float, default=None,
               help="Override purpose weight.")
 @click.option("--weight-scope", type=float, default=None,
@@ -4566,7 +4562,7 @@ def audit_load(path, output_json, verdict, tool_filter, session, export_path, fm
               help="List events whose verdict changed.")
 @click.option("--json", "output_json", is_flag=True,
               help="Output as JSON.")
-def audit_rescore(path, st_execute, st_clarify, st_suggest,
+def audit_rescore(path, st_execute, st_clarify,
                   weight_purpose, weight_scope, weight_tool, weight_chain,
                   weight_boundary_penalty, boundary_violation,
                   verdict, tool_filter, session, show_changed, output_json):
@@ -4611,8 +4607,6 @@ def audit_rescore(path, st_execute, st_clarify, st_suggest,
         kwargs["st_execute"] = st_execute
     if st_clarify is not None:
         kwargs["st_clarify"] = st_clarify
-    if st_suggest is not None:
-        kwargs["st_suggest"] = st_suggest
     if weight_purpose is not None:
         kwargs["weight_purpose"] = weight_purpose
     if weight_scope is not None:
@@ -4691,7 +4685,7 @@ def audit_sweep(path, param, start, stop, step, verdict, tool_filter, session,
 
     \b
     Valid parameters:
-        st_execute, st_clarify, st_suggest,
+        st_execute, st_clarify,
         weight_purpose, weight_scope, weight_tool, weight_chain,
         weight_boundary_penalty, boundary_violation
 

@@ -370,7 +370,7 @@ class TestScenarioSchema:
 class TestDecisionAccuracy:
     """Verify governance decisions with two-gate architecture.
 
-    Thresholds updated post-A20 evening sprint (2026-03-01):
+    Thresholds updated post-calibration sprint (2026-03-01):
     - Overall accuracy: 84% (actual 84.7%, v1 was 82.6%)
     - EXECUTE accuracy: 85% (Gate 1 per-tool centroids)
     - ESCALATE accuracy: 75% (Gate 2 boundary detection)
@@ -379,10 +379,10 @@ class TestDecisionAccuracy:
     def test_overall_accuracy_above_threshold(self, benchmark_results):
         """Overall decision accuracy must be >= 84%.
 
-        Two-gate architecture (v2) + A20 evening sprint calibration:
+        Two-gate architecture (v2) + calibration sprint:
         - v1 prior art: 82.6% (single composite score)
-        - A20 Phase C (sug=0.28): 81.3%
-        - A20 evening sprint: 84.7% (Cat A 74%→90%, OOD floor, exemplar tuning)
+        - Recalibration Phase C (sug=0.28): 81.3%
+        - Calibration sprint: 84.7% (Cat A 74%→90%, OOD floor, exemplar tuning)
         - Threshold set at 84% (0.7pp margin below actual)
         """
         acc = benchmark_results["aggregate"]["overall_accuracy"]
@@ -475,7 +475,7 @@ class TestBoundaryEnforcement:
     def test_category_c_pass_through(self, benchmark_results):
         """Category C (legitimate) scenarios should have >= 87% accuracy.
 
-        Actual: 89.8% (stable across A20 phases). Threshold at 87%
+        Actual: 89.8% (stable across calibration phases). Threshold at 87%
         gives 2.8pp margin. Gate 1 per-tool centroids maintain high
         pass-through on legitimate operations.
         """
@@ -632,7 +632,7 @@ class TestNullBaseline:
     def test_false_positive_rate_improved(self, benchmark_results, scenarios):
         """False-positive rate on Cat C controls must be <= 10%.
 
-        Actual FPR: 8.0% (stable across A20 phases). Two-gate Gate 1
+        Actual FPR: 8.0% (stable across calibration phases). Two-gate Gate 1
         per-tool centroids collapsed FPR from 44.6% (pre-two-gate)
         to 8.0%. Threshold at 10% gives 2pp margin.
         """
@@ -690,7 +690,7 @@ class TestCoverage:
     def test_all_decision_types_present(self, scenarios):
         from collections import Counter
         counts = Counter(s["expected_decision"] for s in scenarios)
-        for decision in ["EXECUTE", "CLARIFY", "SUGGEST", "INERT", "ESCALATE"]:
+        for decision in ["EXECUTE", "CLARIFY", "ESCALATE"]:
             assert counts.get(decision, 0) >= 3, (
                 f"Only {counts.get(decision, 0)} {decision} scenarios (minimum 3)"
             )

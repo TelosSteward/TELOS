@@ -34,7 +34,7 @@
 % ABSTRACT
 % ============================================================================
 \begin{abstract}
-We present TELOS, a Governance Control Plane that achieves a 0\% Attack Success Rate across 2,550 adversarial attacks (95\% CI: [0\%, 0.14\%]). Current systems accept violation rates of 3.7\% to 43.9\% as unavoidable. TELOS uses fixed reference points in embedding space (Primacy Attractors) with a three-tier defense system: mathematical enforcement, policy retrieval, and human escalation. Validation includes AILuminate (1,200), HarmBench (400), MedSafetyBench (900), and SB 243 (50). XSTest shows that domain-specific configuration reduces over-refusal from 24.8\% to 8.0\%. Code and data: \url{github.com/TelosSteward/TELOS}
+We present TELOS, a Governance Control Plane that achieves a 0\% Attack Success Rate across 2,550 adversarial attacks (95\% CI: [0\%, 0.14\%]). Current systems accept violation rates of 3.7\% to 43.9\% as unavoidable. TELOS uses fixed reference points in embedding space (Primacy Attractors) with a three-tier defense system: mathematical enforcement, policy retrieval, and human escalation. Validation includes AILuminate (1,200), HarmBench (400), MedSafetyBench (900), and SB 243 (50). XSTest shows that domain-specific configuration reduces over-refusal from 24.8\% to 8.0\%. Code and data: \url{github.com/TELOS-Labs-AI/telos}
 \end{abstract}
 
 % ============================================================================
@@ -151,9 +151,12 @@ Llama Guard & Classifier & 4.4--7.3\% \\
 \textbf{TELOS} & \textbf{PA + 3-Tier} & \textbf{0\%} \\
 \bottomrule
 \end{tabular}
+\smallskip
+
+{\footnotesize\textit{Note: These benchmarks use different attack sets and threat models. TELOS is a governance layer (not an LLM), and 38.4\% of blocked content is routed to human review (Tier~3) rather than autonomously blocked. Direct comparison is illustrative, not methodologically equivalent.}}
 \end{table}
 
-\textbf{Statistical Validity:} 95\% CI [0\%, 0.14\%]. Fisher's exact compared to baseline: $p < 0.0001$.
+\textbf{Statistical Validity:} Rule of Three 95\% CI upper bound: $<$0.12\% (3/2,550 = 0.118\%). Clopper-Pearson exact 95\% CI: [0\%, 0.14\%]. Fisher's exact compared to baseline: $p < 0.0001$.
 
 \textbf{Interpreting Detection Metrics:} TELOS operates as a detection and escalation framework rather than a binary prevention system. The framework measures semantic drift against constitutional boundaries and triggers graduated intervention when thresholds are exceeded. Prevention emerges as a consequence of detection efficacy. When we report 0\% ASR, we are not claiming binary prevention. We are reporting that 100\% of attacks triggered the detection-escalation-intervention chain. Detection efficacy is measured by trigger rate: the percentage of boundary-violating inputs that initiate the governance response chain. The three-tier defense achieves what binary systems attempt through single-gate blocking. TELOS preserves blocking capability as the graduated endpoint of detection, not the sole mechanism.
 
@@ -201,9 +204,9 @@ Expanding model and language coverage is the immediate research priority.
 % ============================================================================
 \section{Conclusion}
 
-TELOS achieves 0\% ASR across 2,550 attacks (95\% CI: [0\%, 0.14\%]) through mathematical enforcement in embedding space. XSTest validation shows an 8.0\% false positive rate with domain-specific configuration.
+TELOS achieves 0\% ASR across 2,550 attacks (Rule of Three 95\% CI upper bound: $<$0.12\%) through mathematical enforcement in embedding space. XSTest validation shows an 8.0\% false positive rate with domain-specific configuration.
 
-\textbf{Reproducibility:} Code, data, and validation scripts can be found at \url{github.com/TelosSteward/TELOS}. All validation datasets published on Zenodo:
+\textbf{Reproducibility:} Code, data, and validation scripts can be found at \url{github.com/TELOS-Labs-AI/telos}. All validation datasets published on Zenodo:
 \begin{itemize}
     \item AILuminate (1,200): 10.5281/zenodo.18370263
     \item Adversarial (HarmBench 400 + MedSafetyBench 900): 10.5281/zenodo.18370659

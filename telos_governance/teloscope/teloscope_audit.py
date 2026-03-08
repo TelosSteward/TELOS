@@ -155,7 +155,7 @@ class AuditEntry:
 # Check functions
 # ---------------------------------------------------------------------------
 
-# Minimum sample sizes from A30 specification
+# Minimum sample sizes for statistical validity
 _SAMPLE_MINIMUMS = {
     "general": 20,
     "mean": 20,
@@ -171,7 +171,7 @@ _SAMPLE_MINIMUMS = {
 def check_sample_size(n: int, claim_type: str = "general") -> MethodologicalCheck:
     """Check if sample size meets minimum for the claim type.
 
-    Minimums from A30:
+    Minimum sample sizes:
       general/mean: 20, distribution/chi2: 30, comparison: 30 per group,
       per_tool: 10, trend: 3 windows, session: 5 sessions.
 

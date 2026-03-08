@@ -16,17 +16,17 @@ data:
      details, comparison results, event-level appendix (ESCALATE events),
      survivorship disclosure, and complete methodological appendix.
 
-Design constraints from A30 (Gebru, Russell, Karpathy — 3/3 consensus):
-  - Never upgrade PARTIAL to PASS in validation status (A30 #SC-7)
+Design constraints:
+  - Never upgrade PARTIAL to PASS in validation status (#SC-7)
   - Never suppress negative findings — dedicated "Findings Requiring
-    Attention" section (A30 prohibition #8)
+    Attention" section (report quality requirement #8)
   - Always include denominator — every percentage uses (n/N) format
-    (A30 prohibition #3, #SC-5)
+    (#SC-5)
   - Always reference self-audit trail — every report must cite
-    teloscope_audit.jsonl (A30 prohibition #9, #SC-8)
+    teloscope_audit.jsonl (#SC-8)
   - Zone 1 only in reports — no request_text, no explanation, no
-    tool_args in any report tier (A30 #SC-4)
-  - Redact paths using guardrails.redact_paths() (A30 Zone 2 rules)
+    tool_args in any report tier (#SC-4)
+  - Redact paths using guardrails.redact_paths() (Zone 2 rules)
 
 Reports are plain text — clean, readable, monospace-friendly.
 
@@ -129,7 +129,7 @@ _SEPARATOR = "=" * 72
 _THIN_SEP = "-" * 72
 _REPORT_VERSION = "1.0.0"
 
-# Traffic light thresholds (A30 governance health)
+# Traffic light thresholds (governance health)
 _GREEN_EXECUTE_RATE = 0.90   # >90% EXECUTE
 _YELLOW_EXECUTE_RATE = 0.70  # 70-90% EXECUTE
 
@@ -141,7 +141,7 @@ _YELLOW_EXECUTE_RATE = 0.70  # 70-90% EXECUTE
 def _pct_with_denom(count: int, total: int) -> str:
     """Format a percentage with denominator disclosure: '85.0% (170/200)'.
 
-    A30 prohibition #3: every percentage includes (n/N) format.
+    Report quality requirement: every percentage includes (n/N) format.
     """
     if total == 0:
         return "0.0% (0/0)"
@@ -195,7 +195,7 @@ def _traffic_light(
 def _audit_trail_info() -> Tuple[str, int]:
     """Get TELOSCOPE self-audit trail file path and record count.
 
-    A30 prohibition #9: every report must reference teloscope_audit.jsonl.
+    Report quality requirement: every report must reference teloscope_audit.jsonl.
 
     Returns:
         (trail_path, record_count) tuple.
@@ -387,7 +387,7 @@ def _negative_findings(
 ) -> List[str]:
     """Identify negative findings that must not be suppressed.
 
-    A30 prohibition #8: negative findings must be reported prominently.
+    Report quality requirement: negative findings must be reported prominently.
 
     Returns list of human-readable finding strings.
     """
@@ -550,7 +550,7 @@ class ExecReport:
             lines.append("  No findings requiring attention.")
             lines.append("")
 
-        # Self-audit trail reference (A30 prohibition #9)
+        # Self-audit trail reference
         lines.append("  TELOSCOPE Self-Audit Trail:")
         lines.append(f"    Path:    {redact_paths(self.audit_trail_path)}")
         lines.append(f"    Records: {self.audit_trail_records:,}")
@@ -578,7 +578,7 @@ class MgmtReport:
     execute_rate: float
     traffic_light: str
     top_findings: List[str]
-    negative_findings: List[str]             # All negative findings (A30 #8)
+    negative_findings: List[str]             # All negative findings
     integrity_status: Optional[str]
     # Per-tool verdict breakdown
     tool_verdict_table: str                  # Pre-formatted cross-tab
@@ -632,7 +632,7 @@ class MgmtReport:
             lines.append(f"  Integrity Status: {self.integrity_status}")
             lines.append("")
 
-        # --- Negative findings (A30 prohibition #8) ---
+        # --- Negative findings ---
         lines.append(_THIN_SEP)
         lines.append("  FINDINGS REQUIRING ATTENTION")
         lines.append(_THIN_SEP)
@@ -749,7 +749,7 @@ class MgmtReport:
             lines.append("    No methodological notes.")
         lines.append("")
 
-        # --- TELOSCOPE self-audit (A30 prohibition #9) ---
+        # --- TELOSCOPE self-audit ---
         lines.append(_THIN_SEP)
         lines.append("  TELOSCOPE SELF-AUDIT")
         lines.append(_THIN_SEP)
@@ -864,7 +864,7 @@ class FullAuditReport:
             lines.append("")
 
         # ================================================================
-        # SECTION 1: FINDINGS REQUIRING ATTENTION (A30 prohibition #8)
+        # SECTION 1: FINDINGS REQUIRING ATTENTION
         # ================================================================
         lines.append(_SEPARATOR)
         lines.append("  SECTION 1: FINDINGS REQUIRING ATTENTION")
@@ -1078,7 +1078,7 @@ class FullAuditReport:
             lines.append("")
             lines.append(
                 "  [Note: Zone 1 data only -- no request_text, explanation, "
-                "or tool_args included per A30 SC-4.]"
+                "or tool_args included per SC-4.]"
             )
         else:
             lines.append("  No ESCALATE events in corpus.")
@@ -1144,7 +1144,7 @@ class FullAuditReport:
         lines.append("")
 
         # ================================================================
-        # SECTION 12: TELOSCOPE SELF-AUDIT (A30 prohibition #9)
+        # SECTION 12: TELOSCOPE SELF-AUDIT
         # ================================================================
         lines.append(_SEPARATOR)
         lines.append("  SECTION 12: TELOSCOPE SELF-AUDIT TRAIL")
@@ -1176,7 +1176,7 @@ class FullAuditReport:
 
         lines.append(
             "  [This report includes TELOSCOPE's own analytical audit "
-            "trail per A30 prohibition #9.]"
+            "trail for report integrity.]"
         )
         lines.append("")
         lines.append(_SEPARATOR)
@@ -1215,7 +1215,7 @@ def executive_report(
     integrity_status = None
     if validation_result is not None:
         integrity_status = validation_result.overall_status.upper()
-        # A30 SC-7: Never upgrade PARTIAL to PASS
+        # SC-7: Never upgrade PARTIAL to PASS
         has_integrity_failure = validation_result.overall_status == "fail"
 
     # Traffic light
@@ -1260,7 +1260,7 @@ def management_report(
     - Session-level highlights (best and worst by escalation rate)
     - Methodological notes section
     - Denominator disclosure on every statistic
-    - Negative findings prominently displayed (A30 prohibition #8)
+    - Negative findings prominently displayed
     - TELOSCOPE self-audit summary
 
     Args:
@@ -1325,7 +1325,7 @@ def management_report(
             worst = max(qualified, key=lambda x: x[3])
             worst_session = (worst[0], worst[2], worst[3])
 
-    # Negative findings (A30 prohibition #8)
+    # Negative findings
     neg_findings = _negative_findings(
         corpus, validation_result, stats_result, timeline_result
     )
@@ -1448,16 +1448,16 @@ def full_audit_report(
             worst = max(qualified, key=lambda x: x[3])
             worst_session = (worst[0], worst[2], worst[3])
 
-    # Negative findings (A30 prohibition #8)
+    # Negative findings
     neg_findings = _negative_findings(
         corpus, validation_result, stats_result, timeline_result
     )
     top_findings = neg_findings[:3]
 
-    # ESCALATE event appendix -- Zone 1 data only (A30 SC-4)
+    # ESCALATE event appendix -- Zone 1 data only (SC-4)
     escalate_events = _build_escalate_appendix(corpus)
 
-    # Survivorship disclosure (A30 prohibition #10)
+    # Survivorship disclosure
     survivorship = _build_survivorship_notes(corpus)
 
     # Methodological appendix
@@ -1513,7 +1513,7 @@ def full_audit_report(
 def _build_escalate_appendix(corpus: AuditCorpus) -> List[Dict]:
     """Build Zone 1 event records for all ESCALATE events.
 
-    A30 SC-4: No request_text, no explanation, no tool_args.
+    SC-4: No request_text, no explanation, no tool_args.
     Only event_id, timestamp, tool_call, composite score, and index.
     """
     result = []
@@ -1538,7 +1538,7 @@ def _build_escalate_appendix(corpus: AuditCorpus) -> List[Dict]:
 def _build_survivorship_notes(corpus: AuditCorpus) -> List[str]:
     """Build survivorship disclosure notes.
 
-    A30 prohibition #10: never present survivorship-biased results
+    Report quality requirement: never present survivorship-biased results
     without disclosing dropped/skipped record count.
     """
     notes = []
@@ -1708,7 +1708,7 @@ def _build_bonferroni_notes(
 ) -> List[str]:
     """Build Bonferroni correction disclosure for comparisons.
 
-    A30: compare.py tests 6 dimensions simultaneously. Corrected
+    compare.py tests 6 dimensions simultaneously. Corrected
     alpha = 0.05/6 = 0.0083.
     """
     notes = []

@@ -13,7 +13,7 @@ from key generation through encrypted data export.
   6.  Activate (decrypt) governance bundle
   7.  Load decrypted config and build PA
   8.  Score in-scope request (expect EXECUTE/CLARIFY)
-  9.  Score out-of-scope request (expect SUGGEST/INERT)
+  9.  Score out-of-scope request (expect INERT)
   10. Sign governance receipts in a session
   11. Generate session proof chain
   12. Collect intelligence telemetry

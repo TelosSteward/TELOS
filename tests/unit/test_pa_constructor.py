@@ -7,7 +7,7 @@ Validates:
     3. Gate 2: Boundary violations still detected regardless of Gate 1 pass
     4. Deterministic output (same inputs = same PA, critical for signing)
     5. Missing tool definitions don't crash (graceful fallback)
-    6. All 36 tools have definitions (no gaps)
+    6. All 46 tools have definitions (no gaps)
     7. Per-tool centroids are L2-normalized
     8. Combined centroid is L2-normalized
     9. Provenance field populated for every definition
@@ -80,7 +80,7 @@ def minimal_pa_args():
 class TestToolSemantics:
     """Tests for the canonical tool definitions registry."""
 
-    def test_all_36_tools_defined(self):
+    def test_all_46_tools_defined(self):
         """Every unique telos_tool_name has a definition."""
         expected_tools = {
             "fs_read_file", "fs_write_file", "fs_edit_file", "fs_list_directory",
@@ -96,6 +96,11 @@ class TestToolSemantics:
             "nodes_delegate", "nodes_coordinate",
             "openclaw_skill_install", "openclaw_skill_execute",
             "openclaw_config_modify", "openclaw_agent_create",
+            "research_audit_load", "research_audit_rescore",
+            "research_audit_validate", "research_audit_compare",
+            "research_audit_inspect", "research_audit_report",
+            "research_audit_sweep", "research_audit_annotate",
+            "research_audit_timeline", "research_audit_stats",
         }
         actual_tools = set(TOOL_DEFINITIONS.keys())
         missing = expected_tools - actual_tools

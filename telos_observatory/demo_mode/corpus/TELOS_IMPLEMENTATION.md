@@ -33,7 +33,7 @@ TELOS uses two detection layers:
 
 ### Threshold Values (Single Source of Truth)
 
-All thresholds are defined in `telos_purpose/core/constants.py`:
+All thresholds are defined in `telos_core/constants.py`:
 
 | Threshold | Value | Purpose |
 |-----------|-------|---------|

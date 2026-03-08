@@ -17,9 +17,11 @@ For each user request:
 Uses REAL governance math with SIMULATED tool execution.
 """
 
+import hashlib
 import logging
 import time
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Dict, List, Optional, Any
 
 from telos_governance.agent_templates import AgenticTemplate
@@ -28,12 +30,201 @@ from telos_governance.mock_tools import MockToolExecutor
 logger = logging.getLogger(__name__)
 
 
-class AgenticDriftTracker:
-    """SAAI sliding-window drift tracker for agentic sessions.
+class AgentCommissioningState(str, Enum):
+    """Formal agent commissioning lifecycle.
 
-    Drift detection uses a sliding window of the last W post-baseline turns
-    (where W = SAAI_DRIFT_WINDOW_SIZE) compared against a fixed baseline
-    established from the first BASELINE_TURN_COUNT turns.
+    State machine:
+        UNCOMMISSIONED → BASELINE_COLLECTION → COMMISSIONED → RETIRED
+
+    The agent MUST be commissioned before SAAI drift monitoring activates.
+    Commissioning requires:
+    1. PA signature hash recorded (Ed25519 signed config)
+    2. Baseline collection complete (50 turns, CV stable)
+    3. Formal commissioning event emitted to audit trail
+
+    Per SAAI framework: drift monitoring without baseline is meaningless.
+    The 50-turn warmup is a first-class tracked lifecycle event, not a
+    silent internal detail.
+    """
+    UNCOMMISSIONED = "uncommissioned"
+    BASELINE_COLLECTION = "baseline_collection"
+    COMMISSIONED = "commissioned"
+    RETIRED = "retired"
+
+
+@dataclass
+class CommissioningRecord:
+    """Immutable record of an agent commissioning event."""
+    agent_id: str
+    pa_signature_hash: str  # SHA-256 of Ed25519 PA signature
+    commissioned_at: float  # Unix timestamp
+    baseline_fidelity: float  # Mean fidelity from baseline collection
+    baseline_std: float  # Std dev from baseline
+    baseline_turns: int  # Number of turns in baseline
+    state: AgentCommissioningState = AgentCommissioningState.COMMISSIONED
+
+    def to_audit_event(self) -> Dict[str, Any]:
+        """Format as audit trail event."""
+        return {
+            "event_type": "agent_commissioned",
+            "agent_id": self.agent_id,
+            "pa_signature_hash": self.pa_signature_hash,
+            "commissioned_at": self.commissioned_at,
+            "baseline_fidelity": round(self.baseline_fidelity, 4),
+            "baseline_std": round(self.baseline_std, 4),
+            "baseline_turns": self.baseline_turns,
+            "state": self.state.value,
+        }
+
+
+class AgentCommissioningManager:
+    """Manages the formal agent commissioning lifecycle.
+
+    Tracks state transitions and emits audit events for each phase.
+    SAAI drift monitoring only activates after COMMISSIONED state.
+    """
+
+    def __init__(self, agent_id: str = "default"):
+        self._agent_id = agent_id
+        self._state = AgentCommissioningState.UNCOMMISSIONED
+        self._pa_signature_hash: Optional[str] = None
+        self._commissioning_record: Optional[CommissioningRecord] = None
+        self._retired_at: Optional[float] = None
+
+    @property
+    def state(self) -> AgentCommissioningState:
+        return self._state
+
+    @property
+    def is_commissioned(self) -> bool:
+        return self._state == AgentCommissioningState.COMMISSIONED
+
+    @property
+    def commissioning_record(self) -> Optional[CommissioningRecord]:
+        return self._commissioning_record
+
+    def begin_baseline_collection(self, pa_signature_hash: str) -> Dict[str, Any]:
+        """Transition UNCOMMISSIONED → BASELINE_COLLECTION.
+
+        Args:
+            pa_signature_hash: SHA-256 hash of the Ed25519 PA signature.
+
+        Returns:
+            Audit event dict.
+        """
+        if self._state != AgentCommissioningState.UNCOMMISSIONED:
+            return {"error": f"Cannot begin baseline from state {self._state.value}"}
+
+        self._state = AgentCommissioningState.BASELINE_COLLECTION
+        self._pa_signature_hash = pa_signature_hash
+
+        event = {
+            "event_type": "baseline_collection_started",
+            "agent_id": self._agent_id,
+            "pa_signature_hash": pa_signature_hash,
+            "timestamp": time.time(),
+        }
+        logger.info(f"Agent {self._agent_id}: baseline collection started")
+        return event
+
+    def commission(
+        self,
+        baseline_fidelity: float,
+        baseline_std: float,
+        baseline_turns: int,
+    ) -> Dict[str, Any]:
+        """Transition BASELINE_COLLECTION → COMMISSIONED.
+
+        Called when baseline is stable (CV < threshold).
+
+        Returns:
+            Commissioning audit event dict.
+        """
+        if self._state != AgentCommissioningState.BASELINE_COLLECTION:
+            return {"error": f"Cannot commission from state {self._state.value}"}
+
+        self._state = AgentCommissioningState.COMMISSIONED
+        self._commissioning_record = CommissioningRecord(
+            agent_id=self._agent_id,
+            pa_signature_hash=self._pa_signature_hash or "",
+            commissioned_at=time.time(),
+            baseline_fidelity=baseline_fidelity,
+            baseline_std=baseline_std,
+            baseline_turns=baseline_turns,
+        )
+
+        event = self._commissioning_record.to_audit_event()
+        logger.info(
+            f"Agent {self._agent_id}: COMMISSIONED "
+            f"(baseline={baseline_fidelity:.4f}, turns={baseline_turns})"
+        )
+        return event
+
+    def retire(self, reason: str = "") -> Dict[str, Any]:
+        """Transition COMMISSIONED → RETIRED.
+
+        Returns:
+            Retirement audit event dict.
+        """
+        if self._state != AgentCommissioningState.COMMISSIONED:
+            return {"error": f"Cannot retire from state {self._state.value}"}
+
+        self._state = AgentCommissioningState.RETIRED
+        self._retired_at = time.time()
+
+        event = {
+            "event_type": "agent_retired",
+            "agent_id": self._agent_id,
+            "retired_at": self._retired_at,
+            "reason": reason,
+            "total_baseline_fidelity": (
+                self._commissioning_record.baseline_fidelity
+                if self._commissioning_record else None
+            ),
+        }
+        logger.info(f"Agent {self._agent_id}: RETIRED ({reason})")
+        return event
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Serialize for persistence."""
+        return {
+            "agent_id": self._agent_id,
+            "state": self._state.value,
+            "pa_signature_hash": self._pa_signature_hash,
+            "commissioning_record": (
+                self._commissioning_record.to_audit_event()
+                if self._commissioning_record else None
+            ),
+            "retired_at": self._retired_at,
+        }
+
+    def restore(self, state: Dict[str, Any]) -> None:
+        """Restore from persisted snapshot."""
+        if not state:
+            return
+        self._agent_id = state.get("agent_id", self._agent_id)
+        self._state = AgentCommissioningState(state.get("state", "uncommissioned"))
+        self._pa_signature_hash = state.get("pa_signature_hash")
+        self._retired_at = state.get("retired_at")
+        record = state.get("commissioning_record")
+        if record:
+            self._commissioning_record = CommissioningRecord(
+                agent_id=record.get("agent_id", self._agent_id),
+                pa_signature_hash=record.get("pa_signature_hash", ""),
+                commissioned_at=record.get("commissioned_at", 0),
+                baseline_fidelity=record.get("baseline_fidelity", 0),
+                baseline_std=record.get("baseline_std", 0),
+                baseline_turns=record.get("baseline_turns", 0),
+            )
+
+
+class AgenticDriftTracker:
+    """SAAI EWMA drift tracker for agentic sessions.
+
+    Drift detection uses Exponentially Weighted Moving Average (EWMA)
+    compared against a fixed baseline established from the first
+    BASELINE_TURN_COUNT turns. Baseline requires CV < SAAI_BASELINE_CV_MAX
+    for stability; if unstable, collection extends until stable.
 
     Tiered response per SAAI framework and Ostrom DP5 (graduated sanctions):
     - NORMAL: No drift detected
@@ -41,7 +232,7 @@ class AgenticDriftTracker:
     - RESTRICT (>=15%): EXECUTE threshold tightened to 0.90
     - BLOCK (>=20%): Session frozen until human acknowledgment
 
-    Acknowledgment resets drift level and clears the window but preserves
+    Acknowledgment resets drift level and EWMA but preserves
     the original baseline. Max SAAI_MAX_ACKNOWLEDGMENTS per session.
     """
 
@@ -50,9 +241,10 @@ class AgenticDriftTracker:
 
     def reset(self):
         self._fidelity_scores: List[float] = []
-        self._post_baseline_scores: List[float] = []
         self._baseline_fidelity: Optional[float] = None
+        self._baseline_std: float = 0.0
         self._baseline_established: bool = False
+        self._ewma: Optional[float] = None
         self._drift_level: str = "NORMAL"
         self._drift_magnitude: float = 0.0
         self._acknowledgment_count: int = 0
@@ -60,53 +252,68 @@ class AgenticDriftTracker:
         self._permanently_blocked: bool = False
 
     def record_fidelity(self, effective_fidelity: float) -> Dict[str, Any]:
-        """Record a fidelity score and compute drift status.
+        """Record a fidelity score and compute SAAI drift.
 
         Args:
             effective_fidelity: Post-chain-inheritance fidelity score [0.0, 1.0].
 
         Returns dict with: drift_level, drift_magnitude, baseline_fidelity,
-        baseline_established, is_blocked, turn_count, is_restricted
+        baseline_established, is_blocked, turn_count, is_restricted,
+        baseline_progress, baseline_required
         """
         from telos_core.constants import (
-            BASELINE_TURN_COUNT, SAAI_DRIFT_WARNING,
-            SAAI_DRIFT_RESTRICT, SAAI_DRIFT_BLOCK,
-            SAAI_DRIFT_WINDOW_SIZE, EPSILON_NUMERICAL,
+            BASELINE_TURN_COUNT, SAAI_EWMA_SPAN, SAAI_BASELINE_CV_MAX,
+            SAAI_DRIFT_WARNING, SAAI_DRIFT_RESTRICT, SAAI_DRIFT_BLOCK,
+            EPSILON_NUMERICAL,
         )
+        import statistics
 
         # Clamp to valid range
         effective_fidelity = max(0.0, min(1.0, effective_fidelity))
 
-        self._fidelity_scores.append(effective_fidelity)
-
-        # Permanent block after max acknowledgments exhausted
         if self._permanently_blocked:
             return self._status()
 
-        # Phase 1: Baseline collection (first N turns)
+        self._fidelity_scores.append(effective_fidelity)
+
+        # --- Phase 1: Baseline collection ---
         if not self._baseline_established:
             if len(self._fidelity_scores) >= BASELINE_TURN_COUNT:
-                self._baseline_fidelity = (
-                    sum(self._fidelity_scores[:BASELINE_TURN_COUNT])
-                    / BASELINE_TURN_COUNT
-                )
-                self._baseline_established = True
+                baseline_scores = self._fidelity_scores[:BASELINE_TURN_COUNT]
+                mu = sum(baseline_scores) / len(baseline_scores)
+                sigma = statistics.stdev(baseline_scores) if len(baseline_scores) > 1 else 0.0
+                cv = sigma / mu if mu > EPSILON_NUMERICAL else 1.0
+
+                if cv <= SAAI_BASELINE_CV_MAX:
+                    self._baseline_fidelity = mu
+                    self._baseline_std = sigma
+                    self._baseline_established = True
+                    self._ewma = mu
+                else:
+                    # Baseline too erratic — extend by using all scores so far
+                    all_scores = self._fidelity_scores
+                    mu = sum(all_scores) / len(all_scores)
+                    sigma = statistics.stdev(all_scores) if len(all_scores) > 1 else 0.0
+                    cv = sigma / mu if mu > EPSILON_NUMERICAL else 1.0
+                    if cv <= SAAI_BASELINE_CV_MAX:
+                        self._baseline_fidelity = mu
+                        self._baseline_std = sigma
+                        self._baseline_established = True
+                        self._ewma = mu
+
             return self._status()
 
-        # Phase 2: Sliding window drift detection
-        self._post_baseline_scores.append(effective_fidelity)
-        window = self._post_baseline_scores[-SAAI_DRIFT_WINDOW_SIZE:]
-        window_avg = sum(window) / len(window)
+        # --- Phase 2: EWMA drift detection ---
+        lam = 2.0 / (SAAI_EWMA_SPAN + 1)
+        self._ewma = lam * effective_fidelity + (1 - lam) * self._ewma
 
-        if self._baseline_fidelity and self._baseline_fidelity > EPSILON_NUMERICAL:
-            self._drift_magnitude = max(
-                0.0,
-                (self._baseline_fidelity - window_avg) / self._baseline_fidelity,
-            )
-        else:
-            self._drift_magnitude = 0.0
+        # Drift = relative decline from baseline (clamped to >= 0)
+        self._drift_magnitude = max(
+            0.0,
+            (self._baseline_fidelity - self._ewma) / (self._baseline_fidelity + EPSILON_NUMERICAL),
+        )
 
-        # Determine drift level (graduated sanctions)
+        # Graduated sanctions (Ostrom DP5)
         if self._drift_magnitude >= SAAI_DRIFT_BLOCK:
             self._drift_level = "BLOCK"
         elif self._drift_magnitude >= SAAI_DRIFT_RESTRICT:
@@ -153,7 +360,7 @@ class AgenticDriftTracker:
         # Reset drift state, preserve baseline
         self._drift_level = "NORMAL"
         self._drift_magnitude = 0.0
-        self._post_baseline_scores.clear()
+        self._ewma = self._baseline_fidelity  # Reset EWMA to baseline
 
         return self._status()
 
@@ -161,9 +368,10 @@ class AgenticDriftTracker:
         """Export drift tracker state for forensic reporting."""
         return {
             "all_fidelity_scores": list(self._fidelity_scores),
-            "post_baseline_scores": list(self._post_baseline_scores),
             "baseline_fidelity": self._baseline_fidelity,
+            "baseline_std": self._baseline_std,
             "baseline_established": self._baseline_established,
+            "ewma": self._ewma,
             "current_drift_level": self._drift_level,
             "current_drift_magnitude": self._drift_magnitude,
             "acknowledgment_count": self._acknowledgment_count,
@@ -173,16 +381,19 @@ class AgenticDriftTracker:
         }
 
     def _status(self) -> Dict[str, Any]:
+        from telos_core.constants import BASELINE_TURN_COUNT
         return {
             "drift_level": self._drift_level,
-            "drift_magnitude": self._drift_magnitude,
+            "drift_magnitude": round(self._drift_magnitude, 4),
             "baseline_fidelity": self._baseline_fidelity,
             "baseline_established": self._baseline_established,
+            "baseline_progress": min(len(self._fidelity_scores), BASELINE_TURN_COUNT) if not self._baseline_established else BASELINE_TURN_COUNT,
+            "baseline_required": BASELINE_TURN_COUNT,
             "is_blocked": self._drift_level == "BLOCK" or self._permanently_blocked,
             "is_restricted": self._drift_level == "RESTRICT",
+            "permanently_blocked": self._permanently_blocked,
             "turn_count": len(self._fidelity_scores),
             "acknowledgment_count": self._acknowledgment_count,
-            "permanently_blocked": self._permanently_blocked,
         }
 
     @property
@@ -205,9 +416,10 @@ class AgenticDriftTracker:
         """
         return {
             "baseline_fidelity": self._baseline_fidelity,
+            "baseline_std": self._baseline_std,
             "baseline_established": self._baseline_established,
             "fidelity_scores": list(self._fidelity_scores),
-            "post_baseline_scores": list(self._post_baseline_scores),
+            "ewma": self._ewma,
             "drift_level": self._drift_level,
             "drift_magnitude": self._drift_magnitude,
             "acknowledgment_count": self._acknowledgment_count,
@@ -224,22 +436,27 @@ class AgenticDriftTracker:
         if not state:
             return
         self._baseline_fidelity = state.get("baseline_fidelity")
+        self._baseline_std = state.get("baseline_std", 0.0)
         self._baseline_established = state.get("baseline_established", False)
         self._fidelity_scores = list(state.get("fidelity_scores", []))
-        self._post_baseline_scores = list(state.get("post_baseline_scores", []))
+        self._ewma = state.get("ewma")
         self._drift_level = state.get("drift_level", "NORMAL")
         self._drift_magnitude = state.get("drift_magnitude", 0.0)
         self._acknowledgment_count = state.get("acknowledgment_count", 0)
         self._acknowledgment_history = list(state.get("acknowledgment_history", []))
         self._permanently_blocked = state.get("permanently_blocked", False)
 
+        # Migration: old-format state may have baseline_established=True
+        # but ewma=None (pre-EWMA sliding window format).
+        # Bootstrap EWMA from the baseline mean to prevent TypeError.
+        if self._baseline_established and self._ewma is None:
+            self._ewma = self._baseline_fidelity
+
 
 # Token budgets per decision tier — proportional brevity
 _TOKEN_BUDGETS = {
     "EXECUTE": 600,
     "CLARIFY": 400,
-    "SUGGEST": 350,
-    "INERT": 250,
     "ESCALATE": 250,
 }
 
@@ -521,7 +738,7 @@ class AgenticResponseManager:
                 violation_keywords=getattr(template, 'violation_keywords', None),
                 setfit_classifier=setfit_cls,
                 threshold_config=self._threshold_config,
-                # confirmer_mode disconnected from scoring path (A21 experiment conclusive)
+                # confirmer_mode disconnected from scoring path (dual-model experiment conclusive)
             )
 
             self._engine_cache[template.id] = engine
@@ -653,15 +870,6 @@ class AgenticResponseManager:
                 f"Reference your available tools ({tools_text}) so the user "
                 f"knows what you can help with."
             )
-        elif decision == "SUGGEST":
-            examples = template.example_requests[:3]
-            examples_text = ", ".join(f"'{ex}'" for ex in examples)
-            decision_block = (
-                f"GOVERNANCE DECISION: SUGGEST — the request falls outside your "
-                f"primary scope.\n"
-                f"Redirect the user toward what you can help with. Suggest "
-                f"alternatives like: {examples_text}. Be helpful, not dismissive."
-            )
         elif decision == "ESCALATE":
             decision_block = (
                 f"GOVERNANCE DECISION: ESCALATE — the request conflicts with your "
@@ -670,11 +878,11 @@ class AgenticResponseManager:
                 f"the specific limitation without exposing internal governance "
                 f"details. Suggest how the user might rephrase their request."
             )
-        else:  # INERT
+        else:  # ESCALATE fallback
             decision_block = (
-                f"GOVERNANCE DECISION: INERT — the request is outside your scope.\n"
-                f"Politely explain that this is not within your area. Briefly "
-                f"describe what you can help with instead."
+                f"GOVERNANCE DECISION: ESCALATE — the request is outside your scope.\n"
+                f"Explain firmly but politely that you cannot proceed. This request "
+                f"requires human review. Suggest how the user might rephrase."
             )
 
         return (
@@ -803,10 +1011,10 @@ class AgenticResponseManager:
         Lightweight post-generation fidelity check.
 
         Ensures the LLM response is semantically related to the agent's
-        purpose. Skips check for ESCALATE/INERT (refusals are intentionally
+        purpose. Skips check for ESCALATE (refusals are intentionally
         low-fidelity to purpose). Returns True on any error (accept response).
         """
-        if decision in ("ESCALATE", "INERT"):
+        if decision == "ESCALATE":
             return True
 
         if not self._embed_fn:
@@ -868,7 +1076,7 @@ class AgenticResponseManager:
         engine = self._get_engine(template)
         if engine is None:
             # Fallback: no engine available (embeddings failed to load)
-            result.decision = "INERT"
+            result.decision = "ESCALATE"
             result.decision_explanation = "Governance engine unavailable."
             result.response_text = (
                 "The governance engine is not available. "
@@ -1039,25 +1247,14 @@ class AgenticResponseManager:
                 f"you need? I have access to: {', '.join(template.tools)}."
             )
 
-        elif decision_key == "SUGGEST":
-            # Low fidelity -- dimension-aware alternatives
-            weakest_dim, weakest_score, weakest_detail = self._find_weakest_dimension(engine_result)
-            examples = template.example_requests[:3]
-            examples_text = "\n".join(f"- {ex}" for ex in examples)
-            result.response_text = (
-                f"This request has {engine_result.purpose_fidelity:.0%} "
-                f"purpose alignment but {weakest_dim} scored "
-                f"{weakest_score:.0%}, indicating it's outside my "
-                f"operational scope. {weakest_detail}\n\n"
-                f"Here are some things I can help with:\n{examples_text}"
-            )
+
 
         else:
-            # INERT -- very low fidelity
+            # ESCALATE -- very low fidelity
             result.response_text = (
-                f"I appreciate the question, but this falls outside my scope. "
+                f"This request requires human review. It falls outside my scope. "
                 f"I'm a {template.name} focused on: {template.purpose}. "
-                f"I cannot assist with unrelated topics."
+                f"I cannot assist with unrelated topics without human approval."
             )
 
         # --- LLM response generation (Steward pattern) ---

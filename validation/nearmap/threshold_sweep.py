@@ -4,17 +4,17 @@ Threshold Sweep for BOUNDARY_MARGIN_THRESHOLD
 Sweeps BOUNDARY_MARGIN_THRESHOLD from -0.05 to +0.25 in 0.01 increments.
 For each threshold, computes Cat A detection rate and FPR (Cat C/CTRL accuracy).
 Plots the Pareto frontier and identifies the optimal operating point via
-Youden's J statistic, subject to Cat A >= 80% (Schaake regulatory floor).
+Youden's J statistic, subject to Cat A >= 80% (regulatory floor).
 
 Design: Runs the full benchmark at each threshold value using the
 AgenticFidelityEngine directly. Also dumps per-scenario margin telemetry
 as a CSV for further analysis.
 
 Research team consensus (2026-02-12):
-  - Gebru: sweep via Youden's J on calibration split
-  - Russell: Cat A >= 80% is minimum constitutional enforcement
-  - Schaake: 80% is the regulatory floor for deployment
-  - Nell: do this on a calibration split, report held-out once
+  - Sweep via Youden's J on calibration split
+  - Cat A >= 80% is minimum constitutional enforcement
+  - 80% is the regulatory floor for deployment
+  - Do this on a calibration split, report held-out once
 
 Run: python3 validation/nearmap/threshold_sweep.py
 Output: validation/nearmap/reports/threshold_sweep_results.csv
@@ -238,7 +238,7 @@ def main():
     print(f"\nBest Youden's J = {best_j['youdens_j']:.3f} at threshold = {best_j['threshold']}")
     print(f"  Cat A = {best_j['cat_a_rate']:.1%}, CTRL = {best_j['ctrl_rate']:.1%}, FPR = {best_j['fpr']:.1%}")
 
-    # Best Youden's J with Cat A >= 80% constraint (Schaake floor)
+    # Best Youden's J with Cat A >= 80% constraint (regulatory floor)
     constrained = [r for r in sweep_results if r["cat_a_rate"] >= 0.80]
     if constrained:
         best_constrained = max(constrained, key=lambda x: x["youdens_j"])

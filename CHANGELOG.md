@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `telos_core` — Pure mathematical engine extracted as standalone package
 - `telos_governance` — Agentic governance gates (fidelity gate, tool selection, action chains)
-- `telos_gateway` — Hardened FastAPI gateway with auth, rate limiting, health checks
+- Added API gateway support with auth, rate limiting, health checks (separate deployment)
 - `telos_adapters` — Framework adapters (LangGraph, generic decorator)
 - API key authentication on all gateway endpoints
 - Rate limiting with sliding window algorithm

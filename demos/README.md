@@ -1,6 +1,6 @@
 # TELOS Governance Demos
 
-Three live governance demo suites covering property intelligence, healthcare, and autonomous agent governance. Each demonstrates the full 4-layer cascade (L0:keywords → L1:cosine → L1.5:SetFit → L2:LLM) with real-time scoring, cryptographic signing, and forensic audit trails.
+Two live governance demo suites covering property intelligence and healthcare. Each demonstrates the full 4-layer cascade (L0:keywords -> L1:cosine -> L1.5:SetFit -> L2:LLM) with real-time scoring, cryptographic signing, and forensic audit trails.
 
 ---
 
@@ -13,16 +13,14 @@ export PYTHONPATH=$(pwd)
 # Via CLI (requires pip install -e .)
 telos demo nearmap                           # Property intelligence (9 scenarios)
 telos demo healthcare                        # Healthcare menu (7 configs, 70 scenarios)
-telos demo openclaw                          # OpenClaw menu (9 configs, 90 scenarios)
 
 # Via Python directly (no install needed)
 python3 demos/nearmap_live_demo.py           # Nearmap direct
 python3 demos/healthcare_launcher.py         # Healthcare interactive menu
-python3 demos/openclaw_launcher.py           # OpenClaw interactive menu
 
 # Speed up (skip pauses)
-DEMO_FAST=1 python3 demos/openclaw_launcher.py
-telos demo openclaw --fast
+DEMO_FAST=1 python3 demos/healthcare_launcher.py
+telos demo healthcare --fast
 
 # Observation mode (score without blocking)
 DEMO_OBSERVE=1 python3 demos/nearmap_live_demo.py
@@ -44,7 +42,7 @@ Self-narrating terminal walkthrough demonstrating the full TELOS governance stac
 3. Runs 9 scenarios through the full governance stack (FidelityEngine + ToolSelectionGate + ActionChain)
 4. Shows 6-dimension scoring breakdowns for every request (purpose, scope, tool, chain, boundary, composite)
 5. **Agentic mode:** Mistral autonomously decides which tool to call via native function calling, simulated tools execute and return realistic property data, Mistral summarises the results
-6. **Blocked requests** never reach the LLM — governance stops them before the API call
+6. **Blocked requests** never reach the LLM -- governance stops them before the API call
 7. Tracks a multi-step chain with SCI continuity detection (drift + recovery)
 8. Prints a signed session proof and summary
 
@@ -54,7 +52,7 @@ Self-narrating terminal walkthrough demonstrating the full TELOS governance stac
 # Governance-only mode (no API key needed)
 python3 demos/nearmap_live_demo.py
 
-# Full agentic mode — Mistral decides tool calls
+# Full agentic mode -- Mistral decides tool calls
 MISTRAL_API_KEY=your_key python3 demos/nearmap_live_demo.py
 
 # Via CLI
@@ -102,60 +100,7 @@ telos demo healthcare --all --fast             # All 7 sequentially
 
 ---
 
-## 3. OpenClaw Autonomous Agent Governance Demos
-
-**Files:** `openclaw_launcher.py`, `openclaw_live_demo.py`, `openclaw_scenarios.py`
-
-9 governance surface configs covering all 10 OpenClaw tool groups across 4 risk tiers. 90 scenarios including legitimate requests (IN-SCOPE), boundary violations (BOUNDARY), adversarial attacks (ADVERSARIAL), out-of-scope requests, multi-step chains, and negation-blind exploits. Every boundary traced to a sourced CVE or security incident.
-
-### Configs
-
-| # | Config | Governance Surface | Risk Tier |
-|---|--------|--------------------|-----------|
-| 1 | `openclaw_shell_exec` | Shell Execution (CVE-2026-25253/25157) | Critical |
-| 2 | `openclaw_skill_mgmt` | Skill & Agent Management (ClawHavoc) | Critical |
-| 3 | `openclaw_messaging` | External Messaging (Moltbook breach) | High |
-| 4 | `openclaw_automation` | Automation & Gateway | High |
-| 5 | `openclaw_cross_group` | Cross-Group Chain Attacks | Critical |
-| 6 | `openclaw_file_ops` | File System Operations | Medium |
-| 7 | `openclaw_web_network` | Web & Network | High |
-| 8 | `openclaw_agent_orch` | Agent Orchestration | Critical |
-| 9 | `openclaw_safe_baseline` | Safe Operations Baseline | Low |
-
-### Running
-
-```bash
-# Interactive menu (choose 1-9, or 10 for all)
-python3 demos/openclaw_launcher.py
-
-# Run a specific governance surface
-python3 demos/openclaw_live_demo.py --config openclaw_shell_exec
-
-# Via CLI
-telos demo openclaw                              # Interactive menu
-telos demo openclaw -c openclaw_shell_exec       # Specific config
-telos demo openclaw --all --fast                 # All 9 sequentially (90 scenarios)
-telos demo openclaw --list                       # List available configs
-
-# Fast mode + observation mode
-DEMO_FAST=1 DEMO_OBSERVE=1 python3 demos/openclaw_launcher.py
-```
-
-### What you see
-
-Each scenario shows:
-- **Request** — what the user asked the agent to do
-- **6-dimension scoring** — purpose, scope, tool, chain, boundary, composite
-- **Cascade panel** — which governance layers activated (L0/L1/L1.5/L2)
-- **Decision** — EXECUTE (green), ESCALATE (red), CLARIFY (yellow), INERT (grey)
-- **Hash chain** — cryptographically signed audit trail with human-readable narration
-- **Governance latency** — time from request to decision (target: <30ms)
-
----
-
----
-
-## 4. Permission Controller (ESCALATE Notifications)
+## 3. Permission Controller (ESCALATE Notifications)
 
 When the governance engine returns an **ESCALATE** verdict, the Permission Controller notifies the operator and waits for a decision before allowing or blocking the tool call.
 
@@ -173,7 +118,7 @@ When the governance engine returns an **ESCALATE** verdict, the Permission Contr
 # Interactive setup
 telos agent configure-notifications
 
-# Or add to openclaw.yaml directly:
+# Or add to agent config directly:
 # notifications:
 #   telegram_bot_token: "..."
 #   telegram_chat_id: "..."
@@ -209,15 +154,15 @@ Approved overrides produce an **Ed25519-signed receipt** for EU AI Act Article 1
 
 - Python 3.9+
 - `sentence-transformers` (install with `pip install telos[embeddings]`)
-- `mistralai` (optional — install with `pip install telos[mistral]`)
-- `MISTRAL_API_KEY` environment variable (optional — enables agentic LLM mode)
-- `onnxruntime` (for SetFit L1.5 cascade — install with `pip install onnxruntime`)
+- `mistralai` (optional -- install with `pip install telos[mistral]`)
+- `MISTRAL_API_KEY` environment variable (optional -- enables agentic LLM mode)
+- `onnxruntime` (for SetFit L1.5 cascade -- install with `pip install onnxruntime`)
 
 ## Environment Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `DEMO_FAST` | off | Skip pauses between scenarios |
-| `DEMO_OBSERVE` | off | Observation mode — score without blocking |
+| `DEMO_OBSERVE` | off | Observation mode -- score without blocking |
 | `NO_COLOR` | off | Disable terminal colours |
 | `MISTRAL_API_KEY` | none | Enable Mistral LLM for agentic tool selection |

@@ -9,7 +9,7 @@
 # response deliver → emergency escalate.
 # Pipeline sourced from: research/patient_facing_ai_and_coding_systems.md
 #
-# 10-step action chain from Schaake regulatory analysis. Draft-only paradigm
+# 10-step action chain from regulatory analysis. Draft-only paradigm
 # enforced at Epic platform level. Emergency escalation is EMTALA-critical.
 # ECRI #1 hazard 2026: Misuse of AI Chatbots.
 #
@@ -106,7 +106,7 @@ tools:
     description: "Queue draft response for clinician review with AI-drafted status indicator — clinician must review, edit if needed, and explicitly send"
     risk_level: low
   - name: response_deliver
-    description: "Deliver clinician-approved response to patient via authenticated HIPAA-compliant encrypted channel (MyChart, secure chat, SMS)"
+    description: "Deliver clinician-approved response to patient via authenticated encrypted channel designed to support HIPAA audit controls (MyChart, secure chat, SMS)"
     risk_level: medium
   - name: emergency_escalate
     description: "Escalate detected emergency to live clinical staff with full context transfer — EMTALA compliance, includes suicidal ideation, chest pain, stroke symptoms"

@@ -72,7 +72,7 @@ class SweepResult:
     Contains one RescoreResult per parameter value tested, plus
     aggregate statistics for plotting dose-response curves.
 
-    Includes Bonferroni-corrected significance threshold (A34 T0-4):
+    Includes Bonferroni-corrected significance threshold:
     each sweep point is a hypothesis test, so family-wise error rate
     must be controlled. ``corrected_alpha`` divides the base alpha
     (0.05) by the number of sweep points.
@@ -299,7 +299,6 @@ class SweepResult:
             colors = {
                 "EXECUTE": "#2ecc71",
                 "CLARIFY": "#f39c12",
-                "SUGGEST": "#e67e22",
                 "INERT": "#95a5a6",
                 "ESCALATE": "#e74c3c",
             }
@@ -399,7 +398,7 @@ def _compute_fpr(
 
     FPR = (benign events classified as ESCALATE or INERT) / (total benign events)
 
-    "Benign" = ground truth is EXECUTE or CLARIFY or SUGGEST.
+    "Benign" = ground truth is EXECUTE or CLARIFY.
     "False positive" = benign event gets ESCALATE or INERT verdict.
     """
     benign_total = 0
@@ -410,7 +409,7 @@ def _compute_fpr(
         if event.event_id not in ground_truth:
             continue
         expected = ground_truth[event.event_id]
-        if expected in ("EXECUTE", "CLARIFY", "SUGGEST"):
+        if expected in ("EXECUTE", "CLARIFY"):
             benign_total += 1
             if result.new_verdicts[i] in blocking_verdicts:
                 false_positives += 1
@@ -521,7 +520,7 @@ def multi_sweep(
     Each parameter is swept independently while others stay at base values.
     For joint interaction effects, use grid_sweep() (not yet implemented).
 
-    Bonferroni correction (A34 T0-4): the family-wise alpha is computed
+    Bonferroni correction: the family-wise alpha is computed
     across the TOTAL test count (all params × all points per param),
     not per-param. Each returned SweepResult has its ``base_alpha``
     set to the family-wise corrected value.

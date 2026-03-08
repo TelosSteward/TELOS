@@ -1,7 +1,6 @@
 # TELOS as Governance Control Plane: Mapping, Gap Analysis & Terminology Strategy
 
 **Date:** 2026-02-22
-**For:** Jeffrey Brunner, Founder, TELOS AI Labs Inc.
 
 > **Generative AI Disclosure:** This document was developed with assistance from an LLM-based agent (Claude, Anthropic). Analysis draws on web research conducted 2026-02-22, TELOS validation data, and publicly available LinkedIn content. All referenced benchmarks and statistics are sourced from TELOS validation artifacts. This is not independent market research.
 
@@ -71,13 +70,13 @@ When referencing in TELOS copy: *"Governance Control Plane, a term formalized by
 
 | # | Idemudia Requirement | TELOS Capability | Status | Evidence |
 |---|---------------------|------------------|--------|----------|
-| 1 | **Centralized control system** -- agents never execute directly, everything passes through governance | Every tool call scored via cosine similarity against PA through 6-dimensional fidelity engine. OpenClaw adapter intercepts via `before_tool_call` hook. Nothing executes without a governance verdict. | **FULLY MET** | OpenClaw UDS IPC, `governance_hook.py`, `agentic_fidelity.py` |
+| 1 | **Centralized control system** -- agents never execute directly, everything passes through governance | Every tool call scored via cosine similarity against PA through 6-dimensional fidelity engine. Agent adapter intercepts via `before_tool_call` hook. Nothing executes without a governance verdict. | **FULLY MET** | Agent adapter UDS IPC, `governance_hook.py`, `agentic_fidelity.py` |
 | 2 | **Execution monitoring infrastructure** | 4-layer detection cascade (keyword L0 -> cosine L1 -> SetFit L1.5 -> LLM L2). Intelligence Layer with 3 collection levels. Forensic reports (9-section HTML + JSONL + CSV). | **FULLY MET** | `intelligence_layer.py`, `report_generator.py`, 7 benchmarks/5,212 scenarios |
-| 3 | **Runtime enforcement capabilities** | 5 graduated decisions (EXECUTE/CLARIFY/SUGGEST/INERT/ESCALATE). Fail-policy per governance preset (strict+balanced=closed, permissive=open). RESTRICT enforcement (Ostrom DP5). | **FULLY MET** | `agentic_fidelity.py`, `governance_protocol.py`, AgenticDriftTracker |
+| 3 | **Runtime enforcement capabilities** | 3 graduated decisions (EXECUTE/CLARIFY/ESCALATE). Fail-policy per governance preset (strict+balanced=closed, permissive=open). RESTRICT enforcement (Ostrom DP5). | **FULLY MET** | `agentic_fidelity.py`, `governance_protocol.py`, AgenticDriftTracker |
 | 4 | **Immutable decision logs** | Ed25519-signed governance receipts on every decision. TKeys: AES-256-GCM encryption, HMAC-SHA512 signing, hash-chained audit logs. Article 72 EU AI Act compliant fields. | **FULLY MET** | `receipt_signer.py`, `crypto_layer.py`, `session.py`, 22/22 crypto verification tests |
-| 5 | **Pre-approval gates for high-risk actions** | ESCALATE verdict routes to Permission Controller for human review before execution. Multi-channel HITL (Telegram/WhatsApp/Discord). | **FULLY MET** | Permission Controller (v2.4), `HANDOFF_OPENCLAW.md` M6 |
+| 5 | **Pre-approval gates for high-risk actions** | ESCALATE verdict routes to Permission Controller for human review before execution. Multi-channel HITL (Telegram/WhatsApp/Discord). | **FULLY MET** | Permission Controller (v2.4) |
 | 6 | **Allow-listed actions with write/delete/deploy blocking** | Tool palette is defined in PA spec -- only listed tools are authorized. Boundary corpus (61 hand-crafted + 121 LLM-generated + 48 regulatory). Action classifier maps ~40 tool names to categories. | **PARTIALLY MET** | PA-level tool authorization is present. **Gap:** No operation-within-tool granularity (e.g., `file_tool` authorized but can't distinguish read vs. write vs. delete operations on the same tool). |
-| 7 | **Mandatory human approval for destructive workflows** | ESCALATE verdict with Permission Controller. Risk-tier classification in OpenClaw benchmark (4 tiers). | **MOSTLY MET** | **Gap:** Risk tiers are defined per-tool, not per-operation. A tool classified as medium-risk always gets the same treatment regardless of whether the specific invocation is destructive. |
+| 7 | **Mandatory human approval for destructive workflows** | ESCALATE verdict with Permission Controller. Risk-tier classification in agent governance benchmark (4 tiers). | **MOSTLY MET** | **Gap:** Risk tiers are defined per-tool, not per-operation. A tool classified as medium-risk always gets the same treatment regardless of whether the specific invocation is destructive. |
 | 8 | **Plan-to-execution correlation** | SCI (Sequential Chain Index) tracking via `action_chain.py`. Chain continuity scoring as one of 6 governance dimensions. Chain inheritance masking. | **PARTIALLY MET** | SCI tracks chain continuity between sequential actions. **Gap:** No explicit plan artifact that is compared against execution. TELOS tracks whether actions are consistent with each other, not whether they match a declared plan. |
 | 9 | **"Why" attribution for autonomous decisions** | 6-dimensional scoring decomposition (purpose, scope, tool selection, chain continuity, boundary check, composite). Forensic reports with per-dimension breakdowns. GovernanceReceipt with full scoring metadata. | **FULLY MET** | `report_generator.py`, forensic flag on benchmarks, GovernanceReceipt fields |
 | 10 | **Runtime risk measurement** (unauthorized attempt rates, decision depth, boundary violations, external data access patterns) | Intelligence Layer tracks governance telemetry. Benchmarks measure per-category accuracy, per-attack-family ASR. Envelope Margin and CDR metrics designed. | **FULLY MET** | `intelligence_layer.py`, benchmark forensic reports, GovernanceEventStore (designed, P1) |
@@ -136,7 +135,7 @@ Reference those who formalized the term: Forrester (Leslie Joseph, Dec 2025 mark
 - Agent OS is **YAML rule-based policy enforcement with regex pattern matching** -- NOT semantic governance
 - Claims 0% policy violations vs 26.67% prompt-based safety (different metric from TELOS 0% ASR)
 - Has 10+ framework adapters (significant breadth advantage)
-- Published agentmesh-governance on ClawHub (same OpenClaw ecosystem as TELOS)
+- Published agentmesh-governance on a public skill registry
 
 **TELOS differentiation:** Semantic governance (measures meaning in embedding space) vs. rule-based enforcement (matches string patterns). Regex fails against adversarial rephrasing; embedding-space measurement catches semantic equivalents. TELOS has graduated response (5 decisions), cryptographic audit trails (Ed25519), adversarial benchmarks (5,212 scenarios), and academic grounding.
 
@@ -155,8 +154,8 @@ Management plane for AI agents (registry, access control, visualization). TELOS 
 | Claim | Number | Source |
 |-------|--------|--------|
 | Adversarial testing at scale | 2,550 attacks, 0% ASR (Cat A/B) | 7 benchmarks, 5,212 scenarios |
-| Latency | ~15ms per tool call | OpenClaw UDS IPC |
-| Boundary detection | SetFit AUC 0.980 (healthcare), 0.990 (OpenClaw) | 5-fold CV |
+| Latency | ~15ms per tool call | Agent adapter UDS IPC |
+| Boundary detection | SetFit AUC 0.9804 (healthcare); governed agent AUC pending | Healthcare: 5-fold CV; governed agent: preliminary, full cross-validation results pending publication |
 | Cryptographic audit | Ed25519-signed receipts every decision | 22/22 crypto tests |
 | NIST alignment | 82% overall, MEASURE at 92% | Regulatory mapping |
 | OWASP Agentic | 8/10 strong coverage | Regulatory mapping |
@@ -165,4 +164,4 @@ Management plane for AI agents (registry, access control, visualization). TELOS 
 
 ---
 
-*Generated 2026-02-22. Source data: web research (Forrester, Microsoft, arxiv, NIST, Singapore IMDA, LinkedIn), TELOS validation artifacts, CLAUDE.md, HANDOFF.md, HANDOFF_OPENCLAW.md.*
+*Generated 2026-02-22. Source data: web research (Forrester, Microsoft, arxiv, NIST, Singapore IMDA, LinkedIn), TELOS validation artifacts.*

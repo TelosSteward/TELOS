@@ -27,7 +27,6 @@ from typing import Dict, Optional
 from telos_core.constants import (
     ST_AGENTIC_EXECUTE_THRESHOLD,
     ST_AGENTIC_CLARIFY_THRESHOLD,
-    ST_AGENTIC_SUGGEST_THRESHOLD,
     BOUNDARY_MARGIN_THRESHOLD as _DEFAULT_BOUNDARY_MARGIN,
     FIDELITY_GREEN,
     FIDELITY_YELLOW,
@@ -57,14 +56,13 @@ class ThresholdConfig:
     override the module-level constants for that engine instance.
 
     Ordering invariants (enforced by validate()):
-        - st_execute > st_clarify > st_suggest (with 0.05 min gap)
+        - st_execute > st_clarify (with 0.05 min gap)
         - fidelity_green > fidelity_yellow > fidelity_orange (with 0.05 min gap)
         - All weights > 0 and positive weights sum to ~0.90
     """
     # Agentic decision thresholds (SentenceTransformer)
     st_execute: float = ST_AGENTIC_EXECUTE_THRESHOLD
     st_clarify: float = ST_AGENTIC_CLARIFY_THRESHOLD
-    st_suggest: float = ST_AGENTIC_SUGGEST_THRESHOLD
 
     # Boundary detection
     boundary_violation: float = _DEFAULT_BOUNDARY_VIOLATION_THRESHOLD
@@ -101,12 +99,6 @@ class ThresholdConfig:
                 f"st_execute ({self.st_execute:.3f}) must be > "
                 f"st_clarify ({self.st_clarify:.3f}) + 0.05"
             )
-        if self.st_clarify <= self.st_suggest + 0.04:
-            violations.append(
-                f"st_clarify ({self.st_clarify:.3f}) must be > "
-                f"st_suggest ({self.st_suggest:.3f}) + 0.05"
-            )
-
         # Zone ordering
         if self.fidelity_green <= self.fidelity_yellow + 0.04:
             violations.append(
@@ -156,7 +148,6 @@ class ThresholdConfig:
         return {
             "st_execute": self.st_execute,
             "st_clarify": self.st_clarify,
-            "st_suggest": self.st_suggest,
             "boundary_violation": self.boundary_violation,
             "boundary_margin": self.boundary_margin,
             "keyword_boost": self.keyword_boost,

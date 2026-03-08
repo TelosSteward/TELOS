@@ -55,7 +55,7 @@ COLOR_MAPPINGS = {
 # =============================================================================
 # Zone Thresholds - IMPORTED FROM SINGLE SOURCE OF TRUTH
 # =============================================================================
-# All thresholds are defined in telos_purpose/core/constants.py
+# All thresholds are defined in telos_core/constants.py
 # This file re-exports them for backward compatibility with existing imports.
 from telos_core.constants import (
     FIDELITY_GREEN,

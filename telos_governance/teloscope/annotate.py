@@ -90,11 +90,11 @@ except ImportError:
             return True, "OK (fallback validation)"
 
 
-VERDICT_ORDER = ["EXECUTE", "CLARIFY", "SUGGEST", "INERT", "ESCALATE"]
+VERDICT_ORDER = ["EXECUTE", "CLARIFY", "INERT", "ESCALATE"]
 # Reduced set for human annotation — humans classify into the three
-# actionable categories. SUGGEST and INERT map to CLARIFY in most
+# actionable categories. INERT maps to CLARIFY in most
 # annotation workflows, but the schema accepts any verdict string.
-ANNOTATION_VERDICTS = {"EXECUTE", "CLARIFY", "SUGGEST", "INERT", "ESCALATE"}
+ANNOTATION_VERDICTS = {"EXECUTE", "CLARIFY", "INERT", "ESCALATE"}
 DIMENSIONS = ["composite", "purpose", "scope", "boundary", "tool", "chain"]
 
 
@@ -326,7 +326,7 @@ class AnnotationRecord:
         event_id: Unique event identifier (for cross-referencing).
         annotator_id: Anonymized rater identifier (e.g., "rater_1").
         ground_truth_verdict: Human judgment — what the verdict SHOULD be.
-            Must be one of EXECUTE, CLARIFY, SUGGEST, INERT, ESCALATE.
+            Must be one of EXECUTE, CLARIFY, INERT, ESCALATE.
         confidence: Annotator's confidence in their judgment (0.0 - 1.0).
         notes: Optional free-text rationale or observations.
         timestamp: ISO 8601 timestamp when annotation was recorded.

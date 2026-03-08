@@ -222,8 +222,8 @@ class TestTELOSDefenseLayer:
         result = defense.check_task("Harmful task")
         assert result.blocked is False
 
-    def test_inert_decision_blocks(self):
-        """INERT decision blocks in auto_block mode."""
+    def test_escalate_decision_blocks(self):
+        """ESCALATE decision blocks in auto_block mode."""
         defense = TELOSDefenseLayer(embed_fn=_deterministic_embed_fn)
         defense.engine = MagicMock(spec=AgenticFidelityEngine)
         defense.engine.score_action.return_value = AgenticFidelityResult(
@@ -234,7 +234,7 @@ class TestTELOSDefenseLayer:
             chain_continuity=0.50,
             composite_fidelity=0.30,
             effective_fidelity=0.30,
-            decision=ActionDecision.INERT,
+            decision=ActionDecision.ESCALATE,
             direction_level=DirectionLevel.DIRECT,
             boundary_triggered=False,
             chain_broken=False,
@@ -289,48 +289,48 @@ class TestTELOSDefenseLayer:
         result = defense.check_task("Somewhat related request")
         assert result.blocked is False
 
-    def test_suggest_blocked_in_strict_mode(self):
-        """SUGGEST decision blocks in strict mode (default for safety)."""
+    def test_escalate_blocked_in_strict_mode(self):
+        """ESCALATE decision blocks in strict mode (default for safety)."""
         defense = TELOSDefenseLayer(embed_fn=_deterministic_embed_fn, strict=True)
         defense.engine = MagicMock(spec=AgenticFidelityEngine)
         defense.engine.score_action.return_value = AgenticFidelityResult(
-            purpose_fidelity=0.55,
-            scope_fidelity=0.50,
+            purpose_fidelity=0.30,
+            scope_fidelity=0.28,
             boundary_violation=0.0,
-            tool_fidelity=0.50,
-            chain_continuity=0.60,
-            composite_fidelity=0.52,
-            effective_fidelity=0.52,
-            decision=ActionDecision.SUGGEST,
+            tool_fidelity=0.28,
+            chain_continuity=0.50,
+            composite_fidelity=0.30,
+            effective_fidelity=0.30,
+            decision=ActionDecision.ESCALATE,
             direction_level=DirectionLevel.CORRECT,
             boundary_triggered=False,
             chain_broken=False,
         )
         defense.engine.reset_chain = MagicMock()
 
-        result = defense.check_task("Vaguely related request")
+        result = defense.check_task("Completely unrelated request")
         assert result.blocked is True
 
-    def test_suggest_passes_in_non_strict_mode(self):
-        """SUGGEST decision passes when strict=False."""
+    def test_clarify_passes_in_non_strict_mode(self):
+        """CLARIFY decision passes when strict=False."""
         defense = TELOSDefenseLayer(embed_fn=_deterministic_embed_fn, strict=False)
         defense.engine = MagicMock(spec=AgenticFidelityEngine)
         defense.engine.score_action.return_value = AgenticFidelityResult(
-            purpose_fidelity=0.55,
-            scope_fidelity=0.50,
+            purpose_fidelity=0.72,
+            scope_fidelity=0.70,
             boundary_violation=0.0,
-            tool_fidelity=0.50,
-            chain_continuity=0.60,
-            composite_fidelity=0.52,
-            effective_fidelity=0.52,
-            decision=ActionDecision.SUGGEST,
+            tool_fidelity=0.70,
+            chain_continuity=0.75,
+            composite_fidelity=0.72,
+            effective_fidelity=0.72,
+            decision=ActionDecision.CLARIFY,
             direction_level=DirectionLevel.CORRECT,
             boundary_triggered=False,
             chain_broken=False,
         )
         defense.engine.reset_chain = MagicMock()
 
-        result = defense.check_task("Vaguely related request")
+        result = defense.check_task("Ambiguous but related request")
         assert result.blocked is False
 
 
@@ -404,7 +404,7 @@ class TestBenchmarkResults:
         assert results.defense_success_rate == pytest.approx(0.8)
 
     def test_perfect_defense(self):
-        """Perfect defense = 0% ASR."""
+        """Perfect defense = 0% observed ASR."""
         results = BenchmarkResults(total_tasks=100, passed_tasks=0, blocked_tasks=100)
         assert results.attack_success_rate == 0.0
         assert results.defense_success_rate == 1.0

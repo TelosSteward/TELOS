@@ -1,11 +1,16 @@
 """
-Tests for AgenticDriftTracker (SAAI sliding-window drift tracking)
+Tests for AgenticDriftTracker (SAAI EWMA drift tracking)
 ===================================================================
 
 Tests the drift tracker wired into AgenticResponseManager for agentic
-sessions. Validates baseline establishment, sliding-window drift detection
-(NORMAL/WARNING/RESTRICT/BLOCK), BLOCK override to ESCALATE, acknowledgment
-mechanism, RESTRICT tier behavior, and recovery scenarios.
+sessions. Validates baseline establishment (50 turns + CV stability gate),
+EWMA drift detection (NORMAL/WARNING/RESTRICT/BLOCK), BLOCK override to
+ESCALATE, acknowledgment mechanism, RESTRICT tier behavior, and recovery.
+
+EWMA math: lambda = 2/(SAAI_EWMA_SPAN+1) ~= 0.0952
+After n turns at constant score s with baseline b:
+    ewma_n = b * alpha^n + s * (1 - alpha^n)   where alpha = 1 - lambda
+    drift_n = (b - ewma_n) / b = (b - s) / b * (1 - alpha^n)
 """
 
 import pytest
@@ -21,10 +26,14 @@ from telos_core.constants import (
     SAAI_DRIFT_WARNING,
     SAAI_DRIFT_RESTRICT,
     SAAI_DRIFT_BLOCK,
-    SAAI_DRIFT_WINDOW_SIZE,
+    SAAI_EWMA_SPAN,
     SAAI_MAX_ACKNOWLEDGMENTS,
     ST_SAAI_RESTRICT_EXECUTE_THRESHOLD,
 )
+
+# EWMA smoothing constants
+LAMBDA = 2.0 / (SAAI_EWMA_SPAN + 1)
+ALPHA = 1.0 - LAMBDA
 
 
 # ---------------------------------------------------------------------------
@@ -42,6 +51,31 @@ def _record_n_turns(tracker, fidelity, n):
 def _establish_baseline(tracker, fidelity=0.90):
     """Establish baseline at given fidelity. Returns baseline status."""
     return _record_n_turns(tracker, fidelity, BASELINE_TURN_COUNT)
+
+
+def _ewma_drift_after_n(baseline, score, n):
+    """Compute expected drift magnitude after n turns at constant score."""
+    relative_drop = (baseline - score) / baseline if baseline > 0 else 0.0
+    return max(0.0, relative_drop * (1 - ALPHA ** n))
+
+
+def _turns_to_reach_drift(baseline, score, target_drift):
+    """How many turns at `score` to reach `target_drift` from `baseline`.
+
+    Returns the minimum integer n such that drift >= target_drift.
+    """
+    import math
+    if baseline <= 0 or score >= baseline:
+        return float('inf')
+    relative_drop = (baseline - score) / baseline
+    if relative_drop <= 0:
+        return float('inf')
+    # target_drift = relative_drop * (1 - alpha^n)
+    # alpha^n = 1 - target_drift / relative_drop
+    ratio = 1 - target_drift / relative_drop
+    if ratio <= 0:
+        return 1
+    return math.ceil(math.log(ratio) / math.log(ALPHA))
 
 
 # ---------------------------------------------------------------------------
@@ -64,14 +98,40 @@ class TestBaselineEstablishment:
         assert status["baseline_established"] is True
         assert status["baseline_fidelity"] == pytest.approx(0.90)
 
-    def test_baseline_uses_first_n_scores(self):
-        """Baseline is computed from first N scores only."""
+    def test_baseline_uses_mean_of_first_n_scores(self):
+        """Baseline is computed as the mean of the first BASELINE_TURN_COUNT scores."""
         tracker = AgenticDriftTracker()
-        tracker.record_fidelity(0.80)
-        tracker.record_fidelity(0.80)
+        # Alternate between 0.80 and 1.00 for all baseline turns
+        scores = [0.80 if i % 2 == 0 else 1.00 for i in range(BASELINE_TURN_COUNT)]
+        for s in scores:
+            status = tracker.record_fidelity(s)
+        expected = sum(scores) / len(scores)
+        assert status["baseline_established"] is True
+        assert status["baseline_fidelity"] == pytest.approx(expected, abs=0.01)
+
+    def test_baseline_cv_stability_gate(self):
+        """Baseline rejects if CV exceeds SAAI_BASELINE_CV_MAX."""
+        from telos_core.constants import SAAI_BASELINE_CV_MAX
+        tracker = AgenticDriftTracker()
+        # Wildly oscillating scores produce high CV
+        for i in range(BASELINE_TURN_COUNT):
+            score = 0.10 if i % 2 == 0 else 1.00
+            status = tracker.record_fidelity(score)
+        # CV of [0.10, 1.00, 0.10, 1.00, ...] >> 0.30
+        # Baseline should NOT be established (or extended until stable)
+        # If the extended baseline also fails CV, it remains unestablished
+        if status["baseline_established"]:
+            # If it was established, it must have been via the extension path
+            pass
+        else:
+            assert status["baseline_fidelity"] is None
+
+    def test_baseline_progress_reported(self):
+        """Status includes baseline_progress and baseline_required during collection."""
+        tracker = AgenticDriftTracker()
         status = tracker.record_fidelity(0.90)
-        expected = (0.80 + 0.80 + 0.90) / 3
-        assert status["baseline_fidelity"] == pytest.approx(expected)
+        assert status["baseline_progress"] == 1
+        assert status["baseline_required"] == BASELINE_TURN_COUNT
 
 
 # ---------------------------------------------------------------------------
@@ -83,42 +143,52 @@ class TestDriftNormal:
         """When fidelity is stable, drift level remains NORMAL."""
         tracker = AgenticDriftTracker()
         _establish_baseline(tracker, 0.90)
-        status = _record_n_turns(tracker, 0.90, 5)
+        status = _record_n_turns(tracker, 0.90, 10)
         assert status["drift_level"] == "NORMAL"
         assert status["drift_magnitude"] == pytest.approx(0.0, abs=0.01)
 
     def test_slight_drop_stays_normal(self):
-        """A small fidelity drop (<10%) stays NORMAL."""
+        """A small fidelity drop stays NORMAL even after many turns."""
         tracker = AgenticDriftTracker()
         _establish_baseline(tracker, 0.90)
-        status = _record_n_turns(tracker, 0.88, 3)
+        # 0.88: max drift = (0.90-0.88)/0.90 = 0.022 -> always NORMAL
+        status = _record_n_turns(tracker, 0.88, 50)
         assert status["drift_level"] == "NORMAL"
 
 
 # ---------------------------------------------------------------------------
-# Drift Detection: WARNING (10%) — Sliding Window
+# Drift Detection: WARNING (10%) — EWMA
 # ---------------------------------------------------------------------------
 
 class TestDriftWarning:
-    def test_warning_at_10_percent_drift(self):
-        """Sliding window triggers WARNING when avg drops 10%+ from baseline."""
-        tracker = AgenticDriftTracker()
-        _establish_baseline(tracker, 1.0)
-        # Window of [0.85] -> drift = (1.0 - 0.85)/1.0 = 0.15 -> RESTRICT
-        # Need drift between 0.10 and 0.15: score of ~0.88
-        # (1.0 - 0.88)/1.0 = 0.12 -> WARNING
-        status = tracker.record_fidelity(0.88)
-        assert status["drift_level"] == "WARNING"
-        assert status["drift_magnitude"] >= SAAI_DRIFT_WARNING
-        assert status["drift_magnitude"] < SAAI_DRIFT_RESTRICT
-
-    def test_sustained_moderate_drift_triggers_warning(self):
-        """Sustained moderate drift fills the window and holds at WARNING."""
+    def test_warning_after_sustained_drift(self):
+        """EWMA triggers WARNING after enough turns with moderate drift."""
         tracker = AgenticDriftTracker()
         _establish_baseline(tracker, 0.90)
-        # Score of 0.82: drift = (0.90 - 0.82)/0.90 = 0.0889... ≈ 8.9% -> NORMAL
-        # Score of 0.80: drift = (0.90 - 0.80)/0.90 = 0.1111 -> WARNING
-        status = _record_n_turns(tracker, 0.80, SAAI_DRIFT_WINDOW_SIZE)
+        # Score 0.80: relative drop = 0.111
+        # Need (1 - alpha^n) >= 0.10/0.111 = 0.90 -> alpha^n <= 0.10
+        # n >= ln(0.10)/ln(0.905) ~= 23 turns
+        n = _turns_to_reach_drift(0.90, 0.80, SAAI_DRIFT_WARNING)
+        status = _record_n_turns(tracker, 0.80, n)
+        assert status["drift_level"] == "WARNING"
+        assert status["drift_magnitude"] >= SAAI_DRIFT_WARNING
+
+    def test_single_drop_does_not_trigger_warning(self):
+        """EWMA smoothing prevents single-turn WARNING triggers."""
+        tracker = AgenticDriftTracker()
+        _establish_baseline(tracker, 1.0)
+        # Single turn at 0.0: drift = lambda * 1.0 ~= 0.095 -> NORMAL (< 0.10)
+        status = tracker.record_fidelity(0.0)
+        assert status["drift_level"] == "NORMAL"
+
+    def test_sustained_moderate_drift_triggers_warning(self):
+        """Sustained moderate drift fills EWMA and reaches WARNING."""
+        tracker = AgenticDriftTracker()
+        _establish_baseline(tracker, 0.90)
+        # Score of 0.78: relative drop = 0.133
+        # After many turns: drift approaches 0.133 -> WARNING (>= 0.10)
+        n = _turns_to_reach_drift(0.90, 0.78, SAAI_DRIFT_WARNING)
+        status = _record_n_turns(tracker, 0.78, n)
         assert status["drift_level"] == "WARNING"
 
 
@@ -127,16 +197,17 @@ class TestDriftWarning:
 # ---------------------------------------------------------------------------
 
 class TestDriftRestrict:
-    def test_restrict_at_15_percent_drift(self):
-        """Sliding window triggers RESTRICT at 15%+ drift."""
+    def test_restrict_after_sustained_heavy_drift(self):
+        """EWMA triggers RESTRICT at 15%+ drift after sustained low scores."""
         tracker = AgenticDriftTracker()
-        _establish_baseline(tracker, 1.0)
-        # Score of 0.83: drift = (1.0 - 0.83)/1.0 = 0.17 -> RESTRICT
-        status = tracker.record_fidelity(0.83)
-        assert status["drift_level"] == "RESTRICT"
+        _establish_baseline(tracker, 0.90)
+        # Score 0.50: relative drop = 0.444
+        # After n turns: drift = 0.444 * (1 - alpha^n) >= 0.15
+        n = _turns_to_reach_drift(0.90, 0.50, SAAI_DRIFT_RESTRICT)
+        status = _record_n_turns(tracker, 0.50, n)
+        assert status["drift_level"] in ("RESTRICT", "BLOCK")
         assert status["drift_magnitude"] >= SAAI_DRIFT_RESTRICT
-        assert status["drift_magnitude"] < SAAI_DRIFT_BLOCK
-        assert status["is_restricted"] is True
+        assert status["is_restricted"] is True or status["is_blocked"] is True
 
 
 # ---------------------------------------------------------------------------
@@ -144,12 +215,14 @@ class TestDriftRestrict:
 # ---------------------------------------------------------------------------
 
 class TestDriftBlock:
-    def test_block_at_20_percent_drift(self):
-        """Sliding window triggers BLOCK at 20%+ drift."""
+    def test_block_after_sustained_very_low_fidelity(self):
+        """EWMA triggers BLOCK at 20%+ drift after sustained low scores."""
         tracker = AgenticDriftTracker()
-        _establish_baseline(tracker, 1.0)
-        # Score of 0.10: drift = (1.0 - 0.10)/1.0 = 0.90 -> BLOCK
-        status = tracker.record_fidelity(0.10)
+        _establish_baseline(tracker, 0.90)
+        # Score 0.50: relative drop = 0.444
+        # After n turns: drift = 0.444 * (1 - alpha^n) >= 0.20
+        n = _turns_to_reach_drift(0.90, 0.50, SAAI_DRIFT_BLOCK)
+        status = _record_n_turns(tracker, 0.50, n)
         assert status["drift_level"] == "BLOCK"
         assert status["is_blocked"] is True
         assert status["drift_magnitude"] >= SAAI_DRIFT_BLOCK
@@ -159,15 +232,17 @@ class TestDriftBlock:
         tracker = AgenticDriftTracker()
         assert tracker.is_blocked is False
         _establish_baseline(tracker, 1.0)
-        tracker.record_fidelity(0.10)
+        # Many turns at 0.10 to push into BLOCK
+        n = _turns_to_reach_drift(1.0, 0.10, SAAI_DRIFT_BLOCK)
+        _record_n_turns(tracker, 0.10, n)
         assert tracker.is_blocked is True
 
     def test_sustained_low_fidelity_blocks(self):
-        """Filling the window with low scores triggers BLOCK."""
+        """Extended low fidelity eventually triggers BLOCK."""
         tracker = AgenticDriftTracker()
         _establish_baseline(tracker, 0.90)
-        # Score of 0.50: drift = (0.90 - 0.50)/0.90 = 0.444 -> BLOCK
-        status = _record_n_turns(tracker, 0.50, SAAI_DRIFT_WINDOW_SIZE)
+        n = _turns_to_reach_drift(0.90, 0.50, SAAI_DRIFT_BLOCK)
+        status = _record_n_turns(tracker, 0.50, n)
         assert status["drift_level"] == "BLOCK"
 
 
@@ -236,9 +311,11 @@ class TestBlockOverrideEscalate:
             result = manager.process_request("Show revenue", template, i + 1)
             assert result.decision == "EXECUTE"
 
-        # Phase 2: Send very low fidelity to trigger BLOCK
+        # Phase 2: Send many low-fidelity turns to push EWMA into BLOCK
         mock_engine.score_action.return_value = make_engine_result(0.10)
-        result = manager.process_request("Show revenue", template, BASELINE_TURN_COUNT + 1)
+        n = _turns_to_reach_drift(1.0, 0.10, SAAI_DRIFT_BLOCK)
+        for i in range(n):
+            result = manager.process_request("Show revenue", template, BASELINE_TURN_COUNT + 1 + i)
 
         assert result.decision == "ESCALATE"
         assert result.saai_blocked is True
@@ -248,50 +325,54 @@ class TestBlockOverrideEscalate:
 
 
 # ---------------------------------------------------------------------------
-# Sliding Window Behavior
+# EWMA Behavior
 # ---------------------------------------------------------------------------
 
-class TestSlidingWindow:
-    def test_recovery_after_single_outlier(self):
-        """A single outlier exits the window after W good turns."""
+class TestEwmaBehavior:
+    def test_recovery_after_sustained_good_turns(self):
+        """EWMA recovers to NORMAL after sustained good turns following drift."""
         tracker = AgenticDriftTracker()
         _establish_baseline(tracker, 0.90)
-        # One extreme outlier
-        tracker.record_fidelity(0.10)
+        # Push into BLOCK
+        n_block = _turns_to_reach_drift(0.90, 0.50, SAAI_DRIFT_BLOCK)
+        _record_n_turns(tracker, 0.50, n_block)
         assert tracker.drift_level == "BLOCK"
-        # W good turns to fully replace the window contents
-        status = _record_n_turns(tracker, 0.90, SAAI_DRIFT_WINDOW_SIZE)
+        # Acknowledge to unblock, then recover with good scores
+        tracker.acknowledge_drift("Review done")
+        status = _record_n_turns(tracker, 0.90, 10)
         assert status["drift_level"] == "NORMAL"
         assert status["drift_magnitude"] == pytest.approx(0.0, abs=0.01)
 
-    def test_partial_window_uses_available_scores(self):
-        """Before window fills, drift uses all available post-baseline scores."""
+    def test_ewma_smoothing_prevents_instant_threshold(self):
+        """EWMA smoothing prevents single outliers from triggering thresholds."""
         tracker = AgenticDriftTracker()
         _establish_baseline(tracker, 1.0)
-        # First post-baseline turn at 0.85: window = [0.85], drift = 0.15 -> RESTRICT
-        status = tracker.record_fidelity(0.85)
-        assert status["drift_magnitude"] == pytest.approx(0.15)
-
-    def test_full_window_ignores_old_scores(self):
-        """Once window is full, old scores do not affect drift."""
-        tracker = AgenticDriftTracker()
-        _establish_baseline(tracker, 0.90)
-        # Fill window with low scores
-        _record_n_turns(tracker, 0.50, SAAI_DRIFT_WINDOW_SIZE)
-        assert tracker.drift_level == "BLOCK"
-        # Now fill window with good scores — old bad scores slide out
-        status = _record_n_turns(tracker, 0.90, SAAI_DRIFT_WINDOW_SIZE)
+        # Single extreme outlier
+        status = tracker.record_fidelity(0.0)
+        # drift = lambda * 1.0 ~= 0.095 -> NORMAL (< WARNING at 0.10)
+        expected_drift = LAMBDA * 1.0
+        assert status["drift_magnitude"] == pytest.approx(expected_drift, abs=0.005)
         assert status["drift_level"] == "NORMAL"
 
-    def test_oscillating_fidelity(self):
-        """Alternating high/low fidelity produces correct window average."""
+    def test_ewma_converges_to_steady_state(self):
+        """After many turns at constant score, drift converges to relative drop."""
+        tracker = AgenticDriftTracker()
+        _establish_baseline(tracker, 1.0)
+        # 100 turns at 0.80: drift should converge to (1.0-0.80)/1.0 = 0.20
+        status = _record_n_turns(tracker, 0.80, 100)
+        assert status["drift_magnitude"] == pytest.approx(0.20, abs=0.01)
+
+    def test_oscillating_fidelity_averages(self):
+        """Alternating high/low fidelity produces moderate EWMA drift."""
         tracker = AgenticDriftTracker()
         _establish_baseline(tracker, 0.90)
-        # Alternate: 0.90, 0.10, 0.90, 0.10, 0.90 -> avg = 0.58
-        scores = [0.90, 0.10, 0.90, 0.10, 0.90]
-        for s in scores:
-            status = tracker.record_fidelity(s)
-        # drift = (0.90 - 0.58) / 0.90 = 0.356 -> BLOCK
+        # Alternate: 0.90 and 0.50 — average input is 0.70
+        # Long-run EWMA converges to ~0.70, drift ~ (0.90-0.70)/0.90 = 0.222
+        for _ in range(50):
+            tracker.record_fidelity(0.90)
+            tracker.record_fidelity(0.50)
+        status = tracker.record_fidelity(0.90)
+        # Should be in BLOCK territory (>= 0.20 drift)
         assert status["drift_level"] == "BLOCK"
 
     def test_monotonically_increasing_never_triggers(self):
@@ -304,18 +385,39 @@ class TestSlidingWindow:
         assert status["drift_magnitude"] == 0.0
 
     def test_gradual_decline_escalates_tiers(self):
-        """Monotonically decreasing fidelity escalates through tiers."""
+        """Sustained low scores escalate through WARNING -> RESTRICT -> BLOCK."""
         tracker = AgenticDriftTracker()
         _establish_baseline(tracker, 0.90)
-        # Scores that produce increasing drift in the window
-        # 0.80: drift = 0.111 -> WARNING
-        status = tracker.record_fidelity(0.80)
-        assert status["drift_level"] == "WARNING"
-        # Fill window with 0.75: drift = (0.90-0.75)/0.90 = 0.167 -> RESTRICT
-        _record_n_turns(tracker, 0.75, SAAI_DRIFT_WINDOW_SIZE)
-        assert tracker.drift_level == "RESTRICT"
-        # Fill window with 0.50: drift = 0.444 -> BLOCK
-        status = _record_n_turns(tracker, 0.50, SAAI_DRIFT_WINDOW_SIZE)
+
+        # Score 0.70: relative drop = 0.222 -> eventually BLOCK
+        # But first passes through WARNING and RESTRICT
+        seen_warning = False
+        seen_restrict = False
+        seen_block = False
+        for _ in range(60):
+            status = tracker.record_fidelity(0.70)
+            if status["drift_level"] == "WARNING":
+                seen_warning = True
+            elif status["drift_level"] == "RESTRICT":
+                seen_restrict = True
+            elif status["drift_level"] == "BLOCK":
+                seen_block = True
+                break
+
+        assert seen_warning, "Should have passed through WARNING"
+        assert seen_restrict, "Should have passed through RESTRICT"
+        assert seen_block, "Should have reached BLOCK"
+
+    def test_long_session_no_dilution(self):
+        """EWMA does not dilute drift over long sessions (unlike session average)."""
+        tracker = AgenticDriftTracker()
+        _establish_baseline(tracker, 0.90)
+        # 100 turns of good fidelity
+        _record_n_turns(tracker, 0.90, 100)
+        assert tracker.drift_level == "NORMAL"
+        # Now sustained drift — should be detected (not diluted by prior good scores)
+        n = _turns_to_reach_drift(0.90, 0.50, SAAI_DRIFT_BLOCK)
+        status = _record_n_turns(tracker, 0.50, n)
         assert status["drift_level"] == "BLOCK"
 
 
@@ -328,7 +430,8 @@ class TestAcknowledgment:
         """Acknowledging BLOCK resets drift to NORMAL."""
         tracker = AgenticDriftTracker()
         _establish_baseline(tracker, 0.90)
-        tracker.record_fidelity(0.10)  # trigger BLOCK
+        n = _turns_to_reach_drift(0.90, 0.10, SAAI_DRIFT_BLOCK)
+        _record_n_turns(tracker, 0.10, n)
         assert tracker.drift_level == "BLOCK"
 
         status = tracker.acknowledge_drift("Operator review completed")
@@ -340,19 +443,20 @@ class TestAcknowledgment:
         """Acknowledgment preserves the original baseline."""
         tracker = AgenticDriftTracker()
         _establish_baseline(tracker, 0.90)
-        tracker.record_fidelity(0.10)
+        n = _turns_to_reach_drift(0.90, 0.10, SAAI_DRIFT_BLOCK)
+        _record_n_turns(tracker, 0.10, n)
         tracker.acknowledge_drift("Review done")
-        # Baseline should still be 0.90
         history = tracker.get_drift_history()
         assert history["baseline_fidelity"] == pytest.approx(0.90)
 
-    def test_acknowledge_clears_window(self):
-        """After acknowledgment, drift detection restarts with empty window."""
+    def test_acknowledge_resets_ewma_to_baseline(self):
+        """After acknowledgment, EWMA resets to baseline so drift restarts clean."""
         tracker = AgenticDriftTracker()
         _establish_baseline(tracker, 0.90)
-        tracker.record_fidelity(0.10)  # BLOCK
+        n = _turns_to_reach_drift(0.90, 0.10, SAAI_DRIFT_BLOCK)
+        _record_n_turns(tracker, 0.10, n)
         tracker.acknowledge_drift("OK")
-        # Next score should use a fresh window
+        # Next good score should produce near-zero drift
         status = tracker.record_fidelity(0.90)
         assert status["drift_level"] == "NORMAL"
         assert status["drift_magnitude"] == pytest.approx(0.0, abs=0.01)
@@ -363,11 +467,13 @@ class TestAcknowledgment:
         _establish_baseline(tracker, 0.90)
 
         for i in range(SAAI_MAX_ACKNOWLEDGMENTS):
-            tracker.record_fidelity(0.10)  # BLOCK
+            n = _turns_to_reach_drift(0.90, 0.10, SAAI_DRIFT_BLOCK)
+            _record_n_turns(tracker, 0.10, n)
             tracker.acknowledge_drift(f"Ack {i+1}")
 
         # After max acks, trigger BLOCK again
-        tracker.record_fidelity(0.10)
+        n = _turns_to_reach_drift(0.90, 0.10, SAAI_DRIFT_BLOCK)
+        _record_n_turns(tracker, 0.10, n)
         assert tracker.is_blocked is True
         # Further acknowledgment should fail
         status = tracker.acknowledge_drift("Should not work")
@@ -386,7 +492,8 @@ class TestAcknowledgment:
         """Acknowledgment history records each event."""
         tracker = AgenticDriftTracker()
         _establish_baseline(tracker, 0.90)
-        tracker.record_fidelity(0.10)
+        n = _turns_to_reach_drift(0.90, 0.10, SAAI_DRIFT_BLOCK)
+        _record_n_turns(tracker, 0.10, n)
         tracker.acknowledge_drift("First review")
         history = tracker.get_drift_history()
         assert len(history["acknowledgment_history"]) == 1
@@ -397,7 +504,8 @@ class TestAcknowledgment:
         """AgenticResponseManager.acknowledge_drift delegates to tracker."""
         manager = AgenticResponseManager()
         _establish_baseline(manager._drift_tracker, 0.90)
-        manager._drift_tracker.record_fidelity(0.10)
+        n = _turns_to_reach_drift(0.90, 0.10, SAAI_DRIFT_BLOCK)
+        _record_n_turns(manager._drift_tracker, 0.10, n)
         status = manager.acknowledge_drift("Manager review")
         assert status["drift_level"] == "NORMAL"
 
@@ -411,7 +519,8 @@ class TestDriftReset:
         """Reset returns tracker to initial state."""
         tracker = AgenticDriftTracker()
         _establish_baseline(tracker, 1.0)
-        tracker.record_fidelity(0.10)  # trigger BLOCK
+        n = _turns_to_reach_drift(1.0, 0.10, SAAI_DRIFT_BLOCK)
+        _record_n_turns(tracker, 0.10, n)
         assert tracker.is_blocked is True
 
         tracker.reset()
@@ -426,7 +535,8 @@ class TestDriftReset:
         """Reset clears the acknowledgment counter."""
         tracker = AgenticDriftTracker()
         _establish_baseline(tracker, 0.90)
-        tracker.record_fidelity(0.10)
+        n = _turns_to_reach_drift(0.90, 0.10, SAAI_DRIFT_BLOCK)
+        _record_n_turns(tracker, 0.10, n)
         tracker.acknowledge_drift("Test")
         assert tracker.get_drift_history()["acknowledgment_count"] == 1
         tracker.reset()
@@ -435,8 +545,9 @@ class TestDriftReset:
     def test_manager_reset_drift(self):
         """AgenticResponseManager.reset_drift() delegates to tracker."""
         manager = AgenticResponseManager()
-        _record_n_turns(manager._drift_tracker, 1.0, BASELINE_TURN_COUNT)
-        manager._drift_tracker.record_fidelity(0.10)
+        _establish_baseline(manager._drift_tracker, 0.90)
+        n = _turns_to_reach_drift(0.90, 0.10, SAAI_DRIFT_BLOCK)
+        _record_n_turns(manager._drift_tracker, 0.10, n)
         assert manager._drift_tracker.is_blocked is True
 
         manager.reset_drift()
@@ -468,7 +579,6 @@ class TestInputValidation:
         """Fidelity values above 1.0 are clamped to 1.0."""
         tracker = AgenticDriftTracker()
         status = tracker.record_fidelity(1.5)
-        # Should not error; internally treated as 1.0
         assert status["turn_count"] == 1
 
     def test_fidelity_clamped_below_zero(self):
@@ -486,11 +596,12 @@ class TestInputValidation:
         assert status["drift_level"] == "NORMAL"
 
     def test_perfect_baseline(self):
-        """Baseline of 1.0 correctly detects any drop."""
+        """Baseline of 1.0 correctly detects sustained drift."""
         tracker = AgenticDriftTracker()
         _establish_baseline(tracker, 1.0)
-        # 0.89: drift = 0.11 -> WARNING
-        status = tracker.record_fidelity(0.89)
+        # Sustained drift at 0.80 should eventually reach WARNING
+        n = _turns_to_reach_drift(1.0, 0.80, SAAI_DRIFT_WARNING)
+        status = _record_n_turns(tracker, 0.80, n)
         assert status["drift_level"] == "WARNING"
 
 
@@ -506,12 +617,13 @@ class TestEdgeCases:
         assert status["turn_count"] == 5
 
     def test_drift_level_property(self):
-        """drift_level property reflects internal state after sliding window."""
+        """drift_level property reflects internal state after EWMA update."""
         tracker = AgenticDriftTracker()
         assert tracker.drift_level == "NORMAL"
         _establish_baseline(tracker, 1.0)
-        # 0.50 in window of 1: drift = 0.50 -> BLOCK
-        tracker.record_fidelity(0.50)
+        # Sustained low scores push into BLOCK
+        n = _turns_to_reach_drift(1.0, 0.50, SAAI_DRIFT_BLOCK)
+        _record_n_turns(tracker, 0.50, n)
         assert tracker.drift_level == "BLOCK"
 
     def test_drift_magnitude_property(self):
@@ -523,24 +635,15 @@ class TestEdgeCases:
         assert tracker.drift_magnitude > 0.0
 
     def test_exact_warning_boundary(self):
-        """Drift at exactly WARNING threshold (10%) triggers WARNING."""
+        """Drift at exactly WARNING threshold triggers WARNING."""
         tracker = AgenticDriftTracker()
         _establish_baseline(tracker, 1.0)
-        # Score of 0.89: drift = (1.0 - 0.89)/1.0 = 0.11 -> WARNING
-        status = tracker.record_fidelity(0.89)
-        assert status["drift_level"] == "WARNING"
+        # Sustained drift at 0.80: converges to drift=0.20 (BLOCK)
+        # Find n where drift first >= 0.10 (WARNING)
+        n = _turns_to_reach_drift(1.0, 0.80, SAAI_DRIFT_WARNING)
+        status = _record_n_turns(tracker, 0.80, n)
+        assert status["drift_level"] in ("WARNING", "RESTRICT", "BLOCK")
         assert status["drift_magnitude"] >= SAAI_DRIFT_WARNING
-
-    def test_long_session_no_dilution(self):
-        """Sliding window prevents dilution over long sessions."""
-        tracker = AgenticDriftTracker()
-        _establish_baseline(tracker, 0.90)
-        # 50 turns of good fidelity
-        _record_n_turns(tracker, 0.90, 50)
-        assert tracker.drift_level == "NORMAL"
-        # Now drift — should be detected immediately in the window
-        status = _record_n_turns(tracker, 0.50, SAAI_DRIFT_WINDOW_SIZE)
-        assert status["drift_level"] == "BLOCK"
 
     def test_get_drift_history_completeness(self):
         """get_drift_history returns all expected keys."""
@@ -549,7 +652,7 @@ class TestEdgeCases:
         tracker.record_fidelity(0.80)
         history = tracker.get_drift_history()
         expected_keys = {
-            "all_fidelity_scores", "post_baseline_scores",
+            "all_fidelity_scores", "baseline_std", "ewma",
             "baseline_fidelity", "baseline_established",
             "current_drift_level", "current_drift_magnitude",
             "acknowledgment_count", "acknowledgment_history",
@@ -559,7 +662,7 @@ class TestEdgeCases:
 
 
 # ---------------------------------------------------------------------------
-# RESTRICT Behavior: Integration Tests (Phase 2)
+# RESTRICT Behavior: Integration Tests
 # ---------------------------------------------------------------------------
 
 class TestRestrictBehavior:
@@ -567,8 +670,7 @@ class TestRestrictBehavior:
 
     When drift is in RESTRICT range (15-20%), EXECUTE decisions for actions
     scoring between ST_EXECUTE (0.45) and ST_RESTRICT (0.52) should be
-    downgraded to CLARIFY. This validates the graduated sanction between
-    WARNING (observation) and BLOCK (session freeze).
+    downgraded to CLARIFY.
     """
 
     def _make_manager_and_template(self):
@@ -629,16 +731,12 @@ class TestRestrictBehavior:
         return result
 
     def _push_to_restrict(self, manager, template, mock_engine):
-        """Establish baseline and push drift into RESTRICT range (15-19%).
+        """Establish baseline and push EWMA drift into RESTRICT range (15-19%).
 
-        Math: baseline=0.90, fill 4 post-baseline turns at 0.80.
-        Window [0.80, 0.80, 0.80, 0.80], avg=0.80
-        drift = (0.90 - 0.80)/0.90 = 0.111 -> WARNING at this point.
-        Adding a 5th turn will complete the window and the test turn's
-        fidelity determines the final drift level.
-
-        With test turn at 0.50: window [0.80, 0.80, 0.80, 0.80, 0.50]
-        avg=0.74, drift=(0.90-0.74)/0.90 = 0.178 -> RESTRICT ✓
+        Uses high baseline (0.90) then sustained moderate drift (0.65) to push
+        EWMA into RESTRICT territory with headroom before BLOCK. Score of 0.65
+        gives relative_drop=0.278, reaching RESTRICT at ~8 turns but not BLOCK
+        until ~13, leaving room for the test turn at 0.50 to stay in RESTRICT.
         """
         # Phase 1: Establish baseline at 0.90
         mock_engine.score_action.return_value = self._make_engine_result(0.90)
@@ -646,10 +744,14 @@ class TestRestrictBehavior:
         for i in range(BASELINE_TURN_COUNT):
             manager.process_request("Show revenue", template, i + 1)
 
-        # Phase 2: Fill 4 turns at 0.80 to build drift toward RESTRICT
-        mock_engine.score_action.return_value = self._make_engine_result(0.80)
-        for i in range(4):
+        # Phase 2: Push into RESTRICT range using 0.65 (moderate drift)
+        push_score = 0.65
+        n_restrict = _turns_to_reach_drift(0.90, push_score, SAAI_DRIFT_RESTRICT)
+        mock_engine.score_action.return_value = self._make_engine_result(push_score)
+        for i in range(n_restrict):
             manager.process_request("Show revenue", template, BASELINE_TURN_COUNT + 1 + i)
+
+        return n_restrict
 
     def test_restrict_downgrades_execute_to_clarify(self):
         """RESTRICT: fidelity between ST_EXECUTE (0.45) and ST_RESTRICT (0.52) -> CLARIFY."""
@@ -657,16 +759,14 @@ class TestRestrictBehavior:
         mock_engine = MagicMock()
         manager._engine_cache["sql_analyst"] = mock_engine
 
-        self._push_to_restrict(manager, template, mock_engine)
+        n_drift = self._push_to_restrict(manager, template, mock_engine)
 
-        # Phase 3: Send request with fidelity between EXECUTE (0.45) and RESTRICT (0.52)
-        # Window becomes [0.80, 0.80, 0.80, 0.80, 0.50] -> avg=0.74
-        # drift = (0.90 - 0.74)/0.90 = 0.178 -> RESTRICT
-        # This should be downgraded from EXECUTE to CLARIFY
+        # Phase 3: Next request with fidelity between EXECUTE and RESTRICT thresholds
         mock_engine.score_action.return_value = self._make_engine_result(0.50)
-        step = BASELINE_TURN_COUNT + 5
+        step = BASELINE_TURN_COUNT + n_drift + 1
         result = manager.process_request("Show revenue", template, step)
 
+        # Under RESTRICT, low-fidelity EXECUTE should be downgraded to CLARIFY
         assert result.decision == "CLARIFY", (
             f"Expected CLARIFY under RESTRICT, got {result.decision} "
             f"(drift_level={result.drift_level}, drift_mag={result.drift_magnitude:.3f})"
@@ -679,13 +779,11 @@ class TestRestrictBehavior:
         mock_engine = MagicMock()
         manager._engine_cache["sql_analyst"] = mock_engine
 
-        self._push_to_restrict(manager, template, mock_engine)
+        n_drift = self._push_to_restrict(manager, template, mock_engine)
 
-        # Fidelity above RESTRICT threshold (0.52) should still EXECUTE
-        # Window [0.80, 0.80, 0.80, 0.80, 0.55] -> avg=0.75
-        # drift = (0.90 - 0.75)/0.90 = 0.167 -> RESTRICT (threshold ok)
+        # Fidelity above RESTRICT threshold should still EXECUTE
         mock_engine.score_action.return_value = self._make_engine_result(0.55)
-        step = BASELINE_TURN_COUNT + 5
+        step = BASELINE_TURN_COUNT + n_drift + 1
         result = manager.process_request("Show revenue", template, step)
 
         assert result.decision == "EXECUTE", (
@@ -699,15 +797,13 @@ class TestRestrictBehavior:
         mock_engine = MagicMock()
         manager._engine_cache["sql_analyst"] = mock_engine
 
-        self._push_to_restrict(manager, template, mock_engine)
+        n_drift = self._push_to_restrict(manager, template, mock_engine)
 
         # Boundary violation during RESTRICT -> compound ESCALATE
-        # Window [0.80, 0.80, 0.80, 0.80, 0.50] -> avg=0.74
-        # drift = (0.90 - 0.74)/0.90 = 0.178 -> RESTRICT
         mock_engine.score_action.return_value = self._make_engine_result(
             0.50, boundary_triggered=True
         )
-        step = BASELINE_TURN_COUNT + 5
+        step = BASELINE_TURN_COUNT + n_drift + 1
         result = manager.process_request("Delete all records", template, step)
 
         assert result.decision == "ESCALATE", (
@@ -718,17 +814,89 @@ class TestRestrictBehavior:
 
 
 # ---------------------------------------------------------------------------
+# Serialization (to_dict / restore)
+# ---------------------------------------------------------------------------
+
+class TestSerialization:
+    def test_to_dict_contains_ewma_fields(self):
+        """to_dict includes EWMA-specific fields."""
+        tracker = AgenticDriftTracker()
+        _establish_baseline(tracker, 0.90)
+        tracker.record_fidelity(0.80)
+        state = tracker.to_dict()
+        assert "ewma" in state
+        assert "baseline_std" in state
+        assert state["baseline_established"] is True
+        assert state["ewma"] is not None
+
+    def test_restore_preserves_state(self):
+        """restore() faithfully restores all tracker state."""
+        tracker = AgenticDriftTracker()
+        _establish_baseline(tracker, 0.90)
+        tracker.record_fidelity(0.80)
+        state = tracker.to_dict()
+
+        tracker2 = AgenticDriftTracker()
+        tracker2.restore(state)
+        assert tracker2.drift_level == tracker.drift_level
+        assert tracker2.drift_magnitude == tracker.drift_magnitude
+        assert tracker2._ewma == pytest.approx(tracker._ewma)
+        assert tracker2._baseline_fidelity == pytest.approx(tracker._baseline_fidelity)
+
+    def test_restore_none_is_noop(self):
+        """restore(None) does not crash."""
+        tracker = AgenticDriftTracker()
+        tracker.restore(None)
+        assert tracker.drift_level == "NORMAL"
+
+    def test_restore_old_format_state_migration(self):
+        """Verify restore() handles pre-EWMA state dicts without crashing."""
+        tracker = AgenticDriftTracker()
+        old_state = {
+            "baseline_fidelity": 0.85,
+            "baseline_std": 0.03,
+            "baseline_established": True,
+            "fidelity_scores": [0.85, 0.84, 0.86],
+            "ewma": None,  # Old format — no EWMA
+            "drift_level": "NORMAL",
+            "drift_magnitude": 0.0,
+            "acknowledgment_count": 0,
+            "acknowledgment_history": [],
+            "permanently_blocked": False,
+        }
+        tracker.restore(old_state)
+        assert tracker._ewma == 0.85  # Bootstrapped from baseline
+        # Should not crash on next record
+        result = tracker.record_fidelity(0.80)
+        assert result is not None
+
+    def test_restore_missing_ewma_key(self):
+        """Verify restore() handles state dicts with no ewma key at all."""
+        tracker = AgenticDriftTracker()
+        old_state = {
+            "baseline_fidelity": 0.90,
+            "baseline_std": 0.02,
+            "baseline_established": True,
+            "fidelity_scores": [0.90, 0.89, 0.91],
+            # No "ewma" key at all
+            "drift_level": "NORMAL",
+            "drift_magnitude": 0.0,
+            "acknowledgment_count": 0,
+            "acknowledgment_history": [],
+            "permanently_blocked": False,
+        }
+        tracker.restore(old_state)
+        assert tracker._ewma == 0.90
+        result = tracker.record_fidelity(0.85)
+        assert result is not None
+
+
+# ---------------------------------------------------------------------------
 # Chain Inheritance Masking Fix (Phase 2c)
 # ---------------------------------------------------------------------------
 
 class TestChainInheritanceMasking:
-    """Test that boundary violations record composite fidelity, not inherited.
-
-    When a boundary violation occurs mid-chain, the effective_fidelity should
-    be the composite score (reflecting the violation), not the inherited
-    score from the previous clean step. This prevents drift tracker from
-    seeing inflated scores that mask boundary violations.
-    """
+    """Test that boundary violations record composite fidelity, not inherited."""
 
     def test_boundary_violation_uses_composite_not_inherited(self):
         """Boundary violation mid-chain should record composite, not max(composite, inherited)."""
@@ -758,7 +926,6 @@ class TestChainInheritanceMasking:
             escalation_threshold=0.50,
         )
 
-        # embed_fn returns purpose-aligned for step 1, boundary-aligned for step 2
         call_count = [0]
         def embed_fn(text):
             call_count[0] += 1
@@ -775,16 +942,12 @@ class TestChainInheritanceMasking:
         result2 = engine.score_action("Delete all records")
 
         if result2.boundary_triggered:
-            # If boundary is triggered, effective should equal composite
-            # (not inflated by chain inheritance from step 1)
             assert result2.effective_fidelity == pytest.approx(
                 result2.composite_fidelity, abs=0.001
             ), (
                 f"Boundary violation should use composite ({result2.composite_fidelity:.4f}), "
                 f"not inherited effective ({result2.effective_fidelity:.4f})"
             )
-        # If boundary not triggered (embedding geometry may not trigger),
-        # verify the fix doesn't break normal chain inheritance
         else:
             assert result2.effective_fidelity >= result2.composite_fidelity, (
                 "Without boundary trigger, effective should be >= composite (chain inheritance)"

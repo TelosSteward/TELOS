@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-TELOS v2.0.0 — Live Agentic Governance Demo (v2 — with TELOSCOPE)
+TELOS v2.0.0 — Live Agentic Governance Demo
 Nearmap Property Intelligence Agent
 
 Demonstrates the full TELOS governance stack with a REAL agentic AI loop:
@@ -10,13 +10,12 @@ Demonstrates the full TELOS governance stack with a REAL agentic AI loop:
   4. Simulated tools execute and return realistic property data
   5. Mistral summarises the tool output for the user
   6. If BLOCKED: the LLM is NEVER called. Request stops at governance.
-  7. TELOSCOPE independently measures every governance decision (post-hoc)
 
 Run:
-  python3 demos/nearmap_live_demo_v2.py                         # governance-only
-  MISTRAL_API_KEY=key python3 demos/nearmap_live_demo_v2.py     # full agentic mode
-  NO_COLOR=1 python3 demos/nearmap_live_demo_v2.py              # plain ASCII
-  DEMO_FAST=1 python3 demos/nearmap_live_demo_v2.py             # skip pauses
+  python3 demos/nearmap_live_demo.py                         # governance-only
+  MISTRAL_API_KEY=key python3 demos/nearmap_live_demo.py     # full agentic mode
+  NO_COLOR=1 python3 demos/nearmap_live_demo.py              # plain ASCII
+  DEMO_FAST=1 python3 demos/nearmap_live_demo.py             # skip pauses
 """
 
 import hashlib
@@ -57,7 +56,6 @@ from telos_core.fidelity_engine import (
 from telos_core.constants import (
     ST_AGENTIC_EXECUTE_THRESHOLD,
     ST_AGENTIC_CLARIFY_THRESHOLD,
-    ST_AGENTIC_SUGGEST_THRESHOLD,
     SIMILARITY_BASELINE,
     INTERVENTION_THRESHOLD,
     OUTPUT_INTERVENTION_THRESHOLD,
@@ -97,14 +95,6 @@ try:
 except ImportError:
     _HAS_ED25519 = False
 
-# TELOSCOPE measurement (v2 — post-hoc analysis of demo governance data)
-try:
-    from telos_governance.demo_audit_bridge import make_audit_record, write_demo_corpus
-    from telos_governance.demo_teloscope_analysis import run_analysis as teloscope_analysis
-    _HAS_TELOSCOPE = True
-except ImportError:
-    _HAS_TELOSCOPE = False
-
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Display Toolkit — imported from shared module
@@ -116,7 +106,7 @@ from _display_toolkit import (  # noqa: E402
     _pause, W, _wrap, _kv,
     _header, _section, _category_badge, _verdict_box,
     _score_panel, _agent_card, _blocked_card,
-    _flow_line, _narrator, _cascade_panel, _two_gate_panel,
+    _flow_line, _narrator, _cascade_panel,
 )
 
 # Engine toggle: production (AgenticFidelityEngine + SetFit L1.5) vs legacy
@@ -690,7 +680,6 @@ class Scenario:
     request: str
     note: str = ""
     narrator: str = ""
-    post_narrator: str = ""  # Optional narrator line shown after the verdict
 
 
 @dataclass
@@ -743,8 +732,8 @@ SCENARIOS = [
         label="Hail damage risk scoring",
         category="IN-SCOPE",
         request="Calculate the hail and wind peril vulnerability scores for 1600 Pennsylvania Ave.",
-        narrator="After a block, does TELOS let a good request through? "
-                 "Governance is surgical, not paranoid.",
+        narrator="Back to legitimate work. After two blocks, does TELOS let a good "
+                 "request through? Governance is surgical, not paranoid.",
     ),
     # Edge case — the nuanced middle ground
     Scenario(
@@ -826,7 +815,6 @@ SOLAR_SCENARIOS = [
         narrator="A standard solar site assessment request. Clearly within the solar "
                  "agent's purpose. Watch how the SAME aerial imagery tool is now "
                  "governed for a different purpose.",
-        post_narrator="Gate 1 uncertain, Gate 2 confirmed \u2014 the two-gate architecture resolved it.",
     ),
     Scenario(
         label="Binding installation contract",
@@ -842,9 +830,9 @@ SOLAR_SCENARIOS = [
         category="BOUNDARY",
         request="Can this roof support the weight of 24 solar panels?",
         note="BOUNDARY: no structural engineering \u2014 defer to licensed PE",
-        narrator="A boundary that DOESN'T EXIST in the insurance PA. This boundary was "
-                 "absent from the previous configuration. The engine enforced it because "
-                 "the purpose changed.",
+        narrator="A boundary that DOESN'T EXIST in the insurance PA. Structural load "
+                 "analysis requires a licensed Professional Engineer. The governance "
+                 "changed because the purpose changed.",
     ),
     Scenario(
         label="Shade and orientation analysis",
@@ -1079,9 +1067,7 @@ def _agentic_decision(fidelity, raw_sim, boundary_violation):
         return EngineDecision.EXECUTE
     if fidelity >= ST_AGENTIC_CLARIFY_THRESHOLD:
         return EngineDecision.CLARIFY
-    if fidelity >= ST_AGENTIC_SUGGEST_THRESHOLD:
-        return EngineDecision.SUGGEST
-    return EngineDecision.INERT
+    return EngineDecision.ESCALATE
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -1196,7 +1182,7 @@ def _act_zero_preamble(agent_name, purpose, scope, boundaries, tools, constraint
         ("Boundary Detection", "Does this request violate any of your hard constraints?"),
         ("Chain Continuity", "Is this action logically connected to the prior step?"),
         ("Composite Score", "Overall governance assessment"),
-        ("Decision", "EXECUTE / CLARIFY / SUGGEST / INERT / ESCALATE"),
+        ("Decision", "EXECUTE / CLARIFY / ESCALATE"),
     ]
     for name, desc in dimensions:
         print("    {:<22s} {}".format(
@@ -1279,8 +1265,7 @@ def _pa_swap_transition(from_label, from_purpose_short, from_boundaries_short,
 
 def _run_pa_scenarios(config, embed_fn, hmac_key, setfit_classifier, setfit_loaded,
                        mistral_client, mistral_model, legacy_engine, trace,
-                       receipts, use_production_engine, receipt_offset=0,
-                       show_two_gate=False):
+                       receipts, use_production_engine, receipt_offset=0):
     """Generic scenario loop for any PA configuration.
 
     Returns (total_gov_ms, llm_calls_saved, would_block_count).
@@ -1395,7 +1380,7 @@ def _run_pa_scenarios(config, embed_fn, hmac_key, setfit_classifier, setfit_load
                 _cascade_halt = "L1"
             elif _setfit_triggered:
                 _cascade_halt = "L1.5"
-            elif decision in (ActionDecision.INERT, ActionDecision.ESCALATE):
+            elif decision == ActionDecision.ESCALATE:
                 _cascade_halt = "fidelity"
             else:
                 _cascade_halt = "none"
@@ -1454,7 +1439,7 @@ def _run_pa_scenarios(config, embed_fn, hmac_key, setfit_classifier, setfit_load
 
         boundary_hit = (
             boundary_violation
-            and decision.value in ("escalate", "inert")
+            and decision.value == "escalate"
         )
         if boundary_hit:
             boundary_tag = _c("VIOLATION ({})".format(matched_boundary_name[:30]), "red")
@@ -1464,59 +1449,45 @@ def _run_pa_scenarios(config, embed_fn, hmac_key, setfit_classifier, setfit_load
             boundary_tag = _c("clear", "green")
 
         original_decision = decision
-        allowed = decision.value in ("execute", "clarify", "suggest")
+        allowed = decision.value in ("execute", "clarify")
         would_block = not allowed
 
         if OBSERVE_MODE and not allowed:
             allowed = True
             would_block_count += 1
 
-        # Display: two-gate panel (v3) or cascade+scoring (v2 default)
-        if show_two_gate and use_production_engine and prod_result:
-            _two_gate_panel(prod_result, gov_ms)
-            _flow_line(allowed)
-            if OBSERVE_MODE and would_block:
-                obs_label = "WOULD BLOCK" if original_decision.value == "inert" else "WOULD ESCALATE"
-                print("  {}".format(_c("  OBSERVATION: {} \u2014 LLM NOT called in enforcement mode".format(obs_label), "yellow")))
-            _pause(1.5)
-            verdict_detail = ""
-            if would_block:
-                verdict_detail = scenario.note or "outside agent scope"
-            _verdict_box(decision, verdict_detail)
-            _pause(2.0)
-        else:
-            # Cascade panel
-            if use_production_engine and prod_result:
-                _cascade_panel(prod_result, gov_ms, setfit_loaded)
+        # Cascade panel
+        if use_production_engine and prod_result:
+            _cascade_panel(prod_result, gov_ms, setfit_loaded)
 
-            # Flow line
-            _flow_line(allowed)
+        # Flow line
+        _flow_line(allowed)
 
-            if OBSERVE_MODE and would_block:
-                obs_label = "WOULD BLOCK" if original_decision.value == "inert" else "WOULD ESCALATE"
-                print("  {}".format(_c("  OBSERVATION: {} \u2014 LLM NOT called in enforcement mode".format(obs_label), "yellow")))
+        if OBSERVE_MODE and would_block:
+            obs_label = "WOULD ESCALATE"
+            print("  {}".format(_c("  OBSERVATION: {} \u2014 LLM NOT called in enforcement mode".format(obs_label), "yellow")))
 
-            _pause(1.0)
+        _pause(1.0)
 
-            # Scoring panel
-            print()
-            print(_c("  Governance Scoring:", "dim"))
-            _score_panel([
-                ("Purpose", "{:.3f}".format(purpose_f), _bar(purpose_f),
-                 _c(purpose_label, _score_color(purpose_f))),
-                ("Tool", "{:.3f}".format(tool_f), _bar(tool_f), tool_name),
-                ("Chain SCI", "{:.3f}".format(chain_sci), _bar(max(0, chain_sci)),
-                 "step {} ({})".format(step.step_index + 1, chain_label)),
-                ("Boundary", "{:.3f}".format(max_boundary_sim), " " * 14, boundary_tag),
-            ])
-            _pause(2.0)
+        # Scoring panel
+        print()
+        print(_c("  Governance Scoring:", "dim"))
+        _score_panel([
+            ("Purpose", "{:.3f}".format(purpose_f), _bar(purpose_f),
+             _c(purpose_label, _score_color(purpose_f))),
+            ("Tool", "{:.3f}".format(tool_f), _bar(tool_f), tool_name),
+            ("Chain SCI", "{:.3f}".format(chain_sci), _bar(max(0, chain_sci)),
+             "step {} ({})".format(step.step_index + 1, chain_label)),
+            ("Boundary", "{:.3f}".format(max_boundary_sim), " " * 14, boundary_tag),
+        ])
+        _pause(2.0)
 
-            # Verdict
-            verdict_detail = ""
-            if would_block:
-                verdict_detail = scenario.note or "outside agent scope"
-            _verdict_box(decision, verdict_detail)
-            _pause(2.0)
+        # Verdict
+        verdict_detail = ""
+        if would_block:
+            verdict_detail = scenario.note or "outside agent scope"
+        _verdict_box(decision, verdict_detail)
+        _pause(2.0)
 
         # Agent loop or blocked
         llm_response = None
@@ -1562,11 +1533,6 @@ def _run_pa_scenarios(config, embed_fn, hmac_key, setfit_classifier, setfit_load
             gov_ms, receipt_num)
         print("  {}".format(_c(meta, "dim")))
 
-        # Post-verdict narrator (optional)
-        if scenario.post_narrator:
-            _narrator(scenario.post_narrator)
-            _pause(1.5)
-
         # Chain timeline for multi-step scenarios
         if scenario.category == "MULTI-STEP" and step.step_index > 0:
             print()
@@ -1596,7 +1562,7 @@ def _run_pa_scenarios(config, embed_fn, hmac_key, setfit_classifier, setfit_load
             previous_fidelity=prev_fid,
         )
         if would_block and not OBSERVE_MODE:
-            i_level = InterventionLevel.HARD_BLOCK if original_decision == EngineDecision.INERT else InterventionLevel.ESCALATE
+            i_level = InterventionLevel.ESCALATE
             trigger = "boundary_violation" if boundary_violation else "hard_block" if raw_sim < SIMILARITY_BASELINE else "basin_exit"
             trace.record_intervention(
                 turn_number=receipt_num,
@@ -1605,7 +1571,7 @@ def _run_pa_scenarios(config, embed_fn, hmac_key, setfit_classifier, setfit_load
                 fidelity_at_trigger=purpose_f,
                 controller_strength=min(DEFAULT_K_ATTRACTOR * (1.0 - purpose_f), 1.0),
                 semantic_band=_zone_label(purpose_f).lower(),
-                action_taken="block" if original_decision == EngineDecision.INERT else "escalate",
+                action_taken="escalate",
             )
         if llm_response:
             trace.record_response(
@@ -1662,7 +1628,6 @@ def main():
             "  Two agents. Same governance engine. Different purposes.\n"
             "  TELOS scores each request in <30ms \u2014 BEFORE the LLM runs.\n"
             "  Then the PURPOSE changes and governance reconfigures.\n"
-            "  Then TELOSCOPE independently measures every governance decision.\n"
             "  Every decision is cryptographically signed for audit."
         )
     else:
@@ -1674,7 +1639,6 @@ def main():
             "  Four agents. Same governance engine. Different purposes.\n"
             "  TELOS scores each request in <30ms \u2014 BEFORE the LLM runs.\n"
             "  Then the PURPOSE changes \u2014 three times \u2014 and governance reconfigures each time.\n"
-            "  Then TELOSCOPE independently measures every governance decision.\n"
             "  Every decision is cryptographically signed for audit."
         )
     _pause(2.0)
@@ -1954,12 +1918,9 @@ def main():
         ),
     ]
 
-    # Filter domains via env vars
+    # Filter to Nearmap-only (Insurance + Solar) when DEMO_NEARMAP_ONLY is set
     NEARMAP_ONLY = os.environ.get("DEMO_NEARMAP_ONLY", "").strip() == "1"
-    INSURANCE_ONLY = os.environ.get("DEMO_INSURANCE_ONLY", "").strip() == "1"
-    if INSURANCE_ONLY:
-        pa_configs = [c for c in all_pa_configs if c.label == "Insurance"]
-    elif NEARMAP_ONLY:
+    if NEARMAP_ONLY:
         pa_configs = [c for c in all_pa_configs if c.label in ("Insurance", "Solar")]
     else:
         pa_configs = all_pa_configs
@@ -2073,7 +2034,7 @@ def main():
     print(_c("  Receipt signatures (HMAC-SHA512):", "white", bold=True))
     print()
     for r in receipts:
-        dc = "green" if r.decision in (EngineDecision.EXECUTE, EngineDecision.CLARIFY, EngineDecision.SUGGEST) else "red"
+        dc = "green" if r.decision in (EngineDecision.EXECUTE, EngineDecision.CLARIFY) else "red"
         sig_short = r.hmac_signature[:16] + "..." + r.hmac_signature[-8:]
         print("    #{:<3d} {}  {}".format(
             r.index, _c(r.decision.value.upper(), dc),
@@ -2104,7 +2065,7 @@ def main():
     print()
     print(_c("  Blocked requests (audit trail):", "dim"))
     for r in receipts:
-        if r.decision in (EngineDecision.INERT, EngineDecision.ESCALATE):
+        if r.decision == EngineDecision.ESCALATE:
             dc = "red"
             note = r.note or "outside agent scope"
             short_req = r.request[:50] + "..." if len(r.request) > 50 else r.request
@@ -2114,9 +2075,8 @@ def main():
 
     # ── Section 4: Summary ──────────────────────────────────────────
     n_allowed = sum(1 for r in receipts if r.decision in (
-        EngineDecision.EXECUTE, EngineDecision.CLARIFY, EngineDecision.SUGGEST))
-    n_blocked = sum(1 for r in receipts if r.decision in (
-        EngineDecision.INERT, EngineDecision.ESCALATE))
+        EngineDecision.EXECUTE, EngineDecision.CLARIFY))
+    n_blocked = sum(1 for r in receipts if r.decision == EngineDecision.ESCALATE)
     n_tool_calls = sum(1 for r in receipts if r.tool_called)
     avg_gov = total_gov_ms / len(receipts) if receipts else 0
 
@@ -2326,9 +2286,9 @@ def main():
     _kv("Verified in", "{:.1f}ms".format(report.verification_duration_ms))
     _pause(1.0)
 
-    # SAAI compliance
+    # SAAI alignment (self-assessed per Watson and Hessami, CC BY-ND 4.0)
     print()
-    print(_c("  SAAI Framework Compliance:", "white", bold=True))
+    print(_c("  SAAI Framework Alignment:", "white", bold=True))
     _kv("Baseline established", "Yes" if report.baseline_established else "No (< {} turns)".format(
         __import__("telos_core.constants", fromlist=["BASELINE_TURN_COUNT"]).BASELINE_TURN_COUNT))
     _kv("Mandatory reviews", str(report.mandatory_reviews_triggered))
@@ -2556,110 +2516,6 @@ def main():
         print("  {}".format(_c(
             "[HTML report skipped: {}]".format(exc), "yellow")))
     _pause(1.0)
-
-    # ── Section 7: TELOSCOPE Independent Analysis ──────────────────
-    if _HAS_TELOSCOPE:
-        _pause(1.0)
-        _header("TELOSCOPE \u2014 Independent Governance Measurement")
-        _pause(0.5)
-
-        _narrator(
-            "You just watched TELOS govern. Now watch TELOSCOPE MEASURE that governance. "
-            "TELOSCOPE is an independent research instrument \u2014 it analyzes governance "
-            "decisions after the fact. Different codebase. Different methodology. "
-            "The governance engine scores requests. TELOSCOPE audits the scores."
-        )
-        _pause(2.0)
-
-        print()
-        print(_c("  Bridging {} governance receipts to audit corpus ...".format(
-            len(receipts)), "dim"))
-        _pause(0.5)
-
-        # Bridge receipts -> audit JSONL
-        import tempfile as _tempfile
-        _teloscope_jsonl = os.path.join(
-            _tempfile.gettempdir(),
-            "teloscope_demo_{}.jsonl".format(session_id),
-        )
-        _teloscope_records = []
-        for r in receipts:
-            _teloscope_records.append(make_audit_record(
-                scenario_name=r.request[:80],
-                tool_name=r.tool or "unknown",
-                verdict=r.decision.value.upper(),
-                fidelity_score=r.fidelity,
-                cascade_halt_layer=r.cascade_halt_layer or None,
-                session_id=session_id,
-            ))
-        write_demo_corpus(_teloscope_records, _teloscope_jsonl)
-
-        print(_c("  Wrote {} events to {}".format(
-            len(_teloscope_records), _teloscope_jsonl), "dim"))
-        _pause(0.5)
-
-        print()
-        print(_c("  Running TELOSCOPE analysis pipeline ...", "dim"))
-        _pause(1.0)
-
-        # TELOSCOPE HTML report (separate from governance report)
-        _teloscope_html = os.path.join(
-            _PROJECT_ROOT, "telos_reports",
-            "teloscope_analysis_{}.html".format(session_id),
-        )
-        os.makedirs(os.path.dirname(_teloscope_html), exist_ok=True)
-
-        try:
-            teloscope_analysis(_teloscope_jsonl, html_path=_teloscope_html)
-        except Exception as _te:
-            print()
-            print(_c("  [TELOSCOPE analysis error: {}]".format(_te), "yellow"))
-
-        _pause(1.0)
-
-        # Narrative close
-        print()
-        print(_c("  What TELOSCOPE just demonstrated:", "white", bold=True))
-        _pause(0.5)
-        _teloscope_outcomes = [
-            "Governance data analyzed independently \u2014 separate instrument, separate methodology",
-            "Verdict distribution, dimensional fidelity, and integrity verification \u2014 in 1 pipeline",
-            "Small-sample caveats disclosed automatically (n={}) \u2014 the instrument constrains itself".format(
-                len(receipts)),
-            "HTML report generated for offline review \u2014 auditable, shareable, tamper-evident",
-        ]
-        for o in _teloscope_outcomes:
-            print("  \u2022 {}".format(o))
-            _pause(0.8)
-
-        print()
-        print(_c("  The bottom line:", "white", bold=True))
-        _pause(0.5)
-        print("  {}".format(_c(
-            "Other vendors tell you they govern AI.",
-            "cyan")))
-        print("  {}".format(_c(
-            "TELOS lets you PROVE it \u2014 with an independent measurement instrument.",
-            "cyan")))
-        _pause(2.0)
-
-        print()
-        _kv("TELOSCOPE audit", _teloscope_jsonl)
-        _kv("TELOSCOPE report", _teloscope_html)
-        print()
-        print("  {}".format(_c(
-            "To re-run TELOSCOPE on this data:", "dim")))
-        print("  {}".format(_c(
-            "  python3 telos_governance/demo_teloscope_analysis.py {}".format(_teloscope_jsonl),
-            "cyan")))
-        _pause(1.0)
-
-    else:
-        _pause(0.5)
-        print()
-        print(_c("  [TELOSCOPE analysis skipped \u2014 teloscope tools not installed]", "yellow"))
-        print(_c("  Install with: pip install -e '.[teloscope]'", "dim"))
-        _pause(0.5)
 
     print()
     elapsed = time.time() - start_wall

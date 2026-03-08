@@ -205,13 +205,13 @@ class SetFitConfig:
     """SetFit L1.5 boundary classifier configuration.
 
     Enables domain-specific SetFit models to be loaded from YAML config
-    rather than hardcoded paths. Each domain (healthcare, openclaw, etc.)
+    rather than hardcoded paths. Each domain (healthcare, agent, etc.)
     can specify its own trained SetFit model.
 
     YAML format:
       setfit:
         enabled: true
-        model_dir: models/setfit_openclaw_v1
+        model_dir: models/setfit_agent_v1
         threshold: 0.50
         asymmetric_override: true
     """

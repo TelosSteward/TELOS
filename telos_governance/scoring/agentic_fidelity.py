@@ -16,7 +16,7 @@ Composite formula:
 First Principles
 -----------------
 1. **Ostrom's Graduated Sanctions** (Design Principle 5, "Governing the
-   Commons", 1990): The EXECUTE/CLARIFY/SUGGEST/INERT/ESCALATE decision
+   Commons", 1990): The EXECUTE/CLARIFY/ESCALATE decision
    ladder implements graduated sanctions — responses proportional to the
    severity of drift. Minor misalignment gets clarification; boundary
    violations get escalation. This avoids the binary allow/deny trap that
@@ -35,7 +35,7 @@ First Principles
    SPC's detect-out-of-control → corrective-action cycle (Shewhart, 1931;
    Deming, 1986).
 
-4. **SAAI Framework** (Watson et al., 2026, CC BY-ND 4.0): Boundary
+4. **SAAI Framework** (Watson and Hessami, 2026, CC BY-ND 4.0): Boundary
    specifications map to SAAI Safety Foundational Requirements. The composite
    ceiling at 0.90 (weights sum to 0.90 before boundary) implements the SAAI
    principle that no system should claim perfect alignment — 10% is reserved
@@ -84,10 +84,8 @@ from telos_core.constants import (
     SIMILARITY_BASELINE,
     AGENTIC_EXECUTE_THRESHOLD,
     AGENTIC_CLARIFY_THRESHOLD,
-    AGENTIC_SUGGEST_THRESHOLD,
     ST_AGENTIC_EXECUTE_THRESHOLD,
     ST_AGENTIC_CLARIFY_THRESHOLD,
-    ST_AGENTIC_SUGGEST_THRESHOLD,
     FIDELITY_GREEN,
     FIDELITY_YELLOW,
     FIDELITY_ORANGE,
@@ -107,7 +105,7 @@ logger = logging.getLogger(__name__)
 # the 0.10 boundary penalty means the theoretical maximum composite is 0.90 when
 # no boundary is violated. This implements the SAAI principle that governance always
 # retains intervention capacity — no action achieves "perfect" fidelity.
-# See: SAAI Framework §G1.9 (Watson et al., 2026)
+# See: SAAI Framework §G1.9 (Watson and Hessami, 2026)
 WEIGHT_PURPOSE = 0.35   # Highest weight: purpose is the primacy attractor's core
 WEIGHT_SCOPE = 0.20     # Domain constraint
 WEIGHT_TOOL = 0.20      # Tool-action alignment (Tier 2 semantic matching)
@@ -141,6 +139,25 @@ GLOBAL_DEONTIC_KEYWORDS = [
 # with zero semantic relation to any boundary.
 KEYWORD_BOOST = 0.15
 KEYWORD_EMBEDDING_FLOOR = 0.40
+
+# CLARIFY cascade Step 2: Dimensional escalation labels.
+# When a CLARIFY verdict fires, the ambiguous dimension is identified and
+# exposed categorically (no scores). Priority order for tie-breaking:
+# boundary > purpose > scope > tool > chain.
+CLARIFY_DIMENSION_PRIORITY = [
+    "boundary_proximity",
+    "purpose_alignment",
+    "scope_compliance",
+    "tool_authorization",
+    "chain_coherence",
+]
+CLARIFY_DIMENSION_DESCRIPTIONS = {
+    "purpose_alignment": "The action's alignment with the agent's stated purpose was unclear",
+    "scope_compliance": "The action may fall outside the agent's authorized scope",
+    "boundary_proximity": "The action is close to a behavioral boundary",
+    "tool_authorization": "The tool usage pattern didn't match expected behavior",
+    "chain_coherence": "The action doesn't follow coherently from previous actions",
+}
 
 
 class BoundaryCheckResult(NamedTuple):
@@ -217,6 +234,10 @@ class AgenticFidelityResult:
     confirmer_would_override: bool = False            # True if MPNet detected boundary MiniLM missed
     confirmer_override_applied: bool = False          # True if override was applied (enforce mode only)
 
+    # CLARIFY cascade Step 2: Dimensional escalation (categorical only, no scores)
+    ambiguous_dimension: str = ""                     # Which dimension caused the CLARIFY verdict
+    clarify_description: str = ""                     # Human-readable explanation of the ambiguous dimension
+
 
 class AgenticFidelityEngine:
     """
@@ -255,7 +276,7 @@ class AgenticFidelityEngine:
                 engine instance. When None, uses production defaults from
                 constants.py. See: analysis/governance_optimizer.py
             confirmer_mode: Deprecated — safety gate disconnected from scoring
-                path (A21 experiment conclusive). The _confirm_with_secondary()
+                path (dual-model experiment conclusive). The _confirm_with_secondary()
                 method is retained as a research utility but is no longer
                 called in the scoring cascade. This param is accepted but
                 ignored for backward compatibility.
@@ -372,7 +393,7 @@ class AgenticFidelityEngine:
         # stored effective_fidelity to direct_fidelity only. Otherwise the
         # chain's max(direct, inherited) creates a ghost high-water mark that
         # bleeds through when the chain reconnects on a later step.
-        # A20 advisory Phase B: dual-inheritance chain inflation fix.
+        # Dual-inheritance chain inflation fix.
         if chain_broken:
             current_chain_step = self.action_chain.current_step
             if current_chain_step is not None:
@@ -498,6 +519,20 @@ class AgenticFidelityEngine:
                 f"(contrastive suppressed, violation={boundary_violation:.2f})"
             )
 
+        # --- CLARIFY cascade Step 2: Dimensional escalation ---
+        ambiguous_dim = ""
+        clarify_desc = ""
+        if decision == ActionDecision.CLARIFY:
+            ambiguous_dim = self._identify_ambiguous_dimension(
+                purpose_fidelity=purpose_fidelity,
+                scope_fidelity=scope_fidelity,
+                boundary_violation=boundary_violation,
+                tool_fidelity=tool_fidelity,
+                chain_continuity=chain_continuity,
+                chain_broken=chain_broken,
+            )
+            clarify_desc = CLARIFY_DIMENSION_DESCRIPTIONS.get(ambiguous_dim, "")
+
         # --- Direction Level ---
         direction_level = self._determine_direction_level(effective, boundary_triggered)
 
@@ -526,6 +561,8 @@ class AgenticFidelityEngine:
             keyword_matches=boundary_result.keyword_matches,
             setfit_triggered=boundary_result.setfit_triggered,
             setfit_score=boundary_result.setfit_score,
+            ambiguous_dimension=ambiguous_dim,
+            clarify_description=clarify_desc,
             confirmer_activated=False,
             confirmer_score=None,
             confirmer_would_override=False,
@@ -735,7 +772,7 @@ class AgenticFidelityEngine:
         member similarities). If the action qualifies against any cluster
         AND the sub-centroid scores higher than the centroid, applies a
         bounded lift (70% of gap, capped at +0.20). Gate at 0.55 covers
-        SUGGEST + low CLARIFY bands.
+        the low CLARIFY band.
 
         Tier 2 — Lift-only max-pool (fallback): when sub-centroids are
         not available OR the action doesn't qualify against any cluster,
@@ -817,7 +854,7 @@ class AgenticFidelityEngine:
         # This prevents weak tool matches (off-topic requests that happen to
         # weakly resemble some tool centroid) from inflating the score past
         # verdict thresholds. Configurable via Phase C sweep.
-        # A20 advisory: "if tool_score >= gate1_floor: use max, else: purpose_score"
+        # Design rule: "if tool_score >= gate1_floor: use max, else: purpose_score"
         gate1_floor = getattr(self.pa, 'gate1_floor', 0.50)
         if tool_score >= gate1_floor and tool_score > purpose_score:
             return tool_score, True
@@ -860,13 +897,31 @@ class AgenticFidelityEngine:
                 return centroid_score + min(lift, 0.08)
         return centroid_score
 
+    @staticmethod
+    def _normalize_for_keywords(text: str) -> str:
+        """NFKC normalize and strip zero-width/control characters.
+
+        Prevents Unicode bypass attacks where zero-width characters
+        (U+200B, U+200C, U+200D, U+2060, U+FEFF) or homoglyphs break
+        keyword matching while preserving semantic meaning for embeddings.
+        """
+        import unicodedata
+        import re
+        text = unicodedata.normalize("NFKC", text)
+        # Strip zero-width and invisible formatting characters
+        text = re.sub(r"[\u200b\u200c\u200d\u2060\ufeff]", "", text)
+        # Strip control characters (except \n, \t, \r)
+        text = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]", "", text)
+        return text.lower()
+
     def _keyword_check(self, action_text: str) -> List[str]:
         """Layer 0: Check action text for violation-indicator keywords.
 
         Returns list of matched keywords (empty if none found).
         Uses merged global deontic + per-config domain keywords.
+        Input is NFKC-normalized and stripped of zero-width characters.
         """
-        lower = action_text.lower()
+        lower = self._normalize_for_keywords(action_text)
         return [kw for kw in self._violation_keywords if kw in lower]
 
     def _check_boundaries(
@@ -1119,9 +1174,9 @@ class AgenticFidelityEngine:
 
         # Use model-appropriate threshold for tool blocking
         if self._is_sentence_transformer():
-            tool_block_thresh = self._tc.st_suggest
+            tool_block_thresh = self._tc.st_clarify
         else:
-            tool_block_thresh = AGENTIC_SUGGEST_THRESHOLD
+            tool_block_thresh = AGENTIC_CLARIFY_THRESHOLD
         tool_blocked = fidelity < tool_block_thresh
         return fidelity, selected, tool_rankings, tool_blocked
 
@@ -1172,15 +1227,15 @@ class AgenticFidelityEngine:
         overrides take precedence (boundary > tool > chain), then
         threshold-based graduated response on effective fidelity.
 
-        The escalation ladder — EXECUTE > CLARIFY > SUGGEST > INERT >
-        ESCALATE — maps directly to Ostrom's principle that sanctions
+        The escalation ladder — EXECUTE > CLARIFY > ESCALATE
+        — maps directly to Ostrom's principle that sanctions
         should start mild and increase only as violations persist or
         severity warrants. This avoids the "nuclear option" problem
         where binary allow/deny creates adversarial dynamics.
 
         Hard overrides:
         - Boundary violation (hard) -> ESCALATE (human review required)
-        - Tool blocked -> INERT (acknowledge limitation)
+        - Tool blocked -> ESCALATE (blocked tool requires review)
         - Chain broken -> CLARIFY (verify intent before continuing)
 
         Otherwise, threshold-based on effective fidelity.
@@ -1196,10 +1251,13 @@ class AgenticFidelityEngine:
             return ActionDecision.ESCALATE, human_required
 
         if tool_blocked:
-            return ActionDecision.INERT, human_required
+            return ActionDecision.ESCALATE, human_required
 
-        if chain_broken:
-            return ActionDecision.CLARIFY, human_required
+        # NOTE: chain_broken no longer a hard override here.
+        # Moved to post-threshold check below — chain break only
+        # DOWNGRADES (EXECUTE -> CLARIFY), never UPGRADES (ESCALATE -> CLARIFY).
+        # A prompt injection at fidelity 0.15 must stay ESCALATE regardless
+        # of chain state.
 
         # Check if tool requires confirmation
         if tool_name and tool_name in self.pa.tool_manifest:
@@ -1217,26 +1275,79 @@ class AgenticFidelityEngine:
         if self._is_sentence_transformer():
             execute_thresh = self._tc.st_execute
             clarify_thresh = self._tc.st_clarify
-            suggest_thresh = self._tc.st_suggest
         else:
             execute_thresh = AGENTIC_EXECUTE_THRESHOLD
             clarify_thresh = AGENTIC_CLARIFY_THRESHOLD
-            suggest_thresh = AGENTIC_SUGGEST_THRESHOLD
 
         # Threshold-based decision
         if effective_fidelity >= execute_thresh:
-            decision = ActionDecision.EXECUTE
+            # Chain broken downgrades EXECUTE to CLARIFY — a legitimate
+            # agent that breaks its behavioral chain should explain the
+            # jump before proceeding. This is Ostrom's graduated sanctions:
+            # the mildest response that addresses the signal.
+            decision = ActionDecision.CLARIFY if chain_broken else ActionDecision.EXECUTE
         elif effective_fidelity >= clarify_thresh:
             decision = ActionDecision.CLARIFY
-        elif effective_fidelity >= suggest_thresh:
-            decision = ActionDecision.SUGGEST
-        elif effective_fidelity < self.pa.escalation_threshold:
+        else:
             decision = ActionDecision.ESCALATE
             human_required = True
-        else:
-            decision = ActionDecision.INERT
 
         return decision, human_required
+
+    def _identify_ambiguous_dimension(
+        self,
+        purpose_fidelity: float,
+        scope_fidelity: float,
+        boundary_violation: float,
+        tool_fidelity: float,
+        chain_continuity: float,
+        chain_broken: bool,
+    ) -> str:
+        """Identify which dimension caused a CLARIFY verdict.
+
+        Returns a categorical label from CLARIFY_DIMENSION_PRIORITY.
+        No numerical scores are exposed — only the dimension name.
+
+        When a CLARIFY fires from a chain break (high fidelity but broken
+        chain), the ambiguous dimension is always chain_coherence.
+
+        For threshold-based CLARIFYs, finds the dimension whose score is
+        closest to the EXECUTE threshold (most ambiguous).
+
+        Tie-breaking (within 0.01): boundary > purpose > scope > tool > chain.
+        """
+        if chain_broken:
+            return "chain_coherence"
+
+        # Map dimensions to their scores. For boundary, invert: higher
+        # boundary_violation = lower effective boundary "fidelity".
+        # We want the dimension whose fidelity is closest to the threshold.
+        if self._is_sentence_transformer():
+            execute_thresh = self._tc.st_execute
+        else:
+            execute_thresh = AGENTIC_EXECUTE_THRESHOLD
+
+        dimension_scores = {
+            "boundary_proximity": 1.0 - boundary_violation,
+            "purpose_alignment": purpose_fidelity,
+            "scope_compliance": scope_fidelity,
+            "tool_authorization": tool_fidelity,
+            "chain_coherence": chain_continuity,
+        }
+
+        # Find dimension with smallest margin to execute threshold
+        min_margin = float("inf")
+        ambiguous = "purpose_alignment"  # fallback
+        for name in CLARIFY_DIMENSION_PRIORITY:
+            margin = abs(dimension_scores[name] - execute_thresh)
+            if margin < min_margin - 0.01:
+                # Clear winner (more than 0.01 gap)
+                min_margin = margin
+                ambiguous = name
+            elif margin < min_margin + 0.01:
+                # Tie (within 0.01) — priority order wins (earlier in list)
+                pass  # keep current winner (earlier priority)
+        return ambiguous
 
     def _determine_direction_level(
         self, fidelity: float, boundary_triggered: bool

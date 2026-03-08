@@ -1,5 +1,5 @@
 """
-Steward Granular Response Styling (PROPRIETARY)
+Steward Granular Response Styling
 ================================================
 
 This module defines the continuous gradient of Steward response styles

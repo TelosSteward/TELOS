@@ -27,7 +27,6 @@ from telos_core.constants import (
     FIDELITY_ORANGE,
     AGENTIC_EXECUTE_THRESHOLD,
     AGENTIC_CLARIFY_THRESHOLD,
-    AGENTIC_SUGGEST_THRESHOLD,
 )
 
 
@@ -35,17 +34,13 @@ class ActionDecision(str, Enum):
     """
     Action decisions for TELOS governance.
 
-    Agentic thresholds are TIGHTER than conversational:
+    3-verdict model:
     - EXECUTE: fidelity >= 0.85 - High confidence, proceed
     - CLARIFY: fidelity 0.70-0.84 - Close match, verify first
-    - SUGGEST: fidelity 0.50-0.69 - Vague match, offer alternatives
-    - INERT: fidelity < 0.50 - No match, acknowledge limitation
-    - ESCALATE: fidelity < 0.50 + high_risk - Require human review
+    - ESCALATE: fidelity < 0.70 - Require human review
     """
     EXECUTE = "execute"
     CLARIFY = "clarify"
-    SUGGEST = "suggest"
-    INERT = "inert"
     ESCALATE = "escalate"
 
 

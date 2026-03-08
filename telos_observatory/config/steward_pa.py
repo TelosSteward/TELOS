@@ -1,5 +1,5 @@
 """
-Steward Configuration (PROPRIETARY)
+Steward Configuration
 ====================================
 
 The Steward is the INTERVENTION PERSONALITY of TELOS.
@@ -36,7 +36,7 @@ cosine similarity (which captures structure, not tone/intent).
 
 Philosophy: "Be a steward, not a taskmaster."
 
-CONFIDENTIAL: This is proprietary IP. The dual attractor is public.
+The dual attractor is public.
 """
 
 from __future__ import annotations

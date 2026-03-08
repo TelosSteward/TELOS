@@ -7,7 +7,7 @@
 ## CORE MATHEMATICAL KERNEL
 
 ### Foundational Constants & Configuration
-- **File:** `telos_observatory_v3/telos_purpose/core/constants.py`
+- **File:** `telos_core/constants.py`
 - **Purpose:** Single source of truth for all thresholds and calibration constants
 - **Key Constants:**
   - SIMILARITY_BASELINE = 0.20 (Layer 1 hard block)
@@ -19,18 +19,18 @@
 - **Usage:** Imported by all governance modules
 
 ### Fidelity Calculation Engine
-- **File:** `telos_observatory_v3/telos_purpose/core/fidelity_engine.py`
+- **File:** `telos_core/fidelity_engine.py`
 - **Purpose:** Two-layer fidelity calculation and zone classification
 - **Key Classes:**
   - `FidelityZone` enum (GREEN/YELLOW/ORANGE/RED)
-  - `GovernanceDecision` enum (EXECUTE/CLARIFY/SUGGEST/INERT/ESCALATE)
+  - `GovernanceDecision` enum (EXECUTE/CLARIFY/ESCALATE)
   - `FidelityResult` dataclass (raw_similarity, normalized_fidelity, layer results)
   - `FidelityEngine` class (calculate_fidelity, make_governance_decision)
 - **Implements:** Layer 1 (raw similarity < 0.20) and Layer 2 (normalized < 0.48) checking
 - **Lines:** 600+ lines
 
 ### Primacy State Formalization
-- **File:** `telos_observatory_v3/telos_purpose/core/primacy_state.py`
+- **File:** `telos_core/primacy_state.py`
 - **Purpose:** Calculate Primacy State from dual/trifecta PA dynamics
 - **Key Classes:**
   - `PrimacyStateMetrics` (ps_score, f_user, f_ai, rho_pa, condition)
@@ -41,7 +41,7 @@
 - **Lines:** 400+ lines
 
 ### Proportional Control
-- **File:** `telos_observatory_v3/telos_purpose/core/proportional_controller.py`
+- **File:** `telos_core/proportional_controller.py`
 - **Purpose:** Graduated intervention based on proportional control law
 - **Key Classes:**
   - `InterventionRecord` (type, strength, reason, modified_response)
@@ -51,7 +51,7 @@
 - **Lines:** 350+ lines
 
 ### Semantic Interpreter
-- **File:** `telos_observatory_v3/telos_purpose/core/semantic_interpreter.py`
+- **File:** `telos_core/semantic_interpreter.py`
 - **Purpose:** Bridge mathematical fidelity to linguistic specifications
 - **Key Classes:**
   - `SemanticSpec` (sentence_form, hedging, options_count, drift_acknowledgment, etc.)
@@ -65,7 +65,7 @@
 ## AUDIT & COMPLIANCE
 
 ### Governance Trace Collector
-- **File:** `telos_observatory_v3/telos_purpose/core/governance_trace_collector.py`
+- **File:** `telos_core/governance_trace.py`
 - **Purpose:** Central coordinator for governance event logging
 - **Key Features:**
   - Cryptographic hash chain (SHA-256, Genesis hash = "0"*64)
@@ -80,7 +80,7 @@
 - **Lines:** 850+ lines
 
 ### Evidence Schema (JSONL Format)
-- **File:** `telos_observatory_v3/telos_purpose/core/evidence_schema.py`
+- **File:** `telos_core/evidence_schema.py`
 - **Purpose:** Pydantic models for unified JSONL governance schema
 - **Key Models:**
   - `SessionStartEvent` (privacy_mode, telos_version, embedding_model)
@@ -93,7 +93,7 @@
 - **Lines:** 500+ lines
 
 ### Trace Verifier
-- **File:** `telos_observatory_v3/telos_purpose/core/trace_verifier.py`
+- **File:** `telos_core/trace_verifier.py`
 - **Purpose:** Validate cryptographic integrity of governance traces
 - **Key Methods:** verify_hash_chain, validate_sequence, detect_tampering
 - **Lines:** 200+ lines
@@ -103,7 +103,7 @@
 ## EMBEDDING & ENCODING
 
 ### Embedding Provider
-- **File:** `telos_observatory_v3/telos_purpose/core/embedding_provider.py`
+- **File:** `telos_core/embedding_provider.py`
 - **Purpose:** Unified interface for text embeddings
 - **Providers:**
   - Mistral Embed API (mistral-embed, 1024-dim)
@@ -117,7 +117,7 @@
 ## CONVERSATION CONTEXT & ADAPTATION
 
 ### Adaptive Context Buffer
-- **File:** `telos_observatory_v3/telos_purpose/core/adaptive_context.py`
+- **File:** `telos_core/adaptive_context.py`
 - **Purpose:** Multi-tier context buffer with phase detection
 - **Features:**
   - Turns 1-3: Establishment phase (no correction)
@@ -126,11 +126,11 @@
   - Token budget management (MAX_CONVERSATION_HISTORY = 20)
 - **Lines:** 1200+ lines
 
-### Intervention Controller
-- **File:** `telos_observatory_v3/telos_purpose/core/intervention_controller.py`
+### Proportional Controller (Intervention Logic)
+- **File:** `telos_core/proportional_controller.py`
 - **Purpose:** Dual-boundary control (attractor pull + anti-meta push)
-- **Implementation:** MathematicalInterventionController class
-- **Error Thresholds:** ε_min (correct trigger), ε_max (intervene trigger)
+- **Implementation:** Proportional intervention logic (K*e_t formula)
+- **Error Thresholds:** epsilon_min (correct trigger), epsilon_max (intervene trigger)
 - **Lines:** 300+ lines
 
 ---
@@ -138,7 +138,7 @@
 ## CONFIGURATION & TEMPLATES
 
 ### Primacy Attractor Templates
-- **File:** `telos_observatory_v3/config/pa_templates.py`
+- **File:** `telos_observatory/config/pa_templates.py`
 - **Purpose:** 8 pre-configured Primacy Attractors for common use cases
 - **Templates:**
   1. Creative Writing (drafting, voice, editing)
@@ -157,10 +157,10 @@
 - **Lines:** 1000+ lines
 
 ### Configuration Files
-- **File:** `telos_observatory_v3/config/colors.py`
+- **File:** `telos_observatory/config/colors.py`
   - Zone color mapping (GREEN/YELLOW/ORANGE/RED with hex codes)
   - get_fidelity_color() function
-- **File:** `telos_observatory_v3/config/steward_pa.py`
+- **File:** `telos_observatory/config/steward_pa.py`
   - Steward PA configuration (therapeutic care alignment)
 
 ---
@@ -168,84 +168,44 @@
 ## UI COMPONENTS (Streamlit)
 
 ### Alignment Indicator
-- **File:** `telos_observatory_v3/components/alignment_indicator.py`
+- **File:** `telos_observatory/components/alignment_indicator.py`
 - **Purpose:** Real-time fidelity gauge visualization
 - **Displays:** Current fidelity, zone, color indicator
 
 ### TELOSCOPE (Research Instrument)
-- **File:** `telos_observatory_v3/components/teloscope_panel.py`
+- **File:** `telos_observatory/components/teloscope_panel.py`
 - **Purpose:** Granular governance visualization
 - **Features:** Fidelity trajectory, gauge meters, Steward chat, turn navigation
 
 ### TELOSCOPE Controls
-- **File:** `telos_observatory_v3/components/teloscope_controls.py`
+- **File:** `telos_observatory/components/teloscope_controls.py`
 - **Purpose:** Turn navigation and display toggles
 
 ### Intervention Evidence Dashboard
-- **File:** `telos_observatory_v3/components/intervention_evidence_dashboard.py`
+- **File:** `telos_observatory/components/intervention_evidence_dashboard.py`
 - **Purpose:** Per-intervention details and modification tracking
 
 ### Additional Components
-- **File:** `telos_observatory_v3/components/observatory_lens.py` - Real-time metrics
-- **File:** `telos_observatory_v3/components/observatory_review.py` - Session review
+- **File:** `telos_observatory/components/observatory_lens.py` - Real-time metrics
+- **File:** `telos_observatory/components/observatory_review.py` - Session review
 - Total: 27 UI components in components/ directory
-
----
-
-## GATEWAY & AGENT GOVERNANCE
-
-### Gateway Server
-- **File:** `telos_gateway/server.py`
-- **Purpose:** FastAPI OpenAI-compatible API proxy
-- **Features:**
-  - Lifespan context manager for startup/shutdown
-  - CORS middleware configuration
-  - Health and statistics endpoints
-  - Streaming support with SSE
-  - Governance metadata in responses
-- **Endpoints:**
-  - POST /v1/chat/completions (compatible with OpenAI)
-  - POST /v1/primacy-attractor (PA establishment)
-  - GET /health (health check)
-  - GET /stats (governance statistics)
-- **Lines:** 600+ lines
-
-### Fidelity Gate
-- **File:** `telos_gateway/fidelity_gate.py`
-- **Purpose:** Governance decision engine for gateway
-- **Key Classes:**
-  - `PASession` (tracks active PA session, baseline, drift)
-  - `FidelityGate` (evaluate requests against PA, make decisions)
-- **Decisions:** EXECUTE/CLARIFY/SUGGEST/INERT/ESCALATE
-- **SAAI Integration:** Drift level classification, baseline establishment
-- **Lines:** 500+ lines
-
-### Gateway Models
-- **File:** `telos_gateway/models.py`
-- **Purpose:** Pydantic request/response models
-- **Models:**
-  - `ChatCompletionRequest` (messages, model, temperature, etc.)
-  - `ChatCompletionResponse` (choices, usage, governance metadata)
-  - `TelosGovernanceMetadata` (fidelity, decision, tool analysis)
-  - `PrimacyAttractorRequest/Response`
-- **Lines:** 400+ lines
 
 ---
 
 ## VALIDATION & TESTING
 
 ### Internal Validation Suite
-- **File:** `telos_observatory_v3/telos_purpose/validation/run_internal_test0.py`
+- **File:** `validation/run_internal_test0.py`
 - **Purpose:** Baseline condition tests
 - **Runners:** StatelessRunner, PromptOnlyRunner, CadenceReminderRunner, ObservationRunner, TELOSRunner
 
 ### Integration Tests
-- **File:** `telos_observatory_v3/telos_purpose/validation/integration_tests.py`
+- **File:** `validation/integration_tests.py`
 - **Purpose:** End-to-end pipeline tests
 - **Tests:** Data pipeline, analytics pipeline, export pipeline, session workflow
 
 ### Performance Check
-- **File:** `telos_observatory_v3/telos_purpose/validation/performance_check.py`
+- **File:** `validation/performance_check.py`
 - **Purpose:** Fidelity calculation performance metrics
 
 ### Unit Tests
@@ -295,7 +255,7 @@
 - **File:** `docs/TELOS_Academic_Paper.pdf`
   - Peer-review ready (14 pages)
   - Methodology: 2,550 adversarial attacks
-  - Results: 0% ASR (95% CI ~0.15%)
+  - Results: 0% ASR (Rule of Three 95% CI upper bound <0.12%, n=2,550)
   - Figures: Basin geometry, pipelines, traces
 
 ### Terminology Reference
@@ -320,11 +280,6 @@
   - System requirements
   - Test scripts
   - Expected outputs
-- **File:** `docs/TELOS_Gateway_Technical_Brief_v1.0.md`
-  - Gateway API specification
-  - Graduated governance decisions
-  - Multi-tool evaluation
-
 ---
 
 ## KEY STATISTICS & METRICS
@@ -333,7 +288,6 @@
 - **Core Math:** ~4,500 lines (constants, fidelity, primacy, control)
 - **Audit & Compliance:** ~1,300 lines (trace collector, evidence schema)
 - **UI Components:** ~6,500 lines (27 Streamlit components)
-- **Gateway:** ~1,500 lines (server, gate, models)
 - **Configurator:** ~3,000 lines (governance engine + components)
 - **Validation:** ~2,000 lines (tests, benchmarks)
 - **Total:** ~18,000 lines of production code
@@ -363,14 +317,9 @@
 4. Then: `semantic_interpreter.py` (linguistic output)
 
 ### To Understand Audit Trail
-1. Start: `governance_trace_collector.py` (event collection)
+1. Start: `governance_trace.py` (event collection)
 2. Then: `evidence_schema.py` (JSONL schema)
 3. Then: `trace_verifier.py` (integrity validation)
-
-### To Deploy As API
-1. Start: `telos_gateway/server.py` (FastAPI)
-2. Then: `telos_gateway/fidelity_gate.py` (governance)
-3. Then: Review `models.py` for request/response format
 
 ### To Configure For Domain
 1. Start: `telos_configurator/engine/governance_engine.py`
@@ -379,7 +328,7 @@
 4. Then: `components/audit_panel.py` (review decisions)
 
 ### To Validate Locally
-1. Run: `python3 telos_observatory_v3/telos_purpose/validation/run_internal_test0.py`
+1. Run: `python3 validation/run_internal_test0.py`
 2. Run: `python3 -m pytest tests/ -v` (78 unit tests)
 3. Check: `validation/` directory for published datasets
 

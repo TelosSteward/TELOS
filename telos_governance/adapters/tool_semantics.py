@@ -8,24 +8,22 @@ NOT hand-written abstractions. Provenance chain:
         Source: https://gist.github.com/wong2/e0f34aac66caf890a332f7b6f9e2ba8f
         Source: https://gist.github.com/bgauryy/0cdb9aa337d01ae5bd0c803943aa36bd
 
-    OpenClaw tools → OpenClaw official documentation (first-party)
-        Source: https://docs.openclaw.ai/tools
-        Source: https://openclawlab.com/en/docs/tools/
+    Agent platform tools → Agent platform documentation (first-party)
 
     Claude Code Tools Reference (compiled from system prompt):
         Source: https://www.vtrivedy.com/posts/claudecode-tools-reference
 
 Exemplars are in build_action_text() format — the EXACT string format that
 telos-score.py produces at runtime. This ensures Gate 1 centroids sit in the
-same embedding space as runtime action text (Karpathy: "same register → 0.80+").
+same embedding space as runtime action text (same register yields 0.80+ similarity).
 
-Coverage targets per advisory team recommendation (A19):
+Coverage targets:
     HIGH-traffic tools (Read, Bash, Edit, Grep, Glob): 12-15 exemplars
     MEDIUM-traffic tools: 8-10 exemplars
     LOW-traffic tools: 5-8 exemplars
 
-Exemplars include adversarially diverse paths/commands per Gebru recommendation
-to avoid representational bias toward dominant workflows.
+Exemplars include adversarially diverse paths/commands to avoid
+representational bias toward dominant workflows.
 
 This module is consumed by pa_constructor.py to build per-tool centroids.
 """
@@ -40,8 +38,8 @@ class ToolDefinition:
 
     Attributes:
         telos_tool_name: Governance tool identifier (matches action_classifier.py)
-        tool_group: OpenClaw tool group (fs, runtime, web, etc.)
-        risk_level: Risk tier from openclaw.yaml (low, medium, high, critical)
+        tool_group: Tool group (fs, runtime, web, etc.)
+        risk_level: Risk tier from agent config (low, medium, high, critical)
         semantic_description: What the tool IS — sourced from platform documentation.
             This is the authoritative description, not an abstraction.
         provenance: Where the semantic_description comes from.
@@ -60,7 +58,7 @@ class ToolDefinition:
 
 # ═══════════════════════════════════════════════════════════════════════════
 # group:fs — File System (HIGH risk group, per-tool risk varies)
-# Source: Anthropic Claude Code system prompt + OpenClaw docs.openclaw.ai/tools
+# Source: Anthropic Claude Code system prompt
 # ═══════════════════════════════════════════════════════════════════════════
 
 FS_READ_FILE = ToolDefinition(
@@ -76,7 +74,7 @@ FS_READ_FILE = ToolDefinition(
     ),
     provenance="Anthropic Claude Code system prompt — Read tool definition",
     legitimate_exemplars=[
-        # High-traffic: 15 exemplars with diverse paths (Gebru: adversarial diversity)
+        # High-traffic: 15 exemplars with diverse paths
         "Read file in project workspace: src/main.py",
         "Read file in project workspace: README.md",
         "Read file in project workspace: tests/test_app.py",
@@ -246,7 +244,7 @@ FS_APPLY_PATCH = ToolDefinition(
         "review suggestions, merging upstream changes, or applying "
         "formatting fixes."
     ),
-    provenance="OpenClaw docs — apply_patch tool; openclaw.yaml tool definition",
+    provenance="Agent platform documentation — apply_patch tool",
     legitimate_exemplars=[
         "Developer tool call ApplyPatch in project workspace: apply formatting fix",
         "Developer tool call ApplyPatch in project workspace: apply code review suggestion",
@@ -270,7 +268,7 @@ FS_MOVE_FILE = ToolDefinition(
         "reorganizing modules into subdirectories, renaming files for "
         "clarity, or moving tests to the correct folder."
     ),
-    provenance="openclaw.yaml tool definition — fs_move_file",
+    provenance="Agent platform tool definition — fs_move_file",
     legitimate_exemplars=[
         "Developer tool call Move in project workspace: rename src/old_name.py to src/new_name.py",
         "Developer tool call Move in project workspace: move utils.py to src/utils/helpers.py",
@@ -293,7 +291,7 @@ FS_DELETE_FILE = ToolDefinition(
         "temporary files, cleaning build artifacts, or deleting outdated "
         "test fixtures. Destructive operation — cannot be undone."
     ),
-    provenance="openclaw.yaml tool definition — fs_delete_file",
+    provenance="Agent platform tool definition — fs_delete_file",
     legitimate_exemplars=[
         "Developer tool call Delete in project workspace: remove temporary test file",
         "Developer tool call Delete in project workspace: clean build artifacts",
@@ -310,7 +308,7 @@ FS_DELETE_FILE = ToolDefinition(
 
 # ═══════════════════════════════════════════════════════════════════════════
 # group:runtime — Shell Execution (CRITICAL risk group)
-# Source: Anthropic Claude Code system prompt + OpenClaw docs
+# Source: Anthropic Claude Code system prompt
 # ═══════════════════════════════════════════════════════════════════════════
 
 RUNTIME_EXECUTE = ToolDefinition(
@@ -328,7 +326,7 @@ RUNTIME_EXECUTE = ToolDefinition(
     ),
     provenance="Anthropic Claude Code system prompt — Bash tool definition",
     legitimate_exemplars=[
-        # High-traffic: 15 exemplars with diverse commands (Karpathy: Bash needs 15-20)
+        # High-traffic: 15 exemplars with diverse commands
         "Execute shell command in project workspace: git status",
         "Execute shell command in project workspace: git diff",
         "Execute shell command in project workspace: git log --oneline -10",
@@ -364,7 +362,7 @@ RUNTIME_PROCESS = ToolDefinition(
         "hung test runners, or managing file watcher processes. Scoped per "
         "agent — cross-agent sessions are invisible."
     ),
-    provenance="OpenClaw docs — process tool; openclaw.yaml tool definition",
+    provenance="Agent platform documentation — process tool",
     legitimate_exemplars=[
         "Execute shell command in project workspace: start dev server in background",
         "Execute shell command in project workspace: check background process status",
@@ -382,7 +380,7 @@ RUNTIME_PROCESS = ToolDefinition(
 
 # ═══════════════════════════════════════════════════════════════════════════
 # group:web — Web/Network (HIGH risk group)
-# Source: Anthropic Claude Code system prompt + OpenClaw docs
+# Source: Anthropic Claude Code system prompt
 # ═══════════════════════════════════════════════════════════════════════════
 
 WEB_FETCH = ToolDefinition(
@@ -398,7 +396,7 @@ WEB_FETCH = ToolDefinition(
         "and analyzing web content including documentation, API references, "
         "and release notes."
     ),
-    provenance="Anthropic Claude Code system prompt — WebFetch tool definition; OpenClaw docs — web_fetch",
+    provenance="Anthropic Claude Code system prompt — WebFetch tool definition",
     legitimate_exemplars=[
         "Fetch web content for project research: https://docs.python.org/3/library/asyncio.html",
         "Fetch web content for project research: https://fastapi.tiangolo.com/tutorial/",
@@ -428,7 +426,7 @@ WEB_NAVIGATE = ToolDefinition(
         "requests, API reference pages, and interactive web content "
         "that requires JavaScript execution."
     ),
-    provenance="OpenClaw docs — browser tool; Anthropic Claude Code — MCP Playwright tools",
+    provenance="Agent platform documentation; Anthropic Claude Code — MCP Playwright tools",
     legitimate_exemplars=[
         "Developer tool call mcp__playwright__browser_navigate in project workspace: navigate to documentation page",
         "Developer tool call mcp__playwright__browser_snapshot in project workspace: capture page accessibility snapshot",
@@ -456,7 +454,7 @@ WEB_SCRAPE = ToolDefinition(
         "version numbers from downloads pages, or collecting documentation "
         "headings."
     ),
-    provenance="openclaw.yaml tool definition — web_scrape",
+    provenance="Agent platform tool definition — web_scrape",
     legitimate_exemplars=[
         "Developer tool call WebScrape in project workspace: extract release notes from changelog",
         "Developer tool call WebScrape in project workspace: scrape reference table from MDN docs",
@@ -481,7 +479,7 @@ WEB_SEARCH = ToolDefinition(
         "up error messages, finding library documentation, and researching "
         "best practices for coding patterns."
     ),
-    provenance="Anthropic Claude Code system prompt — WebSearch tool definition; OpenClaw docs — web_search",
+    provenance="Anthropic Claude Code system prompt — WebSearch tool definition",
     legitimate_exemplars=[
         "Search web for project research: Python asyncio best practices",
         "Search web for project research: React hooks documentation 2026",
@@ -501,7 +499,7 @@ WEB_SEARCH = ToolDefinition(
 
 # ═══════════════════════════════════════════════════════════════════════════
 # group:messaging — External Communication (CRITICAL risk group)
-# Source: OpenClaw docs — message tool
+# Source: Agent platform documentation — message tool
 # ═══════════════════════════════════════════════════════════════════════════
 
 MESSAGING_SEND = ToolDefinition(
@@ -516,7 +514,7 @@ MESSAGING_SEND = ToolDefinition(
         "Used for posting build status, sending PR summaries, and "
         "notifying channels about deployment completion."
     ),
-    provenance="OpenClaw docs — message tool (send action); openclaw.yaml tool definition",
+    provenance="Agent platform documentation — message tool (send action)",
     legitimate_exemplars=[
         "Developer tool call SendMessage in project workspace: send build status to engineering channel",
         "Developer tool call SendMessage in project workspace: post PR summary to team Slack",
@@ -543,7 +541,7 @@ MESSAGING_READ = ToolDefinition(
         "checking team channels for recent updates, reading deployment "
         "notifications, or reviewing feedback in threads."
     ),
-    provenance="OpenClaw docs — message tool (poll/read actions); openclaw.yaml tool definition",
+    provenance="Agent platform documentation — message tool (poll/read actions)",
     legitimate_exemplars=[
         "Developer tool call ReadMessages in project workspace: check team channel for updates",
         "Developer tool call ReadMessages in project workspace: read deployment notifications",
@@ -566,7 +564,7 @@ MESSAGING_REPLY = ToolDefinition(
         "responding to code review comments, acknowledging deployment "
         "notifications, or answering team questions."
     ),
-    provenance="OpenClaw docs — message tool (thread-reply action); openclaw.yaml tool definition",
+    provenance="Agent platform documentation — message tool (thread-reply action)",
     legitimate_exemplars=[
         "Developer tool call ReplyMessage in project workspace: respond to code review comment",
         "Developer tool call ReplyMessage in project workspace: acknowledge deployment notification",
@@ -583,7 +581,7 @@ MESSAGING_REPLY = ToolDefinition(
 
 # ═══════════════════════════════════════════════════════════════════════════
 # group:automation — Scheduled Tasks (CRITICAL risk group)
-# Source: OpenClaw docs — cron and gateway tools
+# Source: Agent platform documentation — cron and gateway tools
 # ═══════════════════════════════════════════════════════════════════════════
 
 AUTOMATION_CRON_CREATE = ToolDefinition(
@@ -596,7 +594,7 @@ AUTOMATION_CRON_CREATE = ToolDefinition(
         "scheduling nightly test runs, periodic backup scripts, or "
         "hourly health checks."
     ),
-    provenance="OpenClaw docs — cron tool (add action); openclaw.yaml tool definition",
+    provenance="Agent platform documentation — cron tool (add action)",
     legitimate_exemplars=[
         "Developer tool call CronCreate in project workspace: schedule nightly test run",
         "Developer tool call CronCreate in project workspace: set up periodic health check",
@@ -619,7 +617,7 @@ AUTOMATION_CRON_LIST = ToolDefinition(
         "review scheduled backup scripts, check what automation is "
         "currently running, or audit automation history."
     ),
-    provenance="OpenClaw docs — cron tool (list/status actions); openclaw.yaml tool definition",
+    provenance="Agent platform documentation — cron tool (list/status actions)",
     legitimate_exemplars=[
         "Developer tool call CronList in project workspace: list active cron jobs",
         "Developer tool call CronList in project workspace: check scheduled automation",
@@ -642,7 +640,7 @@ AUTOMATION_CRON_DELETE = ToolDefinition(
         "nightly build jobs, canceling deprecated backup schedules, or "
         "cleaning up test automation entries."
     ),
-    provenance="OpenClaw docs — cron tool (remove action); openclaw.yaml tool definition",
+    provenance="Agent platform documentation — cron tool (remove action)",
     legitimate_exemplars=[
         "Developer tool call CronDelete in project workspace: remove obsolete build job",
         "Developer tool call CronDelete in project workspace: cancel deprecated schedule",
@@ -660,13 +658,13 @@ AUTOMATION_GATEWAY_CONFIG = ToolDefinition(
     tool_group="automation",
     risk_level="critical",
     semantic_description=(
-        "Modify the OpenClaw gateway configuration including port, auth, "
+        "Modify the agent gateway configuration including port, auth, "
         "and access settings. Supports restart, config get/apply/patch, "
         "and update operations. Used for changing gateway listening port, "
         "updating authentication tokens, or adjusting CORS and access "
         "control policies."
     ),
-    provenance="OpenClaw docs — gateway tool; openclaw.yaml tool definition",
+    provenance="Agent platform documentation — gateway tool",
     legitimate_exemplars=[
         "Developer tool call GatewayConfig in project workspace: get current gateway configuration",
         "Developer tool call GatewayConfig in project workspace: update gateway settings",
@@ -683,7 +681,7 @@ AUTOMATION_GATEWAY_CONFIG = ToolDefinition(
 
 # ═══════════════════════════════════════════════════════════════════════════
 # group:sessions — Session Management (LOW risk group)
-# Source: OpenClaw docs — sessions tools; Anthropic Claude Code — Task/Skill
+# Source: Agent platform documentation; Anthropic Claude Code — Task/Skill
 # ═══════════════════════════════════════════════════════════════════════════
 
 SESSIONS_SAVE = ToolDefinition(
@@ -696,7 +694,7 @@ SESSIONS_SAVE = ToolDefinition(
         "persisting debugging sessions, saving progress on multi-file "
         "refactors, or checkpointing before risky operations."
     ),
-    provenance="OpenClaw docs — sessions tools; Anthropic Claude Code — TaskCreate/TaskUpdate",
+    provenance="Agent platform documentation; Anthropic Claude Code — TaskCreate/TaskUpdate",
     legitimate_exemplars=[
         "Developer tool call SessionSave in project workspace: save current session state",
         "Developer tool call SessionSave in project workspace: checkpoint before refactor",
@@ -723,7 +721,7 @@ SESSIONS_RESTORE = ToolDefinition(
         "sessions, picking up refactoring tasks, or recovering context "
         "after a restart."
     ),
-    provenance="OpenClaw docs — sessions tools; Anthropic Claude Code — Skill tool",
+    provenance="Agent platform documentation; Anthropic Claude Code — Skill tool",
     legitimate_exemplars=[
         "Developer tool call SessionRestore in project workspace: resume debugging session",
         "Developer tool call SessionRestore in project workspace: restore previous context",
@@ -748,7 +746,7 @@ SESSIONS_LIST = ToolDefinition(
         "debugging sessions, reviewing available checkpoints, or checking "
         "task status."
     ),
-    provenance="OpenClaw docs — sessions_list; Anthropic Claude Code — TaskList/TaskGet/TaskOutput",
+    provenance="Agent platform documentation; Anthropic Claude Code — TaskList/TaskGet/TaskOutput",
     legitimate_exemplars=[
         "Developer tool call SessionList in project workspace: list saved sessions",
         "Developer tool call TaskList in project workspace: view all tasks",
@@ -772,7 +770,7 @@ SESSIONS_DELETE = ToolDefinition(
         "up old debugging checkpoints, removing completed task sessions, "
         "or stopping background tasks."
     ),
-    provenance="OpenClaw docs — sessions tools; Anthropic Claude Code — TaskStop",
+    provenance="Agent platform documentation; Anthropic Claude Code — TaskStop",
     legitimate_exemplars=[
         "Developer tool call SessionDelete in project workspace: clean up old session",
         "Developer tool call TaskStop in project workspace: stop background task",
@@ -789,7 +787,7 @@ SESSIONS_DELETE = ToolDefinition(
 
 # ═══════════════════════════════════════════════════════════════════════════
 # group:memory — Agent Memory (LOW risk group)
-# Source: OpenClaw docs — memory tools; Anthropic Claude Code — MCP memory
+# Source: Agent platform documentation; Anthropic Claude Code — MCP memory
 # ═══════════════════════════════════════════════════════════════════════════
 
 MEMORY_STORE = ToolDefinition(
@@ -802,7 +800,7 @@ MEMORY_STORE = ToolDefinition(
         "sequential thinking. Used for saving project conventions, "
         "recording user preferences, or caching configuration values."
     ),
-    provenance="OpenClaw docs — memory tools; Anthropic Claude Code — MCP memory tools",
+    provenance="Agent platform documentation; Anthropic Claude Code — MCP memory tools",
     legitimate_exemplars=[
         "Developer tool call MemoryStore in project workspace: save project convention",
         "Developer tool call MemoryStore in project workspace: record coding standard",
@@ -830,7 +828,7 @@ MEMORY_RETRIEVE = ToolDefinition(
         "MCP context tools. Used for recalling project conventions, "
         "fetching cached configurations, or looking up documentation."
     ),
-    provenance="OpenClaw docs — memory tools; Anthropic Claude Code — MCP memory + context7 tools",
+    provenance="Agent platform documentation; Anthropic Claude Code — MCP memory + context7 tools",
     legitimate_exemplars=[
         "Developer tool call MemoryRetrieve in project workspace: recall project convention",
         "Developer tool call MemoryRetrieve in project workspace: fetch cached configuration",
@@ -856,7 +854,7 @@ MEMORY_SEARCH = ToolDefinition(
         "Used for finding stored conventions, locating debugging notes, "
         "or searching cached API endpoints."
     ),
-    provenance="OpenClaw docs — memory tools; Anthropic Claude Code — MCP memory search",
+    provenance="Agent platform documentation; Anthropic Claude Code — MCP memory search",
     legitimate_exemplars=[
         "Developer tool call MemorySearch in project workspace: search for testing conventions",
         "Developer tool call MemorySearch in project workspace: find API documentation notes",
@@ -930,7 +928,7 @@ UI_PROMPT = ToolDefinition(
 
 # ═══════════════════════════════════════════════════════════════════════════
 # group:nodes — Agent Orchestration (MEDIUM risk group)
-# Source: Anthropic Claude Code system prompt — Task tool; OpenClaw docs — nodes
+# Source: Anthropic Claude Code system prompt — Task tool
 # ═══════════════════════════════════════════════════════════════════════════
 
 NODES_DELEGATE = ToolDefinition(
@@ -973,7 +971,7 @@ NODES_COORDINATE = ToolDefinition(
         "during feature builds, coordinating test agents across modules, "
         "or orchestrating parallel refactoring efforts."
     ),
-    provenance="openclaw.yaml tool definition — nodes_coordinate; OpenClaw docs — nodes tool",
+    provenance="Agent platform tool definition — nodes_coordinate",
     legitimate_exemplars=[
         "Developer tool call Coordinate in project workspace: synchronize frontend and backend agents",
         "Developer tool call Coordinate in project workspace: coordinate test agents across modules",
@@ -989,20 +987,20 @@ NODES_COORDINATE = ToolDefinition(
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# group:openclaw — Built-in Management (CRITICAL risk group)
-# Source: OpenClaw docs — built-in tools
+# group:agent_management — Built-in Management (CRITICAL risk group)
+# Source: Agent platform documentation — built-in tools
 # ═══════════════════════════════════════════════════════════════════════════
 
-OPENCLAW_SKILL_INSTALL = ToolDefinition(
-    telos_tool_name="openclaw_skill_install",
-    tool_group="openclaw",
+AGENT_SKILL_INSTALL = ToolDefinition(
+    telos_tool_name="agent_skill_install",
+    tool_group="agent_management",
     risk_level="critical",
     semantic_description=(
-        "Install a new skill from ClawHub or external source into the "
-        "OpenClaw environment. Requires governance scoring of the skill's "
+        "Install a new skill from a skill registry or external source into the "
+        "agent environment. Requires governance scoring of the skill's "
         "requested permissions and tool access patterns before installation."
     ),
-    provenance="OpenClaw docs — skill management; openclaw.yaml tool definition",
+    provenance="Agent platform documentation — skill management",
     legitimate_exemplars=[
         "Developer tool call SkillInstall in project workspace: install code formatting skill",
         "Developer tool call SkillInstall in project workspace: add database migration tool",
@@ -1017,16 +1015,16 @@ OPENCLAW_SKILL_INSTALL = ToolDefinition(
     ],
 )
 
-OPENCLAW_SKILL_EXECUTE = ToolDefinition(
-    telos_tool_name="openclaw_skill_execute",
-    tool_group="openclaw",
+AGENT_SKILL_EXECUTE = ToolDefinition(
+    telos_tool_name="agent_skill_execute",
+    tool_group="agent_management",
     risk_level="high",
     semantic_description=(
         "Execute an installed skill with specified parameters. Used for "
         "running code analysis, invoking documentation generators, or "
         "executing database seeding operations."
     ),
-    provenance="OpenClaw docs — skill execution; openclaw.yaml tool definition",
+    provenance="Agent platform documentation — skill execution",
     legitimate_exemplars=[
         "Developer tool call SkillExecute in project workspace: run code analysis on src/",
         "Developer tool call SkillExecute in project workspace: invoke documentation generator",
@@ -1040,16 +1038,16 @@ OPENCLAW_SKILL_EXECUTE = ToolDefinition(
     ],
 )
 
-OPENCLAW_CONFIG_MODIFY = ToolDefinition(
-    telos_tool_name="openclaw_config_modify",
-    tool_group="openclaw",
+AGENT_CONFIG_MODIFY = ToolDefinition(
+    telos_tool_name="agent_config_modify",
+    tool_group="agent_management",
     risk_level="critical",
     semantic_description=(
         "Modify agent configuration including sandbox mode, permissions, "
         "and tool access. Used for adjusting file system access boundaries, "
         "changing allowed tool lists, or updating sandbox isolation settings."
     ),
-    provenance="OpenClaw docs — configuration; openclaw.yaml tool definition",
+    provenance="Agent platform documentation — configuration",
     legitimate_exemplars=[
         "Developer tool call ConfigModify in project workspace: update agent configuration",
         "Developer tool call ConfigModify in project workspace: adjust workspace boundaries",
@@ -1063,9 +1061,9 @@ OPENCLAW_CONFIG_MODIFY = ToolDefinition(
     ],
 )
 
-OPENCLAW_AGENT_CREATE = ToolDefinition(
-    telos_tool_name="openclaw_agent_create",
-    tool_group="openclaw",
+AGENT_INSTANCE_CREATE = ToolDefinition(
+    telos_tool_name="agent_instance_create",
+    tool_group="agent_management",
     risk_level="high",
     semantic_description=(
         "Create a new agent instance with specified configuration and "
@@ -1073,7 +1071,7 @@ OPENCLAW_AGENT_CREATE = ToolDefinition(
         "documentation agents scoped to specific directories, or setting "
         "up CI agents with limited execution capabilities."
     ),
-    provenance="OpenClaw docs — agent management; openclaw.yaml tool definition",
+    provenance="Agent platform documentation — agent management",
     legitimate_exemplars=[
         "Developer tool call AgentCreate in project workspace: spawn testing agent for tests/",
         "Developer tool call AgentCreate in project workspace: create documentation agent",
@@ -1500,11 +1498,11 @@ TOOL_DEFINITIONS: Dict[str, ToolDefinition] = {
     # group:nodes
     "nodes_delegate": NODES_DELEGATE,
     "nodes_coordinate": NODES_COORDINATE,
-    # group:openclaw
-    "openclaw_skill_install": OPENCLAW_SKILL_INSTALL,
-    "openclaw_skill_execute": OPENCLAW_SKILL_EXECUTE,
-    "openclaw_config_modify": OPENCLAW_CONFIG_MODIFY,
-    "openclaw_agent_create": OPENCLAW_AGENT_CREATE,
+    # group:agent_management
+    "agent_skill_install": AGENT_SKILL_INSTALL,
+    "agent_skill_execute": AGENT_SKILL_EXECUTE,
+    "agent_config_modify": AGENT_CONFIG_MODIFY,
+    "agent_instance_create": AGENT_INSTANCE_CREATE,
     # group:research
     "research_audit_load": RESEARCH_AUDIT_LOAD,
     "research_audit_rescore": RESEARCH_AUDIT_RESCORE,

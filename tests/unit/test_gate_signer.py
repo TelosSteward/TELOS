@@ -187,7 +187,7 @@ class TestDaemonGateIntegration:
         hook = MagicMock()
         hook.score_action.return_value = GovernanceVerdict(
             allowed=False,
-            decision="suggest",
+            decision="clarify",
             fidelity=0.55,
             tool_group="runtime",
             telos_tool_name="runtime_execute",
@@ -229,14 +229,14 @@ class TestDaemonGateIntegration:
 
         # Shadow fields preserve original decision
         assert data["gate_mode"] == "observe"
-        assert data["observe_shadow_decision"] == "suggest"
+        assert data["observe_shadow_decision"] == "clarify"
         assert data["observe_shadow_allowed"] is False
 
         # Explanation mentions observe mode
         assert "OBSERVE MODE" in data["explanation"]
 
-    def test_inert_when_gate_closed_enforce(self):
-        """Gate closed+enforce: score returns INERT with gate explanation."""
+    def test_escalate_when_gate_closed_enforce(self):
+        """Gate closed+enforce: score returns ESCALATE with gate explanation."""
         from telos_adapters.openclaw.daemon import create_message_handler
         from telos_adapters.openclaw.ipc_server import IPCMessage
 
@@ -257,7 +257,7 @@ class TestDaemonGateIntegration:
 
         # Enforce mode blocks everything
         assert data["allowed"] is False
-        assert data["decision"] == "inert"
+        assert data["decision"] == "escalate"
         assert data["gate_mode"] == "enforce"
         assert data.get("gate_closed") is True
         assert "CLOSED" in data["explanation"]

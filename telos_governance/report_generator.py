@@ -8,11 +8,10 @@ Generates self-contained HTML forensic reports for agentic governance sessions.
 2. Session Metadata — agent config, PA definition, tool inventory, thresholds, data retention
 3. Turn-by-Turn Decision Log — per-turn governance decisions with IEEE 7001 receipts
 4. Tool Selection Audit Trail — tools invoked, alternatives ranked, selection reasoning
-5. SCI Chain Analysis — semantic continuity across full action chain
-6. SAAI Drift Analysis — sliding window drift trajectory, tier transitions
-7. Boundary Enforcement Log — violations attempted, sanctions applied, human overrides
-8. IEEE 7001 Compliance Checklist — 5-item transparency checklist
-9. Regulatory Mapping — requirement → report section → code reference
+5. SAAI Drift Analysis — sliding window drift trajectory, tier transitions
+6. Boundary Enforcement Log — violations attempted, sanctions applied, human overrides
+7. IEEE 7001 Compliance Checklist — 5-item transparency checklist
+8. Regulatory Mapping — requirement → report section → code reference
 
 Export formats: Self-contained HTML (no CDN deps), JSONL, CSV
 """
@@ -796,16 +795,16 @@ class AgenticForensicReportGenerator:
             execute_threshold = "0.45"
             restrict_threshold = "0.52"
             decision_thresholds = (
-                "EXECUTE \u2265 0.45 | CLARIFY \u2265 0.35 | SUGGEST \u2265 0.25 | "
-                "INERT < 0.25 | ESCALATE: boundary or < 0.25+risk "
+                "EXECUTE \u2265 0.45 | CLARIFY \u2265 0.35 | "
+                "INERT < 0.35 | ESCALATE: boundary or < 0.35+risk "
                 "(SentenceTransformer/MiniLM thresholds)"
             )
         else:
             execute_threshold = "0.85"
             restrict_threshold = "0.90"
             decision_thresholds = (
-                "EXECUTE \u2265 0.85 | CLARIFY \u2265 0.70 | SUGGEST \u2265 0.50 | "
-                "INERT < 0.50 | ESCALATE: boundary or < 0.50+risk "
+                "EXECUTE \u2265 0.85 | CLARIFY \u2265 0.70 | "
+                "INERT < 0.70 | ESCALATE: boundary or < 0.70+risk "
                 "(Mistral thresholds)"
             )
 
@@ -880,7 +879,7 @@ class AgenticForensicReportGenerator:
                 "name": "Interpretability Validation",
                 "description": (
                     "Summary understandable to non-ML reader: each decision tier "
-                    "(EXECUTE/CLARIFY/SUGGEST/INERT/ESCALATE) maps to a plain-language action."
+                    "(EXECUTE/CLARIFY/INERT/ESCALATE) maps to a plain-language action."
                 ),
                 "passed": has_decisions,
             },
@@ -934,31 +933,31 @@ class AgenticForensicReportGenerator:
         return [
             {
                 "requirement": "Written AIS Program with FACTS principles",
-                "source": "NAIC III",
+                "source": "NAIC Model Bulletin (2023), AIS Program",
                 "section": "2",
                 "code_ref": "agent_templates.py (PA definition)",
             },
             {
                 "requirement": "Model drift evaluation",
-                "source": "NAIC IV.A",
+                "source": "NAIC Model Bulletin (2023), Section 3",
                 "section": "6",
                 "code_ref": "AgenticDriftTracker (agentic_response_manager.py)",
             },
             {
                 "requirement": "Third-party vendor audit rights",
-                "source": "NAIC IV.B",
+                "source": "NAIC Model Bulletin (2023), Section 3(5)",
                 "section": "4, 7",
                 "code_ref": "GovernanceProtocol.check_tool_execute()",
             },
             {
                 "requirement": "Trace logs: output → input → model → threshold → decision",
-                "source": "NAIC IV.B",
+                "source": "NAIC Model Bulletin (2023), Section 3(5)",
                 "section": "3",
                 "code_ref": "AgenticFidelityEngine.score_action()",
             },
             {
                 "requirement": "Human review for high-stakes decisions",
-                "source": "NAIC III",
+                "source": "NAIC Model Bulletin (2023), Section 3(3)",
                 "section": "7",
                 "code_ref": "ESCALATE + human_required flag",
             },
@@ -1011,17 +1010,36 @@ class AgenticForensicReportGenerator:
                 "code_ref": "5-point GovernanceProtocol",
             },
             {
-                "requirement": "Adversarial robustness validation",
-                "source": "OWASP LLM Top 10",
+                "requirement": "Adversarial robustness validation (ASI01)",
+                "source": "OWASP Top 10 for Agentic Applications 2026",
                 "section": "1b",
                 "code_ref": "TestAdversarialRobustness (test_nearmap_benchmark.py)",
             },
-            # --- NIST AI 600-1 (Generative AI Profile) ---
+            # --- NIST AI 600-1 (Generative AI Profile, July 2024) ---
+            # See: research/regulatory/nist_ai_600_1_alignment.md
+            {
+                "requirement": "Trustworthy AI characteristics integrated into policies (GV 1.2)",
+                "source": "NIST AI 600-1",
+                "section": "3, 5",
+                "code_ref": "6-dimension composite scoring (agentic_fidelity.py)",
+            },
             {
                 "requirement": "Governance policies across AI lifecycle (GV 1.4)",
                 "source": "NIST AI 600-1",
                 "section": "3, 5",
                 "code_ref": "5-point GovernanceProtocol (governance_protocol.py)",
+            },
+            {
+                "requirement": "Roles and responsibilities for AI risk management (GV 2.1)",
+                "source": "NIST AI 600-1",
+                "section": "2, 5",
+                "code_ref": "PA config model: customer defines (TKey-signed), TELOS measures",
+            },
+            {
+                "requirement": "Data collection and retention policies (GV 5.1)",
+                "source": "NIST AI 600-1",
+                "section": "3, 6",
+                "code_ref": "PrivacyMode enum (evidence_schema.py) + IntelligenceCollector levels",
             },
             {
                 "requirement": "Document intended purpose and context (MAP 1.1)",
@@ -1030,25 +1048,61 @@ class AgenticForensicReportGenerator:
                 "code_ref": "AgenticPA purpose/scope (agentic_pa.py, config.py)",
             },
             {
+                "requirement": "AI system categorized by risk (MAP 2.1)",
+                "source": "NIST AI 600-1",
+                "section": "2, 5",
+                "code_ref": "4 risk tiers per tool (CRITICAL/HIGH/MEDIUM/LOW)",
+            },
+            {
                 "requirement": "Document capabilities and limitations (MAP 2.2)",
                 "source": "NIST AI 600-1",
                 "section": "2, 4, 7",
                 "code_ref": "AgenticPA tools + boundaries + bundle manifest",
             },
             {
-                "requirement": "Ongoing monitoring data collection (MEASURE 2.5)",
+                "requirement": "Supply chain risk mapping (MAP 3.1)",
+                "source": "NIST AI 600-1",
+                "section": "4",
+                "code_ref": "ClawHavoc-sourced boundaries; ActionClassifier supply chain detection",
+            },
+            {
+                "requirement": "AI system tested for performance (MS 2.1)",
+                "source": "NIST AI 600-1",
+                "section": "3, 7",
+                "code_ref": "7 benchmarks / 5,212 scenarios (telos benchmark run)",
+            },
+            {
+                "requirement": "Ongoing monitoring data collection (MS 2.5)",
                 "source": "NIST AI 600-1",
                 "section": "3, 6",
                 "code_ref": "IntelligenceCollector (intelligence_layer.py)",
             },
             {
-                "requirement": "Quantitative trustworthiness metrics (MEASURE 2.6)",
+                "requirement": "Quantitative trustworthiness metrics (MS 2.6)",
                 "source": "NIST AI 600-1",
                 "section": "3, 5",
                 "code_ref": "FidelityGate + AgenticFidelityEngine composite scoring",
             },
             {
-                "requirement": "Supply chain integrity for AI components",
+                "requirement": "AI performance tracked over time (MS 2.8)",
+                "source": "NIST AI 600-1",
+                "section": "3, 6",
+                "code_ref": "CUSUM drift detection (CUSUMMonitorBank, agentic_fidelity.py)",
+            },
+            {
+                "requirement": "Mechanisms to supersede/disengage AI system (MG 2.2)",
+                "source": "NIST AI 600-1",
+                "section": "5, 6",
+                "code_ref": "INERT/RESTRICT verdicts; Permission Controller deny; fail-policy",
+            },
+            {
+                "requirement": "Mechanisms to deactivate AI system (MG 2.4)",
+                "source": "NIST AI 600-1",
+                "section": "5, 7",
+                "code_ref": "Daemon governance_active gate; unsigned PA = INERT; daemon shutdown",
+            },
+            {
+                "requirement": "Supply chain integrity for AI components (MAP 3.1)",
                 "source": "NIST AI 600-1",
                 "section": "4",
                 "code_ref": "Dual-signed .telos bundles (signing.py, bundle.py)",
@@ -1072,34 +1126,34 @@ class AgenticForensicReportGenerator:
                 "section": "3, 6",
                 "code_ref": "GovernanceSessionContext + receipt chain (session.py)",
             },
-            # --- OWASP LLM Top 10 ---
+            # --- OWASP Top 10 for Agentic Applications 2026 (ASI01-ASI10) ---
             {
-                "requirement": "Excessive agency prevention (LLM08)",
-                "source": "OWASP LLM Top 10",
+                "requirement": "Excessive agency prevention (ASI02)",
+                "source": "OWASP Top 10 for Agentic Applications 2026",
                 "section": "3, 5",
                 "code_ref": "Graduated sanctions + composite ceiling (agentic_fidelity.py)",
             },
             {
-                "requirement": "Supply chain vulnerability protection (LLM05)",
-                "source": "OWASP LLM Top 10",
+                "requirement": "Supply chain vulnerability protection (ASI04)",
+                "source": "OWASP Top 10 for Agentic Applications 2026",
                 "section": "4",
                 "code_ref": "Ed25519 dual-signed bundles (signing.py, bundle.py)",
             },
             {
-                "requirement": "Insecure plugin design prevention (LLM07)",
-                "source": "OWASP LLM Top 10",
+                "requirement": "Insecure plugin design prevention (ASI02)",
+                "source": "OWASP Top 10 for Agentic Applications 2026",
                 "section": "4, 7",
                 "code_ref": "Semantic tool ranking + risk levels (tool_selection_gate.py)",
             },
             {
-                "requirement": "Prompt injection boundary defense (LLM01)",
-                "source": "OWASP LLM Top 10",
+                "requirement": "Agent goal hijack boundary defense (ASI01)",
+                "source": "OWASP Top 10 for Agentic Applications 2026",
                 "section": "1b, 7",
                 "code_ref": "Boundary corpus centroid detection (agentic_pa.py)",
             },
             {
-                "requirement": "Overreliance detection (LLM09)",
-                "source": "OWASP LLM Top 10",
+                "requirement": "Human-agent trust exploitation detection (ASI09)",
+                "source": "OWASP Top 10 for Agentic Applications 2026",
                 "section": "6",
                 "code_ref": "Drift tracking + telemetry patterns (intelligence_layer.py)",
             },
@@ -1120,7 +1174,7 @@ class AgenticForensicReportGenerator:
                 "requirement": "Data privacy graduated minimization (P7002)",
                 "source": "IEEE P7002",
                 "section": "3, 6",
-                "code_ref": "Three privacy modes + encrypted export (evidence_schema.py, data_export.py)",
+                "code_ref": "Three privacy modes (PrivacyMode enum in evidence_schema.py) + encrypted export (data_export.py)",
             },
             # --- FedRAMP Controls ---
             {
@@ -1164,8 +1218,6 @@ class AgenticForensicReportGenerator:
             return "green"
         elif d == "CLARIFY":
             return "yellow"
-        elif d == "SUGGEST":
-            return "orange"
         elif d in ("INERT", "ESCALATE"):
             return "red"
         return "blue"

@@ -135,7 +135,7 @@ For each scenario, the benchmark runner captures:
 - Chain SCI (semantic continuity index)
 - Boundary fidelity (inverted boundary similarity)
 - Effective fidelity (weighted composite)
-- Decision tier (EXECUTE/CLARIFY/SUGGEST/INERT/ESCALATE)
+- Decision tier (EXECUTE/CLARIFY/ESCALATE)
 - SAAI drift level and magnitude
 
 ### Layer 6: Audit Trail
@@ -163,7 +163,7 @@ Expected decisions were initially set based on the scenario's intent (e.g., a le
 
 **v1.2 (2026-02-12):** Added 12 Cat A boundary expansion, 38 drift sequence steps, 12 Cat E adversarial (ad-hoc). 5 known gaps (ESCL-003, ESCL-005, ESCL-006, ESCL-074, ESCL-075).
 
-**v2.0 (2026-02-12):** Research-grounded adversarial expansion. 5-agent research team review produced unified taxonomy (9 attack families). Added 33 new Cat E scenarios (ESCL-076 through ESCL-108), 15 Cat C false-positive controls (CTRL-001 through CTRL-015), attack_metadata backfill on 12 existing Cat E. Total: 173 scenarios, 17 known gaps (3 boundary + 14 adversarial), 7 false positives.
+**v2.0 (2026-02-12):** Research-grounded adversarial expansion. Cross-domain research team review produced unified taxonomy (9 attack families). Added 33 new Cat E scenarios (ESCL-076 through ESCL-108), 15 Cat C false-positive controls (CTRL-001 through CTRL-015), attack_metadata backfill on 12 existing Cat E. Total: 173 scenarios, 17 known gaps (3 boundary + 14 adversarial), 7 false positives.
 
 ## Statistical Properties
 
@@ -172,8 +172,7 @@ Expected decisions were initially set based on the scenario's intent (e.g., a le
 | Total scenarios | 173 |
 | EXECUTE | 22 (12.7%) |
 | CLARIFY | 28 (16.2%) |
-| SUGGEST | 15 (8.7%) |
-| INERT | 4 (2.3%) |
+| (SUGGEST/INERT removed) | Remapped to CLARIFY/ESCALATE in 3-verdict model |
 | ESCALATE | 104 (60.1%) |
 | Category A (direct violation) | 23 |
 | Category B (indirect/off-topic) | 42 |
@@ -190,7 +189,7 @@ Expected decisions were initially set based on the scenario's intent (e.g., a le
 | Non-adversarial accuracy | 97.7% (125/128) |
 | Adversarial detection rate | 68.9% (31/45) |
 | CRITICAL evasions (EXECUTE on Cat E) | 6 |
-| MODERATE evasions (SUGGEST/CLARIFY on Cat E) | 8 |
+| MODERATE evasions (CLARIFY on Cat E) | 8 |
 | False-positive rate (controls) | 46.7% (7/15) |
 | Known gaps (total) | 17 (3 boundary + 14 adversarial) |
 
@@ -200,4 +199,6 @@ This dataset contains **zero proprietary data** from Nearmap, Inc. or any other 
 
 ## License
 
-Research use. Part of the TELOS Hardened research artifact.
+Research use. Part of the TELOS research artifact.
+
+Licensed under the terms of the TELOS AI Labs Inc. proprietary research license. Contact JB@telos-labs.ai for licensing inquiries.

@@ -1,1 +1,1 @@
-"""Tools and utilities for TELOS."""
+"""Tools directory — analysis scripts, utilities."""

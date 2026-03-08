@@ -96,7 +96,7 @@ def _decrypt_turn_content(data: Dict) -> Dict:
 
 
 def store_turn_data(manager, turn_number: int, data: Dict):
-    """Store turn data for Observatory review and transmit to Supabase."""
+    """Store turn data for Observatory review and transmit to backend."""
     storage_key = f'beta_turn_{turn_number}_data'
     st.session_state[storage_key] = _encrypt_turn_content(data)
 
@@ -151,7 +151,7 @@ def store_turn_data(manager, turn_number: int, data: Dict):
         valid_scores = [f for f in stats['fidelity_scores'] if f is not None]
         stats['avg_fidelity'] = sum(valid_scores) / len(valid_scores) if valid_scores else 0.0
 
-    # Transmit delta to Supabase (privacy-preserving - metrics only, no content)
+    # Transmit delta to backend (privacy-preserving - metrics only, no content)
     if manager.backend and manager.backend.enabled:
         try:
             session_id = st.session_state.get('session_id',

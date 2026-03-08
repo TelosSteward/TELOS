@@ -4,7 +4,7 @@ Thank you for your interest in contributing to TELOS! This document provides gui
 
 ## Code of Conduct
 
-This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Report violations to conduct@telos-labs.ai.
 
 ## Getting Started
 
@@ -12,8 +12,8 @@ This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDU
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/TelosSteward/TELOS.git
-   cd TELOS
+   git clone https://github.com/TELOS-Labs-AI/telos.git
+   cd telos
    ```
 
 2. **Create a virtual environment**
@@ -56,7 +56,7 @@ pytest tests/test_fidelity_math.py -v
 
 ### Reporting Bugs
 
-1. Check if the bug has already been reported in [Issues](https://github.com/TelosSteward/TELOS/issues)
+1. Check if the bug has already been reported in [Issues](https://github.com/TELOS-Labs-AI/telos/issues)
 2. If not, create a new issue with:
    - Clear, descriptive title
    - Steps to reproduce
@@ -123,14 +123,12 @@ def calculate_fidelity(embedding: np.ndarray, attractor: np.ndarray) -> float:
 ## Project Structure
 
 ```
-TELOS/
+telos/
 ├── telos_core/               # Pure mathematical engine
 ├── telos_governance/         # Governance gates (conversational + agentic)
-├── telos_gateway/            # FastAPI API gateway
 ├── telos_adapters/           # Framework adapters (LangGraph, generic)
 ├── telos_observatory/        # Streamlit UI
 ├── telos_privacy/            # TKeys cryptographic layer
-├── telos_sql_agent/          # SQL agent reference
 ├── tests/                    # Unit, integration, validation tests
 ├── validation/               # Benchmark datasets
 ├── research/                 # Active research program
@@ -147,9 +145,8 @@ TELOS is a research project. If you're contributing research:
 
 ## Questions?
 
-- Open an [Issue](https://github.com/TelosSteward/TELOS/issues) with the `question` label
-- Review the [Whitepaper](docs/TELOS_Whitepaper_v3.0.pdf) for mathematical foundations
-- Review [CLAUDE.md](CLAUDE.md) for architecture and terminology
+- Open an [Issue](https://github.com/TELOS-Labs-AI/telos/issues) with the `question` label
+- Review the [Whitepaper](docs/TELOS_Whitepaper_v3.0.md) for mathematical foundations
 - Contact: contact@telos-labs.ai
 
 ## License

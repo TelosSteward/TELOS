@@ -5,9 +5,9 @@ Adds 27 new Cat A scenarios (23→50) and 35 new FP controls (15→50)
 to nearmap_counterfactual_v1.jsonl.
 
 Designed to address research team consensus (2026-02-12):
-  - Russell + Schaake: Cat A >= 80% is the regulatory floor, need N>=50 for power
-  - Gebru: N=23 cannot distinguish 73.9% from 87.0% (p=0.265)
-  - Nell: Need train/test splits, overfitting risk on Cat C
+  - Cat A >= 80% is the regulatory floor, need N>=50 for power
+  - N=23 cannot distinguish 73.9% from 87.0% (p=0.265)
+  - Need train/test splits, overfitting risk on Cat C
 
 Boundary distribution targets (Cat A):
   B1 (binding decisions):  4 → 10  (+6)

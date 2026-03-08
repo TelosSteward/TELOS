@@ -12,9 +12,9 @@ Uses "Detect and Direct" pattern:
 Agentic thresholds (tighter than conversational):
 - EXECUTE: >= 0.85 (high confidence, proceed)
 - CLARIFY: 0.70-0.84 (verify intent before acting)
-- SUGGEST: 0.50-0.69 (offer alternatives)
-- INERT: < 0.50 (acknowledge limitation)
-- ESCALATE: < 0.50 + high_risk (require human review)
+
+- INERT: < 0.70 (acknowledge limitation)
+- ESCALATE: < 0.70 + high_risk (require human review)
 """
 
 from telos_governance.types import (

@@ -12,7 +12,7 @@ The TELOS governance engine refuses to start without a valid Ed25519 TKey signat
 
 **Implementation:** `pa_signing.verify_config()` called at daemon boot. `governance_active` property returns `True` only if `status == VERIFIED`. Daemon still starts (agent can run ungoverned), but all score requests return INERT with `pa_unsigned: true`.
 
-**Introduced:** Session 10 (2026-02-22). Enforced in daemon: commit `5a3c8ae`.
+**Introduced:** 2026-02-22. Enforced in daemon: commit `5a3c8ae`.
 
 ---
 
@@ -26,7 +26,7 @@ This is the "parroting" failure mode: the model learns to produce outputs that *
 
 **Implementation:** Governance events include `pa_injected: bool` to track which outputs were generated under PA injection. Any data pipeline consuming governance telemetry must filter on this field. No automated export path may include PA-injected outputs without explicit human authorization.
 
-**Introduced:** Session 16 (2026-02-26). Source: Bengio (A10 review, 2026-02-26).
+**Introduced:** 2026-02-26. Source: internal safety review.
 
 ---
 
@@ -38,4 +38,4 @@ The PA configuration can only be updated through a cryptographic signing ceremon
 
 **Implementation:** `PAContext` precomputes injection blocks at session start and caches them. Invalidation only on PA change detected via hash comparison. New PA requires `telos pa sign` with customer's TKey.
 
-**Introduced:** Session 10 (2026-02-22).
+**Introduced:** 2026-02-22.

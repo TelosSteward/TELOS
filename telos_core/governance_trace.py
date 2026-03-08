@@ -123,7 +123,9 @@ class GovernanceTraceCollector:
         # original programming, triggers mandatory review"
         self._baseline_fidelities: List[float] = []  # First N turn fidelities
         self._baseline_fidelity: Optional[float] = None  # Computed baseline average
+        self._baseline_std: float = 0.0
         self._baseline_established: bool = False
+        self._ewma: Optional[float] = None
         self._drift_level: DriftLevel = DriftLevel.NORMAL
         self._drift_acknowledged: bool = False  # For BLOCK level recovery
         self._mandatory_review_count: int = 0
@@ -299,27 +301,30 @@ class GovernanceTraceCollector:
         """
         SAAI Framework processing for each fidelity measurement.
 
-        Phase 1 (turns 1-N): Collect baseline fidelities
-        Phase 2 (after baseline): Compute drift and trigger reviews if needed
+        Phase 1 (turns 1-N): Collect baseline fidelities (with CV stability gate)
+        Phase 2 (after baseline): EWMA drift detection
         """
-        # Phase 1: Baseline Collection
         if not self._baseline_established:
             self._baseline_fidelities.append(fidelity)
-
-            # Check if baseline period is complete
             if len(self._baseline_fidelities) >= BASELINE_TURN_COUNT:
                 self._establish_baseline()
             return
 
-        # Phase 2: Drift Detection (after baseline established)
-        self._check_cumulative_drift(turn_number)
+        # Phase 2: EWMA drift detection
+        self._update_ewma_and_check_drift(turn_number, fidelity)
 
     def _establish_baseline(self) -> None:
         """
         Establish baseline fidelity from collected initial turns.
 
+        Includes CV stability gate: if coefficient of variation exceeds
+        SAAI_BASELINE_CV_MAX, baseline is not established and collection
+        continues until stable.
+
         Records BaselineEstablishedEvent for audit trail.
         """
+        from telos_core.constants import SAAI_BASELINE_CV_MAX, EPSILON_NUMERICAL
+
         if not self._baseline_fidelities:
             logger.warning("Cannot establish baseline: no fidelity data")
             return
@@ -327,64 +332,72 @@ class GovernanceTraceCollector:
         self._baseline_fidelity = statistics.mean(self._baseline_fidelities)
         baseline_min = min(self._baseline_fidelities)
         baseline_max = max(self._baseline_fidelities)
-        baseline_std = statistics.stdev(self._baseline_fidelities) if len(self._baseline_fidelities) > 1 else 0.0
+        self._baseline_std = statistics.stdev(self._baseline_fidelities) if len(self._baseline_fidelities) > 1 else 0.0
+
+        # Stability gate: reject baseline if CV too high
+        cv = self._baseline_std / self._baseline_fidelity if self._baseline_fidelity > EPSILON_NUMERICAL else 1.0
+        if cv > SAAI_BASELINE_CV_MAX:
+            logger.info(
+                f"SAAI Baseline CV too high ({cv:.3f} > {SAAI_BASELINE_CV_MAX}), "
+                f"extending baseline collection"
+            )
+            return  # Don't establish — keep collecting
 
         # Check if baseline is stable (all turns above intervention threshold)
         is_stable = all(f >= INTERVENTION_THRESHOLD for f in self._baseline_fidelities)
-
         self._baseline_established = True
+        self._ewma = self._baseline_fidelity  # Initialize EWMA
 
-        # Record baseline establishment event
         baseline_event = BaselineEstablishedEvent(
             session_id=self.session_id,
             baseline_turn_count=len(self._baseline_fidelities),
             baseline_fidelity=self._baseline_fidelity,
             baseline_min=baseline_min,
             baseline_max=baseline_max,
-            baseline_std=baseline_std,
+            baseline_std=self._baseline_std,
             is_stable=is_stable,
         )
         self._write_event(baseline_event)
 
         logger.info(
             f"SAAI Baseline established: fidelity={self._baseline_fidelity:.3f}, "
-            f"range=[{baseline_min:.3f}, {baseline_max:.3f}], stable={is_stable}"
+            f"range=[{baseline_min:.3f}, {baseline_max:.3f}], CV={cv:.3f}, stable={is_stable}"
         )
 
-    def _check_cumulative_drift(self, turn_number: int) -> None:
-        """
-        Check for cumulative drift and trigger SAAI tiered response.
+    def _update_ewma_and_check_drift(self, turn_number: int, fidelity: float) -> None:
+        """EWMA-based drift detection (replaces session-average method).
 
-        Drift = (baseline - current_avg) / baseline
-        - 10%: WARNING - mandatory review event
-        - 15%: RESTRICT - tighten thresholds
-        - 20%: BLOCK - halt until human acknowledgment
+        Updates the exponentially weighted moving average and checks
+        drift against SAAI thresholds.
         """
+        from telos_core.constants import (
+            SAAI_EWMA_SPAN, SAAI_DRIFT_WARNING, SAAI_DRIFT_RESTRICT,
+            SAAI_DRIFT_BLOCK, EPSILON_NUMERICAL,
+        )
+
         if not self._baseline_established or self._baseline_fidelity is None:
             return
-
         if self._baseline_fidelity <= 0:
-            return  # Avoid division by zero
+            return
 
-        # Compute current session average
-        current_avg = self._fidelity_sum / self._fidelity_count if self._fidelity_count > 0 else 0.0
+        # Update EWMA
+        lam = 2.0 / (SAAI_EWMA_SPAN + 1)
+        self._ewma = lam * fidelity + (1 - lam) * self._ewma
 
-        # Compute relative drift (SAAI formula)
-        drift_magnitude = (self._baseline_fidelity - current_avg) / self._baseline_fidelity
+        # Compute drift
+        drift_magnitude = max(
+            0.0,
+            (self._baseline_fidelity - self._ewma) / (self._baseline_fidelity + EPSILON_NUMERICAL),
+        )
 
-        # Clamp to reasonable range (drift can be negative if improving)
-        drift_magnitude = max(0.0, drift_magnitude)
-
-        # Determine new drift level
         new_drift_level = self._compute_drift_level(drift_magnitude)
 
-        # Check if drift level has escalated (worse than before)
         if self._should_trigger_review(new_drift_level):
             self._trigger_mandatory_review(
                 turn_number=turn_number,
                 new_level=new_drift_level,
                 drift_magnitude=drift_magnitude,
-                current_avg=current_avg,
+                current_avg=self._ewma,
             )
 
     def _compute_drift_level(self, drift_magnitude: float) -> DriftLevel:

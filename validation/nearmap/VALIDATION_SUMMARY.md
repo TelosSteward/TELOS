@@ -47,7 +47,7 @@ TELOS is a governance engine that sits between a user's request and an AI agent'
 
 Each governance receipt records the five fidelity scores, the decision made, and the reasoning — creating an audit trail that maps to regulatory documentation requirements (NAIC Model Bulletin, EU AI Act Article 72, CO SB 24-205).
 
-Based on these checks, TELOS makes one of five governance decisions: **proceed** (EXECUTE), **ask for clarification** (CLARIFY), **suggest alternatives** (SUGGEST), **acknowledge the request is outside scope** (INERT), or **escalate to a human** (ESCALATE).
+Based on these checks, TELOS makes one of three governance decisions: **proceed** (EXECUTE), **ask for clarification** (CLARIFY), or **escalate to a human** (ESCALATE).
 
 ### What We Tested
 
@@ -161,13 +161,13 @@ All 5 drift sequences pass, validating the graduated sanction mechanism. This gr
 The entire benchmark runs locally with no API keys, no network access, and no proprietary data:
 
 ```bash
-git clone https://github.com/TelosSteward/TELOS.git
-cd TELOS
+git clone https://github.com/TELOS-Labs-AI/telos.git
+cd telos
 pip install -r requirements.txt
 python3 validation/nearmap/run_nearmap_benchmark.py --forensic -v
 ```
 
-**Note:** The repository is currently private. Contact JB@telos-labs.ai for access.
+**Note:** Contact JB@telos-labs.ai for repository access.
 
 Execution time: ~17-30 seconds on consumer hardware. The embedding model downloads automatically on first run (~80MB model weights; ~500MB total including PyTorch dependencies if not already installed). Running the benchmark twice produces identical governance telemetry — every score, every decision, every drift measurement is deterministic.
 
@@ -190,12 +190,9 @@ Because MiniLM produces 384-dim embeddings (vs. production models at 1024-dim), 
 |----------|----------------------|---------------------|------|
 | EXECUTE | >= 0.85 | >= 0.45 | |
 | CLARIFY | >= 0.70 | >= 0.35 | |
-| SUGGEST | >= 0.50 | >= 0.25 | |
-| INERT | < 0.50 | < 0.25 | Effectively unreachable for domain-relevant queries; most off-topic requests still score above 0.25 and route to SUGGEST* |
+| ESCALATE | < 0.70 + boundary/risk | < 0.35 + boundary/risk | |
 | Boundary trigger | >= 0.70 | >= 0.70 | |
 | RESTRICT tightening | 0.90 | 0.52 | |
-
-*The 4 INERT scenarios in the dataset involve requests so far from property intelligence (e.g., "write me a poem") that they fall below the SUGGEST threshold. In practice, the INERT tier is rarely triggered because sentence-transformer similarity rarely produces scores below 0.25 for any natural language input related to buildings or property.
 
 ### Calibration Methodology
 
@@ -214,13 +211,12 @@ These should never be averaged into a single number without this context.
 | Total scenarios | 173 | 131 standalone + 42 sequence steps |
 | EXECUTE scenarios | 22 (12.7%) | |
 | CLARIFY scenarios | 28 (16.2%) | |
-| SUGGEST scenarios | 15 (8.7%) | |
-| INERT scenarios | 4 (2.3%) | See INERT note above |
+| (SUGGEST/INERT removed) | — | Remapped to CLARIFY/ESCALATE in 3-verdict model |
 | ESCALATE scenarios | 104 (60.1%) | Includes Cat A + E + some calibrated controls |
 | Adversarial (Cat E) | 45 | 9 attack families, 3 difficulty levels |
 | False-positive controls | 15 | Paired with Cat E scenarios |
 | Known CRITICAL evasions | 6 | Engine produces EXECUTE on adversarial input |
-| Known MODERATE evasions | 8 | Engine produces SUGGEST/CLARIFY instead of ESCALATE |
+| Known MODERATE evasions | 8 | Engine produces CLARIFY instead of ESCALATE |
 | Known false positives | 7 | Legitimate controls incorrectly ESCALATED |
 
 ### Confidence Intervals
@@ -322,9 +318,9 @@ Every claim in this document can be independently verified:
 
 ```bash
 # Clone and install (no API keys needed)
-# Note: Private repo — contact JB@telos-labs.ai for access
-git clone https://github.com/TelosSteward/TELOS.git
-cd TELOS
+# Contact JB@telos-labs.ai for repository access
+git clone https://github.com/TELOS-Labs-AI/telos.git
+cd telos
 pip install -r requirements.txt
 
 # Run the benchmark (~17-30 seconds)

@@ -7,7 +7,7 @@
   "num_epochs": 1,
   "batch_size": 16,
   "dataset_hash": "f3fec898aff63a6651c79acb2e30f6ec0af0d4cc12aee7fd403bfa9e4071e1e9",
-  "dataset_path": "./validation/healthcare/healthcare_counterfactual_v1.jsonl",
+  "dataset_path": "validation/healthcare/healthcare_counterfactual_v1.jsonl",
   "n_scenarios_total": 280,
   "n_binary_samples": 176,
   "n_positive": 61,

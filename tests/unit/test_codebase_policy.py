@@ -134,11 +134,11 @@ class TestPathMatching:
         )
 
         policies = [policy_gov, policy_oc]
-        project_root = "."
+        project_root = "/opt/project"
 
         # Matches telos_governance policy
         matched = find_matching_policy(
-            "./telos_governance/config.py",
+            "/opt/project/telos_governance/config.py",
             policies, project_root,
         )
         assert matched is not None
@@ -146,7 +146,7 @@ class TestPathMatching:
 
         # Matches telos_core prefix in same policy
         matched = find_matching_policy(
-            "./telos_core/constants.py",
+            "/opt/project/telos_core/constants.py",
             policies, project_root,
         )
         assert matched is not None
@@ -154,7 +154,7 @@ class TestPathMatching:
 
         # Matches openclaw policy
         matched = find_matching_policy(
-            "./telos_adapters/openclaw/daemon.py",
+            "/opt/project/telos_adapters/openclaw/daemon.py",
             policies, project_root,
         )
         assert matched is not None
@@ -162,7 +162,7 @@ class TestPathMatching:
 
         # No match for README.md
         matched = find_matching_policy(
-            "./README.md",
+            "/opt/project/README.md",
             policies, project_root,
         )
         assert matched is None
@@ -223,6 +223,75 @@ class TestAccessControl:
         assert allowed is False
         assert reason == "no_policy"
         assert matched is None
+
+    def test_case_insensitive_write_blocked(self):
+        """Lowercase 'write' must be detected as a write tool (CVE fix)."""
+        from telos_governance.codebase_policy import (
+            CodebasePolicySigner, check_access,
+        )
+
+        signer = CodebasePolicySigner.generate()
+        policy = signer.sign_policy(
+            collection="telos_governance",
+            paths=["telos_governance/"],
+            access_level="read_only",
+        )
+
+        for variant in ("write", "WRITE", "Write", " Write ", "edit", "EDIT", "multiedit"):
+            allowed, reason, _ = check_access(
+                variant,
+                "telos_governance/config.py",
+                [policy],
+                "",
+            )
+            assert allowed is False, f"Tool name '{variant}' should be blocked on read_only"
+            assert reason == "unauthorized_write"
+
+    def test_case_insensitive_read_allowed(self):
+        """Case variants of read tools must still be allowed."""
+        from telos_governance.codebase_policy import (
+            CodebasePolicySigner, check_access,
+        )
+
+        signer = CodebasePolicySigner.generate()
+        policy = signer.sign_policy(
+            collection="telos_governance",
+            paths=["telos_governance/"],
+            access_level="read_only",
+        )
+
+        for variant in ("read", "READ", "Read", " Read ", "glob", "GREP", "ListDir"):
+            allowed, reason, _ = check_access(
+                variant,
+                "telos_governance/config.py",
+                [policy],
+                "",
+            )
+            assert allowed is True, f"Tool name '{variant}' should be allowed on read_only"
+            assert reason == "read_allowed"
+
+    def test_unknown_tool_denied_by_default(self):
+        """Unknown tool names must be treated as writes (deny-by-default)."""
+        from telos_governance.codebase_policy import (
+            CodebasePolicySigner, check_access,
+        )
+
+        signer = CodebasePolicySigner.generate()
+        policy = signer.sign_policy(
+            collection="telos_governance",
+            paths=["telos_governance/"],
+            access_level="read_only",
+        )
+
+        for tool in ("CustomTool", "anything", "", "   "):
+            allowed, reason, _ = check_access(
+                tool,
+                "telos_governance/config.py",
+                [policy],
+                "",
+            )
+            assert allowed is False, f"Unknown tool '{tool}' should be denied on read_only"
+            assert reason == "unauthorized_write"
 
 
 # ============================================================================

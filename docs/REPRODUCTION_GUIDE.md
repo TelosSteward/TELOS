@@ -1,4 +1,4 @@
-# TELOS Hardened: Reproduction Guide
+# TELOS: Reproduction Guide
 
 **Purpose**: Enable peer reviewers, grant evaluators, and researchers to verify TELOS governance functionality.
 
@@ -13,8 +13,8 @@
 ### Step 1: Clone and Install
 
 ```bash
-git clone https://github.com/TelosSteward/TELOS.git
-cd TELOS
+git clone https://github.com/TELOS-Labs-AI/telos.git
+cd telos
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -297,14 +297,12 @@ This is a warning, not an error. It occurs on older macOS versions using LibreSS
 ## Repository Structure
 
 ```
-TELOS/
+telos/
 ├── telos_core/               # Pure mathematical engine
 ├── telos_governance/         # Governance gates (conversational + agentic)
-├── telos_gateway/            # FastAPI API gateway
 ├── telos_adapters/           # Framework adapters (LangGraph, generic)
 ├── telos_observatory/        # Streamlit UI
 ├── telos_privacy/            # TKeys cryptographic layer
-├── telos_sql_agent/          # SQL agent reference implementation
 ├── tests/                    # Unit, integration, validation tests
 ├── validation/               # Benchmark datasets and scripts
 ├── research/                 # Active research program
@@ -315,7 +313,7 @@ TELOS/
 
 ## Contact & Support
 
-**Issues**: https://github.com/TelosSteward/TELOS/issues
+**Issues**: https://github.com/TELOS-Labs-AI/telos/issues
 
 ---
 

@@ -353,7 +353,7 @@ User sees: Natural redirection that demonstrates governance
 - Retrieval (top-k similarity search)
 - Context formatting for LLM
 
-**`telos_observatory_v3/core/state_manager.py`**
+**`telos_observatory/core/state_manager.py`**
 - Integration orchestration
 - Mode detection (demo vs open)
 - TELOS initialization

@@ -20,9 +20,8 @@ Design principles (per research team consensus):
 4. Data-driven: Exemplars informed by analysis of known FP controls
 
 Provenance: Phase 2 implementation, 2026-02-12.
-Research team review: Russell (governance), Gebru (data science), Karpathy
-(systems), Schaake (regulatory), Nell (methodology) — all recommended
-per-boundary safe centroids as the P0 fix.
+Reviewed by internal governance team — all recommended per-boundary safe
+centroids as the P0 fix.
 """
 
 from typing import Dict, List
@@ -128,80 +127,89 @@ PROPERTY_INTEL_SAFE_CORPUS: Dict[str, List[str]] = {
 }
 
 
-# ── OpenClaw Governed Agent Safe Corpus ──
+# ── Governed Agent Safe Corpus ──
 # Legitimate developer requests that use boundary-adjacent vocabulary.
 # Each boundary gets per-boundary safe exemplars to reduce false positives
 # on legitimate tool calls (Cat A regression prevention).
 #
 # Key false-positive vectors in production:
-# - File paths containing "openclaw", "config", ".env" trigger B5/B7
+# - File paths containing "agent", "config", ".env" trigger B5/B7
 # - Shell commands like "pytest", "pip install" trigger B1
 # - Reading project config files triggers B5/B6
 #
-# Provenance: Session diagnostic (86% ESCALATE on legitimate work).
+# Provenance: Production audit diagnostic.
 
-OPENCLAW_GOVERNED_SAFE_CORPUS: Dict[str, List[str]] = {
+GOVERNED_AGENT_SAFE_CORPUS: Dict[str, List[str]] = {
 
     # Boundary 1: Shell execution — legitimate dev commands
+    # Exemplar action_text strings for common developer commands.
     "Do not execute arbitrary shell commands that modify system files, install packages globally, or alter system configuration outside the project workspace": [
-        "Run pytest to check for regressions in the test suite",
-        "Execute the test suite with pytest -v to see detailed output",
-        "Run the linter on the changed files to check for style issues",
-        "Install the project dependencies with pip install -e . in the virtualenv",
-        "Run git status to see which files have been modified",
-        "Execute git diff to review the changes before committing",
-        "Run the build script to compile the project",
-        "Check the Python version with python --version",
-        "Run git log --oneline -10 to see recent commit history",
-        "Execute npm install to install the project's JavaScript dependencies",
+        "cd /path/to/project && python -m pytest tests/ -x --tb=short -q",
+        "cd /path/to/project && git log --oneline -10",
+        "cd /path/to/project && git status --short",
+        "cd /path/to/project && git diff --stat HEAD~12..HEAD",
+        "ls -la ~/project/workspace/memory/ 2>/dev/null | head -10",
+        "wc -l /path/to/project/telos_governance/daemon/daemon.py",
+        "cat ~/project/workspace/memory/session.md 2>/dev/null | tail -5",
+        "tail -50 ~/.agent/hooks/telos_audit.jsonl | python3 -c \"import sys,json\"",
+        "cd /path/to/project && python -m codebase_rag reindex 2>&1",
+        "Execute shell command in project workspace: ls -la ~/project/workspace/ 2>/dev/null",
     ],
 
     # Boundary 5: Credential files — legitimate project config reads
+    # Exemplar action_text strings for common developer operations.
     "Do not read, copy, or transmit credential files, API keys, tokens, secrets, SSH keys, cloud provider configs, or environment files containing sensitive values": [
-        "Read the .env.example file to see what environment variables are needed",
-        "Check if the project has a config.yaml with the database connection settings",
-        "Read the pyproject.toml to check the project dependencies",
-        "Look at the configuration file to understand the project settings",
-        "Read the setup.cfg to check the project metadata",
-        "Check the requirements.txt for the list of Python dependencies",
-        "Read the project's config directory to understand the configuration structure",
-        "Look at the docker-compose.yaml to understand the service configuration",
+        "Read source code file in project workspace for analysis: telos_governance/scoring/agentic_fidelity.py",
+        "Read source code file in project workspace for analysis: telos_governance/daemon/daemon.py",
+        "Read governed agent workspace file in project workspace for analysis: workspace/TOOLS.md",
+        "Read governed agent workspace file in project workspace for analysis: workspace/GOVERNANCE_COMPARISON_LOG.md",
+        "Read file in project workspace: ~/.telos/logs/telos-daemon.log",
+        "cat ~/.telos/pulse/memory_line.txt",
+        "cd /path/to/project && head -30 pyproject.toml",
+        "cd /path/to/project && grep -A 20 '[tool.pytest' pyproject.toml",
     ],
 
     # Boundary 6: System files — legitimate workspace file operations
+    # Exemplar action_text strings for common developer operations.
     "Do not write to or modify system-level files including /etc, /var, /usr, ~/.ssh, ~/.aws, ~/.config/gcloud, or any credential store outside the project workspace": [
-        "Edit the project configuration file to update the version number",
-        "Write the new utility module to src/utils.py in the project workspace",
-        "Create a new test file in the tests/ directory",
-        "Edit the project's README.md to update the installation instructions",
-        "Write the configuration changes to the project's config.yaml",
-        "Modify the project's Dockerfile to add the new build step",
-        "Edit the Makefile to add the new target for running tests",
-        "Update the project's .gitignore with the new build artifacts",
+        "Write governed agent workspace file in project workspace: workspace/GOVERNANCE_COMPARISON_LOG.md",
+        "Write governed agent workspace file in project workspace: workspace/PA_INVENTORY.md",
+        "Write governed agent workspace file in project workspace: workspace/memory/session.md",
+        "Edit governed agent workspace file in project workspace: workspace/TOOLS.md",
+        "Edit governed agent workspace file in project workspace: workspace/MEMORY.md",
+        "Edit governed agent workspace file in project workspace: workspace/memory/session.md",
+        "Write source file in project workspace: .plans/implementation-plan.md",
+        "mkdir -p ~/project/workspace/memory && cat >> ~/project/workspace/memory/session.md",
     ],
 
-    # Boundary 7: OpenClaw config directory — legitimate governance adapter reads
-    "Do not access or modify the OpenClaw configuration directory (~/.openclaw/) including agent configs, gateway tokens, hook scripts, or skill manifests except through the governance adapter's own authorized operations": [
-        "Read the OpenClaw plugin source code in the project's plugin directory",
-        "Check the openclaw.yaml configuration template in the templates folder",
-        "Read the OpenClaw adapter source code to understand the governance hook",
-        "Look at the OpenClaw TypeScript plugin index.ts to check the hook handlers",
-        "Read the project's OpenClaw configuration to verify the boundary definitions",
-        "Check the telos_adapters/openclaw/ directory for the bridge implementation",
-        "Read the OpenClaw plugin's package.json to check the dependencies",
-        "Look at the openclaw governance hook source code for debugging",
-        "Read the OpenClaw config loader to understand how boundaries are parsed",
-        "Check the OpenClaw daemon source code to understand the IPC server setup",
+    # Boundary 7: governed agent config files — legitimate workspace operations
+    # Key matches updated boundary text in agent config
+    # Exemplar action_text strings for common developer operations.
+    # Safe centroid must suppress false-positives on workspace paths
+    # which share a prefix with the boundary's config root.
+    "Do not access or modify agent configuration files including gateway tokens, hook scripts, or skill manifests in the root config directory — the governed agent workspace is explicitly authorized and excluded from this boundary": [
+        "Read governed agent workspace file in project workspace for analysis: workspace/SOUL.md",
+        "Read governed agent workspace file in project workspace for analysis: workspace/MEMORY.md",
+        "Write governed agent workspace file in project workspace: workspace/GOVERNANCE_COMPARISON_LOG.md",
+        "Edit governed agent workspace file in project workspace: workspace/TOOLS.md",
+        "Read governed agent workspace file in project workspace for analysis: workspace/HANDOFF.md",
+        "Write governed agent workspace file in project workspace: workspace/PA_INVENTORY.md",
+        "Edit governed agent workspace file in project workspace: workspace/MEMORY.md",
+        "ls -la ~/project/workspace/memory/ 2>/dev/null | head -10",
+        "cat ~/project/workspace/memory/session.md 2>/dev/null | tail -5",
+        "Read governed agent file in project workspace for analysis: logs/telos-daemon.log",
     ],
 
     # Boundary cross-group chains — legitimate multi-step developer workflows
+    # Exemplar action_text strings showing
+    # legitimate cross-tool-group sequences.
     "Do not execute action chains that combine credential reading (fs) with network transmission (web/messaging) or shell execution (runtime) — cross-group chains that bridge credential access with external communication are the primary exfiltration pattern": [
-        "Read the source file and then run the tests to verify the changes",
-        "Edit the configuration and then run the build to apply the changes",
-        "Read the README and then search the web for the framework documentation",
-        "Check the test file contents and then run pytest on that file",
-        "Read the source code and then send the PR summary to the team channel",
-        "Edit the code file and then run git diff to review the changes",
+        "Read source code file in project workspace for analysis: telos_governance/daemon/daemon.py",
+        "cd /path/to/project && python -m pytest tests/ -x --tb=short -q",
+        "Edit governed agent workspace file in project workspace: workspace/GOVERNANCE_COMPARISON_LOG.md",
+        "cd /path/to/project && git diff --stat",
+        "Send message to team: Calibration pulse picked up 7 new candidates",
+        "tail -50 ~/.agent/hooks/telos_audit.jsonl | python3 -c \"import sys,json\"",
     ],
 }
 
@@ -215,7 +223,7 @@ def get_safe_corpus(template_id: str) -> Dict[str, List[str]]:
 
     Args:
         template_id: The agent template identifier (e.g., "property_intel",
-            "openclaw_governed")
+            "governed_agent")
 
     Returns:
         Dict mapping boundary text -> list of safe exemplar strings.
@@ -223,6 +231,6 @@ def get_safe_corpus(template_id: str) -> Dict[str, List[str]]:
     """
     corpora = {
         "property_intel": PROPERTY_INTEL_SAFE_CORPUS,
-        "openclaw_governed": OPENCLAW_GOVERNED_SAFE_CORPUS,
+        "governed_agent": GOVERNED_AGENT_SAFE_CORPUS,
     }
     return corpora.get(template_id, {})

@@ -17,7 +17,7 @@ This script:
      - Boundary Specificity: % of CTRL requests that do NOT trigger boundaries
      - Decision Accuracy: % of non-boundary decisions that match expected
 
-Adjudication protocol (per Gebru/Nell, 2026-02-13):
+Adjudication protocol (research team, 2026-02-13):
   For CTRL scenarios where boundary_triggered=False:
     - The boundary detector correctly identified these as non-violations
     - The final decision (EXECUTE/CLARIFY/SUGGEST) reflects purpose/scope fidelity
@@ -171,7 +171,7 @@ def update_dataset_labels(dataset, label_errors):
                 "reason": "P0 label adjudication: boundary_triggered=False, system decision is defensible",
                 "old_expected": old,
                 "new_expected": new,
-                "protocol": "Research team Phase 3, Nell/Gebru specification",
+                "protocol": "Research team Phase 3 specification",
             })
             changed += 1
 

@@ -59,12 +59,6 @@ embeddings = [
 mistral = [
     "mistralai>=0.1.0,<2.0.0",
 ]
-gateway = [
-    "fastapi>=0.104.0,<1.0.0",
-    "uvicorn>=0.24.0,<1.0.0",
-    "httpx>=0.25.0,<1.0.0",
-    "openai>=1.0.0,<2.0.0",
-]
 observatory = [
     "streamlit>=1.28.0,<2.0.0",
     "plotly>=5.17.0,<6.0.0",
@@ -93,20 +87,18 @@ dev = [
     "mypy>=1.0.0",
 ]
 all = [
-    "telos-gov[cli,embeddings,onnx,mistral,gateway,observatory,langgraph,dev]",
+    "telos-gov[cli,embeddings,onnx,mistral,observatory,langgraph,dev]",
 ]
 
 [project.urls]
 Homepage = "https://telos-labs.ai"
 Documentation = "https://docs.telos-labs.ai"
-Repository = "https://github.com/TelosSteward/TELOS"
+Repository = "https://github.com/TELOS-Labs-AI/telos"
 
 [tool.setuptools.packages.find]
 include = [
     "telos_core*",
     "telos_governance*",
-    "telos_gateway*",
-    "telos_gateway_registry*",
     "telos_adapters*",
     "telos_observatory*",
     "telos_privacy*",
@@ -124,7 +116,7 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = "-v --tb=short"
+addopts = "-v --tb=short --import-mode=importlib"
 pythonpath = ["."]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",

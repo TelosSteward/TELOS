@@ -291,7 +291,7 @@ For each scenario, the benchmark runner captures:
 - Chain SCI (semantic continuity index)
 - Boundary fidelity (inverted boundary similarity against config-specific boundaries)
 - Effective fidelity (weighted composite)
-- Decision tier (EXECUTE/CLARIFY/SUGGEST/INERT/ESCALATE)
+- Decision tier (EXECUTE/CLARIFY/ESCALATE)
 - SAAI drift level and magnitude
 - Config ID used for evaluation
 
@@ -341,7 +341,9 @@ This dataset contains **zero proprietary data** from any healthcare AI vendor, h
 
 ## License
 
-Research use. Part of the TELOS Hardened research artifact.
+Research use. Part of the TELOS research artifact.
+
+Licensed under the terms of the TELOS AI Labs Inc. proprietary research license. Contact JB@telos-labs.ai for licensing inquiries.
 
 ---
 

@@ -42,7 +42,7 @@ from typing import Any, Dict, List, Optional, Tuple
 # Resolve project root
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = SCRIPT_DIR.parent.parent  # ./
+PROJECT_ROOT = SCRIPT_DIR.parent.parent  # telos/
 
 SCENARIOS_PATH = SCRIPT_DIR / "healthcare_counterfactual_v1.jsonl"
 CONFIGS_DIR = PROJECT_ROOT / "templates" / "healthcare"

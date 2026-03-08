@@ -3,7 +3,7 @@ Fidelity Gate (Tier 1)
 =======================
 
 The core governance component — decides whether to EXECUTE, CLARIFY,
-SUGGEST, INERT, or ESCALATE based on fidelity measurement against the
+or ESCALATE based on fidelity measurement against the
 Primacy Attractor.
 
 This is the "Constitutional Filter" applied to agentic AI.
@@ -19,7 +19,7 @@ First Principles
    subtle drift (Layer 2).
 
 2. **Ostrom's Graduated Sanctions** (DP5, "Governing the Commons", 1990):
-   The 5-tier decision ladder (EXECUTE → CLARIFY → SUGGEST → INERT →
+   The 3-tier decision ladder (EXECUTE → CLARIFY →
    ESCALATE) implements proportional response. Agentic thresholds are
    tighter than conversational (EXECUTE at 0.85 vs GREEN at 0.70)
    because actions are harder to reverse than words — a wrong SQL
@@ -48,7 +48,7 @@ First Principles
    600-1 recommends for GenAI risk quantification.
 
 6. **OWASP LLM Top 10** (2025 — LLM08, Excessive Agency): The graduated
-   decision ladder (EXECUTE → CLARIFY → SUGGEST → INERT → ESCALATE)
+   decision ladder (EXECUTE → CLARIFY → ESCALATE)
    mitigates LLM08 by constraining agent autonomy proportionally to
    alignment confidence. Low-fidelity requests are directed to human
    review via ESCALATE, preventing unbounded agent authority. This
@@ -82,7 +82,6 @@ from telos_governance.types import (
     FIDELITY_ORANGE,
     AGENTIC_EXECUTE_THRESHOLD,
     AGENTIC_CLARIFY_THRESHOLD,
-    AGENTIC_SUGGEST_THRESHOLD,
 )
 from telos_governance.pa_extractor import PrimacyAttractor
 
@@ -116,7 +115,6 @@ class FidelityGate:
         embed_fn: Callable[[str], np.ndarray],
         execute_threshold: float = None,
         clarify_threshold: float = None,
-        suggest_threshold: float = None,
         baseline_threshold: float = None,
     ):
         """
@@ -126,7 +124,6 @@ class FidelityGate:
             embed_fn: Function to embed text strings
             execute_threshold: Fidelity threshold for EXECUTE (default 0.85)
             clarify_threshold: Fidelity threshold for CLARIFY (default 0.70)
-            suggest_threshold: Fidelity threshold for SUGGEST (default 0.50)
             baseline_threshold: Hard block threshold (default 0.20)
         """
         self.embed_fn = embed_fn
@@ -134,7 +131,6 @@ class FidelityGate:
         # Thresholds (use constant defaults if not specified)
         self.execute_threshold = execute_threshold or AGENTIC_EXECUTE_THRESHOLD
         self.clarify_threshold = clarify_threshold or AGENTIC_CLARIFY_THRESHOLD
-        self.suggest_threshold = suggest_threshold or AGENTIC_SUGGEST_THRESHOLD
         self.baseline_threshold = baseline_threshold or SIMILARITY_BASELINE
 
     def check_fidelity(
@@ -152,7 +148,7 @@ class FidelityGate:
         Args:
             user_message: The user's message text
             pa: The Primacy Attractor to check against
-            high_risk: If True, low fidelity triggers ESCALATE instead of INERT
+            high_risk: If True, sets human_required flag on ESCALATE decisions
             tools: Optional list of tool dicts with 'name' and 'description' keys
 
         Returns:
@@ -239,7 +235,7 @@ class FidelityGate:
             raw_similarity=raw_similarity,
             reason=self._get_decision_reason(decision, fidelity),
             should_forward=decision in [
-                ActionDecision.EXECUTE, ActionDecision.CLARIFY, ActionDecision.SUGGEST
+                ActionDecision.EXECUTE, ActionDecision.CLARIFY
             ],
         )
 
@@ -269,7 +265,7 @@ class FidelityGate:
                 raw_similarity=raw_similarity,
                 reason=f"Tool '{tool_name}' fidelity: {fidelity:.2f}",
                 should_forward=(
-                    decision != ActionDecision.INERT and decision != ActionDecision.ESCALATE
+                    decision != ActionDecision.ESCALATE
                 ),
             )
 
@@ -349,17 +345,14 @@ class FidelityGate:
         Agentic thresholds (calibrated for normalized fidelity 0-1):
         - EXECUTE: >= execute_threshold (high confidence, proceed)
         - CLARIFY: >= clarify_threshold (verify intent before proceeding)
-        - SUGGEST: >= suggest_threshold (offer purpose-aligned alternatives)
-        - INERT/ESCALATE: below suggest_threshold (outside agent's purpose)
+        - ESCALATE: below clarify_threshold (outside agent's purpose)
         """
         if fidelity >= self.execute_threshold:
             return ActionDecision.EXECUTE
         elif fidelity >= self.clarify_threshold:
             return ActionDecision.CLARIFY
-        elif fidelity >= self.suggest_threshold:
-            return ActionDecision.SUGGEST
         else:
-            return ActionDecision.ESCALATE if high_risk else ActionDecision.INERT
+            return ActionDecision.ESCALATE
 
     def _determine_direction_level(
         self,
@@ -405,28 +398,15 @@ class FidelityGate:
             ActionDecision.CLARIFY: (
                 f"Moderate fidelity ({fidelity:.2f}) - forwarding with governance context"
             ),
-            ActionDecision.SUGGEST: (
-                f"Low fidelity ({fidelity:.2f}) - suggesting alternatives"
-            ),
-            ActionDecision.INERT: (
-                f"Very low fidelity ({fidelity:.2f}) - request outside agent's purpose"
-            ),
             ActionDecision.ESCALATE: (
-                f"Very low fidelity ({fidelity:.2f}) in high-risk context - requiring review"
+                f"Very low fidelity ({fidelity:.2f}) - request outside agent's purpose, requiring review"
             ),
         }
         return reasons.get(decision, f"Fidelity: {fidelity:.2f}")
 
     def _generate_governance_response(self, decision: GovernanceDecision) -> str:
         """Generate a governance response when request is blocked."""
-        if decision.decision == ActionDecision.INERT:
-            return (
-                "I appreciate your request, but it appears to be outside the scope of "
-                "my defined purpose. I'm designed to help with specific tasks as defined "
-                "in my system configuration. Could you rephrase your request to align "
-                "with my intended function?"
-            )
-        elif decision.decision == ActionDecision.ESCALATE:
+        if decision.decision == ActionDecision.ESCALATE:
             return (
                 "This request requires human review before I can proceed. The request "
                 "has been flagged for expert evaluation due to potential misalignment "

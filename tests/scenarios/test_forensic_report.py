@@ -38,7 +38,7 @@ Embedding Design:
     normalization. See conftest.py docstring for the full design rationale.
 
 Attribution:
-    SAAI drift thresholds: Dr. Nell Watson, CC BY-ND 4.0
+    SAAI drift thresholds: Dr. Nell Watson and Ali Hessami, CC BY-ND 4.0
     IEEE 7001-2021: Transparency of Autonomous Systems
     NAIC Model Bulletin on AI in Insurance (2023)
     Colorado SB 24-205 (2024)
@@ -68,7 +68,6 @@ from telos_governance.types import ActionDecision, DirectionLevel
 from telos_core.constants import (
     AGENTIC_EXECUTE_THRESHOLD,
     AGENTIC_CLARIFY_THRESHOLD,
-    AGENTIC_SUGGEST_THRESHOLD,
     BASELINE_TURN_COUNT,
     SAAI_DRIFT_WARNING,
     SAAI_DRIFT_RESTRICT,
@@ -244,9 +243,7 @@ def _build_forensic_trace_entry(
         "sci_continuity": chain_step.continuity_score,
         "inherited_fidelity": chain_step.inherited_fidelity,
         "effective_fidelity": chain_step.effective_fidelity,
-        "boundary_triggered": result["decision"] in (
-            ActionDecision.ESCALATE, ActionDecision.INERT,
-        ),
+        "boundary_triggered": result["decision"] == ActionDecision.ESCALATE,
         "ieee7001_receipt": ieee_receipt,
         "governance_response": result["governance"].governance_response,
         "forwarded_to_llm": result["governance"].forwarded_to_llm,
@@ -438,7 +435,6 @@ def build_forensic_report(
             "thresholds": {
                 "execute": AGENTIC_EXECUTE_THRESHOLD,
                 "clarify": AGENTIC_CLARIFY_THRESHOLD,
-                "suggest": AGENTIC_SUGGEST_THRESHOLD,
                 "sci_continuity": SCI_CONTINUITY_THRESHOLD,
                 "sci_decay": SCI_DECAY_FACTOR,
                 "saai_warning": SAAI_DRIFT_WARNING,
@@ -1014,7 +1010,7 @@ class TestForensicGovernanceReport:
     # SAAI Drift Analysis Tests
     # -------------------------------------------------------------------
 
-    def test_saai_drift_stays_nominal(
+    def test_saai_drift_insufficient_data_for_short_session(
         self,
         property_fidelity_gate,
         property_tool_gate,
@@ -1022,19 +1018,19 @@ class TestForensicGovernanceReport:
         property_embed_fn,
         property_tools,
     ):
-        """SAAI drift should remain nominal — the session is mostly on-topic.
+        """SAAI drift reports insufficient_data when session < BASELINE_TURN_COUNT.
 
-        Despite one ESCALATE turn, the running average should not drift
-        more than 10% from baseline because 17+ turns are on-topic.
+        A 20-turn session cannot establish the 50-turn EWMA baseline,
+        so drift tier remains insufficient_data throughout.
         """
         report = self._build_report(
             property_fidelity_gate, property_tool_gate,
             property_pa, property_embed_fn, property_tools,
         )
         final_tier = report["saai_drift_analysis"]["final_tier"]
-        assert final_tier == "nominal", (
-            f"Expected nominal SAAI tier, got {final_tier}. "
-            f"Drift: {report['saai_drift_analysis']['final_cumulative_drift']:.4f}"
+        assert final_tier == "insufficient_data", (
+            f"Expected insufficient_data for 20-turn session (baseline needs "
+            f"{BASELINE_TURN_COUNT} turns), got {final_tier}"
         )
 
     def test_saai_drift_history_has_all_turns(
@@ -1052,7 +1048,7 @@ class TestForensicGovernanceReport:
         )
         assert len(report["saai_drift_analysis"]["drift_history"]) == 20
 
-    def test_saai_baseline_established_from_first_3_turns(
+    def test_saai_baseline_not_established_in_short_session(
         self,
         property_fidelity_gate,
         property_tool_gate,
@@ -1060,15 +1056,15 @@ class TestForensicGovernanceReport:
         property_embed_fn,
         property_tools,
     ):
-        """SAAI baseline should be established from the first 3 on-topic turns."""
+        """SAAI baseline cannot be established in a 20-turn session (needs 50)."""
         report = self._build_report(
             property_fidelity_gate, property_tool_gate,
             property_pa, property_embed_fn, property_tools,
         )
         baseline = report["saai_drift_analysis"]["baseline_avg"]
-        assert baseline >= AGENTIC_EXECUTE_THRESHOLD, (
-            f"Baseline avg {baseline:.4f} should be >= EXECUTE threshold "
-            f"(first 3 turns are on-topic)"
+        # With 20 turns < BASELINE_TURN_COUNT (50), baseline_avg is 0.0
+        assert baseline == 0.0, (
+            f"Baseline avg should be 0.0 for sub-threshold session, got {baseline:.4f}"
         )
 
     # -------------------------------------------------------------------
@@ -1330,7 +1326,6 @@ class TestForensicGovernanceReport:
         thresholds = report["session_metadata"]["thresholds"]
         assert thresholds["execute"] == AGENTIC_EXECUTE_THRESHOLD
         assert thresholds["clarify"] == AGENTIC_CLARIFY_THRESHOLD
-        assert thresholds["suggest"] == AGENTIC_SUGGEST_THRESHOLD
         assert thresholds["saai_warning"] == SAAI_DRIFT_WARNING
         assert thresholds["saai_restrict"] == SAAI_DRIFT_RESTRICT
         assert thresholds["saai_block"] == SAAI_DRIFT_BLOCK

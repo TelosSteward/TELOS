@@ -82,7 +82,7 @@ def redact_pii(text: str) -> str:
 
 
 def redact_paths(text: str) -> str:
-    """Sanitize user paths: ~/ -> ~/"""
+    """Sanitize user paths: /Users/<name>/ -> ~/"""
     return _PATH_PATTERN.sub("~/", text)
 
 
@@ -167,7 +167,7 @@ def redact_dict(d: Dict, level: int = 2, zone: int = 1) -> Dict:
 # ---------------------------------------------------------------------------
 
 BLOCKED_DIRS = [
-    "telos_governance", ".claude", ".openclaw",
+    "telos_governance", ".claude", ".telos/agent",
     ".telos/posthoc_audit", ".telos/keys",
     ".ssh", ".gnupg",
 ]
@@ -182,7 +182,7 @@ def validate_export_path(path: str, allowed_dir: str = None) -> Tuple[bool, str]
 
     Rules:
     - No '..' path traversal
-    - No writing to telos_governance/, .claude/, .openclaw/, .telos/posthoc_audit/
+    - No writing to telos_governance/, .claude/, .telos/agent/, .telos/posthoc_audit/
     - No writing Python files (.py)
     - No writing JSONL to audit directories (prevent data injection)
     - If allowed_dir specified, must be within it

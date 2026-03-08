@@ -30,7 +30,7 @@ First Principles
    This density produces higher discriminative power in cosine similarity
    measurements — the core hypothesis under empirical investigation.
 
-3. **SAAI Framework** (Watson et al., 2026): Boundaries map to SAAI
+3. **SAAI Framework** (Watson and Hessami, 2026): Boundaries map to SAAI
    Safety Foundational Requirements (SFRs). The inverted boundary
    scoring (high similarity = violation) implements SAAI's principle
    that safety constraints must be encoded as hard limits, not

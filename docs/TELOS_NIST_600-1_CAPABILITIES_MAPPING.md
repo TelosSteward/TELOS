@@ -2,7 +2,7 @@
 
 **Document Version:** 1.0  
 **Generated:** January 29, 2026  
-**Codebase:** .  
+**Codebase:** telos
 **Framework Version:** TELOS v3 (Telically Entrained Linguistic Operational Substrate)
 
 ---
@@ -12,7 +12,7 @@
 TELOS is a mathematical governance framework for AI alignment that treats alignment as a continuous process control problem, not a one-time training task. It implements session-level governance through **Primacy Attractors** (embedding-space representations of user purpose) with real-time fidelity measurement, proportional intervention, and forensic audit trails.
 
 **Validation Results:**
-- **Adversarial Robustness:** 2,550 attacks, 0% ASR (95% CI upper bound: ~0.15%)
+- **Adversarial Robustness:** 2,550 attacks, 0% ASR (95% CI upper bound: <0.12%, Rule of Three)
 - **Operational Coverage:** 46 multi-session governance evaluations
 - **Over-Refusal Calibration:** 8.0% FPR (healthcare PA) vs 24.8% (generic PA)
 - **Regulatory Alignment:** EU AI Act, California SB 53, HIPAA-ready
@@ -44,7 +44,7 @@ Tier 3: Expert Escalation & Human Review
 
 ### 1.1 Fidelity Tracking & Drift Detection
 
-**Location:** `telos_observatory_v3/telos_purpose/core/`
+**Location:** `telos_core/`
 
 #### A. Two-Layer Fidelity System (`fidelity_engine.py`, `constants.py`)
 
@@ -84,7 +84,7 @@ FidelityResult = dataclass with:
 
 #### B. Cumulative Drift Detection (SAAI Framework)
 
-**Location:** `governance_trace_collector.py`, `evidence_schema.py`
+**Location:** `governance_trace.py`, `evidence_schema.py`
 
 Per Safer Agentic AI (SAAI) Framework integration:
 
@@ -178,7 +178,7 @@ Adds third component:
 
 ## 2. SAFETY & SECURITY FEATURES
 
-### 2.1 Cryptographic Audit Trails (`governance_trace_collector.py`)
+### 2.1 Cryptographic Audit Trails (`governance_trace.py`)
 
 **Hash Chain Implementation:**
 
@@ -567,13 +567,13 @@ Example (F=0.65, purpose="Learn ML"):
 
 ## 7. EXISTING COMPLIANCE DOCUMENTATION
 
-**Location:** `./docs/`
+**Location:** `docs/`
 
 ### Academic & Technical Publications
 
 1. **TELOS_Academic_Paper.pdf** (14 pages, peer-review ready)
    - Methodology: adversarial validation on 2,550 attacks
-   - Results: 0% ASR (95% CI: ~0.15%)
+   - Results: 0% ASR (95% CI upper bound: <0.12%, Rule of Three, n=2,550)
    - Figures: Basin geometry, fidelity pipeline, governance trace
 
 2. **TELOS_Whitepaper_v2.5.md** (Comprehensive technical spec)
@@ -605,65 +605,9 @@ Example (F=0.65, purpose="Learn ML"):
 
 ---
 
-### Deployment & Integration
+## 8. VALIDATION & EVIDENCE
 
-1. **TELOS_Gateway_Technical_Brief_v1.0.md**
-   - OpenAI-compatible API proxy
-   - Graduated governance decisions (EXECUTE/CLARIFY/SUGGEST/INERT/ESCALATE)
-   - Per-tool fidelity evaluation for multi-tool agents
-
-2. **SESSION_HANDOFF_SAAI_INTEGRATION.md**
-   - SAAI Framework compliance
-   - Drift detection thresholds (10/15/20%)
-   - Mandatory review triggering
-
----
-
-## 8. GATEWAY & AGENT GOVERNANCE
-
-### 8.1 TELOS Gateway (`telos_gateway/`)
-
-**API Design:** OpenAI-compatible `/v1/chat/completions` proxy
-
-**Components:**
-- `FidelityGate`: Governance decision engine
-- `PASession`: Primacy Attractor session management
-- SAAI-compliant trace collection
-
-**Request Flow:**
-```
-API Request 
-  → Extract/Create Primacy Attractor
-  → Compute Input Fidelity
-  → Make Governance Decision (EXECUTE/CLARIFY/SUGGEST/INERT/ESCALATE)
-  → [If EXECUTE] Forward to Upstream LLM
-  → Compute Response Fidelity
-  → Return with Governance Metadata
-  → Log to Governance Trace
-```
-
-**Graduated Decision Types:**
-- `EXECUTE`: Proceed with request (fidelity >= 0.45)
-- `CLARIFY`: Request clarification (fidelity 0.35-0.45)
-- `SUGGEST`: Offer alternative tools (fidelity 0.25-0.35)
-- `INERT`: Block without revealing governance (fidelity < 0.25)
-- `ESCALATE`: Human review required (SAAI drift thresholds)
-
-### 8.2 Multi-Tool Governance (`fidelity_gate.py`)
-
-**Per-Tool Fidelity Evaluation:**
-
-For multi-tool agents, TELOS evaluates:
-1. Primary input fidelity (user query vs PA)
-2. Tool descriptions against PA (is this tool on-purpose?)
-3. Tool invocation fidelity (is this tool being used correctly?)
-4. Lowest tool fidelity triggers intervention
-
----
-
-## 9. VALIDATION & EVIDENCE
-
-### 9.1 Published Validation Datasets (Zenodo)
+### 8.1 Published Validation Datasets (Zenodo)
 
 | Benchmark | Attacks | Blocked | DOI |
 |-----------|---------|---------|-----|
@@ -681,7 +625,7 @@ For multi-tool agents, TELOS evaluates:
 
 ---
 
-### 9.2 Forensic Evidence (Complete Audit Trails)
+### 8.2 Forensic Evidence (Complete Audit Trails)
 
 **Per Validation Dataset:**
 - 11,208 governance events across 2,550 attacks
@@ -698,48 +642,41 @@ For multi-tool agents, TELOS evaluates:
 
 ---
 
-## 10. IMPLEMENTATION ARCHITECTURE
+## 9. IMPLEMENTATION ARCHITECTURE
 
 ### Core Module Structure
 
 ```
-telos_observatory_v3/
-├── telos_purpose/core/          # Mathematical kernel
-│   ├── constants.py             # Single source of truth for thresholds
-│   ├── fidelity_engine.py       # Two-layer fidelity calculation
-│   ├── primacy_state.py         # Primacy State formalization
-│   ├── primacy_math.py          # Mathematical definitions
-│   ├── proportional_controller.py # Intervention logic
-│   ├── semantic_interpreter.py  # Fidelity → linguistic mapping
-│   ├── embedding_provider.py    # Mistral + SentenceTransformer
-│   ├── governance_trace_collector.py # Event logging (11 types)
-│   ├── evidence_schema.py       # JSONL schema definition
-│   ├── intervention_controller.py # Dual-boundary control
-│   ├── adaptive_context.py      # Multi-tier context buffer
-│   └── trace_verifier.py        # Hash chain validation
-│
-├── components/                  # UI (27 Streamlit components)
-│   ├── alignment_indicator.py   # Fidelity gauge visualization
-│   ├── teloscope_panel.py       # Research instrument view
-│   ├── teloscope_controls.py    # Turn navigation & controls
+telos_core/                          # Mathematical kernel
+├── constants.py                     # Single source of truth for thresholds
+├── fidelity_engine.py               # Two-layer fidelity calculation
+├── primacy_state.py                 # Primacy State formalization
+├── primacy_math.py                  # Mathematical definitions
+├── proportional_controller.py       # Intervention logic
+├── semantic_interpreter.py          # Fidelity → linguistic mapping
+├── embedding_provider.py            # Mistral + SentenceTransformer
+├── governance_trace.py              # Event logging (11 types)
+├── evidence_schema.py               # JSONL schema definition
+├── adaptive_context.py              # Multi-tier context buffer
+└── trace_verifier.py                # Hash chain validation
+
+telos_observatory/                   # Observatory UI & services
+├── components/                      # UI (27+ Streamlit components)
+│   ├── alignment_indicator.py       # Fidelity gauge visualization
+│   ├── teloscope_panel.py           # Research instrument view
+│   ├── teloscope_controls.py        # Turn navigation & controls
 │   ├── intervention_evidence_dashboard.py # Per-intervention details
-│   ├── observatory_lens.py      # Real-time metrics
+│   ├── observatory_lens.py          # Real-time metrics
 │   └── ... (24 more UI components)
 │
-├── config/                      # Configuration
-│   ├── pa_templates.py          # 8 pre-configured PAs
-│   ├── colors.py                # Zone color mapping
-│   └── steward_pa.py            # Steward agent configuration
+├── config/                          # Configuration
+│   ├── pa_templates.py              # 8 pre-configured PAs
+│   ├── colors.py                    # Zone color mapping
+│   └── steward_pa.py                # Steward agent configuration
 │
-└── services/                    # Backend logic
-    ├── beta_response_manager.py # Main fidelity engine
-    └── beta_steward_llm.py      # Steward LLM integration
-
-telos_gateway/                   # FastAPI gateway
-├── server.py                    # OpenAI-compatible API proxy
-├── fidelity_gate.py            # Governance decision engine
-├── models.py                    # Pydantic request/response models
-└── benchmarks/                  # Governance test suites
+└── services/                        # Backend logic
+    ├── beta_response_manager.py     # Main fidelity engine
+    └── beta_steward_llm.py          # Steward LLM integration
 
 telos_configurator/             # Configuration UI
 ├── engine/governance_engine.py  # Three-tier framework
@@ -755,9 +692,9 @@ wmdp/                           # WMDP benchmark integration
 
 ---
 
-## 11. KEY CONSTANTS & THRESHOLDS
+## 10. KEY CONSTANTS & THRESHOLDS
 
-**Single Source of Truth:** `telos_purpose/core/constants.py`
+**Single Source of Truth:** `telos_core/constants.py`
 
 ```python
 # Layer 1: Baseline Pre-Filter
@@ -791,7 +728,7 @@ BASELINE_TURN_COUNT = 3             # Turns for baseline
 
 ---
 
-## 12. EXTENSION POINTS (NIST 600-1 ALIGNMENT)
+## 11. EXTENSION POINTS (NIST 600-1 ALIGNMENT)
 
 **Areas with Direct NIST Mapping:**
 
@@ -806,7 +743,7 @@ BASELINE_TURN_COUNT = 3             # Turns for baseline
 
 ---
 
-## 13. KNOWN LIMITATIONS & FUTURE WORK
+## 12. KNOWN LIMITATIONS & FUTURE WORK
 
 ### Current Limitations
 
@@ -841,7 +778,7 @@ BASELINE_TURN_COUNT = 3             # Turns for baseline
 
 ---
 
-## 14. RESEARCH PUBLICATIONS & CITATIONS
+## 13. RESEARCH PUBLICATIONS & CITATIONS
 
 **Primary:**
 ```bibtex
@@ -869,7 +806,9 @@ BASELINE_TURN_COUNT = 3             # Turns for baseline
 
 ---
 
-## 15. QUICK REFERENCE: NIST 600-1 MAPPING CHECKLIST
+## 14. QUICK REFERENCE: NIST 600-1 MAPPING CHECKLIST
+
+> **Note:** This checklist represents a self-assessment of TELOS capabilities against these frameworks. It does not constitute certification, independent third-party validation, or legal compliance determination.
 
 ```
 [✓] Governance Concepts
@@ -906,15 +845,15 @@ BASELINE_TURN_COUNT = 3             # Turns for baseline
 
 ## CONCLUSION
 
-TELOS implements a mathematically grounded, empirically validated governance framework that maps directly to NIST AI 600-1 requirements. Key differentiators:
+TELOS implements a governance framework grounded in control engineering mathematics, with empirical validation against NIST AI 600-1 requirements. Key characteristics:
 
-1. **Continuous Measurement:** Fidelity calculated every turn, not quarterly
-2. **Proportional Response:** Intervention strength scales with risk, not binary
-3. **Forensic Evidence:** Complete audit trails with cryptographic integrity
-4. **Published Validation:** 2,550 adversarial attacks, 0% ASR
-5. **Regulatory Ready:** EU AI Act, California SB 53, HIPAA-aligned
+1. **Continuous Measurement:** Fidelity calculated every turn
+2. **Proportional Response:** Intervention strength scales with drift magnitude
+3. **Forensic Evidence:** Audit trails with cryptographic integrity
+4. **Published Validation:** 2,550 adversarial attacks, 0% observed ASR (Rule of Three 95% CI upper bound <0.12%)
+5. **Regulatory Alignment:** Mapped to EU AI Act, California SB 53, HIPAA requirements
 
-The framework is production-ready for deployment in high-stakes domains (healthcare, finance, government) with real-time governance and complete compliance documentation.
+Production deployment in high-stakes domains (healthcare, finance, government) should follow appropriate validation and calibration for each domain.
 
 ---
 

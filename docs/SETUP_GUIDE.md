@@ -27,8 +27,8 @@ pip3 --version       # Must be >= 23.0
 ONNX embeddings (~90MB install, 20x faster model load than PyTorch):
 
 ```bash
-git clone https://github.com/TelosSteward/TELOS.git
-cd TELOS
+git clone https://github.com/TELOS-Labs-AI/telos.git
+cd telos
 pip install -e ".[cli,onnx]"
 ```
 
@@ -56,7 +56,7 @@ echo "MISTRAL_API_KEY=your_key_here" >> .env
 
 ### Option D: Everything
 
-CLI + embeddings + gateway + observatory + dev tools:
+CLI + embeddings + observatory + dev tools:
 
 ```bash
 pip install -e ".[all]"
@@ -104,7 +104,7 @@ telos init --template property-intel
 telos score "What is the roof condition for 742 Evergreen Terrace?" -c property_intel.yaml
 ```
 
-Output shows the 6-dimension governance scoring (purpose, scope, tool, chain, boundary, composite) and the governance decision (EXECUTE, CLARIFY, SUGGEST, ESCALATE, or INERT).
+Output shows the 6-dimension governance scoring (purpose, scope, tool, chain, boundary, composite) and the governance decision (EXECUTE, CLARIFY, or ESCALATE).
 
 ### 3. Run the Live Demo
 
@@ -122,7 +122,7 @@ The demo runs 10 scenarios through the full governance stack — aligned request
 telos benchmark run
 ```
 
-Runs 173 scenarios (5 categories) against the governance engine and reports accuracy metrics.
+Runs 235 scenarios (5 categories) against the governance engine and reports accuracy metrics.
 
 ---
 
@@ -217,10 +217,9 @@ pytest tests/scenarios/ -v
 ## Project Structure
 
 ```
-TELOS/
+telos/
 ├── telos_core/          # Pure mathematical engine (no framework deps)
 ├── telos_governance/    # Governance gates + CLI + bundle delivery
-├── telos_gateway/       # FastAPI API gateway (optional)
 ├── telos_adapters/      # Framework adapters (LangGraph, @telos_governed)
 ├── telos_observatory/   # Streamlit dashboard (optional)
 ├── demos/               # Live governance demos

@@ -65,7 +65,7 @@ import numpy as np
 # Resolve project root
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = SCRIPT_DIR.parent.parent  # ./
+PROJECT_ROOT = SCRIPT_DIR.parent.parent  # telos/
 
 SCENARIOS_PATH = SCRIPT_DIR / "healthcare_counterfactual_v1.jsonl"
 
@@ -235,7 +235,7 @@ def compute_metrics(
         roc_auc = float("nan")
     result[f"{prefix}auc_roc"] = round(roc_auc, 4)
 
-    # PR-AUC (Gebru: more informative for imbalanced data)
+    # PR-AUC (more informative for imbalanced data)
     try:
         pr_auc = average_precision_score(y_true, y_scores)
     except ValueError:
@@ -250,7 +250,7 @@ def compute_metrics(
     result[f"{prefix}tpr_at_optimal"] = round(float(tpr_arr[best_idx]), 4)
     result[f"{prefix}fpr_at_optimal"] = round(float(fpr_arr[best_idx]), 4)
 
-    # FPR @ 80% recall (Gebru: operational metric)
+    # FPR @ 80% recall (operational metric)
     target_recall = 0.80
     fpr_at_80 = float("nan")
     for i, tpr_val in enumerate(tpr_arr):
@@ -451,7 +451,7 @@ def train_and_evaluate_frozen_lr(
 ) -> Tuple[np.ndarray, Dict[str, Any]]:
     """Logistic regression on frozen (un-fine-tuned) embeddings.
 
-    This is the critical ablation control (Gebru): if frozen-LR matches SetFit,
+    This is the critical ablation control: if frozen-LR matches SetFit,
     contrastive fine-tuning adds no value over a simple linear classifier.
     """
     from sentence_transformers import SentenceTransformer

@@ -19,8 +19,7 @@ class BackendService:
     Service for transmitting governance deltas to backend storage (privacy-preserving).
 
     This is an abstract interface that can connect to any backend service.
-    The default implementation uses Supabase, but can be adapted to any
-    database or API service that supports the required operations.
+    Configure via BACKEND_URL and BACKEND_KEY environment variables.
 
     Privacy Guarantee: Only governance METRICS are transmitted, never conversation content.
     """
@@ -40,33 +39,49 @@ class BackendService:
 
             # Try Streamlit secrets first
             if hasattr(st, 'secrets'):
-                backend_url = st.secrets.get('BACKEND_URL') or st.secrets.get('SUPABASE_URL')
-                backend_key = st.secrets.get('BACKEND_KEY') or st.secrets.get('SUPABASE_KEY')
+                backend_url = st.secrets.get('BACKEND_URL')
+                backend_key = st.secrets.get('BACKEND_KEY')
 
             # Fall back to environment variables
             if not backend_url:
-                backend_url = os.getenv('BACKEND_URL') or os.getenv('SUPABASE_URL')
+                backend_url = os.getenv('BACKEND_URL')
             if not backend_key:
-                backend_key = os.getenv('BACKEND_KEY') or os.getenv('SUPABASE_KEY')
+                backend_key = os.getenv('BACKEND_KEY')
 
             if backend_url and backend_key:
                 # Initialize the backend client
-                # Using Supabase as default implementation
+                # Implement your backend client initialization here
                 try:
-                    from supabase import create_client, Client
-                    self.client = create_client(backend_url, backend_key)
+                    self.client = self._create_client(backend_url, backend_key)
                     self.enabled = True
-                    print("✓ Backend client initialized successfully")
-                except ImportError:
-                    print("⚠ Supabase package not installed - delta transmission disabled")
+                    print("Backend client initialized successfully")
+                except Exception:
+                    print("Backend client initialization failed - delta transmission disabled")
                     self.enabled = False
             else:
-                print("⚠ Backend credentials not found - delta transmission disabled")
+                print("Backend credentials not found - delta transmission disabled")
                 self.enabled = False
 
         except Exception as e:
-            print(f"⚠ Failed to initialize backend client: {e}")
+            print(f"Failed to initialize backend client: {e}")
             self.enabled = False
+
+    def _create_client(self, url: str, key: str) -> Any:
+        """Create and return a backend client instance.
+
+        Override this method to use your preferred backend service.
+
+        Args:
+            url: Backend service URL
+            key: Backend service API key
+
+        Returns:
+            Initialized backend client
+        """
+        raise NotImplementedError(
+            "Implement _create_client() for your backend service. "
+            "Set BACKEND_URL and BACKEND_KEY environment variables."
+        )
 
     def transmit_delta(self, delta_data: Dict[str, Any]) -> bool:
         """
@@ -104,21 +119,21 @@ class BackendService:
             required_fields = ['session_id', 'turn_number', 'fidelity_score', 'distance_from_pa']
             for field in required_fields:
                 if field not in delta_data:
-                    print(f"❌ Missing required field: {field}")
+                    print(f"Missing required field: {field}")
                     return False
 
             # Insert delta into governance_deltas table
             result = self.client.table('governance_deltas').insert(delta_data).execute()
 
             if result.data:
-                print(f"✓ Delta transmitted: Turn {delta_data['turn_number']}, Fidelity {delta_data['fidelity_score']:.3f}")
+                print(f"Delta transmitted: Turn {delta_data['turn_number']}, Fidelity {delta_data['fidelity_score']:.3f}")
                 return True
             else:
-                print(f"❌ Delta transmission failed (no data returned)")
+                print(f"Delta transmission failed (no data returned)")
                 return False
 
         except Exception as e:
-            print(f"❌ Error transmitting delta: {e}")
+            print(f"Error transmitting delta: {e}")
             return False
 
     def log_consent(self, session_id: uuid.UUID, consent_statement: str, consent_version: str) -> bool:
@@ -147,14 +162,14 @@ class BackendService:
             result = self.client.table('beta_consent_log').insert(consent_data).execute()
 
             if result.data:
-                print(f"✓ Consent logged: Session {session_id}, Version {consent_version}")
+                print(f"Consent logged: Session {session_id}, Version {consent_version}")
                 return True
             else:
-                print(f"❌ Consent logging failed")
+                print(f"Consent logging failed")
                 return False
 
         except Exception as e:
-            print(f"❌ Error logging consent: {e}")
+            print(f"Error logging consent: {e}")
             return False
 
     def update_session_summary(self, session_id: uuid.UUID, summary_data: Dict[str, Any]) -> bool:
@@ -181,14 +196,14 @@ class BackendService:
             result = self.client.table('session_summaries').upsert(upsert_data).execute()
 
             if result.data:
-                print(f"✓ Session summary updated: {session_id}")
+                print(f"Session summary updated: {session_id}")
                 return True
             else:
-                print(f"❌ Session summary update failed")
+                print(f"Session summary update failed")
                 return False
 
         except Exception as e:
-            print(f"❌ Error updating session summary: {e}")
+            print(f"Error updating session summary: {e}")
             return False
 
     def log_pa_config(self, session_id: uuid.UUID, config_data: Dict[str, Any]) -> bool:
@@ -220,14 +235,14 @@ class BackendService:
             result = self.client.table('primacy_attractor_configs').insert(pa_data).execute()
 
             if result.data:
-                print(f"✓ PA config logged: {session_id}")
+                print(f"PA config logged: {session_id}")
                 return True
             else:
-                print(f"❌ PA config logging failed")
+                print(f"PA config logging failed")
                 return False
 
         except Exception as e:
-            print(f"❌ Error logging PA config: {e}")
+            print(f"Error logging PA config: {e}")
             return False
 
     def update_turn_lifecycle(self, session_id: uuid.UUID, turn_number: int,
@@ -270,14 +285,14 @@ class BackendService:
                 .execute()
 
             if result.data:
-                print(f"✓ Lifecycle update: Turn {turn_number}, Status: {status}, Stage: {stage}")
+                print(f"Lifecycle update: Turn {turn_number}, Status: {status}, Stage: {stage}")
                 return True
             else:
-                print(f"❌ Lifecycle update failed")
+                print(f"Lifecycle update failed")
                 return False
 
         except Exception as e:
-            print(f"❌ Error updating turn lifecycle: {e}")
+            print(f"Error updating turn lifecycle: {e}")
             return False
 
     def initiate_turn(self, session_id: uuid.UUID, turn_number: int, mode: str) -> bool:
@@ -351,14 +366,14 @@ class BackendService:
             result = self.client.table('beta_sessions').insert(session_data).execute()
 
             if result.data:
-                print(f"✓ BETA session created: {session_data['session_id']}")
+                print(f"BETA session created: {session_data['session_id']}")
                 return True
             else:
-                print(f"❌ BETA session creation failed")
+                print(f"BETA session creation failed")
                 return False
 
         except Exception as e:
-            print(f"❌ Error creating BETA session: {e}")
+            print(f"Error creating BETA session: {e}")
             return False
 
     def insert_beta_turn(self, turn_data: Dict[str, Any]) -> bool:
@@ -370,14 +385,14 @@ class BackendService:
             result = self.client.table('beta_turns').insert(turn_data).execute()
 
             if result.data:
-                print(f"✓ BETA turn logged: Session {turn_data['session_id']}, Turn {turn_data['turn_number']}")
+                print(f"BETA turn logged: Session {turn_data['session_id']}, Turn {turn_data['turn_number']}")
                 return True
             else:
-                print(f"❌ BETA turn logging failed")
+                print(f"BETA turn logging failed")
                 return False
 
         except Exception as e:
-            print(f"❌ Error logging BETA turn: {e}")
+            print(f"Error logging BETA turn: {e}")
             return False
 
     def update_beta_turn(self, session_id: str, turn_number: int,
@@ -394,14 +409,14 @@ class BackendService:
                 .execute()
 
             if result.data:
-                print(f"✓ BETA turn updated: Session {session_id}, Turn {turn_number}")
+                print(f"BETA turn updated: Session {session_id}, Turn {turn_number}")
                 return True
             else:
-                print(f"❌ BETA turn update failed")
+                print(f"BETA turn update failed")
                 return False
 
         except Exception as e:
-            print(f"❌ Error updating BETA turn: {e}")
+            print(f"Error updating BETA turn: {e}")
             return False
 
     def get_beta_session(self, session_id: str) -> Optional[Dict[str, Any]]:
@@ -417,14 +432,14 @@ class BackendService:
                 .execute()
 
             if result.data:
-                print(f"✓ Retrieved BETA session: {session_id}")
+                print(f"Retrieved BETA session: {session_id}")
                 return result.data
             else:
-                print(f"❌ BETA session not found: {session_id}")
+                print(f"BETA session not found: {session_id}")
                 return None
 
         except Exception as e:
-            print(f"❌ Error retrieving BETA session: {e}")
+            print(f"Error retrieving BETA session: {e}")
             return None
 
     def get_beta_turns(self, session_id: str) -> list:
@@ -440,14 +455,14 @@ class BackendService:
                 .execute()
 
             if result.data:
-                print(f"✓ Retrieved {len(result.data)} BETA turns for session {session_id}")
+                print(f"Retrieved {len(result.data)} BETA turns for session {session_id}")
                 return result.data
             else:
-                print(f"⚠ No BETA turns found for session {session_id}")
+                print(f"No BETA turns found for session {session_id}")
                 return []
 
         except Exception as e:
-            print(f"❌ Error retrieving BETA turns: {e}")
+            print(f"Error retrieving BETA turns: {e}")
             return []
 
     def complete_beta_session(self, session_id: str, total_turns: int) -> bool:
@@ -468,29 +483,29 @@ class BackendService:
                 .execute()
 
             if result.data:
-                print(f"✓ BETA session completed: {session_id}")
+                print(f"BETA session completed: {session_id}")
                 return True
             else:
-                print(f"❌ BETA session completion failed")
+                print(f"BETA session completion failed")
                 return False
 
         except Exception as e:
-            print(f"❌ Error completing BETA session: {e}")
+            print(f"Error completing BETA session: {e}")
             return False
 
     def test_connection(self) -> bool:
         """Test backend connection."""
         if not self.enabled:
-            print("❌ Backend not enabled")
+            print("Backend not enabled")
             return False
 
         try:
             result = self.client.table('session_summaries').select('session_id').limit(1).execute()
-            print("✓ Backend connection test successful")
+            print("Backend connection test successful")
             return True
 
         except Exception as e:
-            print(f"❌ Backend connection test failed: {e}")
+            print(f"Backend connection test failed: {e}")
             return False
 
 
@@ -504,8 +519,3 @@ def get_backend_service() -> BackendService:
     if _backend_service is None:
         _backend_service = BackendService()
     return _backend_service
-
-
-# Backwards compatibility aliases
-SupabaseService = BackendService
-get_supabase_service = get_backend_service

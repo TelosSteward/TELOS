@@ -47,7 +47,7 @@ except ImportError:
 
 
 DIMENSIONS = ["composite", "purpose", "scope", "boundary", "tool", "chain"]
-VERDICT_ORDER = ["EXECUTE", "CLARIFY", "SUGGEST", "INERT", "ESCALATE"]
+VERDICT_ORDER = ["EXECUTE", "CLARIFY", "INERT", "ESCALATE"]
 
 
 # ---------------------------------------------------------------------------
@@ -126,13 +126,13 @@ class TimelineResult:
         header = (
             f"  {'Window':<12}  {'Events':>6}  "
             f"{'Composite':>9}  {'EXEC':>5}  {'CLAR':>5}  "
-            f"{'SUGG':>5}  {'INRT':>5}  {'ESC':>5}  {'EscRate':>7}"
+            f"{'INRT':>5}  {'ESC':>5}  {'EscRate':>7}"
         )
         lines.append(header)
         sep = (
             f"  {'-' * 12}  {'-' * 6}  "
             f"{'-' * 9}  {'-' * 5}  {'-' * 5}  "
-            f"{'-' * 5}  {'-' * 5}  {'-' * 5}  {'-' * 7}"
+            f"{'-' * 5}  {'-' * 5}  {'-' * 7}"
         )
         lines.append(sep)
 
@@ -145,7 +145,6 @@ class TimelineResult:
                 f"{wp.mean_composite:>9.3f}  "
                 f"{vc.get('EXECUTE', 0):>5}  "
                 f"{vc.get('CLARIFY', 0):>5}  "
-                f"{vc.get('SUGGEST', 0):>5}  "
                 f"{vc.get('INERT', 0):>5}  "
                 f"{vc.get('ESCALATE', 0):>5}  "
                 f"{wp.escalation_rate:>6.1%}"

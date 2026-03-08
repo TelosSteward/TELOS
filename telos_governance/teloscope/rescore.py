@@ -52,7 +52,7 @@ _DEFAULT_WEIGHTS = {
 }
 
 # Verdicts in severity order (for migration analysis)
-VERDICT_ORDER = ["EXECUTE", "CLARIFY", "SUGGEST", "INERT", "ESCALATE"]
+VERDICT_ORDER = ["EXECUTE", "CLARIFY", "INERT", "ESCALATE"]
 
 
 def _compute_composite(
@@ -93,18 +93,16 @@ def _apply_decision_ladder(
     boundary_triggered: bool,
     st_execute: float,
     st_clarify: float,
-    st_suggest: float,
     escalation_threshold: float = 0.15,
 ) -> str:
     """Apply the governance decision ladder to a fidelity score.
 
-    Replicates the logic from agentic_fidelity.py lines 1190-1230:
+    Replicates the logic from agentic_fidelity.py:
         1. boundary_triggered → ESCALATE (hard override)
         2. effective >= st_execute → EXECUTE
         3. effective >= st_clarify → CLARIFY
-        4. effective >= st_suggest → SUGGEST
-        5. effective < escalation_threshold → ESCALATE
-        6. else → INERT
+        4. effective < escalation_threshold → ESCALATE
+        5. else → INERT
 
     Note: tool_blocked and chain_broken hard overrides are not replicated
     here because we don't have those signals in the stored audit data.
@@ -119,8 +117,6 @@ def _apply_decision_ladder(
         return "EXECUTE"
     elif effective_fidelity >= st_clarify:
         return "CLARIFY"
-    elif effective_fidelity >= st_suggest:
-        return "SUGGEST"
     elif effective_fidelity < escalation_threshold:
         return "ESCALATE"
     else:
@@ -328,7 +324,6 @@ def rescore(
     # Convenience kwargs — override individual ThresholdConfig params
     st_execute: Optional[float] = None,
     st_clarify: Optional[float] = None,
-    st_suggest: Optional[float] = None,
     weight_purpose: Optional[float] = None,
     weight_scope: Optional[float] = None,
     weight_tool: Optional[float] = None,
@@ -353,7 +348,6 @@ def rescore(
         config: Full ThresholdConfig (or None to start from defaults)
         st_execute: Execute threshold override
         st_clarify: Clarify threshold override
-        st_suggest: Suggest threshold override
         weight_purpose: Purpose weight override
         weight_scope: Scope weight override
         weight_tool: Tool weight override
@@ -385,8 +379,6 @@ def rescore(
         overrides["st_execute"] = st_execute
     if st_clarify is not None:
         overrides["st_clarify"] = st_clarify
-    if st_suggest is not None:
-        overrides["st_suggest"] = st_suggest
     if weight_purpose is not None:
         overrides["weight_purpose"] = weight_purpose
     if weight_scope is not None:
@@ -414,7 +406,6 @@ def rescore(
     w_boundary = config.weight_boundary_penalty
     t_execute = config.st_execute
     t_clarify = config.st_clarify
-    t_suggest = config.st_suggest
     bv_threshold = config.boundary_violation
 
     # Re-score every event
@@ -443,7 +434,6 @@ def rescore(
             boundary_triggered=boundary_triggered,
             st_execute=t_execute,
             st_clarify=t_clarify,
-            st_suggest=t_suggest,
             escalation_threshold=escalation_threshold,
         )
         new_verdicts.append(new_verdict)

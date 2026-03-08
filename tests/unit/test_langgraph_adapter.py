@@ -573,6 +573,7 @@ class TestWrapperDriftTracker:
         # Force BLOCK state directly on tracker
         tracker._baseline_established = True
         tracker._baseline_fidelity = 0.90
+        tracker._ewma = 0.90
         tracker._drift_level = "BLOCK"
         tracker._drift_magnitude = 0.25
         status = wrapper.acknowledge_drift("user reviewed output")
@@ -581,9 +582,10 @@ class TestWrapperDriftTracker:
     def test_drift_block_returns_blocked_response(self):
         """When drift triggers BLOCK, invoke() should return governance_blocked."""
         wrapper, agent, tracker = self._make_wrapper_with_drift()
-        # Establish baseline first
+        # Establish baseline first (must also init EWMA for Phase 2)
         tracker._baseline_established = True
         tracker._baseline_fidelity = 0.90
+        tracker._ewma = 0.90
         tracker._drift_level = "NORMAL"
 
         # Make record_fidelity return BLOCK
@@ -626,6 +628,7 @@ class TestWrapperDriftTracker:
         # Establish baseline and force WARNING state
         tracker._baseline_established = True
         tracker._baseline_fidelity = 0.90
+        tracker._ewma = 0.90
         tracker._drift_level = "NORMAL"
 
         original_record = tracker.record_fidelity

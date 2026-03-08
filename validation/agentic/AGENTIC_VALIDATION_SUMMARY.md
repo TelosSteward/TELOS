@@ -8,9 +8,9 @@
 
 ### Disclosures
 
-> **Generative AI Disclosure:** Internal analysis, experimental design review, and qualitative assessment in this document were conducted with assistance from LLM-based research agents (Claude, Anthropic). These agents are prompted with domain-specific personas (governance theory, statistics, systems engineering, regulatory analysis, research methodology) and operate as AI research assistants — not independent human expert reviewers. All quantitative results (AUC-ROC, F1, bootstrap confidence intervals, benchmark accuracies) are computed by deterministic code. Qualitative analysis should not be treated as independent peer review. See `research/research_team_spec.md` for full methodology.
+> **Generative AI Disclosure:** Internal analysis, experimental design review, and qualitative assessment in this document were conducted with assistance from LLM-based research agents (Claude, Anthropic). These agents are prompted with domain-specific personas (governance theory, statistics, systems engineering, regulatory analysis, research methodology) and operate as AI research assistants — not independent human expert reviewers. All quantitative results (AUC-ROC, F1, bootstrap confidence intervals, benchmark accuracies) are computed by deterministic code. Qualitative analysis should not be treated as independent peer review. See CONTRIBUTING.md for methodology details.
 
-> **Conflict of Interest Disclosure:** This research was conducted and funded by TELOS AI Labs Inc., which has a commercial interest in the TELOS governance framework. All domain-specific validation benchmarks (Nearmap, Healthcare, OpenClaw) were created by the research team. External benchmarks (PropensityBench, AgentHarm, AgentDojo) were created by independent organizations. Research artifacts are published on [Zenodo](https://zenodo.org/) with persistent DOIs. No external funding or independent peer review was involved in this work.
+> **Conflict of Interest Disclosure:** This research was conducted and funded by TELOS AI Labs Inc., which has a commercial interest in the TELOS governance framework. All domain-specific validation benchmarks (Nearmap, Healthcare) were created by the research team. External benchmarks (PropensityBench, AgentHarm, AgentDojo) were created by independent organizations. Research artifacts are published on [Zenodo](https://zenodo.org/) with persistent DOIs. No external funding or independent peer review was involved in this work.
 
 ---
 
@@ -41,8 +41,10 @@ TELOS governance was validated against **three peer-reviewed agentic AI benchmar
 
 ### AgentDojo (ETH Zurich / NeurIPS 2024)
 - **Focus**: Prompt injection detection in agentic pipelines
-- **139 injection scenarios** testing whether injected instructions can hijack agent behavior
+- **139 injection scenarios** (v1) / **23 representative tasks** (v2) testing whether injected instructions can hijack agent behavior
 - **What TELOS detects**: Fidelity collapse when injected prompts shift the semantic trajectory away from the established Primacy Attractor
+
+**Utility-safety trade-off (important context):** While AgentDojo achieved 100% DSR (all injections blocked), the v2.0 evaluation revealed **52.2% overall correctness** (12/23 tasks) and a **0% benign pass rate** -- all 11 benign tasks were over-blocked as false positives. This demonstrates the over-restriction cost of using a generic PA on general-purpose task domains. The generic PA used in benchmarking applies broad safety constraints that do not distinguish between legitimate everyday tasks (email, banking, travel) and actual attacks. Domain-specific PAs achieve higher utility preservation -- as demonstrated by the Healthcare PA reducing FPR from 24.8% to 8.0% on XSTest over-refusal calibration.
 
 ---
 

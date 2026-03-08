@@ -21,6 +21,8 @@ from telos_governance.agentic_fidelity import (
     WEIGHT_CHAIN,
     WEIGHT_BOUNDARY_PENALTY,
     BOUNDARY_VIOLATION_THRESHOLD,
+    CLARIFY_DIMENSION_DESCRIPTIONS,
+    CLARIFY_DIMENSION_PRIORITY,
 )
 from telos_core.constants import BOUNDARY_MARGIN_THRESHOLD
 from telos_governance.agentic_pa import AgenticPA, BoundarySpec, ToolAuth, ActionTierSpec
@@ -31,7 +33,6 @@ from telos_core.constants import (
     FIDELITY_ORANGE,
     ST_AGENTIC_EXECUTE_THRESHOLD,
     ST_AGENTIC_CLARIFY_THRESHOLD,
-    ST_AGENTIC_SUGGEST_THRESHOLD,
 )
 
 
@@ -388,17 +389,25 @@ class TestDecisionMapping:
         )
         assert decision == ActionDecision.CLARIFY
 
-    def test_suggest_decision(self):
-        """Low-mid fidelity -> SUGGEST."""
-        fidelity = (ST_AGENTIC_SUGGEST_THRESHOLD + ST_AGENTIC_CLARIFY_THRESHOLD) / 2
-        decision, human = self.engine._make_decision(
+    def test_below_clarify_is_escalate(self):
+        """Fidelity below CLARIFY threshold -> ESCALATE.
+
+        In the 3-verdict model, anything below CLARIFY threshold
+        triggers ESCALATE (human review required).
+        """
+        engine = AgenticFidelityEngine(
+            embed_fn=_make_embed_fn(_make_embedding([1, 0, 0])),
+            pa=_make_pa(escalation_threshold=0.10),
+        )
+        fidelity = ST_AGENTIC_CLARIFY_THRESHOLD - 0.02
+        decision, human = engine._make_decision(
             effective_fidelity=fidelity,
             boundary_triggered=False,
             tool_blocked=False,
             chain_broken=False,
             tool_name=None,
         )
-        assert decision == ActionDecision.SUGGEST
+        assert decision == ActionDecision.ESCALATE
 
     def test_boundary_override_to_escalate(self):
         """Boundary triggered -> ESCALATE regardless of fidelity."""
@@ -412,8 +421,8 @@ class TestDecisionMapping:
         assert decision == ActionDecision.ESCALATE
         assert human is True
 
-    def test_tool_blocked_override_to_inert(self):
-        """Tool blocked -> INERT regardless of fidelity."""
+    def test_tool_blocked_override_to_escalate(self):
+        """Tool blocked -> ESCALATE regardless of fidelity."""
         decision, human = self.engine._make_decision(
             effective_fidelity=0.95,
             boundary_triggered=False,
@@ -421,7 +430,7 @@ class TestDecisionMapping:
             chain_broken=False,
             tool_name=None,
         )
-        assert decision == ActionDecision.INERT
+        assert decision == ActionDecision.ESCALATE
 
     def test_chain_broken_override_to_clarify(self):
         """Chain broken -> CLARIFY regardless of fidelity."""
@@ -938,4 +947,163 @@ class TestChainRollover:
         result = engine.score_action("final step")
         assert engine.action_chain.length == 1
         assert result.chain_broken is False
+
+
+# ---------------------------------------------------------------------------
+# Unicode Normalization — zero-width character bypass prevention
+# ---------------------------------------------------------------------------
+
+class TestUnicodeNormalization:
+    """Tests for _normalize_for_keywords preventing Unicode bypass attacks."""
+
+    def test_zero_width_space_stripped(self):
+        """Zero-width space inside keyword must still match."""
+        result = AgenticFidelityEngine._normalize_for_keywords("byp\u200bass")
+        assert "bypass" in result
+
+    def test_zero_width_joiner_stripped(self):
+        """Zero-width joiner must be stripped."""
+        result = AgenticFidelityEngine._normalize_for_keywords("over\u200dride")
+        assert "override" in result
+
+    def test_bom_stripped(self):
+        """Byte order mark (U+FEFF) must be stripped."""
+        result = AgenticFidelityEngine._normalize_for_keywords("\ufeffbypass")
+        assert result == "bypass"
+
+    def test_nfkc_normalization(self):
+        """NFKC should normalize compatibility characters."""
+        # Fullwidth latin "ｂｙpａｓｓ" → "bypass"
+        result = AgenticFidelityEngine._normalize_for_keywords("ｂｙｐａｓｓ")
+        assert "bypass" in result
+
+    def test_control_chars_stripped(self):
+        """Control characters (except newline/tab) must be stripped."""
+        result = AgenticFidelityEngine._normalize_for_keywords("byp\x00\x01ass")
+        assert "bypass" in result
+
+    def test_normal_text_unchanged(self):
+        """Normal text should pass through correctly."""
+        result = AgenticFidelityEngine._normalize_for_keywords("Read project file")
+        assert result == "read project file"
+
+
+# ---------------------------------------------------------------------------
+# CLARIFY cascade Step 2: Dimensional Escalation
+# ---------------------------------------------------------------------------
+
+class TestClarifyDimensionalEscalation:
+    """Tests for _identify_ambiguous_dimension and result field population."""
+
+    def setup_method(self):
+        self.engine = AgenticFidelityEngine(
+            embed_fn=_make_embed_fn(_make_embedding([1, 0, 0])),
+            pa=_make_pa(),
+        )
+
+    def test_chain_broken_always_chain_coherence(self):
+        """Chain broken CLARIFY should always identify chain_coherence."""
+        dim = self.engine._identify_ambiguous_dimension(
+            purpose_fidelity=0.9,
+            scope_fidelity=0.9,
+            boundary_violation=0.0,
+            tool_fidelity=0.9,
+            chain_continuity=0.0,
+            chain_broken=True,
+        )
+        assert dim == "chain_coherence"
+
+    def test_purpose_most_ambiguous(self):
+        """When purpose is closest to threshold, identify purpose_alignment."""
+        # ST execute threshold is ~0.45. Put purpose closest to it.
+        dim = self.engine._identify_ambiguous_dimension(
+            purpose_fidelity=ST_AGENTIC_EXECUTE_THRESHOLD - 0.01,
+            scope_fidelity=0.20,
+            boundary_violation=0.0,
+            tool_fidelity=0.20,
+            chain_continuity=0.20,
+            chain_broken=False,
+        )
+        assert dim == "purpose_alignment"
+
+    def test_scope_most_ambiguous(self):
+        """When scope is closest to threshold, identify scope_compliance."""
+        dim = self.engine._identify_ambiguous_dimension(
+            purpose_fidelity=0.20,
+            scope_fidelity=ST_AGENTIC_EXECUTE_THRESHOLD - 0.02,
+            boundary_violation=0.0,
+            tool_fidelity=0.20,
+            chain_continuity=0.20,
+            chain_broken=False,
+        )
+        assert dim == "scope_compliance"
+
+    def test_boundary_most_ambiguous(self):
+        """When boundary proximity is closest to threshold, identify it."""
+        # boundary_proximity = 1.0 - boundary_violation
+        # For this to be closest to execute_thresh (~0.45),
+        # we need 1.0 - boundary_violation ~= 0.45, i.e., violation ~= 0.55
+        dim = self.engine._identify_ambiguous_dimension(
+            purpose_fidelity=0.20,
+            scope_fidelity=0.20,
+            boundary_violation=1.0 - ST_AGENTIC_EXECUTE_THRESHOLD + 0.005,
+            tool_fidelity=0.20,
+            chain_continuity=0.20,
+            chain_broken=False,
+        )
+        assert dim == "boundary_proximity"
+
+    def test_tie_breaking_priority_order(self):
+        """On tie (within 0.01), boundary > purpose > scope > tool > chain."""
+        # All dimensions equidistant from threshold
+        dim = self.engine._identify_ambiguous_dimension(
+            purpose_fidelity=ST_AGENTIC_EXECUTE_THRESHOLD,
+            scope_fidelity=ST_AGENTIC_EXECUTE_THRESHOLD,
+            boundary_violation=1.0 - ST_AGENTIC_EXECUTE_THRESHOLD,
+            tool_fidelity=ST_AGENTIC_EXECUTE_THRESHOLD,
+            chain_continuity=ST_AGENTIC_EXECUTE_THRESHOLD,
+            chain_broken=False,
+        )
+        # boundary is first in priority order
+        assert dim == "boundary_proximity"
+
+    def test_result_fields_populated_on_clarify(self):
+        """AgenticFidelityResult should have ambiguous_dimension set on CLARIFY."""
+        r = AgenticFidelityResult(
+            purpose_fidelity=0.5,
+            scope_fidelity=0.4,
+            boundary_violation=0.0,
+            tool_fidelity=0.6,
+            chain_continuity=0.3,
+            composite_fidelity=0.42,
+            effective_fidelity=0.42,
+            decision=ActionDecision.CLARIFY,
+            direction_level=DirectionLevel.CORRECT,
+            ambiguous_dimension="purpose_alignment",
+            clarify_description=CLARIFY_DIMENSION_DESCRIPTIONS["purpose_alignment"],
+        )
+        assert r.ambiguous_dimension == "purpose_alignment"
+        assert "purpose" in r.clarify_description.lower()
+
+    def test_result_fields_empty_on_execute(self):
+        """AgenticFidelityResult should NOT have ambiguous_dimension on EXECUTE."""
+        r = AgenticFidelityResult(
+            purpose_fidelity=0.9,
+            scope_fidelity=0.9,
+            boundary_violation=0.0,
+            tool_fidelity=0.9,
+            chain_continuity=0.9,
+            composite_fidelity=0.9,
+            effective_fidelity=0.9,
+            decision=ActionDecision.EXECUTE,
+            direction_level=DirectionLevel.NONE,
+        )
+        assert r.ambiguous_dimension == ""
+        assert r.clarify_description == ""
+
+    def test_all_dimensions_have_descriptions(self):
+        """Every dimension in priority list has a description."""
+        for dim in CLARIFY_DIMENSION_PRIORITY:
+            assert dim in CLARIFY_DIMENSION_DESCRIPTIONS
+            assert len(CLARIFY_DIMENSION_DESCRIPTIONS[dim]) > 10
 

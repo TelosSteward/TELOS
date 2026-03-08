@@ -17,7 +17,7 @@ Two modes:
 Usage:
     from telos_governance.pa_context import PAContext
 
-    ctx = PAContext.from_config("templates/openclaw.yaml")
+    ctx = PAContext.from_config("templates/agent.yaml")
     block = ctx.get_injection_block()           # full mode
     block = ctx.get_injection_block(compressed=True)  # compressed
 
@@ -27,9 +27,7 @@ Usage:
 Compliance:
   - NIST AI 600-1 (GV 1.4): PA specification present in model context
   - EU AI Act Art. 72: Verifiable governance context per response
-  - Bengio (2026): Pre-generation semantic alignment layer
-
-Design rationale: research/A10_PA_SEMANTIC_INJECTION_REVIEW.md
+  - Pre-generation semantic alignment layer (safety-by-design principle)
 """
 
 import hashlib
@@ -69,7 +67,7 @@ class PAContext:
     _compressed_block: str = ""
     _injection_hash: str = ""  # SHA-256 of the full injection block
 
-    # Alternating-treatment experiment (A10-T3)
+    # Alternating-treatment experiment
     # When enabled, PA injection can be toggled per-turn for experimental design.
     # The pa_injected field on GovernanceEvent records which condition each turn used.
     injection_enabled: bool = True

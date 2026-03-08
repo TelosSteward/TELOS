@@ -213,12 +213,6 @@ def _verdict_box(decision, detail=""):
         desc = "Verifying intent before proceeding"
         border_fg = "yellow"
         bg_col = "yellow"
-    elif dec_val == "suggest":
-        glyph = "\u26A0"
-        label = "SUGGEST"
-        desc = "Offering purpose-aligned alternatives"
-        border_fg = "yellow"
-        bg_col = "yellow"
     elif dec_val == "escalate":
         glyph = "\u2717"
         label = "ESCALATE"

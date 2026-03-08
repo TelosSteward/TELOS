@@ -37,7 +37,7 @@ def make_audit_record(
     Args:
         scenario_name: Human-readable description of the scenario.
         tool_name: Canonical tool name (Read, Edit, Bash, etc.).
-        verdict: EXECUTE, CLARIFY, SUGGEST, ESCALATE, or INERT.
+        verdict: EXECUTE, CLARIFY, ESCALATE, or INERT.
         fidelity_score: Composite fidelity score (0.0-1.0).
         cascade_halt_layer: Which layer halted scoring (e.g. "boundary").
         session_id: Session identifier (default "demo").
@@ -47,7 +47,7 @@ def make_audit_record(
         Dict matching the TELOS audit JSONL schema.
     """
     v = verdict.upper()
-    allowed = v in ("EXECUTE", "CLARIFY", "SUGGEST")
+    allowed = v in ("EXECUTE", "CLARIFY")
     return {
         "event_id": str(uuid.uuid4()),
         "timestamp": datetime.now(timezone.utc).isoformat(),

@@ -59,7 +59,7 @@ class SidebarActionsBeta:
                         help="View research question and documentation"):
                 st.markdown("""
                 <script>
-                window.open('https://github.com/TelosSteward/TELOS', '_blank');
+                window.open('https://github.com/TELOS-Labs-AI/telos', '_blank');
                 </script>
                 """, unsafe_allow_html=True)
                 st.info("Opening TelosLabs research repository...")

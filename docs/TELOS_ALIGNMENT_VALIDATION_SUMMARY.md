@@ -19,9 +19,9 @@ TELOS development began in January 2025, driven by three first principles:
 
 1. **Transparency** - Every governance decision must be observable and explainable
 2. **Auditability** - Complete records of system behavior must be maintained
-3. **Human-in-the-Loop Agency** - Human authority must be architecturally guaranteed, not assumed
+3. **Human-in-the-Loop Agency** - Human authority must be architecturally enforced, not assumed
 
-These principles preceded any external framework assessment. When the Safer Agentic AI (SAAI) Framework was published by Dr. Nell Watson in January 2026, we mapped TELOS against it and confirmed 88% alignment with requirements we had already implemented.
+These principles preceded any external framework assessment. When the Safer Agentic AI (SAAI) Framework was published by Dr. Nell Watson and Ali Hessami in January 2026, we mapped TELOS against it and confirmed 88% alignment with requirements we had already implemented.
 
 ### Timeline
 
@@ -30,7 +30,7 @@ These principles preceded any external framework assessment. When the Safer Agen
 | **January 2025** | TELOS development begins. Primacy Attractor concept, proportional control architecture |
 | **Q1-Q2 2025** | Core implementation: fidelity engine, governance trace collector, two-layer detection |
 | **Q3-Q4 2025** | Adversarial validation: AILuminate, MedSafetyBench, XSTest calibration |
-| **January 2026** | SAAI Framework published by Dr. Nell Watson |
+| **January 2026** | SAAI Framework published by Dr. Nell Watson and Ali Hessami |
 | **January 2026** | SAAI mapping performed - 88% alignment confirmed |
 | **January 2026** | Remaining gaps closed (~70 lines of code for hash chains, tiered thresholds) |
 
@@ -75,13 +75,14 @@ Alignment framed as Statistical Process Control:
 
 | Benchmark | Attacks | Result | Notes |
 |-----------|---------|--------|-------|
-| AILuminate (MLCommons) | 1,200 | ASR below detectable threshold | 95% CI upper bound: ~0.15% |
+| AILuminate (MLCommons) | 1,200 | ASR below detectable threshold | Rule of Three 95% CI upper bound: <0.25% |
+| HarmBench | 400 | ASR below detectable threshold | General-purpose attacks |
 | MedSafetyBench (NeurIPS 2024) | 900 | ASR below detectable threshold | Healthcare-specific attacks |
 | SB 243 Child Safety | 50 | ASR below detectable threshold | Conservative configuration |
 | XSTest Over-Refusal | 250 | 8.0% FPR (down from 24.8%) | Domain-specific PA calibration |
 
-**Total adversarial attacks tested:** 2,400+
-**95% CI upper bound:** ~0.15% ASR under black-box threat model
+**Total adversarial attacks tested:** 2,550 (AILuminate 1,200 + HarmBench 400 + MedSafetyBench 900 + SB 243 50)
+**Rule of Three 95% CI upper bound:** <0.12% ASR (3/2,550) under black-box threat model
 
 The XSTest calibration demonstrates that safety does not require over-restriction. Domain-specific Primacy Attractors reduced false positive rates by 16.8 percentage points while maintaining adversarial resistance.
 
@@ -89,7 +90,7 @@ The XSTest calibration demonstrates that safety does not require over-restrictio
 
 ## SAAI Framework Alignment
 
-**Framework:** Safer Agentic AI (SAAI) - Dr. Nell Watson
+**Framework:** Safer Agentic AI (SAAI) - Dr. Nell Watson and Ali Hessami
 **Compliance Score:** 88% (39/47 requirements) - self-assessed
 **External validation:** Planned through IEEE CertifAIEd process
 
@@ -115,8 +116,8 @@ The SAAI Framework addresses safety requirements specific to autonomous AI syste
 
 ### Key Code Locations
 
-- `telos_purpose/core/constants.py` (lines 466-507): SAAI threshold definitions
-- `telos_purpose/core/governance_trace_collector.py`: Full SAAI integration
+- `telos_core/constants.py` (lines 466-507): SAAI threshold definitions
+- `telos_core/governance_trace.py`: Full SAAI integration
 
 ---
 
@@ -182,10 +183,12 @@ This creates a tamper-evident chain where any modification invalidates all subse
 
 | Document | Location | Description |
 |----------|----------|-------------|
-| SAAI Framework Transcript | `Agentic_AI_Synthesis_Framework/01_SAAI_Framework_Overview_Transcript.txt` | 90-minute presentation by Dr. Nell Watson |
+| SAAI Framework Transcript | `Agentic_AI_Synthesis_Framework/01_SAAI_Framework_Overview_Transcript.txt` | 90-minute presentation by Dr. Nell Watson and Ali Hessami |
 | SAAI Explainer Transcript | `Agentic_AI_Synthesis_Framework/02_SAAI_Governance_Explainer_Transcript.txt` | 7-minute condensed overview |
 
 ### Validation Data
+
+Generated locally by running the validation scripts. Consolidated results available via [Zenodo](https://doi.org/10.5281/zenodo.18370659).
 
 | File | Description |
 |------|-------------|
@@ -199,10 +202,10 @@ This creates a tamper-evident chain where any modification invalidates all subse
 
 | File | Purpose |
 |------|---------|
-| `telos_purpose/core/constants.py` | Single source of truth for all thresholds |
-| `telos_purpose/core/governance_trace_collector.py` | SAAI integration, hash chains, drift detection |
-| `telos_purpose/core/fidelity_engine.py` | Shared mathematical core |
-| `telos_purpose/core/adaptive_context.py` | Phase detection, semantic continuity |
+| `telos_core/constants.py` | Single source of truth for all thresholds |
+| `telos_core/governance_trace.py` | SAAI integration, hash chains, drift detection |
+| `telos_core/fidelity_engine.py` | Shared mathematical core |
+| `telos_core/adaptive_context.py` | Phase detection, semantic continuity |
 
 ---
 

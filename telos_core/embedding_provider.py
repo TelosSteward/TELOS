@@ -14,6 +14,7 @@ install size matters.
 
 from __future__ import annotations
 import hashlib
+import logging
 import numpy as np
 from typing import Optional
 
@@ -193,19 +194,40 @@ class OnnxEmbeddingProvider:
     Downloads model files from HuggingFace Hub on first use (cached in ~/.cache/huggingface/).
     """
 
-    # Supported models and their ONNX file paths within the repo
+    # Supported models, ONNX paths, and pinned SHA-256 hashes for integrity.
+    # Hash mismatch = fail closed (refuse to score with tampered model).
     _SUPPORTED_MODELS = {
         "sentence-transformers/all-MiniLM-L6-v2": {
             "onnx_file": "onnx/model.onnx",
             "dimension": 384,
             "max_length": 256,
+            "sha256": "6fd5d72fe4589f189f8ebc006442dbb529bb7ce38f8082112682524616046452",
         },
         "sentence-transformers/all-mpnet-base-v2": {
             "onnx_file": "onnx/model.onnx",
             "dimension": 768,
             "max_length": 384,
+            "sha256": "74187b16d9c946fea252e120cfd7a12c5779d8b8b86838a2e4c56573c47941bd",
         },
     }
+
+    @staticmethod
+    def _verify_model_hash(model_path: str, expected_hash: str) -> bool:
+        """Verify ONNX model file integrity against pinned SHA-256 hash."""
+        import hashlib
+        h = hashlib.sha256()
+        with open(model_path, "rb") as f:
+            for chunk in iter(lambda: f.read(8192), b""):
+                h.update(chunk)
+        actual = h.hexdigest()
+        if actual != expected_hash:
+            logging.critical(
+                f"ONNX model integrity FAILED: "
+                f"expected sha256:{expected_hash[:16]}..., "
+                f"got sha256:{actual[:16]}..."
+            )
+            return False
+        return True
 
     def __init__(self, model_name: str = "sentence-transformers/all-MiniLM-L6-v2"):
         """
@@ -242,8 +264,14 @@ class OnnxEmbeddingProvider:
                 pad_id=0, pad_token="[PAD]", length=None
             )
 
-            # Download and load ONNX model
+            # Download and load ONNX model with integrity verification
             onnx_path = hf_hub_download(model_name, model_info["onnx_file"])
+            expected_hash = model_info.get("sha256")
+            if expected_hash and not self._verify_model_hash(onnx_path, expected_hash):
+                raise RuntimeError(
+                    f"ONNX model integrity check failed for {model_name}. "
+                    f"Model file may be corrupted or tampered with."
+                )
             sess_options = ort.SessionOptions()
             sess_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
             self._session = ort.InferenceSession(onnx_path, sess_options)

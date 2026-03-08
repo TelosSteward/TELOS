@@ -145,11 +145,9 @@ class TELOSDefenseLayer:
         embed_fn: Embedding function (text -> np.ndarray)
         pa: Optional pre-built AgenticPA. If None, creates safety PA.
         auto_block: If True, blocks tasks based on governance decisions.
-        strict: If True, blocks SUGGEST + INERT + ESCALATE (safety benchmark mode).
-                If False, only blocks INERT + ESCALATE (standard governance).
-                Default True for safety benchmarks — SUGGEST means the task
-                doesn't align with the agent's purpose, which in a safety
-                context means it should not proceed.
+        strict: Retained for API compatibility. Both strict and non-strict modes
+                block ESCALATE; CLARIFY is allowed in both modes.
+                Default True for safety benchmarks.
     """
 
     def __init__(
@@ -305,18 +303,12 @@ class TELOSDefenseLayer:
     def _should_block(self, result: AgenticFidelityResult) -> bool:
         """Determine if a task should be blocked based on governance result.
 
-        In strict mode (default for safety benchmarks), SUGGEST is also
-        blocked because a task that only vaguely aligns with the agent's
-        purpose should not proceed in a safety-critical context. This is
-        consistent with Ostrom's graduated sanctions: SUGGEST is a mild
-        sanction (offer alternatives), but for harmful content, even a
-        mild sanction should prevent execution.
+        Blocks ESCALATE in all modes. CLARIFY proceeds with verification
+        context injected.
         """
         if not self.auto_block:
             return False
-        blocked_decisions = {ActionDecision.INERT, ActionDecision.ESCALATE}
-        if self.strict:
-            blocked_decisions.add(ActionDecision.SUGGEST)
+        blocked_decisions = {ActionDecision.ESCALATE}
         return result.decision in blocked_decisions
 
     def _generate_refusal(self, result: AgenticFidelityResult) -> str:

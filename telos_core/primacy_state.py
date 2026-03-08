@@ -7,7 +7,7 @@ equilibrium condition between User PA, AI PA, and Steward PA.
 DUAL FORMULA (Public):
     PS = rho_PA * (2*F_user*F_AI)/(F_user + F_AI)
 
-TRIFECTA FORMULA (Proprietary):
+TRIFECTA FORMULA:
     PS = rho_PA * 3/(1/F_user + 1/F_AI + 1/F_steward)
 
 The Steward PA is the constant third branch - an always-active agent whose

@@ -96,7 +96,7 @@ class C:
 def _color_verdict(verdict: str) -> str:
     """Color-code a verdict string."""
     colors = {
-        "EXECUTE": C.GREEN, "CLARIFY": C.YELLOW, "SUGGEST": C.YELLOW,
+        "EXECUTE": C.GREEN, "CLARIFY": C.YELLOW,
         "INERT": C.RED, "ESCALATE": C.RED,
     }
     return f"{colors.get(verdict, C.WHITE)}{verdict}{C.RESET}"
@@ -221,7 +221,7 @@ def print_corpus_summary(corpus: AuditCorpus):
 
 def print_verdict_table(corpus: AuditCorpus):
     n = len(corpus)
-    verdict_order = ["EXECUTE", "CLARIFY", "SUGGEST", "INERT", "ESCALATE"]
+    verdict_order = ["EXECUTE", "CLARIFY", "INERT", "ESCALATE"]
     dist: Dict[str, int] = {}
     for e in corpus:
         dist[e.verdict] = dist.get(e.verdict, 0) + 1
@@ -427,9 +427,9 @@ def generate_html(
     dist: Dict[str, int] = {}
     for e in corpus:
         dist[e.verdict] = dist.get(e.verdict, 0) + 1
-    verdict_order = ["EXECUTE", "CLARIFY", "SUGGEST", "INERT", "ESCALATE"]
+    verdict_order = ["EXECUTE", "CLARIFY", "INERT", "ESCALATE"]
     verdict_colors = {
-        "EXECUTE": "#22c55e", "CLARIFY": "#eab308", "SUGGEST": "#eab308",
+        "EXECUTE": "#22c55e", "CLARIFY": "#eab308",
         "INERT": "#ef4444", "ESCALATE": "#ef4444",
     }
 
@@ -711,7 +711,7 @@ def generate_html(
     </table>
 
     <h2>Allowed vs Blocked Comparison</h2>
-    <p style="color:#94a3b8;margin-bottom:8px">Allowed (EXECUTE/CLARIFY/SUGGEST): {cmp.n_a} events &mdash; Blocked (INERT/ESCALATE): {cmp.n_b} events</p>
+    <p style="color:#94a3b8;margin-bottom:8px">Allowed (EXECUTE/CLARIFY): {cmp.n_a} events &mdash; Blocked (INERT/ESCALATE): {cmp.n_b} events</p>
     <table>
         <thead>
             <tr><th>Dimension</th><th class="num">Allowed</th><th class="num">Blocked</th><th class="num">Delta</th><th class="num">Cohen's d</th><th>Effect</th></tr>
@@ -782,7 +782,7 @@ def run_analysis(jsonl_path: str, html_path: Optional[str] = None):
 
     # 4. Compare: allowed vs blocked
     t0 = time.perf_counter()
-    allowed = corpus.filter(predicate=lambda e: e.verdict in ("EXECUTE", "CLARIFY", "SUGGEST"))
+    allowed = corpus.filter(predicate=lambda e: e.verdict in ("EXECUTE", "CLARIFY"))
     blocked = corpus.filter(predicate=lambda e: e.verdict in ("INERT", "ESCALATE"))
     cmp = compare(allowed, blocked, label_a="Allowed", label_b="Blocked")
     timings["Compare"] = (time.perf_counter() - t0) * 1000

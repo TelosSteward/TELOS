@@ -64,7 +64,7 @@ class AuditEvent:
     timestamp: str
     session_id: str
     agent_id: str
-    verdict: str              # EXECUTE, CLARIFY, SUGGEST, INERT, ESCALATE
+    verdict: str              # EXECUTE, CLARIFY, INERT, ESCALATE
     # Per-dimension fidelity scores (recorded at scoring time)
     composite: float
     purpose: float
@@ -169,7 +169,7 @@ class AuditCorpus:
         All filters compose with AND logic.
 
         Args:
-            verdict: Match exact verdict (EXECUTE, CLARIFY, SUGGEST, INERT, ESCALATE)
+            verdict: Match exact verdict (EXECUTE, CLARIFY, INERT, ESCALATE)
             tool: Match tool_call name (case-insensitive)
             session: Match session_id
             min_composite: Minimum composite fidelity
@@ -340,7 +340,7 @@ class AuditCorpus:
                     record.pop("raw_payload", None)
                     record.pop("raw_request", None)
                     record.pop("raw_response", None)
-                    # Apply zone-based redaction (A34 T0-3)
+                    # Apply zone-based redaction
                     _redact = _get_redact_dict()
                     if _redact is not None:
                         record = _redact(record, level=2, zone=zone)

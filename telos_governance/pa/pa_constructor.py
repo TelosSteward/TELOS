@@ -24,11 +24,11 @@ Gate 2 — Behavioral Fidelity: "How are you planning to use it?"
 Provenance:
     Tool definitions sourced from first-party platform documentation:
     - Claude Code tools → Anthropic system prompt
-    - OpenClaw tools → docs.openclaw.ai
+    - Agent tools → platform-specific documentation
     See tool_semantics.py for per-definition provenance citations.
 
 Consumed by:
-    telos_adapters/openclaw/config_loader.py → _build_pa() when
+    telos_adapters config_loader → _build_pa() when
     construction_mode == "tool_grounded"
 """
 
@@ -64,7 +64,7 @@ class PAConstructor:
         Args:
             embed_fn: Function that embeds text → np.ndarray (384-dim for MiniLM).
                 Must be the same function used at scoring time for consistent
-                cosine similarity (Gebru: model version pinning is critical).
+                cosine similarity (model version pinning is critical).
         """
         self._embed_fn = embed_fn
 
@@ -183,7 +183,7 @@ class PAConstructor:
         # (purpose_emb) shifts into action-verb space, inflating off-topic
         # scores past thresholds. Gate 1 per-tool centroids handle tool
         # selection independently via pa.tool_centroids.
-        # See: A20 advisory — centroid separation fix.
+        # See: centroid separation fix.
 
         # ── Attach per-tool centroids (Gate 1 data) ──
         pa.tool_centroids = tool_centroids  # type: ignore[attr-defined]

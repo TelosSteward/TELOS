@@ -26,7 +26,7 @@ Regulatory traceability:
     - EU AI Act Art. 14: interrupt() implements mandatory human oversight
     - NIST AI 600-1 (MEASURE): Agentic thresholds are documented, versioned,
       centralized governance parameters (imported from telos_core.constants)
-    - OWASP LLM Top 10 (LLM08): EXECUTE/CLARIFY/SUGGEST/INERT/ESCALATE taxonomy
+    - OWASP LLM Top 10 (LLM08): EXECUTE/CLARIFY/ESCALATE taxonomy
       constrains agent autonomy proportionally to alignment confidence
 """
 
@@ -60,7 +60,6 @@ except ImportError:
 from telos_core.constants import (
     AGENTIC_EXECUTE_THRESHOLD,
     AGENTIC_CLARIFY_THRESHOLD,
-    AGENTIC_SUGGEST_THRESHOLD,
 )
 TELOS_CORE_AVAILABLE = True
 
@@ -154,9 +153,8 @@ class TelosGovernanceGate:
 
     CRITICAL: Tool selection uses TIGHTER thresholds than semantic alignment.
     - EXECUTE: >= 0.85 (vs 0.70 for conversational green zone)
-    - CLARIFY: 0.70-0.84 (verify intent before acting)
-    - SUGGEST: 0.50-0.69 (offer alternatives)
-    - INERT/ESCALATE: < 0.50 (no match)
+    - CLARIFY: 0.50-0.84 (verify intent before acting)
+    - ESCALATE: < 0.50 (no match, require human review)
 
     Usage:
         gate = TelosGovernanceGate(embed_fn=my_embedding_function)
@@ -352,14 +350,11 @@ class TelosGovernanceGate:
             elif fidelity >= AGENTIC_CLARIFY_THRESHOLD:
                 agentic_decision = ActionDecision.CLARIFY
                 reason = f"Moderate fidelity ({fidelity:.2f}) - verify intent"
-            elif fidelity >= AGENTIC_SUGGEST_THRESHOLD:
-                agentic_decision = ActionDecision.SUGGEST
-                reason = f"Low fidelity ({fidelity:.2f}) - suggest alternatives"
             elif self.high_risk:
                 agentic_decision = ActionDecision.ESCALATE
                 reason = f"Very low fidelity ({fidelity:.2f}) in high-risk context"
             else:
-                agentic_decision = ActionDecision.INERT
+                agentic_decision = ActionDecision.ESCALATE
                 reason = f"Very low fidelity ({fidelity:.2f}) - outside purpose"
 
             result["action_decision"] = agentic_decision.value
@@ -386,17 +381,6 @@ class TelosGovernanceGate:
                 result["reason"] = reason
                 return result
 
-            # SUGGEST: Vague match (0.50-0.69) - suggest alternatives
-            if agentic_decision == ActionDecision.SUGGEST:
-                approval = self._request_approval(
-                    action_text=action_text,
-                    fidelity=fidelity,
-                    zone=zone,
-                    direction=direction,
-                    reason=f"SUGGEST: Consider alternatives to {tool_name}",
-                )
-                result["approved"] = approval.get("approved", False)
-                result["approval_source"] = "human_suggest"
                 result["reason"] = reason
                 return result
 
@@ -418,10 +402,10 @@ class TelosGovernanceGate:
                 result["escalated"] = True
                 return result
 
-            # INERT: No match (< 0.50) - don't execute, don't hallucinate
-            if agentic_decision == ActionDecision.INERT:
+            # ESCALATE (non-high-risk): No match (< 0.50) - don't execute
+            if agentic_decision == ActionDecision.ESCALATE:
                 result["approved"] = False
-                result["approval_source"] = "blocked_inert"
+                result["approval_source"] = "blocked_escalate"
                 result["reason"] = reason
                 return result
 
